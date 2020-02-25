@@ -18,7 +18,7 @@ Adds option groups to `pallets/click <https://github.com/pallets/click>`_.
 
 This package only affects how the command help is formatted, it doesn't
 (and never will) allow to specify constraints on option groups. Look at
-`click-option-group <https://github.com/click-contrib/click-option-group>`_, if
+`click-option-group <https://github.com/click-contrib/click-option-group>`_ if
 you want that.
 
 * Free software: MIT license
