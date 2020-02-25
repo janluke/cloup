@@ -6,7 +6,7 @@ cloup
         :target: https://pypi.python.org/pypi/cloup
 
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
-        :target: https://travis-ci.com/janLuke/cloup
+        :target: https://travis-ci.org/janLuke/cloup
 
 .. comment:
     .. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
