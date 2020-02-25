@@ -80,7 +80,7 @@ The following code
 Credits
 -------
 
-I started from the code of the `@chrisjsewell <https://github.com/chrisjsewell>`_
+I started from the code writte by `@chrisjsewell <https://github.com/chrisjsewell>`_
 in `this comment <https://github.com/pallets/click/issues/373#issuecomment-515293746>`_.
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
