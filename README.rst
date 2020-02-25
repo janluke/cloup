@@ -24,7 +24,9 @@ you want that.
 
 Example
 -------
-The following code::
+The following code
+
+.. code-block:: python
 
     import cloup
     from cloup import option_group
