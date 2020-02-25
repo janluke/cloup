@@ -8,9 +8,10 @@ cloup
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
         :target: https://travis-ci.com/janLuke/cloup
 
-.. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
-        :target: https://cloup.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+.. comment:
+    .. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
+            :target: https://cloup.readthedocs.io/en/latest/?badge=latest
+            :alt: Documentation Status
 
 
 Extends pallets/click in order to add support to option groups in the command help.
