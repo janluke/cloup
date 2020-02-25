@@ -7,7 +7,7 @@ from click.testing import CliRunner
 from tests.example import cli
 
 expected_help = """
-Usage: example [OPTIONS]
+Usage: clouptest [OPTIONS]
 
   A CLI that does nothing.
 

@@ -2,7 +2,7 @@ import cloup
 from cloup import option_group
 
 
-@cloup.command('example')
+@cloup.command('clouptest')
 @option_group('Option group A', [
     cloup.option('--a1', help='1st option of group A'),
     cloup.option('--a2', help='2nd option of group A'),

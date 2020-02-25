@@ -33,7 +33,7 @@ The following code
     from cloup import option_group
 
 
-    @cloup.command()
+    @cloup.command('clouptest')
     @option_group('Option group A', [
         cloup.option('--a1', help='1st option of group A'),
         cloup.option('--a2', help='2nd option of group A'),
@@ -57,7 +57,7 @@ The following code
 
 ... will print::
 
-    Usage: example.py [OPTIONS]
+    Usage: clouptest [OPTIONS]
 
       A CLI that does nothing.
 
