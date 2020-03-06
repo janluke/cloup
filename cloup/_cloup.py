@@ -4,15 +4,33 @@ from functools import wraps
 import click
 
 
-class OptionGroup(object):
-    def __init__(self, name, help=None):
+class OptionGroup:
+    def __init__(self, name, options=[], help=None):
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
         self.help = help
+        self.options = list(options)
+
+    def append(self, option):
+        self.options.append(option)
+
+    def __iter__(self):
+        return iter(self.options)
+
+    def __getitem__(self, i):
+        return self.options[i]
+
+    def __len__(self) -> int:
+        return len(self.options)
 
     def __repr__(self):
-        return 'OptionGroup(name={}, help={})'.format(self.name, self.help)
+        return 'OptionGroup({}, {}, help={})'.format(
+            self.name, self.options, self.help)
+
+    def __repr__(self):
+        return 'OptionGroup({}, {}, help={})'.format(
+            self.name, [opt.name for opt in self.options], self.help)
 
 
 class GroupedOption(click.Option):
@@ -31,30 +49,55 @@ class GroupedOption(click.Option):
 class CloupCommand(click.Command):
     """ A ``click.Command`` supporting option groups. """
 
+    def __init__(self, name, context_settings=None, callback=None, params=None,
+                 help=None, epilog=None, short_help=None, options_metavar='[OPTIONS]',
+                 add_help_option=True, hidden=False, deprecated=False):
+        super().__init__(name, context_settings, callback, params, help, epilog, short_help,
+                         options_metavar, add_help_option, hidden, deprecated)
+
+        options_by_group = OrderedDict()
+        for param in self.params:
+            if not isinstance(param, click.Option):
+                continue
+            if not hasattr(param, 'group') or param.group is None:
+                continue
+            options_by_group.setdefault(param.group, []).append(param)
+
+        self.option_groups = list(options_by_group.keys())
+        for group, options in options_by_group.items():
+            group.options = options
+
+    def get_ungrouped_options(self, ctx):
+        return [param for param in self.get_params(ctx) if (
+            isinstance(param, click.Option)
+            and (not hasattr(param, 'group') or param.group is None)
+        )]
+
+    def format_option_group(self, ctx, formatter, option_group):
+        with formatter.section(option_group.name):
+            if option_group.help:
+                formatter.write_text(option_group.help)
+            help_records = [param.get_help_record(ctx) for param in option_group]
+            formatter.write_dl(help_records)
+
+    def format_ungrouped_options(self, ctx, formatter, options):
+        default_group = OptionGroup(
+            name='Other options' if self.option_groups else 'Options',
+            options=options
+        )
+        self.format_option_group(ctx, formatter, default_group)
+
     def format_options(self, ctx, formatter):
-        """Writes all the options into the formatter if they exist."""
-        default_option_group = []
-        opts_by_group = OrderedDict()
-        for param in self.get_params(ctx):
-            rv = param.get_help_record(ctx)
-            if rv is not None:
-                if hasattr(param, 'group') and param.group:
-                    opts_by_group.setdefault(param.group, []).append(rv)
-                else:
-                    default_option_group.append(rv)
-
-        for option_group, entries in opts_by_group.items():
-            with formatter.section(option_group.name):
-                if option_group.help:
-                    formatter.write_text(option_group.help)
-                formatter.write_dl(entries)
-
-        with formatter.section('Other options' if opts_by_group else 'Options'):
-            formatter.write_dl(default_option_group)
+        for option_group in self.option_groups:
+            self.format_option_group(ctx, formatter, option_group)
+        ungrouped_options = self.get_ungrouped_options(ctx)
+        if ungrouped_options:
+            self.format_ungrouped_options(ctx, formatter, ungrouped_options)
 
 
 class CloupGroup(click.Group):
     """ A ``click.Group`` supporting option groups. """
+
     def command(self, name=None, cls=CloupCommand, **attrs):
         return super().command(name=name, cls=cls, **attrs)
 
@@ -78,6 +121,7 @@ def command(name=None, cls=CloupCommand, **attrs):
 
 def option(*param_decls, **attrs):
     """ Attaches a ``GroupedOption``, i.e. an option supporting option groups. """
+
     def decorator(f, group=None):
         return click.option(*param_decls, cls=GroupedOption, group=group, **attrs)(f)
 
@@ -86,12 +130,11 @@ def option(*param_decls, **attrs):
 
 def option_group(name, options, help=None):
     """ Attaches an option group to the command. """
-    group = OptionGroup(name, help)
+    opt_group = OptionGroup(name, help=help)
 
     def decorator(f):
-        composition = f
-        for opt in reversed(options):
-            composition = opt(composition, group)
-        return composition
+        for opt_decorator in reversed(options):
+            opt_decorator(f, opt_group)
+        return f
 
     return decorator
