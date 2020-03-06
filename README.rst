@@ -8,23 +8,25 @@ cloup
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
         :target: https://travis-ci.org/janLuke/cloup
 
-.. comment
-    .. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
-            :target: https://cloup.readthedocs.io/en/latest/?badge=latest
-            :alt: Documentation Status
+.. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
+        :target: https://cloup.readthedocs.io/en/latest/?badge=latest
+        :alt: Documentation Status
 
 
-Adds option groups to `pallets/click <https://github.com/pallets/click>`_.
+``cloup`` (``CLick`` + ``grOUP``) extends `pallets/click <https://github.com/pallets/click>`_
+to add option groups and the possibility to organize the subcommands of a ``Group``
+in multiple "help sections" with a title.
 
-This package only affects how the command help is formatted, it doesn't
+Currently, this package only affects how the command help is formatted, it doesn't
 allow to specify constraints on option groups. Look at
 `click-option-group <https://github.com/click-contrib/click-option-group>`_ if
-you want that.
+you want that. Nonetheless, constraints would be a very easy addition and may be
+added soon.
 
 * Free software: MIT license
 
-Example
--------
+Option groups
+-------------
 The following code
 
 .. code-block:: python
@@ -74,11 +76,101 @@ The following code
       --opt2 TEXT  another uncategorized option
       --help       Show this message and exit.
 
+
+``cloup.Group`` sections
+------------------------
+See the full example code `here <examples/git_sections.py>`_.
+
+.. code-block:: python
+
+    # {Definitions of subcommands are omitted}
+
+    """
+    If "align_sections_help=True" (default), the help column of all sections will
+    be aligned; otherwise, each section will be formatted independently.
+    """
+    @cloup.group('git', align_sections_help=True)
+    def git():
+        return 0
+
+    """
+    git.section() creates a new GroupSection object, adds it to git and returns it.
+
+    In the help, sections are shown in the same order they are added.
+    Commands in each sections are shown in the same order they are listed, unless
+    you pass the argument "sorted_=True".
+    """
+    git.section('Start a working area (see also: git help tutorial)', [
+        git_clone,
+        git_init,
+    ])
+    git.section('Work on the current change (see also: git help everyday)', [
+        git_rm,
+        git_sparse_checkout,
+        git_mv,
+    ])
+
+    # The following commands will be added to the "default section" (a sorted GroupSection)
+    git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
+    git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
+
+In alternative to ``git.section()``, you could either:
+
+- ``@cloup.group('git', sections=[<list of GroupSection objects])``)
+- use ``git.add_section(section)`` to add an existing ``GroupSection`` object
+- use ``git.add_command(cmd, name, section, ...)``; the section must NOT contain the command
+- use ``@git.command(cmd, name, section, ...)``
+
+Individual commands don't store the section they belong to.
+Also, ``@cloup.command()`` doesn't accept a "section" argument.
+
+With ``align_sections_help=True``, the help will be::
+
+    Usage: git [OPTIONS] COMMAND [ARGS]...
+
+    Options:
+      --help  Show this message and exit.
+
+    Start a working area (see also: git help tutorial):
+      clone            Clone a repository into a new directory
+      init             Create an empty Git repository or reinitialize an...
+
+    Work on the current change (see also: git help everyday):
+      rm               Remove files from the working tree and from the index
+      sparse-checkout  Initialize and modify the sparse-checkout
+      mv               Move or rename a file, a directory, or a symlink
+
+    Other commands:
+      fake-1           Fake command #1
+      fake-2           Fake command #2
+
+
+With ``align_sections_help=False``, the help will be::
+
+    Usage: git_sections.py [OPTIONS] COMMAND [ARGS]...
+
+    Options:
+      --help  Show this message and exit.
+
+    Start a working area (see also: git help tutorial):
+      clone  Clone a repository into a new directory
+      init   Create an empty Git repository or reinitialize an existing one
+
+    Work on the current change (see also: git help everyday):
+      rm               Remove files from the working tree and from the index
+      sparse-checkout  Initialize and modify the sparse-checkout
+      mv               Move or rename a file, a directory, or a symlink
+
+    Other commands:
+      fake-1  Fake command #1
+      fake-2  Fake command #2
+
+
 Credits
 -------
 
-I started from the code written by `@chrisjsewell <https://github.com/chrisjsewell>`_
-in `this comment <https://github.com/pallets/click/issues/373#issuecomment-515293746>`_.
+For implementing option groups, I started from the idea of `@chrisjsewell <https://github.com/chrisjsewell>`_
+presented in `this comment <https://github.com/pallets/click/issues/373#issuecomment-515293746>`_.
 
 This package was created with Cookiecutter_ and the `audreyr/cookiecutter-pypackage`_ project template.
 
