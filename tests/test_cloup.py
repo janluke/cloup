@@ -4,10 +4,15 @@ Tests for `cloup` package.
 """
 from click.testing import CliRunner
 
+import cloup
+from cloup import (
+    option_group,
+    option
+)
 from tests.example import cli
 
 expected_help = """
-Usage: clouptest [OPTIONS] ARG
+Usage: clouptest [OPTIONS] [ARG]
 
   A CLI that does nothing.
 
@@ -28,10 +33,23 @@ Other options:
   --help       Show this message and exit.
 """
 
-def test_cloup():
+def test_cloup_example():
     runner = CliRunner()
     result = runner.invoke(cli, args=('--help',))
     assert result.exit_code == 0
     assert result.output.strip() == expected_help.strip()
 
 
+def test_hidden_option():
+    @cloup.command()
+    @option_group('group', [
+        option('--opt1', hidden=True),
+        option('--opt2')
+    ])
+    def cli(opt1, opt2):
+        return 0
+
+    result = CliRunner().invoke(cli, args=('--help',))
+    assert result.exit_code == 0
+    assert '--opt1' not in result.output
+    assert '--opt2' in result.output, result.output

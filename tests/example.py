@@ -3,7 +3,7 @@ import cloup
 from cloup import option_group, option
 
 @cloup.command('clouptest')
-@click.argument('arg')
+@click.argument('arg', required=False)
 @option_group('Option group A', [
     option('--a1', help='1st option of group A'),
     option('--a2', help='2nd option of group A'),

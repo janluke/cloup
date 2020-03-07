@@ -12,6 +12,9 @@ class OptionGroup:
         self.help = help
         self.options = list(options)
 
+    def get_help_records(self, ctx):
+        return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
+
     def append(self, option):
         self.options.append(option)
 
@@ -77,7 +80,7 @@ class CloupCommand(click.Command):
         with formatter.section(option_group.name):
             if option_group.help:
                 formatter.write_text(option_group.help)
-            help_records = [param.get_help_record(ctx) for param in option_group]
+            help_records = option_group.get_help_records(ctx)
             formatter.write_dl(help_records)
 
     def format_ungrouped_options(self, ctx, formatter, options):
