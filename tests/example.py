@@ -1,8 +1,6 @@
 import click
-
 import cloup
 from cloup import option_group, option
-
 
 @cloup.command('clouptest')
 @click.argument('arg')
@@ -14,7 +12,7 @@ from cloup import option_group, option
 )
 @option_group('Option group B', [
     option('--b1', help='1st option of group B'),
-    option('--b2', help='end option of group B'),
+    option('--b2', help='2nd option of group B'),
     option('--b3', help='3rd option of group B'),
 ])
 @option('--opt1', help='an uncategorized option')
