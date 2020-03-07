@@ -52,13 +52,9 @@ The following code
         """ A CLI that does nothing. """
         print(kwargs)
 
-
-    if __name__ == '__main__':
-        cli()
-
 ... will print::
 
-    Usage: clouptest [OPTIONS]
+    Usage: clouptest [OPTIONS] [ARG]
 
       A CLI that does nothing.
 
@@ -70,7 +66,7 @@ The following code
 
     Option group B:
       --b1 TEXT  1st option of group B
-      --b2 TEXT  end option of group B
+      --b2 TEXT  2nd option of group B
       --b3 TEXT  3rd option of group B
 
     Other options:
