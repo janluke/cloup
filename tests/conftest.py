@@ -2,6 +2,7 @@ import click
 import cloup
 from cloup import option_group, option
 
+
 @cloup.command('clouptest')
 @click.argument('arg', required=False)
 @option_group('Option group A', [
@@ -13,14 +14,15 @@ from cloup import option_group, option
 @option_group('Option group B', [
     option('--b1', help='1st option of group B'),
     option('--b2', help='2nd option of group B'),
-    option('--b3', help='3rd option of group B'),
+    option('--b3', help='3rd option of group B', hidden=True),
 ])
-@option('--opt1', help='an uncategorized option')
-@option('--opt2', help='another uncategorized option')
-def cli(**kwargs):
+@option('--opt1', help='uncategorized option #1')
+@option('--opt2', help='uncategorized option #2', hidden=True)
+@option('--opt3', help='uncategorized option #3')
+def example_cli(**kwargs):
     """ A CLI that does nothing. """
     print(kwargs)
 
 
 if __name__ == '__main__':
-    cli()
+    example_cli()
