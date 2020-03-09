@@ -2,7 +2,7 @@
 
 __author__ = """Gianluca Gippetto"""
 __email__ = 'gianluca.gippetto@gmail.com'
-__version__ = '0.1.1'
+__version__ = '0.1.2'
 
 from ._cloup import (
     OptionGroup,
