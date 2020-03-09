@@ -49,7 +49,7 @@ class GroupedOption(click.Option):
                          hidden, show_choices, show_envvar, **attrs)
 
 
-class CloupCommand(click.Command):
+class Command(click.Command):
     """ A ``click.Command`` supporting option groups. """
 
     def __init__(self, name, context_settings=None, callback=None, params=None,
@@ -76,7 +76,7 @@ class CloupCommand(click.Command):
             and (not hasattr(param, 'group') or param.group is None)
         )]
 
-    def format_option_group(self, ctx, formatter, option_group):
+    def format_option_group(self, ctx, formatter, option_group): # noqa
         with formatter.section(option_group.name):
             if option_group.help:
                 formatter.write_text(option_group.help)
@@ -98,27 +98,27 @@ class CloupCommand(click.Command):
             self.format_ungrouped_options(ctx, formatter, ungrouped_options)
 
 
-class CloupGroup(click.Group):
+class Group(click.Group):
     """ A ``click.Group`` supporting option groups. """
 
-    def command(self, name=None, cls=CloupCommand, **attrs):
+    def command(self, name=None, cls=Command, **attrs):
         return super().command(name=name, cls=cls, **attrs)
 
     def group(self, name=None, cls=None, **attrs):
         if cls is None:
-            cls = CloupGroup
+            cls = Group
         return super().group(name=name, cls=cls, **attrs)
 
 
 @wraps(click.group)
 def group(name=None, **attrs):
-    """ Creates a new ``CloupGroup``, i.e. a group supporting option groups. """
-    return click.group(name=name, cls=CloupGroup, **attrs)
+    """ Creates a new ``cloup.Group``. """
+    return click.group(name=name, cls=Group, **attrs)
 
 
 @wraps(click.command)
-def command(name=None, cls=CloupCommand, **attrs):
-    """ Creates a new ``CloupCommand``, i.e. a command supporting option groups. """
+def command(name=None, cls=Command, **attrs):
+    """ Creates a new ``cloup.Command``. """
     return click.command(name, cls=cls, **attrs)
 
 
