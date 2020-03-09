@@ -8,7 +8,7 @@ cloup
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
         :target: https://travis-ci.org/janLuke/cloup
 
-.. comment:
+.. comment
     .. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
             :target: https://cloup.readthedocs.io/en/latest/?badge=latest
             :alt: Documentation Status
@@ -17,7 +17,7 @@ cloup
 Adds option groups to `pallets/click <https://github.com/pallets/click>`_.
 
 This package only affects how the command help is formatted, it doesn't
-(and never will) allow to specify constraints on option groups. Look at
+allow to specify constraints on option groups. Look at
 `click-option-group <https://github.com/click-contrib/click-option-group>`_ if
 you want that.
 
