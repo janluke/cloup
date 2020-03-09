@@ -1,11 +1,10 @@
 from collections import OrderedDict
-from functools import wraps
 
 import click
 
 
 class OptionGroup:
-    def __init__(self, name, options=[], help=None):
+    def __init__(self, name, help=None, options=[]):
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
@@ -28,16 +27,16 @@ class OptionGroup:
         return len(self.options)
 
     def __repr__(self):
-        return 'OptionGroup({}, {}, help={})'.format(
+        return 'OptionGroup({}, help={}, options={})'.format(
             self.name, self.options, self.help)
 
-    def __repr__(self):
-        return 'OptionGroup({}, {}, help={})'.format(
+    def __str__(self):
+        return 'OptionGroup({}, help={}, options={})'.format(
             self.name, [opt.name for opt in self.options], self.help)
 
 
 class GroupedOption(click.Option):
-    """ A click.Option with a an extra field ``group`` of type OptionGroup """
+    """ A click.Option with an extra field ``group`` of type OptionGroup """
 
     def __init__(self, param_decls=None, show_default=False, prompt=False,
                  confirmation_prompt=False, hide_input=False, is_flag=None, flag_value=None,
@@ -49,34 +48,43 @@ class GroupedOption(click.Option):
                          hidden, show_choices, show_envvar, **attrs)
 
 
+def has_option_group(param):
+    return hasattr(param, 'group') and param.group is not None
+
+
+def get_option_group_of(param, default=None):
+    return param.group if has_option_group(param) else default
+
+
 class Command(click.Command):
     """ A ``click.Command`` supporting option groups. """
 
     def __init__(self, name, context_settings=None, callback=None, params=None,
                  help=None, epilog=None, short_help=None, options_metavar='[OPTIONS]',
                  add_help_option=True, hidden=False, deprecated=False):
+
         super().__init__(name, context_settings, callback, params, help, epilog, short_help,
                          options_metavar, add_help_option, hidden, deprecated)
 
         options_by_group = OrderedDict()
         for param in self.params:
-            if not isinstance(param, click.Option):
+            if isinstance(param, click.Argument):
                 continue
-            if not hasattr(param, 'group') or param.group is None:
-                continue
-            options_by_group.setdefault(param.group, []).append(param)
+            options_by_group.setdefault(get_option_group_of(param), []).append(param)
 
+        self.ungrouped_options = options_by_group.pop(None, default=[])
         self.option_groups = list(options_by_group.keys())
         for group, options in options_by_group.items():
             group.options = options
 
     def get_ungrouped_options(self, ctx):
-        return [param for param in self.get_params(ctx) if (
-            isinstance(param, click.Option)
-            and (not hasattr(param, 'group') or param.group is None)
-        )]
+        help_option = self.get_help_option(ctx)
+        if help_option is not None:
+            return self.ungrouped_options + [help_option]
+        else:
+            return self.ungrouped_options
 
-    def format_option_group(self, ctx, formatter, option_group): # noqa
+    def format_option_group(self, ctx, formatter, option_group):  # noqa
         with formatter.section(option_group.name):
             if option_group.help:
                 formatter.write_text(option_group.help)
@@ -86,8 +94,7 @@ class Command(click.Command):
     def format_ungrouped_options(self, ctx, formatter, options):
         default_group = OptionGroup(
             name='Other options' if self.option_groups else 'Options',
-            options=options
-        )
+            options=options)
         self.format_option_group(ctx, formatter, default_group)
 
     def format_options(self, ctx, formatter):
@@ -110,15 +117,13 @@ class Group(click.Group):
         return super().group(name=name, cls=cls, **attrs)
 
 
-@wraps(click.group)
-def group(name=None, **attrs):
-    """ Creates a new ``cloup.Group``. """
-    return click.group(name=name, cls=Group, **attrs)
+def group(name=None, cls=Group, **attrs):
+    """ Creates a new ``cloup.Group`` (by default). """
+    return click.group(name=name, cls=cls, **attrs)
 
 
-@wraps(click.command)
 def command(name=None, cls=Command, **attrs):
-    """ Creates a new ``cloup.Command``. """
+    """ Creates a new ``cloup.Command`` (by default). """
     return click.command(name, cls=cls, **attrs)
 
 
