@@ -209,10 +209,14 @@ class Group(click.Group):
             return cmd
         return decorator
 
-    def group(self, name=None, cls=None, **attrs):
+    def group(self, name=None, section=None, cls=None, **attrs):
         if cls is None:
             cls = Group
-        return super().group(name=name, cls=cls, **attrs)
+        def decorator(f):
+            cmd = group(name=name, cls=cls, **attrs)(f)
+            self.add_command(cmd, section=section)
+            return cmd
+        return decorator
 
     def _add_command_to_section(self, cmd, name=None, section=None):
         """ Adds a command to the section (if specified) or to the default section """
