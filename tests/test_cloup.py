@@ -27,6 +27,7 @@ Other options:
   --help       Show this message and exit.
 """
 
+
 def test_example_cli():
     runner = CliRunner()
     result = runner.invoke(example_cli, args=('--help',))

@@ -48,14 +48,6 @@ class GroupedOption(click.Option):
                          hidden, show_choices, show_envvar, **attrs)
 
 
-def has_option_group(param):
-    return hasattr(param, 'group') and param.group is not None
-
-
-def get_option_group_of(param, default=None):
-    return param.group if has_option_group(param) else default
-
-
 class GroupSection(object):
     """
     A section of commands inside a ``cloup.Group``. Sections are not
@@ -212,10 +204,12 @@ class Group(click.Group):
     def group(self, name=None, section=None, cls=None, **attrs):
         if cls is None:
             cls = Group
+
         def decorator(f):
             cmd = group(name=name, cls=cls, **attrs)(f)
             self.add_command(cmd, section=section)
             return cmd
+
         return decorator
 
     def _add_command_to_section(self, cmd, name=None, section=None):
@@ -267,8 +261,9 @@ class Group(click.Group):
         section_list = self.list_sections(ctx)
         command_name_col_width = None
         if self.align_sections_help:
-            command_name_col_width = max(len(name) for section in section_list
-                                                   for name in section.commands)
+            command_name_col_width = max(len(name)
+                                         for section in section_list
+                                         for name in section.commands)
         for section in section_list:
             self.format_section(ctx, formatter, section, command_name_col_width)
 
