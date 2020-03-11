@@ -6,6 +6,7 @@ __version__ = '0.1.2'
 
 from ._cloup import (
     OptionGroup,
+    GroupSection,
     GroupedOption,
     Group,
     Command,
