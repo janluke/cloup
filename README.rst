@@ -15,8 +15,8 @@ cloup
 
 
 ``cloup`` (``CLick`` + ``grOUP``) extends `pallets/click <https://github.com/pallets/click>`_
-to add option groups and the possibility to organize the subcommands of a ``Group``
-in multiple "help sections" with a title.
+to add option groups and the possibility of organizing the subcommands of a ``Group``
+in multiple help sections.
 
 Currently, this package only affects how the command help is formatted, it doesn't
 allow to specify constraints on option groups. Look at
