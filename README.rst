@@ -8,9 +8,10 @@ cloup
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
         :target: https://travis-ci.org/janLuke/cloup
 
-.. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
-        :target: https://cloup.readthedocs.io/en/latest/?badge=latest
-        :alt: Documentation Status
+.. comment:
+    .. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
+            :target: https://cloup.readthedocs.io/en/latest/?badge=latest
+            :alt: Documentation Status
 
 
 ``cloup`` (``CLick`` + ``grOUP``) extends `pallets/click <https://github.com/pallets/click>`_
@@ -114,16 +115,6 @@ See the full example code `here <examples/git_sections.py>`_.
     git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
     git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
 
-In alternative to ``git.section()``, you could either:
-
-- ``@cloup.group('git', sections=[<list of GroupSection objects])``)
-- use ``git.add_section(section)`` to add an existing ``GroupSection`` object
-- use ``git.add_command(cmd, name, section, ...)``; the section must NOT contain the command
-- use ``@git.command(cmd, name, section, ...)``
-
-Individual commands don't store the section they belong to.
-Also, ``@cloup.command()`` doesn't accept a "section" argument.
-
 With ``align_sections_help=True``, the help will be::
 
     Usage: git [OPTIONS] COMMAND [ARGS]...
@@ -165,6 +156,15 @@ With ``align_sections_help=False``, the help will be::
       fake-1  Fake command #1
       fake-2  Fake command #2
 
+In alternative to ``git.section()``, you could also use:
+
+- ``@cloup.group('git', sections=[<list of GroupSection objects])``)
+- ``git.add_section(section)`` to add an existing ``GroupSection`` object
+- ``git.add_command(cmd, name, section, ...)``; the section must NOT contain the command
+- ``@git.command(cmd, name, section, ...)``
+
+Individual commands don't know the section they belong to. As a consequence,
+neither ``cloup.Command`` nor ``@cloup.command()`` accept a "section" argument.
 
 Credits
 -------
