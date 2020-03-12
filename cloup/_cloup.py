@@ -54,15 +54,15 @@ class GroupSection(object):
     (multi)commands, they simply allow to organize cloup.Group subcommands
     in many different help sections.
     """
-    def __init__(self, title, commands=[], sorted_=False):   # noqa
+    def __init__(self, title, commands=[], sorted=False):   # noqa
         """
         :param title:
         :param commands: list of commands, dictionary {name: command}
-        :param sorted_:
+        :param sorted:
             if True, ``list_commands`` will return the commands in lexicographic order
         """
         self.title = title
-        self.sorted = sorted_
+        self.sorted = sorted
         if isinstance(commands, (list, tuple)):
             self.commands = OrderedDict()
             for cmd in commands:
@@ -75,7 +75,7 @@ class GroupSection(object):
 
     @classmethod
     def sorted(cls, title, commands=[]):
-        return cls(title, commands, sorted_=True)
+        return cls(title, commands, sorted=True)
 
     def add_command(self, cmd, name=None):
         name = name or cmd.name
@@ -95,7 +95,7 @@ class GroupSection(object):
         return len(self.commands)
 
     def __repr__(self):
-        return 'GroupSection({}, sorted_={})'.format(self.title, self.sorted)
+        return 'GroupSection({}, sorted={})'.format(self.title, self.sorted)
 
 
 def has_option_group(param):

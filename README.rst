@@ -99,7 +99,7 @@ See the full example code `here <examples/git_sections.py>`_.
 
     In the help, sections are shown in the same order they are added.
     Commands in each sections are shown in the same order they are listed, unless
-    you pass the argument "sorted_=True".
+    you pass the argument "sorted=True".
     """
     git.section('Start a working area (see also: git help tutorial)', [
         git_clone,
