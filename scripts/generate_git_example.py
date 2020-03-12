@@ -59,10 +59,10 @@ def f(**kwargs):
 # ==================================================================================================
 
 \"\"\"
-If "align_sections_help=True" (default), the help column of all sections will 
+If "align_sections=True" (default), the help column of all sections will 
 be aligned; otherwise, each section will be formatted independently.
 \"\"\"
-@cloup.group('git', align_sections_help=True)
+@cloup.group('git', align_sections=True)
 def git():
     return 0
 

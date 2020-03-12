@@ -176,17 +176,17 @@ class Group(click.Group):
     shown section in the help and its commands are listed in lexicographic order.
     """
 
-    def __init__(self, name=None, commands=None, sections=[], align_sections_help=True, **attrs):
+    def __init__(self, name=None, commands=None, sections=[], align_sections=True, **attrs):
         """
         :param name: name of the command
         :param commands: dict {name: command}; this command will be added to the default section.
         :param sections: a list of GroupSection objects
-        :param align_sections_help: if True, the help column of all columns will be aligned;
+        :param align_sections: if True, the help column of all columns will be aligned;
             if False, each section will be formatted independently
         :param attrs:
         """
         super().__init__(name, commands=commands, **attrs)
-        self.align_sections_help = align_sections_help
+        self.align_sections = align_sections
         self._default_section = GroupSection(None, commands=commands or [])
         self._user_sections = []
         self._section_set = set([self._default_section])
@@ -260,7 +260,7 @@ class Group(click.Group):
     def format_commands(self, ctx, formatter):
         section_list = self.list_sections(ctx)
         command_name_col_width = None
-        if self.align_sections_help:
+        if self.align_sections:
             command_name_col_width = max(len(name)
                                          for section in section_list
                                          for name in section.commands)

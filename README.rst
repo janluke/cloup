@@ -87,10 +87,10 @@ See the full example code `here <examples/git_sections.py>`_.
     # {Definitions of subcommands are omitted}
 
     """
-    If "align_sections_help=True" (default), the help column of all sections will
+    If "align_sections=True" (default), the help column of all sections will
     be aligned; otherwise, each section will be formatted independently.
     """
-    @cloup.group('git', align_sections_help=True)
+    @cloup.group('git', align_sections=True)
     def git():
         return 0
 
@@ -115,7 +115,7 @@ See the full example code `here <examples/git_sections.py>`_.
     git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
     git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
 
-With ``align_sections_help=True``, the help will be::
+With ``align_sections=True``, the help will be::
 
     Usage: git [OPTIONS] COMMAND [ARGS]...
 
@@ -136,7 +136,7 @@ With ``align_sections_help=True``, the help will be::
       fake-2           Fake command #2
 
 
-With ``align_sections_help=False``, the help will be::
+With ``align_sections=False``, the help will be::
 
     Usage: git_sections.py [OPTIONS] COMMAND [ARGS]...
 
