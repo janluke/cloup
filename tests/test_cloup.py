@@ -4,7 +4,7 @@ Tests for `cloup` package.
 """
 from click.testing import CliRunner
 
-from tests.conftest import example_cli
+from tests.conftest import example_command
 
 expected_help = """
 Usage: clouptest [OPTIONS] [ARG]
@@ -30,6 +30,6 @@ Other options:
 
 def test_example_cli():
     runner = CliRunner()
-    result = runner.invoke(example_cli, args=('--help',))
+    result = runner.invoke(example_command, args=('--help',))
     assert result.exit_code == 0
     assert result.output.strip() == expected_help.strip()

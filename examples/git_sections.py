@@ -31,7 +31,7 @@ git_bisect = cloup.command('bisect', help='Use binary search to find the commit 
 If "align_sections_help=True" (default), the help column of all sections will 
 be aligned; otherwise, each section will be formatted independently.
 """
-@cloup.group('git', align_sections_help=False)
+@cloup.group('git', align_sections_help=True)
 def git():
     return 0
 
@@ -42,20 +42,20 @@ In the help, sections are shown in the same order they are added.
 Commands in each sections are shown in the same order they are listed, unless
 you pass the argument "sorted_=True".
 """
-git.section('Start a working area (see also: git help tutorial)', [
+git.section('Start a working area (see also: git help tutorial)',
     git_clone,
     git_init,
-])
-git.section('Work on the current change (see also: git help everyday)', [
+)
+git.section('Work on the current change (see also: git help everyday)',
     git_rm,
     git_sparse_checkout,
     git_mv,
-])
-git.section('Examine the history and state (see also: git help revisions)', [
+)
+git.section('Examine the history and state (see also: git help revisions)',
     git_status,
     git_diff,
     git_bisect,
-])
+)
 
 """ 
 In alternative, you can either:

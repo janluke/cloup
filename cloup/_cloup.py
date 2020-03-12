@@ -4,7 +4,7 @@ import click
 
 
 class OptionGroup:
-    def __init__(self, name, help=None, options=[]):
+    def __init__(self, name, options=[], help=None):
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
@@ -54,7 +54,7 @@ class GroupSection(object):
     (multi)commands, they simply allow to organize cloup.Group subcommands
     in many different help sections.
     """
-    def __init__(self, title, commands=[], sorted_=False):
+    def __init__(self, title, commands=[], sorted_=False):   # noqa
         """
         :param title:
         :param commands: list of commands, dictionary {name: command}
@@ -95,7 +95,7 @@ class GroupSection(object):
         return len(self.commands)
 
     def __repr__(self):
-        return 'GroupSection({}, sort={})'.format(self.title, self.sorted)
+        return 'GroupSection({}, sorted_={})'.format(self.title, self.sorted)
 
 
 def has_option_group(param):
@@ -232,7 +232,7 @@ class Group(click.Group):
         for name, cmd in section.commands.items():
             super().add_command(cmd, name)
 
-    def section(self, title, commands, **attrs):
+    def section(self, title, *commands, **attrs):
         """ Creates a new :class:`GroupSection`, adds it to this group and returns it. """
         section = GroupSection(title, commands, **attrs)
         self.add_section(section)
@@ -306,8 +306,10 @@ def option(*param_decls, **attrs):
     return decorator
 
 
-def option_group(name, options, help=None):
+def option_group(name, *options, help=None):   # noqa
     """ Attaches an option group to the command. """
+    if not options:
+        raise ValueError('you must provide at least one option')
     opt_group = OptionGroup(name, help=help)
 
     def decorator(f):
