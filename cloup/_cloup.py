@@ -4,7 +4,7 @@ import click
 
 
 class OptionGroup:
-    def __init__(self, name, options=[], help=None):
+    def __init__(self, name, options=[], help=None):  # noqa
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
@@ -28,11 +28,11 @@ class OptionGroup:
 
     def __repr__(self):
         return 'OptionGroup({}, help={}, options={})'.format(
-            self.name, self.options, self.help)
+            self.name, self.help, self.options)
 
     def __str__(self):
         return 'OptionGroup({}, help={}, options={})'.format(
-            self.name, [opt.name for opt in self.options], self.help)
+            self.name, self.help, [opt.name for opt in self.options])
 
 
 class GroupedOption(click.Option):
@@ -59,7 +59,7 @@ class GroupSection(object):
         :param title:
         :param commands: list of commands, dictionary {name: command}
         :param sorted:
-            if True, ``list_commands`` will return the commands in lexicographic order
+            if True, ``list_commands()`` returns the commands in lexicographic order
         """
         self.title = title
         self.sorted = sorted
@@ -111,7 +111,7 @@ class Command(click.Command):
 
     def __init__(self, name, context_settings=None, callback=None, params=None,
                  help=None, epilog=None, short_help=None, options_metavar='[OPTIONS]',
-                 add_help_option=True, hidden=False, deprecated=False):
+                 add_help_option=True, hidden=False, deprecated=False, align_option_groups=True):
 
         super().__init__(name, context_settings, callback, params, help, epilog, short_help,
                          options_metavar, add_help_option, hidden, deprecated)
@@ -126,6 +126,7 @@ class Command(click.Command):
         self.option_groups = list(options_by_group.keys())
         for group, options in options_by_group.items():
             group.options = options
+        self.align_option_groups = align_option_groups
 
     def get_ungrouped_options(self, ctx):
         help_option = self.get_help_option(ctx)
@@ -134,25 +135,41 @@ class Command(click.Command):
         else:
             return self.ungrouped_options
 
-    def format_option_group(self, ctx, formatter, option_group):  # noqa
+    def format_option_group(self, ctx, formatter, option_group, help_records=None):  # noqa
+        help_records = help_records or option_group.get_help_records(ctx)
+        if not help_records:
+            return
         with formatter.section(option_group.name):
             if option_group.help:
                 formatter.write_text(option_group.help)
-            help_records = option_group.get_help_records(ctx)
             formatter.write_dl(help_records)
 
-    def format_ungrouped_options(self, ctx, formatter, options):
-        default_group = OptionGroup(
-            name='Other options' if self.option_groups else 'Options',
-            options=options)
-        self.format_option_group(ctx, formatter, default_group)
-
-    def format_options(self, ctx, formatter):
-        for option_group in self.option_groups:
-            self.format_option_group(ctx, formatter, option_group)
+    def format_options(self, ctx, formatter, max_option_width=30):
+        records_by_group = {group: group.get_help_records(ctx)
+                            for group in self.option_groups}
         ungrouped_options = self.get_ungrouped_options(ctx)
         if ungrouped_options:
-            self.format_ungrouped_options(ctx, formatter, ungrouped_options)
+            default_group = OptionGroup(
+                'Other options' if records_by_group else 'Options', ungrouped_options)
+            records_by_group[default_group] = default_group.get_help_records(ctx)
+
+        if self.align_option_groups:
+            option_name_width = min(
+                max_option_width,
+                max(len(rec[0])
+                    for records in records_by_group.values()
+                    for rec in records)
+            )
+            # Pad the first column of the first entry of each group to reach option_name_width
+            for records in records_by_group.values():
+                first = records[0]
+                pad_width = option_name_width - len(first[0])
+                if pad_width <= 0:
+                    continue
+                records[0] = (first[0] + ' ' * pad_width, first[1])
+
+        for group, records in records_by_group.items():
+            self.format_option_group(ctx, formatter, group, help_records=records)
 
 
 class Group(click.Group):
