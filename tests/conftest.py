@@ -1,29 +1,25 @@
-import click
-
-import cloup
-from cloup import option, option_group
-
-
-@cloup.command('clouptest')
-@click.argument('arg', required=False)
-@option_group('Option group A',
-    option('--a1', help='1st option of group A'),
-    option('--a2', help='2nd option of group A'),
-    option('--a3', help='3rd option of group A'),
-    help='This is a useful description of group A',
-)
-@option_group('Option group B',
-    option('--b1', help='1st option of group B'),
-    option('--b2', help='2nd option of group B'),
-    option('--b3', help='3rd option of group B', hidden=True)
-)
-@option('--opt1', help='uncategorized option #1')
-@option('--opt2', help='uncategorized option #2', hidden=True)
-@option('--opt3', help='uncategorized option #3')
-def example_command(**kwargs):
-    """ A CLI that does nothing. """
-    print(kwargs)
+from pytest import fixture
+from tests.example_command import make_example_command
+from tests.example_group import make_example_group
 
 
-if __name__ == '__main__':
-    example_command()
+@fixture(scope='session')
+def get_example_command():
+    aligned_cmd = make_example_command(align_option_groups=True)
+    non_aligned_cmd = make_example_command(align_option_groups=False)
+
+    def get_command(align_option_groups):
+        return aligned_cmd if align_option_groups else non_aligned_cmd
+
+    return get_command
+
+
+@fixture(scope='session')
+def get_example_group():
+    aligned_cmd = make_example_group(align_sections=True)
+    non_aligned_cmd = make_example_group(align_sections=False)
+
+    def get_group(align_sections):
+        return aligned_cmd if align_sections else non_aligned_cmd
+
+    return get_group

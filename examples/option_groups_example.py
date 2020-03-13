@@ -16,8 +16,7 @@ from cloup import option, option_group
     option('--five', help='2nd option of group B'),
     option('--six', help='3rd option of group B')
 )
-@option('--seven', help='first uncategorized option',
-    type=click.Choice('yes no ask'.split()))
+@option('--seven', help='first uncategorized option', type=click.Choice('yes no ask'.split()))
 @option('--height', help='second uncategorized option')
 def example_cli(**kwargs):
     """ A CLI that does nothing. """

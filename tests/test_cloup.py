@@ -1,35 +1,25 @@
 #!/usr/bin/env python
 """
-Tests for `cloup` package.
+These tests are just for preventing regressions. Helps of example commands were
+visually checked and they are expected to be stable. These tests just ensures
+that future code changes (mostly refactoring) don't break anything.
 """
+import pytest
 from click.testing import CliRunner
 
-from tests.conftest import example_command
 
-expected_help = """
-Usage: clouptest [OPTIONS] [ARG]
-
-  A CLI that does nothing.
-
-Option group A:
-  This is a useful description of group A
-  --a1 TEXT  1st option of group A
-  --a2 TEXT  2nd option of group A
-  --a3 TEXT  3rd option of group A
-
-Option group B:
-  --b1 TEXT  1st option of group B
-  --b2 TEXT  2nd option of group B
-
-Other options:
-  --opt1 TEXT  uncategorized option #1
-  --opt3 TEXT  uncategorized option #3
-  --help       Show this message and exit.
-"""
-
-
-def test_example_cli():
+@pytest.mark.parametrize('align_option_groups', [True, False], ids=['aligned', 'non-aligned'])
+def test_example_command_help(align_option_groups, get_example_command):
+    cmd = get_example_command(align_option_groups)
     runner = CliRunner()
-    result = runner.invoke(example_command, args=('--help',))
+    result = runner.invoke(cmd, args=('--help',))
     assert result.exit_code == 0
-    assert result.output.strip() == expected_help.strip()
+    assert result.output.strip() == cmd.expected_help
+
+
+@pytest.mark.parametrize('align_sections', [True, False], ids=['aligned', 'non-aligned'])
+def test_example_group_help(align_sections, get_example_group):
+    grp = get_example_group(align_sections)
+    result = CliRunner().invoke(grp, args=('--help',))
+    assert result.exit_code == 0
+    assert result.output.strip() == grp.expected_help
