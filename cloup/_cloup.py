@@ -4,7 +4,7 @@ import click
 
 
 class OptionGroup:
-    def __init__(self, name, options=[], help=None):  # noqa
+    def __init__(self, name, options=(), help=None):  # noqa
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
@@ -27,11 +27,11 @@ class OptionGroup:
         return len(self.options)
 
     def __repr__(self):
-        return 'OptionGroup({}, help={}, options={})'.format(
+        return 'OptionGroup({!r}, help={!r}, options={})'.format(
             self.name, self.help, self.options)
 
     def __str__(self):
-        return 'OptionGroup({}, help={}, options={})'.format(
+        return 'OptionGroup({!r}, help={!r}, options={})'.format(
             self.name, self.help, [opt.name for opt in self.options])
 
 
@@ -44,8 +44,8 @@ class GroupedOption(click.Option):
                  hidden=False, show_choices=True, show_envvar=False, group=None, **attrs):
         self.group = group
         super().__init__(param_decls, show_default, prompt, confirmation_prompt, hide_input,
-                         is_flag, flag_value, multiple, count, allow_from_autoenv, type, help,
-                         hidden, show_choices, show_envvar, **attrs)
+            is_flag, flag_value, multiple, count, allow_from_autoenv, type, help,
+            hidden, show_choices, show_envvar, **attrs)
 
 
 class GroupSection(object):
@@ -54,7 +54,8 @@ class GroupSection(object):
     (multi)commands, they simply allow to organize cloup.Group subcommands
     in many different help sections.
     """
-    def __init__(self, title, commands=[], sorted=False):   # noqa
+
+    def __init__(self, title, commands=(), sorted=False):  # noqa
         """
         :param title:
         :param commands: list of commands, dictionary {name: command}
@@ -74,7 +75,7 @@ class GroupSection(object):
                 raise TypeError('commands must be a list of commands or a dict {name: command}')
 
     @classmethod
-    def sorted(cls, title, commands=[]):
+    def sorted(cls, title, commands=()):
         return cls(title, commands, sorted=True)
 
     def add_command(self, cmd, name=None):
@@ -114,7 +115,7 @@ class Command(click.Command):
                  add_help_option=True, hidden=False, deprecated=False, align_option_groups=True):
 
         super().__init__(name, context_settings, callback, params, help, epilog, short_help,
-                         options_metavar, add_help_option, hidden, deprecated)
+            options_metavar, add_help_option, hidden, deprecated)
 
         options_by_group = OrderedDict()
         for param in self.params:
@@ -193,7 +194,7 @@ class Group(click.Group):
     shown section in the help and its commands are listed in lexicographic order.
     """
 
-    def __init__(self, name=None, commands=None, sections=[], align_sections=True, **attrs):
+    def __init__(self, name=None, commands=None, sections=(), align_sections=True, **attrs):
         """
         :param name: name of the command
         :param commands: dict {name: command}; this command will be added to the default section.
@@ -212,10 +213,12 @@ class Group(click.Group):
 
     def command(self, name=None, section=None, cls=Command, **attrs):
         """ Creates a new command and adds it to this group. """
+
         def decorator(f):
             cmd = command(name=name, **attrs)(f)
             self.add_command(cmd, section=section)
             return cmd
+
         return decorator
 
     def group(self, name=None, section=None, cls=None, **attrs):
@@ -323,10 +326,11 @@ def option(*param_decls, **attrs):
     return decorator
 
 
-def option_group(name, *options, help=None):   # noqa
+def option_group(name, *options, help=None):  # noqa
     """ Attaches an option group to the command. """
     if not options:
         raise ValueError('you must provide at least one option')
+
     opt_group = OptionGroup(name, help=help)
 
     def decorator(f):
