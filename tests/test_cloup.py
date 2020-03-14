@@ -21,5 +21,7 @@ def test_example_command_help(align_option_groups, get_example_command):
 def test_example_group_help(align_sections, get_example_group):
     grp = get_example_group(align_sections)
     result = CliRunner().invoke(grp, args=('--help',))
+    if result.exception:
+        raise result.exception
     assert result.exit_code == 0
     assert result.output.strip() == grp.expected_help

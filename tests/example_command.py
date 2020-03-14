@@ -1,3 +1,4 @@
+# flake8: noqa E128
 import click
 
 import cloup

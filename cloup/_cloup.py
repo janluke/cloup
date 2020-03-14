@@ -44,7 +44,8 @@ class GroupedOption(click.Option):
                  multiple=False, count=False, allow_from_autoenv=True, type=None, help=None,
                  hidden=False, show_choices=True, show_envvar=False, group=None, **attrs):
         self.group = group
-        super().__init__(param_decls, show_default, prompt, confirmation_prompt, hide_input,
+        super().__init__(
+            param_decls, show_default, prompt, confirmation_prompt, hide_input,
             is_flag, flag_value, multiple, count, allow_from_autoenv, type, help,
             hidden, show_choices, show_envvar, **attrs)
 
@@ -59,21 +60,21 @@ class GroupSection(object):
     def __init__(self, title, commands=(), sorted=False):  # noqa
         """
         :param title:
-        :param commands: list of commands, dictionary {name: command}
+        :param commands: sequence of commands or dictionary {name: command}
         :param sorted:
             if True, ``list_commands()`` returns the commands in lexicographic order
         """
         self.title = title
         self.sorted = sorted
-        if isinstance(commands, (list, tuple)):
+        self.commands = OrderedDict()
+        if isinstance(commands, Sequence):
             self.commands = OrderedDict()
             for cmd in commands:
                 self.add_command(cmd)
+        elif isinstance(commands, dict):
+            self.commands = OrderedDict(commands)
         else:
-            try:
-                self.commands = OrderedDict(commands)
-            except TypeError:
-                raise TypeError('commands must be a list of commands or a dict {name: command}')
+            raise TypeError('commands must be a list of commands or a dict {name: command}')
 
     @classmethod
     def sorted(cls, title, commands=()):
@@ -115,7 +116,8 @@ class Command(click.Command):
                  help=None, epilog=None, short_help=None, options_metavar='[OPTIONS]',
                  add_help_option=True, hidden=False, deprecated=False, align_option_groups=True):
 
-        super().__init__(name, context_settings, callback, params, help, epilog, short_help,
+        super().__init__(
+            name, context_settings, callback, params, help, epilog, short_help,
             options_metavar, add_help_option, hidden, deprecated)
 
         options_by_group = OrderedDict()
@@ -373,7 +375,7 @@ def _option_group(name: str,
                 raise ValueError(
                     'option {} was first assigned to {} and then passed '
                     'as argument to @option_group({!r}, ...)'
-                        .format(new_option.opts, curr_group, name))
+                    .format(new_option.opts, curr_group, name))
             new_option.group = opt_group
         return f
 
