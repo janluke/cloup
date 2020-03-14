@@ -8,15 +8,9 @@ cloup
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
         :target: https://travis-ci.org/janLuke/cloup
 
-.. comment:
-    .. image:: https://readthedocs.org/projects/cloup/badge/?version=latest
-            :target: https://cloup.readthedocs.io/en/latest/?badge=latest
-            :alt: Documentation Status
-
-
-``cloup`` (``CLick`` + ``grOUP``) extends `pallets/click <https://github.com/pallets/click>`_
-to add option groups and the possibility of organizing the subcommands of a ``Group``
-in multiple help sections.
+cloup (click + group) extends `pallets/click <https://github.com/pallets/click>`_
+to add option groups and the possibility of organizing the subcommands of a
+``Group`` in multiple help sections.
 
 Currently, this package only affects how the command help is formatted, it doesn't
 allow to specify constraints on option groups. Look at
@@ -24,73 +18,135 @@ allow to specify constraints on option groups. Look at
 you want that. Nonetheless, constraints would be a very easy addition and may be
 added soon.
 
-* Free software: MIT license
+.. contents:: **Table of contents**
+  :local:
+
+Installation
+============
+To install the last release::
+
+    pip install cloup
+
+Versioning
+----------
+cloup uses **semantic versioning**. I'll release v1.0 when I'm
+satisfied with API and features but cloup is already usable, just
+make sure you specify a compatible version number in your list
+of requirements if you decide to use it, e.g.::
+
+    cloup==0.3.*
+
+Patch releases are guaranteed to be backwards compatible even
+prior v1.0.
 
 Option groups
--------------
-The following code
+=============
+You can define option groups in two ways or "styles": I'll call them "nested style" and "flat style".
+The full code for the examples shown below can also be found in `<examples/option_groups_example.py>`_.
+
+Nested style (recommended)
+--------------------------
+In "nested style" you make use of the decorator ``option_group``.
+This decorator is "overloaded" with two signatures:
 
 .. code-block:: python
 
-    import click
+    @option_group(name, *options, help=None)    # help as keyword argument
+    @option_group(name, help, *options)         # help as 2nd positional argument
+
+I introduced the 2nd signature because I think it looks and feels nicer when you
+have to provide a long help that takes multiple lines; also, it reflects how to
+help is actually formatted.
+
+Here's an example:
+
+.. code-block:: python
+
     import cloup
     from cloup import option_group, option
 
     @cloup.command('clouptest')
-    @click.argument('arg')
-    @option_group(
-        'Option group A',
-        option('--a1', help='1st option of group A'),
-        option('--a2', help='2nd option of group A'),
-        option('--a3', help='3rd option of group A'),
-        help='This is a useful description of group A')
-    @option_group(
-        'Option group B',
-        option('--b1', help='1st option of group B'),
-        option('--b2', help='2nd option of group B'),
-        option('--b3', help='3rd option of group B'))
-    @option('--opt1', help='an uncategorized option')
-    @option('--opt2', help='another uncategorized option')
+    @option_group('Input options',
+        "This is a very long description of the option group. I don't think this is "
+        "needed very often; still, if you want to provide it, you can pass it as 2nd "
+        "positional argument or as keyword argument 'help' after all options.",
+        option('-o', '--one', help='1st input option'),
+        option('--two', help='2nd input option'),
+        option('--three', help='3rd input option')
+    )
+    @option_group('Output options',
+        option('--four / --no-four', help='1st output option'),
+        option('--five', help='2nd output option'),
+        option('--six', help='3rd output option'),
+        # help='You can also pass the help as keyword argument after the options.'
+    )
+    @option('--seven', help='first uncategorized option', type=click.Choice('yes no ask'.split()))
+    @option('--height', help='second uncategorized option')
     def cli(**kwargs):
         """ A CLI that does nothing. """
         print(kwargs)
 
-... will print::
+The help will be::
 
-    Usage: clouptest [OPTIONS] [ARG]
+    Usage: clouptest [OPTIONS]
 
       A CLI that does nothing.
 
-    Option group A:
-      This is a useful description of group A
-      --a1 TEXT  1st option of group A
-      --a2 TEXT  2nd option of group A
-      --a3 TEXT  3rd option of group A
+    Input options:
+      This is a very long description of the option group. I don't think this is
+      needed very often; still, if you want to provide it, you can pass it as
+      2nd positional argument or as keyword argument 'help' after all options.
+      -o, --one TEXT        1st input option
+      --two TEXT            2nd input option
+      --three TEXT          3rd input option
 
-    Option group B:
-      --b1 TEXT  1st option of group B
-      --b2 TEXT  2nd option of group B
-      --b3 TEXT  3rd option of group B
+    Output options:
+      --four / --no-four    1st output option
+      --five TEXT           2nd output option
+      --six TEXT            3rd output option
 
     Other options:
-      --opt1 TEXT  an uncategorized option
-      --opt2 TEXT  another uncategorized option
-      --help       Show this message and exit.
+      --seven [yes|no|ask]  first uncategorized option
+      --height TEXT         second uncategorized option
+      --help                Show this message and exit.
+
+As you can see, the columns of all option groups are aligned. If you want to
+format each option group independently, you can pass ``align_option_groups=False``
+to ``@command()``.
+
+Flat style
+----------
+In "flat style", you first define your option groups and then call the ``option()`` method on them.
+**Don't reuse** OptionGroup objects in multiple commands.
+
+.. code-block:: python
+
+    input_grp = OptionGroup('Input options', help='This is a very useful description of the group')
+    output_grp = OptionGroup('Output options')
+
+    @cloup.command('clouptest', align_option_groups=True)
+    @input_grp.option('-o', '--one', help='1st input option')
+    @input_grp.option('--two', help='2nd input option')
+    @input_grp.option('--three', help='3rd input option')
+    @output_grp.option('--four / --no-four', help='1st output option')
+    @output_grp.option('--five', help='2nd output option')
+    @output_grp.option('--six', help='3rd output option')
+    @option('--seven', help='first uncategorized option', type=click.Choice('yes no ask'.split()))
+    @option('--height', help='second uncategorized option')
+    def cli_flat(**kwargs):
+        """ A CLI that does nothing. """
+        print(kwargs)
 
 
-``cloup.Group`` sections
-------------------------
+Subcommand sections
+===================
 See the full example code `here <examples/git_sections.py>`_.
 
 .. code-block:: python
 
     # {Definitions of subcommands are omitted}
 
-    """
-    If "align_sections=True" (default), the help column of all sections will
-    be aligned; otherwise, each section will be formatted independently.
-    """
-    @cloup.group('git', align_sections=True)
+    @cloup.group('git')
     def git():
         return 0
 
@@ -115,7 +171,7 @@ See the full example code `here <examples/git_sections.py>`_.
     git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
     git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
 
-With ``align_sections=True``, the help will be::
+The help will be::
 
     Usage: git [OPTIONS] COMMAND [ARGS]...
 
@@ -135,39 +191,18 @@ With ``align_sections=True``, the help will be::
       fake-1           Fake command #1
       fake-2           Fake command #2
 
-
-With ``align_sections=False``, the help will be::
-
-    Usage: git_sections.py [OPTIONS] COMMAND [ARGS]...
-
-    Options:
-      --help  Show this message and exit.
-
-    Start a working area (see also: git help tutorial):
-      clone  Clone a repository into a new directory
-      init   Create an empty Git repository or reinitialize an existing one
-
-    Work on the current change (see also: git help everyday):
-      rm               Remove files from the working tree and from the index
-      sparse-checkout  Initialize and modify the sparse-checkout
-      mv               Move or rename a file, a directory, or a symlink
-
-    Other commands:
-      fake-1  Fake command #1
-      fake-2  Fake command #2
-
-In alternative to ``git.section()``, you could also use:
+In alternative to ``git.section()``, you can use:
 
 - ``@cloup.group('git', sections=[<list of GroupSection objects])``)
 - ``git.add_section(section)`` to add an existing ``GroupSection`` object
 - ``git.add_command(cmd, name, section, ...)``; the section must NOT contain the command
 - ``@git.command(cmd, name, section, ...)``
 
-Individual commands don't know the section they belong to. As a consequence,
-neither ``cloup.Command`` nor ``@cloup.command()`` accept a "section" argument.
+Individual commands don't know the section they belong to.
+Neither ``cloup.Command`` nor ``@cloup.command()`` accept a "section" argument.
 
 Credits
--------
+=======
 
 For implementing option groups, I started from the idea of `@chrisjsewell <https://github.com/chrisjsewell>`_
 presented in `this comment <https://github.com/pallets/click/issues/373#issuecomment-515293746>`_.
