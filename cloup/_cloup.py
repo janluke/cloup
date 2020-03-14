@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from typing import Callable, Optional, Sequence, overload
 
 import click
 
@@ -327,8 +328,37 @@ def option(*param_decls, group=None, cls=GroupedOption, **attrs):
     return decorator
 
 
-def option_group(name, *options, help=None):  # noqa
-    """ Attaches an option group to the command. """
+@overload
+def option_group(name: str, help: str, *options) -> Callable:  # noqa
+    ...
+
+
+@overload
+def option_group(name: str, *options, help: Optional[str] = None) -> Callable:  # noqa
+    ...
+
+
+def option_group(name: str, *args, **kwargs):
+    """
+    Attaches an option group to the command. This decorator is overloaded with
+    two signatures::
+
+        @option_group(name: str, *options, help: Optional[str] = None)
+        @option_group(name: str, help: str, *options)
+
+    In other words, if the second position argument is a string, it is interpreted
+    as the "help" argument. Otherwise, it is interpreted as the first option;
+    in this case, you can still pass the help as keyword argument.
+    """
+    if isinstance(args[0], str):
+        return _option_group(name, options=args[1:], help=args[0], **kwargs)
+    else:
+        return _option_group(name, options=args, **kwargs)
+
+
+def _option_group(name: str,
+                  options: Sequence[Callable],
+                  help: Optional[str] = None) -> Callable:  # noqa
     if not options:
         raise ValueError('you must provide at least one option')
 
