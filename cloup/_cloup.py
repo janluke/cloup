@@ -4,18 +4,18 @@ import click
 
 
 class OptionGroup:
-    def __init__(self, name, options=(), help=None):  # noqa
+    def __init__(self, name, help=None):  # noqa
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
         self.help = help
-        self.options = list(options)
+        self.options = []
 
     def get_help_records(self, ctx):
         return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
 
-    def append(self, option):
-        self.options.append(option)
+    def option(self, *param_decls, **attrs):
+        return option(*param_decls, group=self, **attrs)
 
     def __iter__(self):
         return iter(self.options)
@@ -150,8 +150,8 @@ class Command(click.Command):
                             for group in self.option_groups}
         ungrouped_options = self.get_ungrouped_options(ctx)
         if ungrouped_options:
-            default_group = OptionGroup(
-                'Other options' if records_by_group else 'Options', ungrouped_options)
+            default_group = OptionGroup('Other options' if records_by_group else 'Options')
+            default_group.options = ungrouped_options
             records_by_group[default_group] = default_group.get_help_records(ctx)
 
         if self.align_option_groups:
@@ -317,11 +317,12 @@ def command(name=None, cls=Command, **attrs):
     return click.command(name, cls=cls, **attrs)
 
 
-def option(*param_decls, **attrs):
-    """ Attaches a ``GroupedOption``, i.e. an option supporting option groups. """
-
-    def decorator(f, group=None):
-        return click.option(*param_decls, cls=GroupedOption, group=group, **attrs)(f)
+def option(*param_decls, group=None, cls=GroupedOption, **attrs):
+    def decorator(f):
+        click.option(*param_decls, cls=cls, **attrs)(f)
+        new_option = f.__click_params__[-1]
+        new_option.group = group
+        return f
 
     return decorator
 
@@ -335,7 +336,15 @@ def option_group(name, *options, help=None):  # noqa
 
     def decorator(f):
         for opt_decorator in reversed(options):
-            opt_decorator(f, opt_group)
+            opt_decorator(f)
+            new_option = f.__click_params__[-1]
+            curr_group = get_option_group_of(new_option)
+            if curr_group is not None:
+                raise ValueError(
+                    'option {} was first assigned to {} and then passed '
+                    'as argument to @option_group({!r}, ...)'
+                        .format(new_option.opts, curr_group, name))
+            new_option.group = opt_group
         return f
 
     return decorator

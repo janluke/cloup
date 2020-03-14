@@ -75,4 +75,4 @@ Other options:
 
 
 if __name__ == '__main__':
-    get_example_command(False)(['--help'])
+    make_example_command(False)(['--help'])
