@@ -41,7 +41,7 @@ git.section() creates a new GroupSection object, adds it to git and returns it.
 
 In the help, sections are shown in the same order they are added.
 Commands in each sections are shown in the same order they are listed, unless
-you pass the argument "sorted_=True".
+you pass the argument "sorted=True".
 """
 git.section('Start a working area (see also: git help tutorial)',
     git_clone,

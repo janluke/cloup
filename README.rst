@@ -151,21 +151,21 @@ See the full example code `here <examples/git_sections.py>`_.
         return 0
 
     """
-    git.section() creates a new GroupSection object, adds it to git and returns it.
+    group.section() creates a new GroupSection object, adds it to "group" and returns it.
 
     In the help, sections are shown in the same order they are added.
     Commands in each sections are shown in the same order they are listed, unless
     you pass the argument "sorted=True".
     """
-    git.section('Start a working area (see also: git help tutorial)', [
+    git.section('Start a working area (see also: git help tutorial)',
         git_clone,
-        git_init,
-    ])
-    git.section('Work on the current change (see also: git help everyday)', [
+        git_init
+    )
+    git.section('Work on the current change (see also: git help everyday)',
         git_rm,
         git_sparse_checkout,
-        git_mv,
-    ])
+        git_mv
+    )
 
     # The following commands will be added to the "default section" (a sorted GroupSection)
     git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
@@ -191,14 +191,31 @@ The help will be::
       fake-1           Fake command #1
       fake-2           Fake command #2
 
-In alternative to ``git.section()``, you can use:
+Though I think using ``_.section()`` is the cleanest way to define sections, there
+are alternatives.
 
-- ``@cloup.group('git', sections=[<list of GroupSection objects])``)
+One is to pass a list of ``GroupSection`` objects to @cloup.group():
+
+.. code-block:: python
+
+    SECTIONS = [
+        GroupSection('Start a working area (see also: git help tutorial)',
+                     git_clone, git_init),
+        GroupSection('Work on the current change (see also: git help everyday)',
+                     git_rm, git_sparse_checkout, git_mv)
+    ]
+
+    @cloup.group('git', sections=SECTIONS)
+    def git():
+        return 0
+
+Others are:
+
 - ``git.add_section(section)`` to add an existing ``GroupSection`` object
 - ``git.add_command(cmd, name, section, ...)``; the section must NOT contain the command
-- ``@git.command(cmd, name, section, ...)``
+- ``@git.command(cmd, name, section, ...)``, specifying ``section``.
 
-Individual commands don't know the section they belong to.
+**Note:** individual commands don't know the section they belong to.
 Neither ``cloup.Command`` nor ``@cloup.command()`` accept a "section" argument.
 
 Credits
