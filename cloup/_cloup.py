@@ -136,7 +136,8 @@ class Command(click.Command):
             return self.ungrouped_options
 
     def format_option_group(self, ctx, formatter, option_group, help_records=None):  # noqa
-        help_records = help_records or option_group.get_help_records(ctx)
+        if help_records is None:
+            help_records = option_group.get_help_records(ctx)
         if not help_records:
             return
         with formatter.section(option_group.name):
@@ -145,8 +146,9 @@ class Command(click.Command):
             formatter.write_dl(help_records)
 
     def format_options(self, ctx, formatter, max_option_width=30):
-        records_by_group = {group: group.get_help_records(ctx)
-                            for group in self.option_groups}
+        records_by_group = OrderedDict()    # OrderedDict for python 3.5
+        for group in self.option_groups:
+            records_by_group[group] = group.get_help_records(ctx)
         ungrouped_options = self.get_ungrouped_options(ctx)
         if ungrouped_options:
             default_group = OptionGroup('Other options' if records_by_group else 'Options')
@@ -160,6 +162,7 @@ class Command(click.Command):
                     for records in records_by_group.values()
                     for rec in records)
             )
+            # This is a hacky way to have aligned options groups.
             # Pad the first column of the first entry of each group to reach option_name_width
             for records in records_by_group.values():
                 first = records[0]
