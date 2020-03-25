@@ -36,8 +36,7 @@ of requirements if you decide to use it, e.g.::
 
     cloup==0.3.*
 
-Patch releases are guaranteed to be backwards compatible even
-prior v1.0.
+Patch releases are guaranteed to be backwards compatible (even before v1.0).
 
 Option groups
 =============
