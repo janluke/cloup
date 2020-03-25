@@ -1,18 +1,30 @@
 from collections import OrderedDict
-from typing import Callable, Optional, Sequence, overload
+from typing import (
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    Type,
+    Union,
+    cast,
+    overload
+)
 
 import click
 
 
 class OptionGroup:
-    def __init__(self, name, help=None):  # noqa
+    def __init__(self, name: str, help: Optional[str] = None):  # noqa
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
         self.help = help
-        self.options = []
+        self.options = []  # type: Sequence[click.Option]
 
-    def get_help_records(self, ctx):
+    def get_help_records(self, ctx: click.Context):
         return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
 
     def option(self, *param_decls, **attrs):
@@ -21,17 +33,17 @@ class OptionGroup:
     def __iter__(self):
         return iter(self.options)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i: int) -> click.Option:
         return self.options[i]
 
     def __len__(self) -> int:
         return len(self.options)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'OptionGroup({!r}, help={!r}, options={})'.format(
             self.name, self.help, self.options)
 
-    def __str__(self):
+    def __str__(self) -> str:
         return 'OptionGroup({!r}, help={!r}, options={})'.format(
             self.name, self.help, [opt.name for opt in self.options])
 
@@ -39,7 +51,7 @@ class OptionGroup:
 class GroupedOption(click.Option):
     """ A click.Option with an extra field ``group`` of type OptionGroup """
 
-    def __init__(self, *args, group=None, **attrs):
+    def __init__(self, *args, group: Optional[OptionGroup] = None, **attrs):
         super().__init__(*args, **attrs)
         self.group = group
 
@@ -51,7 +63,9 @@ class GroupSection(object):
     in many different help sections.
     """
 
-    def __init__(self, title, commands=(), sorted=False):  # noqa
+    def __init__(self, title: str,
+                 commands: Union[Iterable[click.Command], Dict[str, click.Command]] = (),
+                 sorted: bool = False):  # noqa
         """
         :param title:
         :param commands: sequence of commands or dictionary {name: command}
@@ -59,8 +73,8 @@ class GroupSection(object):
             if True, ``list_commands()`` returns the commands in lexicographic order
         """
         self.title = title
-        self.sorted = sorted
-        self.commands = OrderedDict()
+        self.sorted = sorted  # type: ignore
+        self.commands = OrderedDict()  # type: OrderedDict[str, click.Command]
         if isinstance(commands, Sequence):
             self.commands = OrderedDict()
             for cmd in commands:
@@ -71,10 +85,12 @@ class GroupSection(object):
             raise TypeError('commands must be a list of commands or a dict {name: command}')
 
     @classmethod
-    def sorted(cls, title, commands=()):
+    def sorted(cls, title: str,
+               commands: Union[Iterable[click.Command], Dict[str, click.Command]] = ()
+               ) -> 'GroupSection':
         return cls(title, commands, sorted=True)
 
-    def add_command(self, cmd, name=None):
+    def add_command(self, cmd: click.Command, name: Optional[str] = None):
         name = name or cmd.name
         if not name:
             raise TypeError('missing command name')
@@ -82,20 +98,20 @@ class GroupSection(object):
             raise Exception('command "{}" already exists'.format(name))
         self.commands[name] = cmd
 
-    def list_commands(self):
+    def list_commands(self) -> List[Tuple[str, click.Command]]:
         command_list = [(name, cmd) for name, cmd in self.commands.items() if not cmd.hidden]
         if self.sorted:
             command_list.sort()
         return command_list
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.commands)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return 'GroupSection({}, sorted={})'.format(self.title, self.sorted)
 
 
-def has_option_group(param):
+def has_option_group(param) -> bool:
     return hasattr(param, 'group') and param.group is not None
 
 
@@ -128,14 +144,17 @@ class Command(click.Command):
             group.options = options
         self.align_option_groups = align_option_groups
 
-    def get_ungrouped_options(self, ctx):
+    def get_ungrouped_options(self, ctx: click.Context) -> Sequence[click.Option]:
         help_option = self.get_help_option(ctx)
         if help_option is not None:
             return self.ungrouped_options + [help_option]
         else:
             return self.ungrouped_options
 
-    def format_option_group(self, ctx, formatter, option_group, help_records=None):  # noqa
+    def format_option_group(self, ctx: click.Context,
+                            formatter: click.HelpFormatter,
+                            option_group: OptionGroup,
+                            help_records: Optional[Sequence] = None):
         if help_records is None:
             help_records = option_group.get_help_records(ctx)
         if not help_records:
@@ -145,8 +164,10 @@ class Command(click.Command):
                 formatter.write_text(option_group.help)
             formatter.write_dl(help_records)
 
-    def format_options(self, ctx, formatter, max_option_width=30):
-        records_by_group = OrderedDict()    # OrderedDict for python 3.5
+    def format_options(self, ctx: click.Context,
+                       formatter: click.HelpFormatter,
+                       max_option_width: int = 30):
+        records_by_group = OrderedDict()  # OrderedDict for python 3.5
         for group in self.option_groups:
             records_by_group[group] = group.get_help_records(ctx)
         ungrouped_options = self.get_ungrouped_options(ctx)
@@ -196,7 +217,10 @@ class Group(click.Group):
     shown section in the help and its commands are listed in lexicographic order.
     """
 
-    def __init__(self, name=None, commands=None, sections=(), align_sections=True, **attrs):
+    def __init__(self, name: Optional[str] = None,
+                 commands: Optional[Dict[str, click.Command]] = None,
+                 sections: Iterable[GroupSection] = (),
+                 align_sections: bool = True, **attrs):
         """
         :param name: name of the command
         :param commands: dict {name: command}; this command will be added to the default section.
@@ -207,28 +231,33 @@ class Group(click.Group):
         """
         super().__init__(name=name, commands=commands, **attrs)
         self.align_sections = align_sections
-        self._default_section = GroupSection(None, commands=commands or [])
-        self._user_sections = []
+        self._default_section = GroupSection('__DEFAULT', commands=commands or [])
+        self._user_sections = []  # type: List[GroupSection]
         self._section_set = set([self._default_section])
         for section in sections:
             self.add_section(section)
 
-    def command(self, name=None, section=None, cls=Command, **attrs):
+    def command(self, name: Optional[str] = None,      # type: ignore
+                section: Optional[GroupSection] = None,
+                cls: Type[click.Command] = Command, **attrs) -> Callable[[Callable], click.Command]:
         """ Creates a new command and adds it to this group. """
 
         def decorator(f):
-            cmd = command(name=name, **attrs)(f)
+            cmd = click.command(name=name, cls=cls, **attrs)(f)
             self.add_command(cmd, section=section)
             return cmd
 
         return decorator
 
-    def group(self, name=None, section=None, cls=None, **attrs):
+    def group(self, name: Optional[str] = None,            # type: ignore
+              section: Optional[GroupSection] = None,
+              cls: Optional[Type[click.Group]] = None,
+              **attrs) -> Callable[[Callable], click.Group]:
         if cls is None:
             cls = Group
 
         def decorator(f):
-            cmd = group(name=name, cls=cls, **attrs)(f)
+            cmd = click.group(name=name, cls=cls, **attrs)(f)
             self.add_command(cmd, section=section)
             return cmd
 
@@ -244,7 +273,7 @@ class Group(click.Group):
             self._user_sections.append(section)
             self._section_set.add(section)
 
-    def add_section(self, section):
+    def add_section(self, section: GroupSection):
         """ Adds a :class:`GroupSection` to this group. You can add the same
         section object a single time. """
         if section in self._section_set:
@@ -254,20 +283,23 @@ class Group(click.Group):
         for name, cmd in section.commands.items():
             super().add_command(cmd, name)
 
-    def section(self, title, *commands, **attrs):
+    def section(self, title: str, *commands: click.Command, **attrs) -> GroupSection:
         """ Creates a new :class:`GroupSection`, adds it to this group and returns it. """
         section = GroupSection(title, commands, **attrs)
         self.add_section(section)
         return section
 
-    def add_command(self, cmd, name=None, section=None):
+    def add_command(self, cmd: click.Command,
+                    name: Optional[str] = None,
+                    section: Optional[GroupSection] = None):
         """
         Adds a new command. If ``section`` is None, the command is added to the default section.
         """
         super().add_command(cmd, name)
         self._add_command_to_section(cmd, name, section)
 
-    def list_sections(self, ctx, include_default_section=True):
+    def list_sections(self, ctx: click.Context,
+                      include_default_section: bool = True) -> List[GroupSection]:
         """ Returns the list of all sections in the "correct order".
          if ``include_default_section=True`` and the default section is non-empty,
          it will be included at the end of the list. """
@@ -279,7 +311,7 @@ class Group(click.Group):
             section_list.append(default_section)
         return section_list
 
-    def format_commands(self, ctx, formatter):
+    def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter):
         section_list = self.list_sections(ctx)
         command_name_col_width = None
         if self.align_sections:
@@ -289,7 +321,10 @@ class Group(click.Group):
         for section in section_list:
             self.format_section(ctx, formatter, section, command_name_col_width)
 
-    def format_section(self, ctx, formatter, section, command_col_width=None):  # noqa
+    def format_section(self, ctx: click.Context,
+                       formatter: click.HelpFormatter,
+                       section: GroupSection,
+                       command_col_width: Optional[int] = None):
         commands = section.list_commands()
         if not commands:
             return
@@ -297,7 +332,7 @@ class Group(click.Group):
         if command_col_width is None:
             command_col_width = max(len(cmd_name) for cmd_name, _ in commands)
 
-        limit = formatter.width - 6 - command_col_width
+        limit = formatter.width - 6 - command_col_width     # type: ignore
         rows = []
         for name, cmd in commands:
             short_help = cmd.get_short_help_str(limit)
@@ -309,17 +344,25 @@ class Group(click.Group):
                 formatter.write_dl(rows)
 
 
-def group(name=None, cls=Group, **attrs):
+def group(name: Optional[str] = None,
+          cls: Type[Group] = Group, **attrs) -> Callable[[Callable], Group]:
     """ Creates a new ``Group`` (by default). """
-    return click.group(name=name, cls=cls, **attrs)
+    if not issubclass(cls, Group):
+        raise TypeError('cls must be a subclass of cloup.Group')
+    return cast(Group, click.group(name=name, cls=cls, **attrs))
 
 
-def command(name=None, cls=Command, **attrs):
+def command(name: Optional[str] = None,
+            cls: Type[Command] = Command, **attrs) -> Callable[[Callable], Command]:
     """ Creates a new ``cloup.Command`` (by default). """
-    return click.command(name, cls=cls, **attrs)
+    if not issubclass(cls, Command):
+        raise TypeError('cls must be a subclass of cloup.Command')
+    return cast(Command, click.command(name, cls=cls, **attrs))
 
 
-def option(*param_decls, group=None, cls=GroupedOption, **attrs):
+def option(*param_decls,
+           group: Optional[OptionGroup] = None,
+           cls: Type[click.Option] = GroupedOption, **attrs) -> Callable[[Callable], Callable]:
     def decorator(f):
         click.option(*param_decls, cls=cls, **attrs)(f)
         new_option = f.__click_params__[-1]
@@ -339,7 +382,7 @@ def option_group(name: str, *options, help: Optional[str] = None) -> Callable:  
     ...
 
 
-def option_group(name: str, *args, **kwargs):
+def option_group(name: str, *args, **kwargs) -> Callable:
     """
     Attaches an option group to the command. This decorator is overloaded with
     two signatures::
@@ -352,7 +395,7 @@ def option_group(name: str, *args, **kwargs):
     in this case, you can still pass the help as keyword argument.
     """
     if isinstance(args[0], str):
-        return _option_group(name, options=args[1:], help=args[0], **kwargs)
+        return _option_group(name, options=args[1:], help=args[0])
     else:
         return _option_group(name, options=args, **kwargs)
 
