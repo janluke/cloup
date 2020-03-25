@@ -39,15 +39,9 @@ class OptionGroup:
 class GroupedOption(click.Option):
     """ A click.Option with an extra field ``group`` of type OptionGroup """
 
-    def __init__(self, param_decls=None, show_default=False, prompt=False,
-                 confirmation_prompt=False, hide_input=False, is_flag=None, flag_value=None,
-                 multiple=False, count=False, allow_from_autoenv=True, type=None, help=None,
-                 hidden=False, show_choices=True, show_envvar=False, group=None, **attrs):
+    def __init__(self, *args, group=None, **attrs):
+        super().__init__(*args, **attrs)
         self.group = group
-        super().__init__(
-            param_decls, show_default, prompt, confirmation_prompt, hide_input,
-            is_flag, flag_value, multiple, count, allow_from_autoenv, type, help,
-            hidden, show_choices, show_envvar, **attrs)
 
 
 class GroupSection(object):
@@ -112,13 +106,15 @@ def get_option_group_of(param, default=None):
 class Command(click.Command):
     """ A ``click.Command`` supporting option groups. """
 
-    def __init__(self, name, context_settings=None, callback=None, params=None,
-                 help=None, epilog=None, short_help=None, options_metavar='[OPTIONS]',
-                 add_help_option=True, hidden=False, deprecated=False, align_option_groups=True):
-
+    def __init__(self, name, context_settings=None, callback=None, params=None, help=None,
+                 epilog=None, short_help=None, options_metavar="[OPTIONS]", add_help_option=True,
+                 no_args_is_help=False, hidden=False, deprecated=False, align_option_groups=True,
+                 **kwargs):
         super().__init__(
-            name, context_settings, callback, params, help, epilog, short_help,
-            options_metavar, add_help_option, hidden, deprecated)
+            name=name, context_settings=context_settings, callback=callback, params=params,
+            help=help, epilog=epilog, short_help=short_help, options_metavar=options_metavar,
+            add_help_option=add_help_option, no_args_is_help=no_args_is_help, hidden=hidden,
+            deprecated=deprecated, **kwargs)
 
         options_by_group = OrderedDict()
         for param in self.params:
@@ -206,7 +202,7 @@ class Group(click.Group):
             if False, each section will be formatted independently
         :param attrs:
         """
-        super().__init__(name, commands=commands, **attrs)
+        super().__init__(name=name, commands=commands, **attrs)
         self.align_sections = align_sections
         self._default_section = GroupSection(None, commands=commands or [])
         self._user_sections = []
