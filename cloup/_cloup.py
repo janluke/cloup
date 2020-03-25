@@ -394,7 +394,7 @@ def option_group(name: str, *args, **kwargs) -> Callable:
     as the "help" argument. Otherwise, it is interpreted as the first option;
     in this case, you can still pass the help as keyword argument.
     """
-    if isinstance(args[0], str):
+    if args and isinstance(args[0], str):
         return _option_group(name, options=args[1:], help=args[0])
     else:
         return _option_group(name, options=args, **kwargs)
