@@ -3,10 +3,16 @@ cloup
 =====
 
 .. image:: https://img.shields.io/pypi/v/cloup.svg
-        :target: https://pypi.python.org/pypi/cloup
+    :alt: PyPI Package
+    :target: https://pypi.python.org/pypi/cloup
 
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
-        :target: https://travis-ci.org/janLuke/cloup
+    :alt: Travis-CI Build Status
+    :target: https://travis-ci.org/janLuke/cloup?branch=master
+
+.. image:: https://codecov.io/github/janLuke/embfile/coverage.svg?branch=master
+    :alt: Coverage Status
+    :target: https://codecov.io/github/janLuke/cloup?branch=master
 
 cloup (click + group) extends `pallets/click <https://github.com/pallets/click>`_
 to add option groups and the possibility of organizing the subcommands of a
