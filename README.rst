@@ -10,7 +10,7 @@ cloup
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/janLuke/cloup?branch=master
 
-.. image:: https://codecov.io/github/janLuke/embfile/coverage.svg?branch=master
+.. image:: https://codecov.io/github/janLuke/cloup/coverage.svg?branch=master
     :alt: Coverage Status
     :target: https://codecov.io/github/janLuke/cloup?branch=master
 
