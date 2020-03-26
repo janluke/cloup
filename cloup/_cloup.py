@@ -56,7 +56,7 @@ class GroupedOption(click.Option):
         self.group = group
 
 
-class GroupSection(object):
+class GroupSection:
     """
     A section of commands inside a ``cloup.Group``. Sections are not
     (multi)commands, they simply allow to organize cloup.Group subcommands
