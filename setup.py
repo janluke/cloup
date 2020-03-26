@@ -21,7 +21,6 @@ setup(
     author_email='gianluca.gippetto@gmail.com',
     python_requires='>=3.5',
     classifiers=[
-        'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
@@ -31,7 +30,7 @@ setup(
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
     ],
-    description="Option groups for pallets/click",
+    description="Option groups and subcommand help sections for pallets/click",
     install_requires=requirements,
     license="MIT license",
     long_description=readme + '\n\n' + history,
@@ -43,6 +42,6 @@ setup(
     test_suite='tests',
     tests_require=test_requirements,
     url='https://github.com/janLuke/cloup',
-    version='0.2.0',
+    version='0.3.0',
     zip_safe=False,
 )
