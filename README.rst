@@ -21,7 +21,7 @@ to add option groups and the possibility of organizing the subcommands of a
 Currently, this package only affects how the command help is formatted, it doesn't
 allow to specify constraints on option groups. Look at
 `click-option-group <https://github.com/click-contrib/click-option-group>`_ if
-you want that. Nonetheless, constraints would be a very easy addition and may be
+you want that. Nonetheless, constraints would be a very easy addition and might be
 added soon.
 
 .. contents:: **Table of contents**
