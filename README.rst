@@ -8,7 +8,7 @@ cloup
 
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/janLuke/cloup?branch=master
+    :target: https://travis-ci.com/janLuke/cloup?branch=master
 
 .. image:: https://codecov.io/github/janLuke/cloup/coverage.svg?branch=master
     :alt: Coverage Status
