@@ -60,7 +60,7 @@ This decorator is "overloaded" with two signatures:
     @option_group(name, help, *options)         # help as 2nd positional argument
 
 I introduced the 2nd signature because I think it looks and feels nicer when you
-have to provide a long help that takes multiple lines; also, it reflects how to
+have to provide a long help that takes multiple lines; furthermore, it reflects how the
 help is actually formatted.
 
 Here's an example:
