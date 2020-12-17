@@ -11,12 +11,12 @@ script: tox
 after_success:
     - codecov
 deploy:
-  provider: pypi
-  distributions: sdist bdist_wheel
-  user: janluke
-  password:
-    secure: nIdK/rSWyKXnot35BDqBKMnw5NvNv+2wRkEJLTzi/KV9jXlyzq1WosABILKCjVGk8WuKe0FzlrSL5pqQWGRK8VjVpyM8+6Vu4n9+RRFb2xsdLxJueXmEkQYxcZxhrhHLf8J94QxFp7e5G2G0SYghDuBk1sw+6yJA2eQkH/BJ4LY84C8i2M38SqL9mojV7+wSnTJb+LFUlR2fgzIQ+Xcj0j4oG5hF7K1ni07dyrKzznjbR0DrHkPbNiAd0jCVOnAajSL3wRph8+e2hKDvFQFYDW6pPuX5JwqwHbVzEPzlzIOfyMW9TdyvD+6uF7+q1aJbHdVitpuM67CJA8naI1Q/4N5u6ieQ6mTjs/J6TMcLj3NdbnVq/CD3SpDsAqqIGVbrNPcNICd0EeHQw7YjaqkJ0q+o3SknYNwuHV7KyiHUSr7g0ZZ3IfLrpnlFz3dYfSPAMhs9kAg4YqQhvVFEEcpoNh4Fr+rkbAWHTDCHnCELiCgA5RHs+dnqxtHDHbfhjOlIrv2vRrMRl2b0VEnl2gQJ4fF1ac13CeTGclluXVoiFWH+j6PhNvQwz8SSPdHqucLQCReeef6kxjTaAxsUSkI0aO/CLTGEI73iDtouvHoRbjDSFP2nuCAIcAq8yGlVRD19QZ7Y8zTwVgHp43hdCHi/j5aP2V+SLkbRcPmagAh8xxs=
-  on:
-    tags: true
-    repo: janLuke/cloup
-    python: 3.8
+    provider: pypi
+    distributions: sdist bdist_wheel
+    user: janluke
+    password:
+        secure: nIdK/rSWyKXnot35BDqBKMnw5NvNv+2wRkEJLTzi/KV9jXlyzq1WosABILKCjVGk8WuKe0FzlrSL5pqQWGRK8VjVpyM8+6Vu4n9+RRFb2xsdLxJueXmEkQYxcZxhrhHLf8J94QxFp7e5G2G0SYghDuBk1sw+6yJA2eQkH/BJ4LY84C8i2M38SqL9mojV7+wSnTJb+LFUlR2fgzIQ+Xcj0j4oG5hF7K1ni07dyrKzznjbR0DrHkPbNiAd0jCVOnAajSL3wRph8+e2hKDvFQFYDW6pPuX5JwqwHbVzEPzlzIOfyMW9TdyvD+6uF7+q1aJbHdVitpuM67CJA8naI1Q/4N5u6ieQ6mTjs/J6TMcLj3NdbnVq/CD3SpDsAqqIGVbrNPcNICd0EeHQw7YjaqkJ0q+o3SknYNwuHV7KyiHUSr7g0ZZ3IfLrpnlFz3dYfSPAMhs9kAg4YqQhvVFEEcpoNh4Fr+rkbAWHTDCHnCELiCgA5RHs+dnqxtHDHbfhjOlIrv2vRrMRl2b0VEnl2gQJ4fF1ac13CeTGclluXVoiFWH+j6PhNvQwz8SSPdHqucLQCReeef6kxjTaAxsUSkI0aO/CLTGEI73iDtouvHoRbjDSFP2nuCAIcAq8yGlVRD19QZ7Y8zTwVgHp43hdCHi/j5aP2V+SLkbRcPmagAh8xxs=
+    on:
+        tags: true
+        repo: janLuke/cloup
+        python: 3.8
