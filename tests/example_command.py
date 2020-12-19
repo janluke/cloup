@@ -6,21 +6,23 @@ from cloup import option, option_group
 
 
 def make_example_command(align_option_groups):
-    @cloup.command('clouptest',
+    @cloup.command(
+        'clouptest',
         align_option_groups=align_option_groups,
         context_settings={'terminal_width': 80})
-    @option_group('Option group A',
+    @option_group(
+        'Option group A',
         option('--one', help='1st option of group A'),
         option('--two', help='2nd option of group A'),
         option('--three', help='3rd option of group A'),
-        help='This is a very useful description of group A'
-    )
-    @option_group('Option group B',
+        help='This is a very useful description of group A')
+    @option_group(
+        'Option group B',
         option('--four / --no-four', help='1st option of group B'),
         option('--five', help='2nd option of group B', hidden=True),
-        option('--six', help='3rd option of group B')
-    )
-    @option('--seven', help='first uncategorized option', type=click.Choice('yes no ask'.split()))
+        option('--six', help='3rd option of group B'))
+    @option('--seven', help='first uncategorized option',
+            type=click.Choice('yes no ask'.split()))
     @option('--height', help='second uncategorized option')
     @option('--nine', help='second uncategorized option', hidden=True)
     def cmd(**kwargs):
@@ -73,7 +75,6 @@ Other options:
   --height TEXT         second uncategorized option
   --help                Show this message and exit.
 """.strip()
-
 
 if __name__ == '__main__':
     make_example_command(False)(['--help'])
