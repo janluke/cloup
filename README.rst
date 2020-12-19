@@ -47,7 +47,7 @@ Patch releases are guaranteed to be backwards compatible (even before v1.0).
 Option groups
 =============
 You can define option groups in two ways or "styles": I'll call them "nested style" and "flat style".
-The full code for the examples shown below can also be found in `<examples/option_groups_example.py>`_.
+The full code for the examples shown below can also be found in `<examples/option_groups.py>`_.
 
 Nested style (recommended)
 --------------------------
