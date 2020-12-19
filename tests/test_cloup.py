@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 import click
-import cloup
 import pytest
 from click.testing import CliRunner
+
+import cloup
 
 
 def noop(*args, **kwargs):

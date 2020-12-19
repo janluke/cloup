@@ -5,14 +5,10 @@ __email__ = 'gianluca.gippetto@gmail.com'
 __version__ = '0.3.0'
 
 # flake8: noqa F401
-from ._cloup import (
-    OptionGroup,
-    GroupSection,
-    GroupedOption,
-    Group,
-    Command,
-    option_group,
-    option,
-    command,
-    group
+from ._option_groups import (
+    GroupedOption, OptionGroup, option, option_group,
 )
+from ._cloup import (
+    Command, Group, GroupSection, command, group,
+)
+
