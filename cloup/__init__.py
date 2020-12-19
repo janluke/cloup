@@ -8,7 +8,7 @@ __version__ = '0.3.0'
 from ._option_groups import (
     GroupedOption, OptionGroup, option, option_group,
 )
-from ._cloup import (
+from ._commands import (
     Command, Group, GroupSection, command, group,
 )
 
