@@ -1,4 +1,3 @@
-.PHONY: clean clean-test clean-pyc clean-build docs help
 .DEFAULT_GOAL := help
 
 define BROWSER_PYSCRIPT
@@ -23,46 +22,49 @@ export PRINT_HELP_PYSCRIPT
 
 BROWSER := python -c "$$BROWSER_PYSCRIPT"
 
-help:
+help::
 	@python -c "$$PRINT_HELP_PYSCRIPT" < $(MAKEFILE_LIST)
 
-clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
+clean:: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
-clean-build: ## remove build artifacts
+clean-build:: ## remove build artifacts
 	rm -fr build/
 	rm -fr dist/
 	rm -fr .eggs/
 	find . -name '*.egg-info' -exec rm -fr {} +
 	find . -name '*.egg' -exec rm -f {} +
 
-clean-pyc: ## remove Python file artifacts
+clean-pyc:: ## remove Python file artifacts
 	find . -name '*.pyc' -exec rm -f {} +
 	find . -name '*.pyo' -exec rm -f {} +
 	find . -name '*~' -exec rm -f {} +
 	find . -name '__pycache__' -exec rm -fr {} +
 
-clean-test: ## remove test and coverage artifacts
+clean-test:: ## remove test and coverage artifacts
 	rm -fr .tox/
 	rm -f .coverage
 	rm -fr htmlcov/
 	rm -fr .pytest_cache
 
-lint: ## check style with flake8
+mypy::
+	mypy cloup tests
+
+lint:: ## check style with flake8
 	flake8 cloup tests
 
-test: ## run tests quickly with the default Python
+test:: ## run tests quickly with the default Python
 	pytest
 
-test-all: ## run tests on every Python version with tox
+test-all:: ## run tests on every Python version with tox
 	tox
 
-coverage: ## check code coverage quickly with the default Python
+coverage:: ## check code coverage quickly with the default Python
 	coverage run --source cloup -m pytest
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-docs: ## generate Sphinx HTML documentation, including API docs
+docs:: ## generate Sphinx HTML documentation, including API docs
 	rm -f docs/cloup.rst
 	rm -f docs/modules.rst
 	sphinx-apidoc -o docs/ cloup
@@ -70,16 +72,16 @@ docs: ## generate Sphinx HTML documentation, including API docs
 	$(MAKE) -C docs html
 	$(BROWSER) docs/_build/html/index.html
 
-servedocs: docs ## compile the docs watching for changes
+servedocs:: docs ## compile the docs watching for changes
 	watchmedo shell-command -p '*.rst' -c '$(MAKE) -C docs html' -R -D .
 
-release: dist ## package and upload a release
+release:: dist ## package and upload a release
 	twine upload dist/*
 
-dist: clean ## builds source and wheel package
+dist:: clean ## builds source and wheel package
 	python setup.py sdist
 	python setup.py bdist_wheel
 	ls -l dist
 
-install: clean ## install the package to the active Python's site-packages
+install:: clean ## install the package to the active Python's site-packages
 	python setup.py install
