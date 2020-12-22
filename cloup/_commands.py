@@ -17,6 +17,9 @@ import click
 from ._option_groups import OptionGroup, get_option_group_of
 
 
+Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
+
+
 class GroupSection:
     """
     A section of commands inside a ``cloup.Group``. Sections are not
@@ -25,7 +28,7 @@ class GroupSection:
     """
 
     def __init__(self, title: str,
-                 commands: Union[Iterable[click.Command], Dict[str, click.Command]] = (),
+                 commands: Subcommands = (),
                  sorted: bool = False):  # noqa
         """
         :param title:
@@ -46,9 +49,7 @@ class GroupSection:
             raise TypeError('commands must be a list of commands or a dict {name: command}')
 
     @classmethod
-    def sorted(cls, title: str,
-               commands: Union[Iterable[click.Command], Dict[str, click.Command]] = ()
-               ) -> 'GroupSection':
+    def sorted(cls, title: str, commands: Subcommands = ()) -> 'GroupSection':
         return cls(title, commands, sorted=True)
 
     def add_command(self, cmd: click.Command, name: Optional[str] = None):
