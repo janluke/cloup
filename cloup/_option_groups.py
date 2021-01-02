@@ -58,10 +58,10 @@ def option(
     **attrs
 ) -> Callable[[Callable], Callable]:
     def decorator(f):
-        click.option(*param_decls, cls=cls, **attrs)(f)
-        new_option = f.__click_params__[-1]
+        func = click.option(*param_decls, cls=cls, **attrs)(f)
+        new_option = func.__click_params__[-1]
         new_option.group = group
-        return f
+        return func
 
     return decorator
 
@@ -104,7 +104,7 @@ def _option_group(
 
     def decorator(f):
         for opt_decorator in reversed(options):
-            opt_decorator(f)
+            f = opt_decorator(f)
             new_option = f.__click_params__[-1]
             curr_group = get_option_group_of(new_option)
             if curr_group is not None:
