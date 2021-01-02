@@ -2,6 +2,8 @@ from typing import Callable, Optional, Sequence, Type, overload
 
 import click
 
+OptionDecorator = Callable[[Callable], Callable]
+
 
 class OptionGroup:
     def __init__(self, name: str, help: Optional[str] = None):
@@ -56,7 +58,7 @@ def option(
     group: Optional[OptionGroup] = None,
     cls: Type[click.Option] = GroupedOption,
     **attrs
-) -> Callable[[Callable], Callable]:
+) -> OptionDecorator:
     def decorator(f):
         func = click.option(*param_decls, cls=cls, **attrs)(f)
         new_option = func.__click_params__[-1]
@@ -72,11 +74,11 @@ def option_group(name: str, help: str, *options) -> Callable:
 
 
 @overload
-def option_group(name: str, *options, help: Optional[str] = None) -> Callable:
+def option_group(name: str, *options, help: Optional[str] = None) -> OptionDecorator:
     ...
 
 
-def option_group(name: str, *args, **kwargs) -> Callable:
+def option_group(name: str, *args, **kwargs) -> OptionDecorator:
     """
     Attaches an option group to the command. This decorator is overloaded with
     two signatures::
@@ -96,7 +98,7 @@ def option_group(name: str, *args, **kwargs) -> Callable:
 
 def _option_group(
     name: str, options: Sequence[Callable], help: Optional[str] = None
-) -> Callable:
+) -> OptionDecorator:
     if not options:
         raise ValueError('you must provide at least one option')
 
