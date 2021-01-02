@@ -10,16 +10,17 @@ with open('README.rst') as readme_file:
 with open('HISTORY.rst') as history_file:
     history = history_file.read()
 
-requirements = [ 'click' ]
-
-setup_requirements = ['pytest-runner', ]
-
-test_requirements = ['pytest>=3', ]
-
 setup(
+    # Name, author, description and other info
+    name='cloup',
+    version='0.3.0',
     author="Gianluca Gippetto",
     author_email='gianluca.gippetto@gmail.com',
-    python_requires='>=3.5',
+    description="Option groups and subcommand help sections for pallets/click",
+    long_description=readme + '\n\n' + history,
+    url='https://github.com/janLuke/cloup',
+    license="MIT license",
+    keywords='cloup click option',
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
@@ -29,19 +30,13 @@ setup(
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
     ],
-    description="Option groups and subcommand help sections for pallets/click",
-    install_requires=requirements,
-    license="MIT license",
-    long_description=readme + '\n\n' + history,
-    include_package_data=True,
-    keywords='cloup',
-    name='cloup',
     packages=find_packages(include=['cloup', 'cloup.*']),
-    setup_requires=setup_requirements,
-    test_suite='tests',
-    tests_require=test_requirements,
-    url='https://github.com/janLuke/cloup',
-    version='0.3.0',
     zip_safe=False,
+    include_package_data=True,
+    python_requires='>=3.5',
+    install_requires=[
+        'click>=7.0,<9.0'
+    ],
 )
