@@ -4,7 +4,7 @@ import click
 
 
 class OptionGroup:
-    def __init__(self, name: str, help: Optional[str] = None):  # noqa
+    def __init__(self, name: str, help: Optional[str] = None):
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
@@ -51,9 +51,12 @@ def get_option_group_of(param, default=None):
     return param.group if has_option_group(param) else default
 
 
-def option(*param_decls,
-           group: Optional[OptionGroup] = None,
-           cls: Type[click.Option] = GroupedOption, **attrs) -> Callable[[Callable], Callable]:
+def option(
+    *param_decls,
+    group: Optional[OptionGroup] = None,
+    cls: Type[click.Option] = GroupedOption,
+    **attrs
+) -> Callable[[Callable], Callable]:
     def decorator(f):
         click.option(*param_decls, cls=cls, **attrs)(f)
         new_option = f.__click_params__[-1]
@@ -64,12 +67,12 @@ def option(*param_decls,
 
 
 @overload
-def option_group(name: str, help: str, *options) -> Callable:  # noqa
+def option_group(name: str, help: str, *options) -> Callable:
     ...
 
 
 @overload
-def option_group(name: str, *options, help: Optional[str] = None) -> Callable:  # noqa
+def option_group(name: str, *options, help: Optional[str] = None) -> Callable:
     ...
 
 
@@ -91,9 +94,9 @@ def option_group(name: str, *args, **kwargs) -> Callable:
         return _option_group(name, options=args, **kwargs)
 
 
-def _option_group(name: str,
-                  options: Sequence[Callable],
-                  help: Optional[str] = None) -> Callable:  # noqa
+def _option_group(
+    name: str, options: Sequence[Callable], help: Optional[str] = None
+) -> Callable:
     if not options:
         raise ValueError('you must provide at least one option')
 
