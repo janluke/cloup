@@ -78,12 +78,12 @@ class Command(click.Command):
 
     def __init__(self, name, context_settings=None, callback=None, params=None, help=None,
                  epilog=None, short_help=None, options_metavar="[OPTIONS]", add_help_option=True,
-                 no_args_is_help=False, hidden=False, deprecated=False, align_option_groups=True,
+                 hidden=False, deprecated=False, align_option_groups=True,
                  **kwargs):
         super().__init__(
             name=name, context_settings=context_settings, callback=callback, params=params,
             help=help, epilog=epilog, short_help=short_help, options_metavar=options_metavar,
-            add_help_option=add_help_option, no_args_is_help=no_args_is_help, hidden=hidden,
+            add_help_option=add_help_option, hidden=hidden,
             deprecated=deprecated, **kwargs)
 
         options_by_group = OrderedDict()
