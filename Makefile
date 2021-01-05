@@ -1,17 +1,6 @@
 .DEFAULT_GOAL := help
 
-define BROWSER_PYSCRIPT
-import os, webbrowser, sys
-
-from urllib.request import pathname2url
-
-webbrowser.open("file://" + pathname2url(os.path.abspath(sys.argv[1])))
-endef
-export BROWSER_PYSCRIPT
-
-define PRINT_HELP_PYSCRIPT
-import re, sys
-
+REMOVE = python scripts/remove.py
 BROWSER = python scripts/browser.py
 
 .PHONY: help
@@ -43,8 +32,7 @@ coverage: ## check code coverage quickly with the default Python
 
 .PHONY: docs
 docs: ## generate Sphinx HTML documentation, including API docs
-	rm -f docs/cloup.rst
-	rm -f docs/modules.rst
+	$(REMOVE) docs/cloup.rst docs/modules.rst
 	sphinx-apidoc -o docs/ cloup
 	$(MAKE) -C docs clean
 	$(MAKE) -C docs html
@@ -58,25 +46,19 @@ clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and 
 
 .PHONY: clean-build
 clean-build: ## remove build artifacts
-	rm -fr build/
-	rm -fr dist/
-	rm -fr .eggs/
-	find . -name '*.egg-info' -exec rm -fr {} +
-	find . -name '*.egg' -exec rm -f {} +
+	$(REMOVE) build dist .eggs
+	$(REMOVE) -r './**/*.egg-info'
+	$(REMOVE) -r './**/*.egg'
 
 .PHONY: clean-pyc
 clean-pyc: ## remove Python file artifacts
-	find . -name '*.pyc' -exec rm -f {} +
-	find . -name '*.pyo' -exec rm -f {} +
-	find . -name '*~' -exec rm -f {} +
-	find . -name '__pycache__' -exec rm -fr {} +
+	$(REMOVE) -r './**/__pycache__'
+	$(REMOVE) -r './**/*.pyc'
+	$(REMOVE) -r './**/*.pyo'
 
 .PHONY: clean-test
 clean-test: ## remove test and coverage artifacts
-	rm -fr .tox/
-	rm -f .coverage
-	rm -fr htmlcov/
-	rm -fr .pytest_cache
+	$(REMOVE) .tox .coverage htmlcov .pytest_cache
 
 .PHONY: dist
 dist: clean ## builds source and wheel package
