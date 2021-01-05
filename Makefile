@@ -68,3 +68,9 @@ dist: clean ## builds source and wheel package
 .PHONY: release
 release: dist ## package and upload a release
 	twine upload dist/*
+
+.PHONY: pin-deps
+pin-deps: ## pin dependencies in requirements/ using the current env
+	pip-compile requirements/test.in
+	pip-compile requirements/docs.in
+	pip-compile requirements/dev.in

@@ -1,0 +1,8 @@
+-r test.in
+-r docs.in
+flake8
+mypy
+pip-tools
+tox
+twine
+bump2version
