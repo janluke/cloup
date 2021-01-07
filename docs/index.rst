@@ -1,20 +1,15 @@
-Welcome to cloup's documentation!
-======================================
+.. include:: ../README.rst
+    :end-before: if-doc-stop-here
+
+Table of contents
+=================
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+    :maxdepth: 2
 
-   readme
-   installation
-   usage
-   modules
-   contributing
-   authors
-   history
-
-Indices and tables
-==================
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+    installation
+    usage
+    autoapi/index
+    contributing
+    history
+    credits
