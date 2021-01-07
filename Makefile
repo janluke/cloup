@@ -7,6 +7,10 @@ BROWSER = python scripts/browser.py
 help:
 	@python scripts/make-help.py < $(MAKEFILE_LIST)
 
+.PHONY: venv
+venv: ## creates a virtualenv using tox
+	tox -e dev
+
 .PHONY: install
 install: clean ## install the package in dev mode
 	pip install -e .
