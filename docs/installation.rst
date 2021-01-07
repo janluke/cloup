@@ -1,51 +1,29 @@
-.. highlight:: shell
+.. highlight:: console
 
 ============
 Installation
 ============
 
-
 Stable release
 --------------
 
-To install cloup, run this command in your terminal:
+To install the latest release, run this command in your terminal::
 
-.. code-block:: console
+    pip install cloup
 
-    $ pip install cloup
+To update::
 
-This is the preferred method to install cloup, as it will always install the most recent stable release.
-
-If you don't have `pip`_ installed, this `Python installation guide`_ can guide
-you through the process.
-
-.. _pip: https://pip.pypa.io
-.. _Python installation guide: http://docs.python-guide.org/en/latest/starting/installation/
+    pip install -U cloup
 
 
-From sources
-------------
+Semantic versioning
+--------------------
+cloup adheres to `semantic versioning <https://semver.org/>`_.
 
-The sources for cloup can be downloaded from the `Github repo`_.
+Even though cloup is still a work in progress, it is already tested and usable;
+just make sure you specify a compatible version number in your list of
+requirements, e.g.::
 
-You can either clone the public repository:
+    cloup==0.3.*
 
-.. code-block:: console
-
-    $ git clone git://github.com/janLuke/cloup
-
-Or download the `tarball`_:
-
-.. code-block:: console
-
-    $ curl -OJL https://github.com/janLuke/cloup/tarball/master
-
-Once you have a copy of the source, you can install it with:
-
-.. code-block:: console
-
-    $ python setup.py install
-
-
-.. _Github repo: https://github.com/janLuke/cloup
-.. _tarball: https://github.com/janLuke/cloup/tarball/master
+Patch releases are guaranteed to be backwards compatible.
