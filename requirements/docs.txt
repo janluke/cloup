@@ -6,14 +6,20 @@
 #
 alabaster==0.7.12
     # via sphinx
+astroid==2.4.2
+    # via sphinx-autoapi
 babel==2.9.0
     # via sphinx
+beautifulsoup4==4.9.3
+    # via sphinx-material
 certifi==2020.12.5
     # via requests
 chardet==4.0.0
     # via requests
 colorama==0.4.4
     # via sphinx
+css-html-js-minify==2.5.5
+    # via sphinx-material
 docutils==0.16
     # via sphinx
 idna==2.10
@@ -21,32 +27,44 @@ idna==2.10
 imagesize==1.2.0
     # via sphinx
 jinja2==2.11.2
-    # via sphinx
+    # via
+    #   sphinx
+    #   sphinx-autoapi
+lazy-object-proxy==1.4.3
+    # via astroid
+lxml==4.6.2
+    # via sphinx-material
 markupsafe==1.1.1
     # via jinja2
 packaging==20.8
-    # via
-    #   pallets-sphinx-themes
-    #   sphinx
-pallets-sphinx-themes==1.2.3
-    # via -r requirements/docs.in
+    # via sphinx
 pygments==2.7.3
     # via sphinx
 pyparsing==2.4.7
     # via packaging
+python-slugify[unidecode]==4.0.1
+    # via sphinx-material
 pytz==2020.5
     # via babel
+pyyaml==5.3.1
+    # via sphinx-autoapi
 requests==2.25.1
     # via sphinx
+six==1.15.0
+    # via astroid
 snowballstemmer==2.0.0
     # via sphinx
-sphinx-autodoc-typehints==1.11.1
+soupsieve==2.1
+    # via beautifulsoup4
+sphinx-autoapi==1.5.1
+    # via -r requirements/docs.in
+sphinx-material==0.0.32
     # via -r requirements/docs.in
 sphinx==3.4.2
     # via
     #   -r requirements/docs.in
-    #   pallets-sphinx-themes
-    #   sphinx-autodoc-typehints
+    #   sphinx-autoapi
+    #   sphinx-material
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2
@@ -59,8 +77,16 @@ sphinxcontrib-qthelp==1.0.3
     # via sphinx
 sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
+text-unidecode==1.3
+    # via python-slugify
+unidecode==1.1.2
+    # via
+    #   python-slugify
+    #   sphinx-autoapi
 urllib3==1.26.2
     # via requests
+wrapt==1.12.1
+    # via astroid
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
