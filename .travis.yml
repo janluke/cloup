@@ -19,6 +19,8 @@ jobs:
          env: TOXENV=lint
       -  python: 3.8
          env: TOXENV=mypy
+      -  python: 3.8
+         env: TOXENV=docs
 
 install:
    - pip install -U codecov
