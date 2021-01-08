@@ -15,9 +15,9 @@ jobs:
       -  python: 3.5
          env: CLICK=8
    include:
-      -  python: '3.6'
+      -  python: 3.8
          env: TOXENV=lint
-      -  python: '3.6'
+      -  python: 3.8
          env: TOXENV=mypy
 
 install:
