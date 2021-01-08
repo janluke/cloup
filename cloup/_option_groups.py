@@ -2,6 +2,7 @@ from typing import Callable, Optional, Sequence, Type, overload
 
 import click
 
+#: A decorator that registers one or multiple click Options to the decorated function
 OptionDecorator = Callable[[Callable], Callable]
 
 
@@ -106,6 +107,8 @@ def _option_group(
 
     def decorator(f):
         for opt_decorator in reversed(options):
+            # Note: the assignment is just a precaution, as both click.option
+            # and @cloup.option currently return the same f
             f = opt_decorator(f)
             new_option = f.__click_params__[-1]
             curr_group = get_option_group_of(new_option)
