@@ -1,5 +1,5 @@
 ========
-cloup
+Cloup
 ========
 
 .. image:: https://img.shields.io/pypi/v/cloup.svg
@@ -14,7 +14,7 @@ cloup
     :alt: Coverage Status
     :target: https://codecov.io/github/janLuke/cloup?branch=master
 
-cloup (= click + group) adds to `click <https://github.com/pallets/click>`_
+Cloup (= CLick + grOUPs) adds to `click <https://github.com/pallets/click>`_
 the following features:
 
 - **option groups** for ``Command``;

@@ -11,5 +11,5 @@ Table of contents
     usage
     autoapi/index
     contributing
-    history
     credits
+    changelog
