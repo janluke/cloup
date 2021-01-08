@@ -14,7 +14,7 @@ You can define option groups in two ways or "styles". I'll call them
 - flat style.
 
 The full code for the examples shown below can also be found in the
-`examples folder <https://www.github.com/janluke/cloup/examples>`_ on GitHub.
+`examples folder <https://github.com/janLuke/cloup/tree/master/examples>`_ on GitHub.
 
 Nested style (recommended)
 --------------------------
@@ -123,7 +123,7 @@ Grouping subcommands
 You can use :class:`cloup.Group` when you want to organize the subcommands of a
 ``Group`` in multiple help sections. The api is trivial and the formatting is
 similar to that of options groups. You can find the full example code
-`here <https://www.github.com/janluke/cloup/blob/master/examples/git_sections.py>`_.
+`here <https://github.com/janLuke/cloup/blob/master/examples/git_sections.py>`_.
 
 .. code-block:: python
 

@@ -4,7 +4,7 @@ Cloup
 
 .. image:: https://img.shields.io/pypi/v/cloup.svg
     :alt: PyPI Package
-    :target: https://pypi.python.org/pypi/cloup
+    :target: https://pypi.org/project/cloup/
 
 .. image:: https://img.shields.io/travis/janLuke/cloup.svg
     :alt: Travis-CI Build Status

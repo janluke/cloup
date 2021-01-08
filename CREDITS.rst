@@ -16,5 +16,5 @@ Credits
 - This package was bootstrapped with Cookiecutter_ and the
   `audreyr/cookiecutter-pypackage`_ project template.
 
-.. _Cookiecutter: https://github.com/audreyr/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyr/cookiecutter-pypackage
+.. _Cookiecutter: https://github.com/cookiecutter/cookiecutter
+.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyfeldroy/cookiecutter-pypackage
