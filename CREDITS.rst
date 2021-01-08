@@ -1,5 +1,5 @@
 ===================
-Author and credits
+Author and Credits
 ===================
 
 Author

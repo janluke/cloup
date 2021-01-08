@@ -2,17 +2,30 @@
 Cloup
 ========
 
-.. image:: https://img.shields.io/pypi/v/cloup.svg
+.. list-table::
+    :stub-columns: 1
+    :widths: 1 4
+
+    * - Master
+      - | |travis| |coverage|
+    * - Package
+      - | |version| |supported-pythons|
+
+.. |version| image:: https://img.shields.io/pypi/v/cloup.svg
     :alt: PyPI Package
     :target: https://pypi.org/project/cloup/
 
-.. image:: https://img.shields.io/travis/janLuke/cloup.svg
+.. |travis| image:: https://img.shields.io/travis/janLuke/cloup.svg
     :alt: Travis-CI Build Status
     :target: https://travis-ci.com/janLuke/cloup?branch=master
 
-.. image:: https://codecov.io/github/janLuke/cloup/coverage.svg?branch=master
+.. |coverage| image:: https://codecov.io/github/janLuke/cloup/coverage.svg?branch=master
     :alt: Coverage Status
     :target: https://codecov.io/github/janLuke/cloup?branch=master
+
+.. |supported-pythons| image:: https://img.shields.io/pypi/pyversions/cloup.svg
+    :alt: Supported versions
+    :target: https://pypi.org/project/cloup
 
 Cloup (= CLick + grOUPs) adds to `click <https://github.com/pallets/click>`_
 the following features:

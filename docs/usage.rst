@@ -1,10 +1,26 @@
-===========
-Usage
-===========
+============
+User's Guide
+============
 
 .. Setting this to "python" would be more useful but, because of bug in the
 .. PyCharm rst plugin, I don't get syntax highlighting in the IDE.
 .. highlight:: none
+
+Installation
+============
+To install the **latest release**, run::
+
+    pip install cloup
+
+Cloup adheres to `semantic versioning <https://semver.org/>`_.
+
+.. warning::
+    Since Cloup has not reached v1.0, its API is not to be considered stable.
+    This doesn't mean you can't already use it: it is already tested and usable.
+    Just make sure you specify a version constraint in your list of
+    requirements, e.g.::
+
+        cloup==0.3.*
 
 Option groups
 =============
