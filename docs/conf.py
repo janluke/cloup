@@ -38,6 +38,8 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
     'sphinx.ext.autodoc.typehints',
+    'sphinx_tabs.tabs',
+    'sphinx_copybutton',
 ]
 autoapi_type = 'python'
 autoapi_dirs = [os.path.join(PROJ_DIR, 'cloup')]
@@ -51,6 +53,7 @@ autoapi_options = [
     'special-members',
     'imported-members'
 ]
+sphinx_tabs_valid_builders = ['linkcheck']
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
@@ -144,8 +147,11 @@ version_dropdown = True
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
-
+html_static_path = ['_static']
+html_css_files = [
+    'styles/copybutton-overrides.css',
+    'styles/tabs-overrides.css',
+]
 
 # -- Options for HTMLHelp output ---------------------------------------
 

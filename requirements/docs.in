@@ -1,3 +1,5 @@
 sphinx
 sphinx-autoapi
 sphinx-material
+sphinx-tabs
+sphinx_copybutton

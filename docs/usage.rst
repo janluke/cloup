@@ -44,61 +44,62 @@ This decorator is overloaded with two signatures
 
 Here's an example
 
-.. code-block:: python
+.. tabs::
 
-    import cloup
-    from cloup import option_group, option
+    .. code-tab:: python Code
 
-    @cloup.command('clouptest')
-    @option_group(
-        "Input options",
-        "This is a very long description of the option group. I don't think this is "
-        "needed very often; still, if you want to provide it, you can pass it as 2nd "
-        "positional argument or as keyword argument 'help' after all options.",
-        option('-o', '--one', help='1st input option'),
-        option('--two', help='2nd input option'),
-        option('--three', help='3rd input option'),
-    )
-    @option_group(
-        'Output options',
-        option('--four / --no-four', help='1st output option'),
-        option('--five', help='2nd output option'),
-        option('--six', help='3rd output option'),
-    )
-    @option('--seven', help='first uncategorized option', type=click.Choice('yes no ask'.split()))
-    @option('--height', help='second uncategorized option')
-    def cli(**kwargs):
-        """ A CLI that does nothing. """
-        print(kwargs)
+        import cloup
+        from cloup import option_group, option
+
+        @cloup.command('clouptest')
+        @option_group(
+            "Input options",
+            "This is a very long description of the option group. I don't think this is "
+            "needed very often; still, if you want to provide it, you can pass it as 2nd "
+            "positional argument or as keyword argument 'help' after all options.",
+            option('-o', '--one', help='1st input option'),
+            option('--two', help='2nd input option'),
+            option('--three', help='3rd input option'),
+        )
+        @option_group(
+            'Output options',
+            option('--four / --no-four', help='1st output option'),
+            option('--five', help='2nd output option'),
+            option('--six', help='3rd output option'),
+        )
+        @option('--seven', help='first uncategorized option', type=click.Choice('yes no ask'.split()))
+        @option('--height', help='second uncategorized option')
+        def cli(**kwargs):
+            """ A CLI that does nothing. """
+            print(kwargs)
+
+    .. code-tab:: none Generated help
+
+        Usage: clouptest [OPTIONS]
+
+          A CLI that does nothing.
+
+        Input options:
+          This is a very long description of the option group. I don't think this is
+          needed very often; still, if you want to provide it, you can pass it as
+          2nd positional argument or as keyword argument 'help' after all options.
+          -o, --one TEXT        1st input option
+          --two TEXT            2nd input option
+          --three TEXT          3rd input option
+
+        Output options:
+          --four / --no-four    1st output option
+          --five TEXT           2nd output option
+          --six TEXT            3rd output option
+
+        Other options:
+          --seven [yes|no|ask]  first uncategorized option
+          --height TEXT         second uncategorized option
+          --help                Show this message and exit.
 
 .. note::
     Options that are not assigned to any user-defined option group are listed
     under a section titled "Other options".
-
-The generated help will be::
-
-    Usage: clouptest [OPTIONS]
-
-      A CLI that does nothing.
-
-    Input options:
-      This is a very long description of the option group. I don't think this is
-      needed very often; still, if you want to provide it, you can pass it as
-      2nd positional argument or as keyword argument 'help' after all options.
-      -o, --one TEXT        1st input option
-      --two TEXT            2nd input option
-      --three TEXT          3rd input option
-
-    Output options:
-      --four / --no-four    1st output option
-      --five TEXT           2nd output option
-      --six TEXT            3rd output option
-
-    Other options:
-      --seven [yes|no|ask]  first uncategorized option
-      --height TEXT         second uncategorized option
-      --help                Show this message and exit.
-
 
 In the example above, I used the :func:`cloup.option` decorator to define
 options but this is entirely optional as you can use :func:`click.option` as
@@ -141,49 +142,50 @@ You can use :class:`cloup.Group` when you want to organize the subcommands of a
 similar to that of options groups. You can find the full example code
 `here <https://github.com/janLuke/cloup/blob/master/examples/git_sections.py>`_.
 
-.. code-block:: python
+.. tabs::
+    .. code-tab:: python Code
 
-    # import subcommands git_init, git_clone ecc...
+        # import subcommands git_init, git_clone ecc...
 
-    @cloup.group('git')
-    def git():
-        return 0
+        @cloup.group('git')
+        def git():
+            return 0
 
-    git.section(
-        'Start a working area (see also: git help tutorial)',
-        git_clone,
-        git_init
-    )
-    git.section(
-        'Work on the current change (see also: git help everyday)',
-        git_rm,
-        git_sparse_checkout,
-        git_mv
-    )
+        git.section(
+            'Start a working area (see also: git help tutorial)',
+            git_clone,
+            git_init
+        )
+        git.section(
+            'Work on the current change (see also: git help everyday)',
+            git_rm,
+            git_sparse_checkout,
+            git_mv
+        )
 
-    # The following commands will be added to the "default section" (a sorted GroupSection)
-    git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
-    git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
+        # The following commands will be added to the "default section" (a sorted GroupSection)
+        git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
+        git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
 
-The help will be::
+    .. code-tab:: none Generated help
 
-    Usage: git [OPTIONS] COMMAND [ARGS]...
+        Usage: git [OPTIONS] COMMAND [ARGS]...
 
-    Options:
-      --help  Show this message and exit.
+        Options:
+          --help  Show this message and exit.
 
-    Start a working area (see also: git help tutorial):
-      clone            Clone a repository into a new directory
-      init             Create an empty Git repository or reinitialize an...
+        Start a working area (see also: git help tutorial):
+          clone            Clone a repository into a new directory
+          init             Create an empty Git repository or reinitialize an...
 
-    Work on the current change (see also: git help everyday):
-      rm               Remove files from the working tree and from the index
-      sparse-checkout  Initialize and modify the sparse-checkout
-      mv               Move or rename a file, a directory, or a symlink
+        Work on the current change (see also: git help everyday):
+          rm               Remove files from the working tree and from the index
+          sparse-checkout  Initialize and modify the sparse-checkout
+          mv               Move or rename a file, a directory, or a symlink
 
-    Other commands:
-      fake-1           Fake command #1
-      fake-2           Fake command #2
+        Other commands:
+          fake-1           Fake command #1
+          fake-2           Fake command #2
 
 - Sections are shown in the same order they are added to the group.
 - By default, the commands of a user-defined section are shown in the same

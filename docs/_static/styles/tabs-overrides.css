@@ -1,0 +1,27 @@
+/**************************
+ * sphinx-tabs overrides
+ */
+.ui.menu {
+    font-size: inherit;
+    min-height: 2.5em;
+}
+
+.ui.segment, .ui.segments .segment {
+    font-size: inherit;
+}
+
+.sphinx-tabs .sphinx-menu a.item {
+    color: rgb(90, 90, 90) !important;
+}
+
+.ui.tabular.menu .active.item {
+    color: #2196f3 !important;
+}
+
+.ui.tabular.menu .item {
+    padding: 0.5em 1em;
+}
+
+.sphinx-tabs .highlight {
+    margin: 0;
+}
