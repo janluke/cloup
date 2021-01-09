@@ -41,6 +41,8 @@ extensions = [
     'sphinx_tabs.tabs',
     'sphinx_copybutton',  # adds a copy button to code blocks
 ]
+autoclass_content = 'both'
+autodoc_typehints = 'description'
 autoapi_type = 'python'
 autoapi_dirs = [os.path.join(PROJ_DIR, 'cloup')]
 autoapi_template_dir = '_autoapi_templates'
@@ -61,7 +63,7 @@ intersphinx_mapping = {
 }
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = [autoapi_template_dir]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:

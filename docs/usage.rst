@@ -1,9 +1,9 @@
 ============
-User's Guide
+Usage
 ============
 
 .. Setting this to "python" would be more useful but, because of bug in the
-.. PyCharm rst plugin, I don't get syntax highlighting in the IDE.
+.. PyCharm rst plugin, I don't get Python syntax highlighting in the IDE.
 .. highlight:: none
 
 Installation
