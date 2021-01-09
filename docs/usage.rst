@@ -14,7 +14,7 @@ To install the **latest release**, run::
 
 Cloup adheres to `semantic versioning <https://semver.org/>`_.
 
-.. warning::
+.. attention::
     Since Cloup has not reached v1.0, its API is not to be considered stable.
     This doesn't mean you can't already use it: it is already tested and usable.
     Just make sure you specify a version constraint in your list of
@@ -67,7 +67,8 @@ Here's an example
             option('--five', help='2nd output option'),
             option('--six', help='3rd output option'),
         )
-        @option('--seven', help='first uncategorized option', type=click.Choice('yes no ask'.split()))
+        @option('--seven', help='first uncategorized option',
+                type=click.Choice(['yes', 'no', 'ask']))
         @option('--height', help='second uncategorized option')
         def cli(**kwargs):
             """ A CLI that does nothing. """
@@ -99,7 +100,7 @@ Here's an example
 
 .. note::
     Options that are not assigned to any user-defined option group are listed
-    under a section titled "Other options".
+    under a section titled "Other options" which is shows at the bottom.
 
 In the example above, I used the :func:`cloup.option` decorator to define
 options but this is entirely optional as you can use :func:`click.option` as
@@ -107,10 +108,9 @@ well. The only difference is that :func:`cloup.option` adds a
 :class:`cloup.GroupedOption`, which is nothing more than a
 :class:`click.Option` with an additional attribute called ``group``.
 
-.. tip::
-    By default, the columns of all option groups are aligned. Most people find
-    this visually pleasing. Nonetheless, you can also format each option group
-    independently passing ``align_option_groups=False`` to ``@command()``.
+By default, the columns of all option groups are aligned. Most people find
+this visually pleasing. Nonetheless, you can also format each option group
+independently passing ``align_option_groups=False`` to ``@command()``.
 
 Flat style
 ----------
@@ -187,11 +187,12 @@ similar to that of options groups. You can find the full example code
           fake-1           Fake command #1
           fake-2           Fake command #2
 
-- Sections are shown in the same order they are added to the group.
-- By default, the commands of a user-defined section are shown in the same
-  order they are listed. Passing ``sorted=True``, you can create a sorted
-  section, i.e. a section where commands are sorted by name.
-- The default section (titled "Other commands") is a sorted section.
+.. note::
+    - Sections are shown in the same order they are added to the group.
+    - By default, the commands of a user-defined section are shown in the same
+      order they are listed. Passing ``sorted=True``, you can create a sorted
+      section, i.e. a section where commands are sorted by name.
+    - The default section (titled "Other commands") is a sorted section.
 
 In alternative, you can create a list of :class:`~cloup.GroupSection` yourself
 and pass it as the ``sections`` argument of :func:`cloup.group`:
@@ -212,5 +213,5 @@ and pass it as the ``sections`` argument of :func:`cloup.group`:
         return 0
 
 .. tip::
-    Other than passing ``sorted=True`` to the constructor, you can create a
-    sorted section by using the static method :meth:`cloup.GroupSection.sorted`.
+    Instead of passing ``sorted=True`` to the constructor, you can create a
+    sorted section by using the static method ``GroupSection.sorted(...)``.

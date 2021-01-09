@@ -2,16 +2,14 @@
 Change Log
 ==========
 
-v0.3.0 (2020-03-26) - API changes and aligned option groups
-===========================================================
-
+v0.3.0 (2020-03-26)
+===================
 Backward incompatible API changes
 ---------------------------------
-
-- ``option_groups`` decorator now takes options as positional arguments ``*options``;
-- ``Group.section`` decorator now takes sections as positional arguments ``*sections``;
-- ``align_sections_help`` was renamed to ``align_sections``;
-- ``GroupSection.__init__() sorted_`` argument was renamed to ``sorted``.
+* ``option_groups`` decorator now takes options as positional arguments ``*options``;
+* ``Group.section`` decorator now takes sections as positional arguments ``*sections``;
+* ``align_sections_help`` was renamed to ``align_sections``;
+* ``GroupSection.__init__() sorted_`` argument was renamed to ``sorted``.
 
 Other changes
 -------------
@@ -21,15 +19,16 @@ Other changes
 * More refactoring and testing.
 
 
-v0.2.0 (2020-03-11) - Introducing Group sections
-================================================
-
+v0.2.0 (2020-03-11)
+===================
 * [Feature] Add possibility of organizing subcommands of a cloup.Group in
   multiple help sections.
+* Various code improvements.
 * Backward incompatible change:
     - rename ``CloupCommand`` and ``CloupGroup`` resp. to just ``Command`` and ``Group``.
-* Various code improvements.
 
 
-v0.1.0 (2020-02-25) - First release
-===================================
+
+v0.1.0 (2020-02-25)
+===================
+* First release on PyPI.

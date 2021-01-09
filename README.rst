@@ -2,14 +2,11 @@
 Cloup
 ========
 
-.. list-table::
-    :stub-columns: 1
-    :widths: 1 4
-
-    * - Master
-      - | |travis| |coverage|
-    * - Package
-      - | |version| |supported-pythons|
+====================  ==========================================================
+**Tests**             |travis| |coverage|
+--------------------  ----------------------------------------------------------
+**Package**           |version| |supported-pythons|
+====================  ==========================================================
 
 .. |version| image:: https://img.shields.io/pypi/v/cloup.svg
     :alt: PyPI Package
@@ -27,7 +24,7 @@ Cloup
     :alt: Supported versions
     :target: https://pypi.org/project/cloup
 
-Cloup (= CLick + grOUPs) adds to `click <https://github.com/pallets/click>`_
+Cloup (= **Cl**\ick + gr\ **oup**\s) adds to `Click <https://github.com/pallets/click>`_
 the following features:
 
 - **option groups** for ``Command``;
