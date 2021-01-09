@@ -1,9 +1,27 @@
 /**************************
  * sphinx-tabs overrides
  */
-.ui.menu {
+ .ui.bottom.attached.sphinx-tab.tab.segment.code-tab {
+    border: 0px 1px 1px;
+    border-color: #c9c9c9 !important;
+    box-shadow: 1px 1px 1px #d8d8d8;
+}
+
+ .ui.menu {
     font-size: inherit;
     min-height: 2.5em;
+}
+
+.sphinx-tabs.container {
+    padding: 0;
+}
+
+.sphinx-tabs .ui.tabular.menu {
+    border-bottom: 1px solid #c9c9c9 !important;
+}
+
+.sphinx-tabs .sphinx-menu a.active.item {
+    border-color: #c9c9c9 !important;
 }
 
 .ui.segment, .ui.segments .segment {
@@ -11,17 +29,32 @@
 }
 
 .sphinx-tabs .sphinx-menu a.item {
-    color: rgb(90, 90, 90) !important;
+    color: #5a5a5a !important;
 }
 
 .ui.tabular.menu .active.item {
-    color: #2196f3 !important;
+    color: #0071bc !important;
 }
 
 .ui.tabular.menu .item {
-    padding: 0.5em 1em;
+    padding: 0.5em;
 }
 
 .sphinx-tabs .highlight {
     margin: 0;
+}
+
+.sphinx-tabs .highlight pre {
+    margin: 0;
+    box-shadow: none;
+    border: 0;
+}
+
+ul {
+    padding-left: 1em;
+    list-style-position: inside;
+}
+
+ul.simple li p, ul.simple li dl, ul.simple li dt {
+    display: inline;
 }

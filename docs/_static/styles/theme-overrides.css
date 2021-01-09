@@ -1,0 +1,7 @@
+div.navbar_extra_footer {
+    display: none;
+}
+
+.table tr:last-child {
+    border-bottom: 1px solid #dee2e6;
+}

@@ -54,9 +54,8 @@ live-docs:   ## watch docs files and rebuild the docs when they change
 	sphinx-autobuild docs docs/_build/html --watch *.rst --open-browser
 
 .PHONY: live-docs-all
-live-docs:   ## write all files (useful when working on html/css)
+live-docs-all:   ## write all files (useful when working on html/css)
 	sphinx-autobuild -a docs docs/_build/html --watch *.rst --open-browser
-
 
 .PHONY: clean
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
