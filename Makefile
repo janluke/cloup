@@ -53,6 +53,11 @@ view-docs: docs ## open the built docs in the default browser
 live-docs:   ## watch docs files and rebuild the docs when they change
 	sphinx-autobuild docs docs/_build/html --watch *.rst --open-browser
 
+.PHONY: live-docs-all
+live-docs:   ## write all files (useful when working on html/css)
+	sphinx-autobuild -a docs docs/_build/html --watch *.rst --open-browser
+
+
 .PHONY: clean
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
 
@@ -86,3 +91,7 @@ pip-compile: ## pin dependencies in requirements/ using the current env
 	pip-compile requirements/test.in
 	pip-compile requirements/docs.in
 	pip-compile requirements/dev.in
+
+.PHONY: pip-sync
+pip-sync: pip-compile ## sync development environment with requirements/dev.txt
+	pip-sync requirements/dev.txt
