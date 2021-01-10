@@ -12,15 +12,15 @@ env:
 jobs:
    exclude:
       # Click 8.0 doesn't support Python 3.5
-      -  python: 3.5
-         env: CLICK=8
+      - python: 3.5
+        env: CLICK=8
    include:
-      -  python: 3.8
-         env: TOXENV=lint
-      -  python: 3.8
-         env: TOXENV=mypy
-      -  python: 3.8
-         env: TOXENV=docs
+      - python: 3.8
+        env: TOXENV=lint
+      - python: 3.8
+        env: TOXENV=mypy
+      - python: 3.8
+        env: TOXENV=docs
 
 install:
    - pip install -U codecov
