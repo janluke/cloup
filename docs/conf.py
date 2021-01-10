@@ -38,9 +38,10 @@ extensions = [
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
     'sphinx.ext.autodoc.typehints',
-    'sphinx_tabs.tabs',
+    'sphinx_panels',
     'sphinx_copybutton',  # adds a copy button to code blocks
 ]
+
 autoclass_content = 'both'
 autodoc_typehints = 'description'
 autoapi_type = 'python'
@@ -126,6 +127,18 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+def primary_color_rgba(alpha=1.0):
+    return "rgba(0, 113, 188, %f)" % alpha
+
+panels_css_variables = {
+    "tabs-color-label-active": primary_color_rgba(),
+    "tabs-color-label-inactive": primary_color_rgba(0.5),
+    "tabs-color-overline": primary_color_rgba(0.2),
+    # "tabs-color-underline": "rgb(207, 236, 238)",
+    # "tabs-size-label": "1rem",
+}
+panels_add_bootstrap_css = False
 html_css_files = [
     'styles/copybutton-overrides.css',
     'styles/tabs-overrides.css',

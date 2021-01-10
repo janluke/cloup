@@ -1,5 +1,5 @@
 sphinx
 sphinx-autoapi
 sphinx-book-theme
-sphinx-tabs
+sphinx-panels
 sphinx_copybutton

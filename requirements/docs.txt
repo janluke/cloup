@@ -24,6 +24,7 @@ docutils==0.16
     # via
     #   sphinx
     #   sphinx-book-theme
+    #   sphinx-panels
 idna==2.10
     # via requests
 imagesize==1.2.0
@@ -41,9 +42,7 @@ packaging==20.8
 pydata-sphinx-theme==0.4.1
     # via sphinx-book-theme
 pygments==2.7.3
-    # via
-    #   sphinx
-    #   sphinx-tabs
+    # via sphinx
 pyparsing==2.4.7
     # via packaging
 pytz==2020.5
@@ -66,7 +65,7 @@ sphinx-book-theme==0.0.39
     # via -r requirements/docs.in
 sphinx-copybutton==0.3.1
     # via -r requirements/docs.in
-sphinx-tabs==1.3.0
+sphinx-panels==0.5.2
     # via -r requirements/docs.in
 sphinx==3.4.2
     # via
@@ -75,7 +74,7 @@ sphinx==3.4.2
     #   sphinx-autoapi
     #   sphinx-book-theme
     #   sphinx-copybutton
-    #   sphinx-tabs
+    #   sphinx-panels
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2

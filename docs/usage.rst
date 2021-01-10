@@ -42,11 +42,10 @@ This decorator is overloaded with two signatures
     @option_group(name, *options, help=None)  # help as keyword argument
     @option_group(name, help, *options)       # help as 2nd positional argument
 
-Here's an example
+.. tabbed:: Code
+    :new-group:
 
-.. tabs::
-
-    .. code-tab:: python Code
+    .. code-block:: python
 
         import cloup
         from cloup import option_group, option
@@ -74,7 +73,9 @@ Here's an example
             """ A CLI that does nothing. """
             print(kwargs)
 
-    .. code-tab:: none Generated help
+.. tabbed:: Generated help
+
+    .. code-block:: none
 
         Usage: clouptest [OPTIONS]
 
@@ -142,8 +143,10 @@ You can use :class:`cloup.Group` when you want to organize the subcommands of a
 similar to that of options groups. You can find the full example code
 `here <https://github.com/janLuke/cloup/blob/master/examples/git_sections.py>`_.
 
-.. tabs::
-    .. code-tab:: python Code
+.. tabbed:: Code
+    :new-group:
+
+    .. code-block:: python
 
         # import subcommands git_init, git_clone ecc...
 
@@ -167,7 +170,10 @@ similar to that of options groups. You can find the full example code
         git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
         git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
 
-    .. code-tab:: none Generated help
+
+.. tabbed:: Generated help
+
+    .. code-block:: none
 
         Usage: git [OPTIONS] COMMAND [ARGS]...
 
