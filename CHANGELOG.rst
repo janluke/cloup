@@ -2,6 +2,22 @@
 Change Log
 ==========
 
+v0.4.0 (2020-01-10)
+===================
+This is the last release officially supporting Python 3.5.
+
+Package-wise:
+
+* changed the internal (non-public) structure of the package
+* no new features or public API changes
+* minor code improvements and fixes.
+
+Repository-wise:
+
+* new documentation (hosted by ReadTheDocs)
+* tox, TravisCI, Makefile completely rewritten.
+
+
 v0.3.0 (2020-03-26)
 ===================
 Backward incompatible API changes
