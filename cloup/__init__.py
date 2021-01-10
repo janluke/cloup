@@ -2,7 +2,7 @@
 
 __author__ = """Gianluca Gippetto"""
 __email__ = 'gianluca.gippetto@gmail.com'
-__version__ = '0.3.0'
+__version__ = '0.4.0'
 
 # flake8: noqa F401
 from ._option_groups import (
