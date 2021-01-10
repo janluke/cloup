@@ -3,13 +3,13 @@ Cloup
 ========
 
 ====================  ==========================================================
-**Tests**             |travis| |coverage|
+**Master branch**     |travis| |coverage| |latest-docs|
 --------------------  ----------------------------------------------------------
-**Package**           |version| |supported-pythons|
+**Package**           |pypi-release| |python-versions| |release-docs|
 ====================  ==========================================================
 
-.. |version| image:: https://img.shields.io/pypi/v/cloup.svg
-    :alt: PyPI Package
+.. |pypi-release| image:: https://img.shields.io/pypi/v/cloup.svg
+    :alt: Latest release on PyPI
     :target: https://pypi.org/project/cloup/
 
 .. |travis| image:: https://img.shields.io/travis/janLuke/cloup.svg
@@ -20,9 +20,17 @@ Cloup
     :alt: Coverage Status
     :target: https://codecov.io/github/janLuke/cloup?branch=master
 
-.. |supported-pythons| image:: https://img.shields.io/pypi/pyversions/cloup.svg
+.. |python-versions| image:: https://img.shields.io/pypi/pyversions/cloup.svg
     :alt: Supported versions
     :target: https://pypi.org/project/cloup
+
+.. |latest-docs| image:: https://readthedocs.org/projects/cloup/badge/?version=latest
+    :alt: Documentation Status (master branch)
+    :target: https://cloup.readthedocs.io/en/latest/
+
+.. |release-docs| image:: https://readthedocs.org/projects/cloup/badge/?version=stable
+    :alt: Documentation Status (latest release)
+    :target: https://cloup.readthedocs.io/en/stable/
 
 Cloup (= **Cl**\ick + gr\ **oup**\s) adds to `Click <https://github.com/pallets/click>`_
 the following features:
