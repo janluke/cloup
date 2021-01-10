@@ -44,7 +44,6 @@ v0.2.0 (2020-03-11)
     - rename ``CloupCommand`` and ``CloupGroup`` resp. to just ``Command`` and ``Group``.
 
 
-
 v0.1.0 (2020-02-25)
 ===================
 * First release on PyPI.
