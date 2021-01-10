@@ -29,7 +29,7 @@ dl:last-child {
 }
 
 dl.field-list dt {
-    font-size: 14px !important;
+    font-size: 15px !important;
     background: transparent !important;
     color: #0071bc !important;   /* 0071bc */
     border: 0 !important;
@@ -37,7 +37,7 @@ dl.field-list dt {
 }
 
 dl.field-list ul {
-    padding-left: 0 !important;
+    padding-left: 1em !important;
 }
 
 dl.field-list ul li {
