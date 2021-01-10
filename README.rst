@@ -12,7 +12,7 @@ Cloup
     :alt: Latest release on PyPI
     :target: https://pypi.org/project/cloup/
 
-.. |travis| image:: https://img.shields.io/travis/janLuke/cloup.svg
+.. |travis| image:: https://img.shields.io/travis/com/janluke/cloup/master?label=tests
     :alt: Travis-CI Build Status
     :target: https://travis-ci.com/janLuke/cloup?branch=master
 
