@@ -77,7 +77,7 @@ clean-test: ## remove test and coverage artifacts
 	$(REMOVE) .tox .coverage htmlcov .pytest_cache
 
 .PHONY: dist
-dist: clean ## builds source and wheel package
+dist: clean-build ## builds source and wheel package
 	python setup.py sdist bdist_wheel
 	twine check dist/*
 
