@@ -34,16 +34,28 @@ coverage: ## check code coverage quickly with the default Python
 	coverage html
 	$(BROWSER) htmlcov/index.html
 
-.PHONY: docs
-docs: ## generate Sphinx HTML documentation, including API docs
-	$(REMOVE) docs/cloup.rst docs/modules.rst
-	sphinx-apidoc -o docs/ cloup
+.PHONY: clean-docs
+clean-docs: ## clean the documentation
 	$(MAKE) -C docs clean
+
+.PHONY: docs
+docs: ## generate Sphinx HTML documentation
 	$(MAKE) -C docs html
 
-.PHONY: viewdocs
-viewdocs: docs ## compile the docs and view it in the default browser
+.PHONY: re-docs
+re-docs: clean-docs docs ## (re)generate Sphinx HTML documentation from scratch
+
+.PHONY: view-docs
+view-docs: docs ## open the built docs in the default browser
 	$(BROWSER) docs/_build/html/index.html
+
+.PHONY: live-docs
+live-docs:   ## watch docs files and rebuild the docs when they change
+	sphinx-autobuild docs docs/_build/html --watch *.rst --open-browser
+
+.PHONY: live-docs-all
+live-docs-all:   ## write all files (useful when working on html/css)
+	sphinx-autobuild -a docs docs/_build/html --watch *.rst --open-browser
 
 .PHONY: clean
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts
@@ -65,7 +77,7 @@ clean-test: ## remove test and coverage artifacts
 	$(REMOVE) .tox .coverage htmlcov .pytest_cache
 
 .PHONY: dist
-dist: clean ## builds source and wheel package
+dist: clean-build ## builds source and wheel package
 	python setup.py sdist bdist_wheel
 	twine check dist/*
 
@@ -78,3 +90,7 @@ pip-compile: ## pin dependencies in requirements/ using the current env
 	pip-compile requirements/test.in
 	pip-compile requirements/docs.in
 	pip-compile requirements/dev.in
+
+.PHONY: pip-sync
+pip-sync: pip-compile ## sync development environment with requirements/dev.txt
+	pip-sync requirements/dev.txt

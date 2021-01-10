@@ -1,0 +1,19 @@
+/********************************
+ * sphinx_copybutton overrides
+ */
+
+a.copybtn {
+    cursor: pointer;
+    top: .4em;
+    right: .25em;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.o-tooltip--left::after {
+    /* padding: 2px; */
+    /* font-size: 1rem; */
+    padding: 5px 8px;
+    font-size: inherit;
+    border-radius: 4px;
+}

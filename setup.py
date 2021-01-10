@@ -7,7 +7,7 @@ from setuptools import setup, find_packages
 with open('README.rst') as readme_file:
     readme = readme_file.read()
 
-with open('HISTORY.rst') as history_file:
+with open('CHANGELOG.rst') as history_file:
     history = history_file.read()
 
 setup(
@@ -18,6 +18,7 @@ setup(
     author_email='gianluca.gippetto@gmail.com',
     description="Option groups and subcommand help sections for pallets/click",
     long_description=readme + '\n\n' + history,
+    long_description_content_type='text/x-rst',
     url='https://github.com/janLuke/cloup',
     license="MIT license",
     keywords='cloup click option',

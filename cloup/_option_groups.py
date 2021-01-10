@@ -70,7 +70,7 @@ def option(
 
 
 @overload
-def option_group(name: str, help: str, *options) -> Callable:
+def option_group(name: str, help: str, *options) -> OptionDecorator:
     ...
 
 

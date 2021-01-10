@@ -18,10 +18,12 @@
 # absolute, like shown here.
 #
 import os
-import sys
-sys.path.insert(0, os.path.abspath('..'))
 
 import cloup
+
+# import sys
+# sys.path.insert(0, os.path.abspath('..'))
+PROJ_DIR = os.path.abspath(os.path.join(__file__, '..', '..'))
 
 # -- General configuration ---------------------------------------------
 
@@ -31,10 +33,38 @@ import cloup
 
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
-extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
+extensions = [
+    'autoapi.extension',
+    'sphinx.ext.intersphinx',
+    'sphinx.ext.viewcode',
+    'sphinx.ext.autodoc.typehints',
+    'sphinx_panels',
+    'sphinx_copybutton',  # adds a copy button to code blocks
+]
+
+autoclass_content = 'both'
+autodoc_typehints = 'description'
+autoapi_type = 'python'
+autoapi_dirs = [os.path.join(PROJ_DIR, 'cloup')]
+autoapi_template_dir = '_autoapi_templates'
+# autoapi_add_toctree_entry = False
+autoapi_options = [
+    'members',
+    'undoc-members',
+    'show-inheritance',
+    'show-module-summary',
+    'special-members',
+    'imported-members'
+]
+sphinx_tabs_valid_builders = ['linkcheck']
+
+intersphinx_mapping = {
+    'python': ('https://docs.python.org/', None),
+    'Click': ('https://click.palletsprojects.com', None)
+}
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+templates_path = [autoapi_template_dir]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -64,7 +94,7 @@ release = cloup.__version__
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = "en"
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -72,36 +102,53 @@ language = None
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 # The name of the Pygments (syntax highlighting) style to use.
-pygments_style = 'sphinx'
+pygments_style = 'default'
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-
 
 # -- Options for HTML output -------------------------------------------
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
-
-# Theme options are theme-specific and customize the look and feel of a
-# theme further.  For a list of options available for each theme, see the
-# documentation.
-#
-# html_theme_options = {}
+html_title = "Cloup v{version}".format(version=version)
+html_theme = "sphinx_book_theme"
+html_theme_options = {
+    "repository_url": "https://github.com/janluke/cloup",
+    "path_to_docs": "docs",
+    "use_repository_button": True,
+    "use_issues_button": True,
+    "use_edit_page_button": True,
+    "home_page_in_toc": False,
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+def primary_color_rgba(alpha=1.0):
+    return "rgba(0, 113, 188, %f)" % alpha
+
+panels_css_variables = {
+    "tabs-color-label-active": primary_color_rgba(),
+    "tabs-color-label-inactive": primary_color_rgba(0.5),
+    "tabs-color-overline": primary_color_rgba(0.2),
+    # "tabs-color-underline": "rgb(207, 236, 238)",
+    # "tabs-size-label": "1rem",
+}
+panels_add_bootstrap_css = False
+html_css_files = [
+    'styles/copybutton-overrides.css',
+    'styles/tabs-overrides.css',
+    'styles/theme-overrides.css',
+]
 
 # -- Options for HTMLHelp output ---------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = 'cloupdoc'
-
 
 # -- Options for LaTeX output ------------------------------------------
 
@@ -132,7 +179,6 @@ latex_documents = [
      'Gianluca Gippetto', 'manual'),
 ]
 
-
 # -- Options for manual page output ------------------------------------
 
 # One entry per manual page. List of tuples
@@ -142,7 +188,6 @@ man_pages = [
      'cloup Documentation',
      [author], 1)
 ]
-
 
 # -- Options for Texinfo output ----------------------------------------
 
@@ -157,6 +202,3 @@ texinfo_documents = [
      'One line description of project.',
      'Miscellaneous'),
 ]
-
-
-

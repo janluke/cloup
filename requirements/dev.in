@@ -6,3 +6,5 @@ pip-tools
 tox
 twine
 bump2version
+sphinx-autobuild
+-e .

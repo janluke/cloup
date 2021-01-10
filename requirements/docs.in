@@ -1,3 +1,5 @@
 sphinx
-Pallets-Sphinx-Themes
-sphinx-autodoc-typehints
+sphinx-autoapi
+sphinx-book-theme
+sphinx-panels
+sphinx_copybutton

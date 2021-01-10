@@ -1,0 +1,12 @@
+/**
+ * sphinx-panels tabs overrides
+ */
+.tabbed-content {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+}
+
+.tabbed-set > label {
+    margin-bottom: 0 !important;
+    padding: .4em 1.25em !important;
+}

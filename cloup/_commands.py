@@ -152,11 +152,8 @@ class Command(click.Command):
 
 class Group(click.Group):
     """
-    A ``click.Group``:
-
-    #. whose ``command()`` and ``group()`` methods returns resp. a ``cloup.Command``
-       and a ``cloup.Group``;
-    #. that allows to group subcommands into "sections" in the help.
+    A ``click.Group`` that supports subcommand help sections and returns
+    and whose subcommands are, by default, of class ``cloup.Commands``.
 
     Subgroups can be specified in different ways:
 
