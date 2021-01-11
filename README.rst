@@ -38,7 +38,7 @@ the following features:
 - **option groups** for ``Command``;
 
 - the possibility to organize the subcommands of a ``Group`` in multiple
-  **subcommand help sections**.
+  **help sections**.
 
 Cloup implements these features by providing subclasses of ``Command`` and ``Group``,
 and by defining a new decorator ``@option_group(name, *options, ...)`` decorator.
