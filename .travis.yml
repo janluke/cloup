@@ -5,7 +5,7 @@ dist: xenial
 stages:
    - tests
    - name: deploy
-     if: (type = push) AND (branch = master) AND (tag =~ /^v\d+[.]\d+[.]\d+/)
+     if: (type = push) AND (tag =~ /^v\d+[.]\d+[.]\d+/)
 
 python:
    - 3.5
