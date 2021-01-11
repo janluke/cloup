@@ -27,7 +27,6 @@ setup(
         'License :: OSI Approved :: MIT License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -36,7 +35,7 @@ setup(
     packages=find_packages(include=['cloup', 'cloup.*']),
     zip_safe=False,
     include_package_data=True,
-    python_requires='>=3.5',
+    python_requires='>=3.6',
     install_requires=[
         'click>=7.0,<9.0'
     ],

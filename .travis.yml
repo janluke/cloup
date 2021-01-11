@@ -3,7 +3,6 @@ os: linux
 dist: xenial
 
 python:
-   - 3.5
    - 3.6
    - 3.7
    - 3.8
@@ -25,8 +24,6 @@ after_success: |
    fi
 
 jobs:
-   exclude:
-      - { python: 3.5, env: CLICK=8 }  # Click 8.0 doesn't support Python 3.5
    include:
       - { python: 3.8, env: TOXENV=lint }
       - { python: 3.8, env: TOXENV=mypy }
