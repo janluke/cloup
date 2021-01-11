@@ -14,8 +14,7 @@ from typing import (
 
 import click
 
-from ._option_groups import OptionGroup, get_option_group_of
-
+from cloup import OptionGroupMixin
 
 Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
 
@@ -73,81 +72,15 @@ class GroupSection:
         return 'GroupSection({}, sorted={})'.format(self.title, self.sorted)
 
 
-class Command(click.Command):
-    """ A ``click.Command`` supporting option groups. """
+class Command(OptionGroupMixin, click.Command):
+    """
+    A ``click.Command`` supporting option groups.
+    This class is obtained by mixing :class:`click.Command` with
+    :class:`cloup.OptionGroupMixin`.
+    """
 
-    def __init__(self, name, context_settings=None, callback=None, params=None, help=None,
-                 epilog=None, short_help=None, options_metavar="[OPTIONS]", add_help_option=True,
-                 hidden=False, deprecated=False, align_option_groups=True,
-                 **kwargs):
-        super().__init__(
-            name=name, context_settings=context_settings, callback=callback, params=params,
-            help=help, epilog=epilog, short_help=short_help, options_metavar=options_metavar,
-            add_help_option=add_help_option, hidden=hidden,
-            deprecated=deprecated, **kwargs)
-
-        options_by_group = OrderedDict()
-        for param in self.params:
-            if isinstance(param, click.Argument):
-                continue
-            options_by_group.setdefault(get_option_group_of(param), []).append(param)
-
-        self.ungrouped_options = options_by_group.pop(None, default=[])
-        self.option_groups = list(options_by_group.keys())
-        for group, options in options_by_group.items():
-            group.options = options
-        self.align_option_groups = align_option_groups
-
-    def get_ungrouped_options(self, ctx: click.Context) -> Sequence[click.Option]:
-        help_option = self.get_help_option(ctx)
-        if help_option is not None:
-            return self.ungrouped_options + [help_option]
-        else:
-            return self.ungrouped_options
-
-    def format_option_group(self, ctx: click.Context,
-                            formatter: click.HelpFormatter,
-                            option_group: OptionGroup,
-                            help_records: Optional[Sequence] = None):
-        if help_records is None:
-            help_records = option_group.get_help_records(ctx)
-        if not help_records:
-            return
-        with formatter.section(option_group.name):
-            if option_group.help:
-                formatter.write_text(option_group.help)
-            formatter.write_dl(help_records)
-
-    def format_options(self, ctx: click.Context,
-                       formatter: click.HelpFormatter,
-                       max_option_width: int = 30):
-        records_by_group = OrderedDict()  # OrderedDict for python 3.5
-        for group in self.option_groups:
-            records_by_group[group] = group.get_help_records(ctx)
-        ungrouped_options = self.get_ungrouped_options(ctx)
-        if ungrouped_options:
-            default_group = OptionGroup('Other options' if records_by_group else 'Options')
-            default_group.options = ungrouped_options
-            records_by_group[default_group] = default_group.get_help_records(ctx)
-
-        if self.align_option_groups:
-            option_name_width = min(
-                max_option_width,
-                max(len(rec[0])
-                    for records in records_by_group.values()
-                    for rec in records)
-            )
-            # This is a hacky way to have aligned options groups.
-            # Pad the first column of the first entry of each group to reach option_name_width
-            for records in records_by_group.values():
-                first = records[0]
-                pad_width = option_name_width - len(first[0])
-                if pad_width <= 0:
-                    continue
-                records[0] = (first[0] + ' ' * pad_width, first[1])
-
-        for group, records in records_by_group.items():
-            self.format_option_group(ctx, formatter, group, help_records=records)
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
 
 
 class Group(click.Group):

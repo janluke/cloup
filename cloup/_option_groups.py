@@ -1,8 +1,14 @@
-from typing import Callable, Optional, Sequence, Type, overload
+"""
+Implements support to option group.
+"""
+from collections import defaultdict
+from typing import Callable, List, Optional, Sequence, Tuple, Type, overload
 
 import click
 
 #: A decorator that registers one or multiple click Options to the decorated function
+from click import Option, Parameter
+
 OptionDecorator = Callable[[Callable], Callable]
 
 
@@ -52,6 +58,87 @@ def has_option_group(param) -> bool:
 
 def get_option_group_of(param, default=None):
     return param.group if has_option_group(param) else default
+
+
+class OptionGroupMixin:
+    """ Implements support to option groups. """
+
+    def __init__(self, *args, align_option_groups: bool = True, **kwargs):
+        self.align_option_groups = align_option_groups
+        self.option_groups, self.ungrouped_options = \
+            self._option_groups_from_params(kwargs['params'])
+        if len(self.__class__.__mro__) > 1:
+            # This "if" allows using this class as "stand-alone" class
+            super().__init__(*args, **kwargs)   # type: ignore
+
+    @staticmethod
+    def _option_groups_from_params(
+        params: List[Parameter]
+    ) -> Tuple[List[OptionGroup], List[Option]]:
+
+        options_by_group = defaultdict(list)
+        for param in params:
+            if isinstance(param, click.Option):
+                grp = get_option_group_of(param)
+                options_by_group[grp].append(param)
+
+        ungrouped_options = options_by_group.pop(None, [])
+        option_groups = list(options_by_group.keys())
+        for group, options in options_by_group.items():
+            group.options = options
+
+        return option_groups, ungrouped_options
+
+    def get_ungrouped_options(self, ctx: click.Context) -> Sequence[click.Option]:
+        help_option = ctx.command.get_help_option(ctx)
+        if help_option is not None:
+            return self.ungrouped_options + [help_option]
+        else:
+            return self.ungrouped_options
+
+    def format_option_group(self, ctx: click.Context,
+                            formatter: click.HelpFormatter,
+                            option_group: OptionGroup,
+                            help_records: Optional[Sequence] = None):
+        if help_records is None:
+            help_records = option_group.get_help_records(ctx)
+        if not help_records:
+            return
+        with formatter.section(option_group.name):
+            if option_group.help:
+                formatter.write_text(option_group.help)
+            formatter.write_dl(help_records)
+
+    def format_options(self, ctx: click.Context,
+                       formatter: click.HelpFormatter,
+                       max_option_width: int = 30):
+        records_by_group = {}
+        for group in self.option_groups:
+            records_by_group[group] = group.get_help_records(ctx)
+        ungrouped_options = self.get_ungrouped_options(ctx)
+        if ungrouped_options:
+            default_group = OptionGroup('Other options' if records_by_group else 'Options')
+            default_group.options = ungrouped_options
+            records_by_group[default_group] = default_group.get_help_records(ctx)
+
+        if self.align_option_groups:
+            option_name_width = min(
+                max_option_width,
+                max(len(rec[0])
+                    for records in records_by_group.values()
+                    for rec in records)
+            )
+            # This is a hacky way to have aligned options groups.
+            # Pad the first column of the first entry of each group to reach option_name_width
+            for records in records_by_group.values():
+                first = records[0]
+                pad_width = option_name_width - len(first[0])
+                if pad_width <= 0:
+                    continue
+                records[0] = (first[0] + ' ' * pad_width, first[1])
+
+        for group, records in records_by_group.items():
+            self.format_option_group(ctx, formatter, group, help_records=records)
 
 
 def option(
@@ -121,3 +208,7 @@ def _option_group(
         return f
 
     return decorator
+
+
+if __name__ == '__main__':
+    OptionGroupMixin()
