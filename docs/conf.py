@@ -44,9 +44,11 @@ extensions = [
 
 autoclass_content = 'both'
 autodoc_typehints = 'description'
+
 autoapi_type = 'python'
 autoapi_dirs = [os.path.join(PROJ_DIR, 'cloup')]
 autoapi_template_dir = '_autoapi_templates'
+autoapi_keep_files = True
 # autoapi_add_toctree_entry = False
 autoapi_options = [
     'members',
