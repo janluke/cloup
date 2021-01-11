@@ -56,7 +56,6 @@ autoapi_options = [
     'special-members',
     'imported-members'
 ]
-sphinx_tabs_valid_builders = ['linkcheck']
 
 intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
