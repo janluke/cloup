@@ -2,11 +2,6 @@ language: python
 os: linux
 dist: xenial
 
-stages:
-   - tests
-   - name: deploy
-     if: (type = push) AND (tag =~ /^v\d+[.]\d+[.]\d+/)
-
 python:
    - 3.5
    - 3.6
@@ -31,27 +26,9 @@ after_success: |
 
 jobs:
    exclude:
-      # Click 8.0 doesn't support Python 3.5
-      - python: 3.5
-        env: CLICK=8
-
+      - { python: 3.5, env: CLICK=8 }  # Click 8.0 doesn't support Python 3.5
    include:
       - { python: 3.8, env: TOXENV=lint }
       - { python: 3.8, env: TOXENV=mypy }
       - { python: 3.8, env: TOXENV=twine }
       - { python: 3.8, env: TOXENV=docs }
-
-      - stage: deploy
-        python: 3.8
-        install: pip install -U setuptools
-        script: skip
-        after_success: skip
-        deploy:
-           provider: pypi
-           distributions: sdist bdist_wheel
-           username: janluke
-           password:
-              secure: nIdK/rSWyKXnot35BDqBKMnw5NvNv+2wRkEJLTzi/KV9jXlyzq1WosABILKCjVGk8WuKe0FzlrSL5pqQWGRK8VjVpyM8+6Vu4n9+RRFb2xsdLxJueXmEkQYxcZxhrhHLf8J94QxFp7e5G2G0SYghDuBk1sw+6yJA2eQkH/BJ4LY84C8i2M38SqL9mojV7+wSnTJb+LFUlR2fgzIQ+Xcj0j4oG5hF7K1ni07dyrKzznjbR0DrHkPbNiAd0jCVOnAajSL3wRph8+e2hKDvFQFYDW6pPuX5JwqwHbVzEPzlzIOfyMW9TdyvD+6uF7+q1aJbHdVitpuM67CJA8naI1Q/4N5u6ieQ6mTjs/J6TMcLj3NdbnVq/CD3SpDsAqqIGVbrNPcNICd0EeHQw7YjaqkJ0q+o3SknYNwuHV7KyiHUSr7g0ZZ3IfLrpnlFz3dYfSPAMhs9kAg4YqQhvVFEEcpoNh4Fr+rkbAWHTDCHnCELiCgA5RHs+dnqxtHDHbfhjOlIrv2vRrMRl2b0VEnl2gQJ4fF1ac13CeTGclluXVoiFWH+j6PhNvQwz8SSPdHqucLQCReeef6kxjTaAxsUSkI0aO/CLTGEI73iDtouvHoRbjDSFP2nuCAIcAq8yGlVRD19QZ7Y8zTwVgHp43hdCHi/j5aP2V+SLkbRcPmagAh8xxs=
-           on:
-              repo: janLuke/cloup
-              branch: master
