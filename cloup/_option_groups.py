@@ -6,9 +6,9 @@ from typing import Callable, List, Optional, Sequence, Tuple, Type, overload
 
 import click
 
-#: A decorator that registers one or multiple click Options to the decorated function
 from click import Option, Parameter
 
+#: A decorator that registers one or multiple click Options to the decorated function
 OptionDecorator = Callable[[Callable], Callable]
 
 
@@ -208,7 +208,3 @@ def _option_group(
         return f
 
     return decorator
-
-
-if __name__ == '__main__':
-    OptionGroupMixin()
