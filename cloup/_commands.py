@@ -24,7 +24,21 @@ class Command(OptionGroupMixin, click.Command):
         super().__init__(*args, **kwargs)
 
 
-class Group(click.Group):
+class MultiCommand(SectionMixin, click.MultiCommand, metaclass=abc.ABCMeta):
+    """
+    A ``click.MultiCommand`` that allows to organize its subcommands in multiple help
+    sections and and whose subcommands are, by default, of type :class:`cloup.Command`.
+
+    This class is just a :class:`click.MultiCommand` mixed with
+    :class:`cloup.SectionMixin`.
+    See the docstring of these two subclasses for more details.
+    """
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+
+class Group(SectionMixin, click.Group):
     """
     A ``click.Group`` that allows to organize its subcommands in multiple help
     sections and and whose subcommands are, by default, of type :class:`cloup.Command`.

@@ -12,6 +12,6 @@ from ._sections import (
     GroupSection, SectionMixin
 )
 from ._commands import (
-    Command, Group, command, group,
+    Command, Group, MultiCommand, command, group,
 )
 
