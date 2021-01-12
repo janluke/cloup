@@ -1,6 +1,6 @@
 # flake8: noqa E128
 import cloup
-from cloup import GroupSection
+from cloup import Section
 
 
 def make_example_group(align_sections):
@@ -31,7 +31,7 @@ def make_example_group(align_sections):
         'Start a working area (see also: git help tutorial)', git_init, git_hidden1)
     first_section.add_command(git_clone)
 
-    git.add_section(GroupSection(
+    git.add_section(Section(
         'Work on the current change (see also: git help everyday)',
         [git_rm, git_sparse_checkout, git_mv],
         sorted=True

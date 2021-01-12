@@ -10,7 +10,8 @@ from typing import (
 
 import click
 
-from cloup import GroupSection, OptionGroupMixin, SectionMixin
+from ._option_groups import OptionGroupMixin
+from ._sections import Section, SectionMixin
 
 
 class Command(OptionGroupMixin, click.Command):
@@ -49,12 +50,12 @@ class Group(SectionMixin, click.Group):
 
     def __init__(self, name: Optional[str] = None,
                  commands: Optional[Dict[str, click.Command]] = None,
-                 sections: Iterable[GroupSection] = (),
+                 sections: Iterable[Section] = (),
                  align_sections: bool = True, **attrs):
         """
         :param name: name of the command
         :param commands: dict {name: command}; this command will be added to the default section.
-        :param sections: a list of GroupSection objects
+        :param sections: a list of Section objects
         :param align_sections: if True, the help column of all columns will be aligned;
             if False, each section will be formatted independently
         :param attrs:
@@ -65,7 +66,7 @@ class Group(SectionMixin, click.Group):
             **attrs)
 
     def command(self, name: Optional[str] = None,  # type: ignore
-                section: Optional[GroupSection] = None,
+                section: Optional[Section] = None,
                 cls: Type[click.Command] = Command, **attrs) -> Callable[[Callable], click.Command]:
         """ Creates a new command and adds it to this group. """
 
@@ -77,7 +78,7 @@ class Group(SectionMixin, click.Group):
         return decorator
 
     def group(self, name: Optional[str] = None,  # type: ignore
-              section: Optional[GroupSection] = None,
+              section: Optional[Section] = None,
               cls: Optional[Type[click.Group]] = None,
               **attrs) -> Callable[[Callable], click.Group]:
         if cls is None:

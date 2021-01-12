@@ -166,7 +166,7 @@ similar to that of options groups. You can find the full example code
             git_mv
         )
 
-        # The following commands will be added to the "default section" (a sorted GroupSection)
+        # The following commands will be added to the "default section" (a sorted Section)
         git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
         git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
 
@@ -200,7 +200,7 @@ similar to that of options groups. You can find the full example code
       section, i.e. a section where commands are sorted by name.
     - The default section (titled "Other commands") is a sorted section.
 
-In alternative, you can create a list of :class:`~cloup.GroupSection` yourself
+In alternative, you can create a list of :class:`~cloup.Section` yourself
 and pass it as the ``sections`` argument of :func:`cloup.group`:
 
 .. code-block:: python
@@ -208,10 +208,10 @@ and pass it as the ``sections`` argument of :func:`cloup.group`:
     # import subcommands git_init, git_clone ecc...
 
     SECTIONS = [
-        GroupSection('Start a working area (see also: git help tutorial)',
-                     git_clone, git_init),
-        GroupSection('Work on the current change (see also: git help everyday)',
-                     git_rm, git_sparse_checkout, git_mv)
+        Section('Start a working area (see also: git help tutorial)',
+                git_clone, git_init),
+        Section('Work on the current change (see also: git help everyday)',
+                git_rm, git_sparse_checkout, git_mv)
     ]
 
     @cloup.group('git', sections=SECTIONS)
@@ -220,4 +220,4 @@ and pass it as the ``sections`` argument of :func:`cloup.group`:
 
 .. tip::
     Instead of passing ``sorted=True`` to the constructor, you can create a
-    sorted section by using the static method ``GroupSection.sorted(...)``.
+    sorted section by using the static method ``Section.sorted(...)``.

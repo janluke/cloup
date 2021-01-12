@@ -9,7 +9,7 @@ from ._option_groups import (
     GroupedOption, OptionGroup, OptionGroupMixin, option, option_group,
 )
 from ._sections import (
-    GroupSection, SectionMixin
+    Section, GroupSection, SectionMixin
 )
 from ._commands import (
     Command, Group, MultiCommand, command, group,

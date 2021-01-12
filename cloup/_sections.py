@@ -7,11 +7,11 @@ CommandType = TypeVar('CommandType', bound=Type[click.Command])
 Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
 
 
-class GroupSection:
+class Section:
     """
-    A section of commands inside a ``cloup.MultiCommand``. Sections are not
-    (multi)commands, they simply allow to organize cloup.Group subcommands
-    in many different help sections.
+    A group of (sub)commands to show in the same help section of a
+    :class:`cloup.MultiCommand`. You can use sections with any `Command`
+    that inherits from :class:`SectionMixin`.
     """
 
     def __init__(self, title: str,
@@ -36,7 +36,7 @@ class GroupSection:
             raise TypeError('commands must be a list of commands or a dict {name: command}')
 
     @classmethod
-    def sorted(cls, title: str, commands: Subcommands = ()) -> 'GroupSection':
+    def sorted(cls, title: str, commands: Subcommands = ()) -> 'Section':
         return cls(title, commands, sorted=True)
 
     def add_command(self, cmd: click.Command, name: Optional[str] = None):
@@ -57,7 +57,14 @@ class GroupSection:
         return len(self.commands)
 
     def __repr__(self) -> str:
-        return 'GroupSection({}, sorted={})'.format(self.title, self.sorted)
+        return 'Section({}, sorted={})'.format(self.title, self.sorted)
+
+
+#: Alias for :class:`Section`. This was the old name of `Section` when the
+#: implementation of the feature was hard-coded and tightly coupled with `cloup.Group`.
+#: **You should not use this.**
+#: TODO: Should I worry about deprecation notices in v0.x?
+GroupSection = Section
 
 
 class SectionMixin:
@@ -67,7 +74,7 @@ class SectionMixin:
 
     Sections can be specified in the following ways:
 
-    #. passing a list of GroupSection objects to the constructor setting
+    #. passing a list of :class:`Section` objects to the constructor setting
        the argument ``sections``
     #. using :meth:`add_section` to add a single section
     #. using :meth:`add_command` with the argument `section` set
@@ -83,18 +90,18 @@ class SectionMixin:
     def __init__(
         self, *args,
         commands: Optional[Dict[str, click.Command]] = None,
-        sections: Iterable[GroupSection] = (),
+        sections: Iterable[Section] = (),
         align_sections: bool = True,
         **kwargs,
     ):
         """
-        :param sections: a list of GroupSection objects
+        :param sections: a list of :class:`Section` objects
         :param align_sections: if True, the help column of all columns will be aligned;
             if False, each section will be formatted independently
         """
         self.align_sections = align_sections
-        self._default_section = GroupSection('__DEFAULT', commands=commands or [])
-        self._user_sections: List[GroupSection] = []
+        self._default_section = Section('__DEFAULT', commands=commands or [])
+        self._user_sections: List[Section] = []
         self._section_set = {self._default_section}
         for section in sections:
             self.add_section(section)
@@ -110,8 +117,8 @@ class SectionMixin:
             self._user_sections.append(section)
             self._section_set.add(section)
 
-    def add_section(self, section: GroupSection):
-        """ Adds a :class:`GroupSection` to this group. You can add the same
+    def add_section(self, section: Section):
+        """ Adds a :class:`Section` to this group. You can add the same
         section object a single time. """
         if section in self._section_set:
             raise ValueError('section {} was already added'.format(section))
@@ -120,15 +127,15 @@ class SectionMixin:
         for name, cmd in section.commands.items():
             super().add_command(cmd, name)  # type: ignore
 
-    def section(self, title: str, *commands: click.Command, **attrs) -> GroupSection:
-        """ Creates a new :class:`GroupSection`, adds it to this group and returns it. """
-        section = GroupSection(title, commands, **attrs)
+    def section(self, title: str, *commands: click.Command, **attrs) -> Section:
+        """ Creates a new :class:`Section`, adds it to this group and returns it. """
+        section = Section(title, commands, **attrs)
         self.add_section(section)
         return section
 
     def add_command(self, cmd: click.Command,
                     name: Optional[str] = None,
-                    section: Optional[GroupSection] = None):
+                    section: Optional[Section] = None):
         """
         Adds a new command. If ``section`` is None, the command is added to the default section.
         """
@@ -136,13 +143,13 @@ class SectionMixin:
         self._add_command_to_section(cmd, name, section)
 
     def list_sections(self, ctx: click.Context,
-                      include_default_section: bool = True) -> List[GroupSection]:
+                      include_default_section: bool = True) -> List[Section]:
         """ Returns the list of all sections in the "correct order".
          if ``include_default_section=True`` and the default section is non-empty,
          it will be included at the end of the list. """
         section_list = list(self._user_sections)
         if include_default_section and len(self._default_section) > 0:
-            default_section = GroupSection.sorted(
+            default_section = Section.sorted(
                 title='Other commands' if len(self._user_sections) > 0 else 'Commands',
                 commands=self._default_section.commands)
             section_list.append(default_section)
@@ -160,7 +167,7 @@ class SectionMixin:
 
     def format_section(self, ctx: click.Context,
                        formatter: click.HelpFormatter,
-                       section: GroupSection,
+                       section: Section,
                        command_col_width: Optional[int] = None):
         commands = section.list_commands()
         if not commands:

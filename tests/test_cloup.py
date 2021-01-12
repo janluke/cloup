@@ -31,14 +31,14 @@ def test_example_group_help(align_sections, get_example_group):
 
 @pytest.mark.parametrize('method_name, cls, section', [
     ('command', click.Command, None),
-    ('command', cloup.Command, cloup.GroupSection('A')),
-    ('group', click.Group, cloup.GroupSection('A')),
+    ('command', cloup.Command, cloup.Section('A')),
+    ('group', click.Group, cloup.Section('A')),
     ('group', cloup.Group, None),
 ])
 def test_Group_command_decorator(method_name, cls, section):
     grp = cloup.Group('ciao')
     decorator = getattr(grp, method_name)
-    section = cloup.GroupSection('1')
+    section = cloup.Section('1')
     cmd = decorator('cmd', section=section, cls=cls, help='Help')(noop)
     assert cmd.__class__ is cls
     assert grp.commands['cmd'] is cmd
