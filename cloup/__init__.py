@@ -8,7 +8,10 @@ __version__ = '0.4.2'
 from ._option_groups import (
     GroupedOption, OptionGroup, OptionGroupMixin, option, option_group,
 )
+from ._sections import (
+    GroupSection, SectionMixin
+)
 from ._commands import (
-    Command, Group, GroupSection, command, group,
+    Command, Group, command, group,
 )
 
