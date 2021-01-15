@@ -177,6 +177,12 @@ def option_group(name: str, *args, **kwargs) -> OptionDecorator:
     In other words, if the second position argument is a string, it is interpreted
     as the "help" argument. Otherwise, it is interpreted as the first option;
     in this case, you can still pass the help as keyword argument.
+
+    :param name: a mandatory name/title for the group
+    :param help: an optional help string for the group
+    :param options: option decorators like `click.option`
+    :return: a decorator that attaches the contained options to the decorated
+             function (by monkey-patching it)
     """
     if args and isinstance(args[0], str):
         return _option_group(name, options=args[1:], help=args[0])
