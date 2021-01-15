@@ -51,7 +51,10 @@ view-docs: docs ## open the built docs in the default browser
 
 .PHONY: live-docs
 live-docs:   ## watch docs files and rebuild the docs when they change
-	sphinx-autobuild docs docs/_build/html --watch *.rst --open-browser
+	sphinx-autobuild docs docs/_build/html \
+		--watch *.rst \
+		--watch cloup/**/*.py \
+		--open-browser
 
 .PHONY: live-docs-all
 live-docs-all:   ## write all files (useful when working on html/css)

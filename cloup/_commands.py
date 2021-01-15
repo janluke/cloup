@@ -92,17 +92,26 @@ class Group(SectionMixin, click.Group):
         return decorator
 
 
-def group(name: Optional[str] = None,
-          cls: Type[Group] = Group, **attrs) -> Callable[[Callable], Group]:
-    """ Creates a new ``Group`` (by default). """
-    if not issubclass(cls, Group):
-        raise TypeError('cls must be a subclass of cloup.Group')
-    return cast(Group, click.group(name=name, cls=cls, **attrs))
+def group(name: Optional[str] = None, **attrs) -> Callable[[Callable], Group]:
+    """ Creates a new :class:`Group` using the decorated function as
+    callback. This is just a convenience function equivalent to::
+
+        click.group(name, cls=cloup.Group, **attrs)
+
+    :param name: name of the command
+    :param attrs: any argument you can pass to :func:`click.group`
+    """
+    return cast(Group, click.group(name=name, cls=Group, **attrs))
 
 
-def command(name: Optional[str] = None,
-            cls: Type[Command] = Command, **attrs) -> Callable[[Callable], Command]:
-    """ Creates a new ``cloup.Command`` (by default). """
-    if not issubclass(cls, Command):
-        raise TypeError('cls must be a subclass of cloup.Command')
-    return cast(Command, click.command(name, cls=cls, **attrs))
+def command(name: Optional[str] = None, **attrs) -> Callable[[Callable], Command]:
+    """
+    Creates a new :class:`Command` using the decorated function as
+    callback. This is just a convenience function equivalent to::
+
+        click.command(name, cls=cloup.Command, **attrs)
+
+    :param name: name of the command
+    :param attrs: any argument you can pass to :func:`click.command`
+    """
+    return cast(Command, click.command(name, cls=Command, **attrs))
