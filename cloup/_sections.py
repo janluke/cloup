@@ -78,8 +78,6 @@ class SectionMixin:
        the argument ``sections``
     #. using :meth:`add_section` to add a single section
     #. using :meth:`add_command` with the argument `section` set
-    #. using :meth:`command` with the argument `section` set
-    #. using :meth:`group` with the argument `section` set
 
     Commands not assigned to any user-defined section are added to the
     "default section", whose title is "Commands" or "Other commands" depending
