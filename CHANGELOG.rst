@@ -2,6 +2,35 @@
 Change Log
 ==========
 
+..  V0.X.X (in development)
+    =======================
+    **Requirements**
+    **Incompatible changes**
+    **Deprecated**
+    **Compatible changes and features**
+
+
+V0.5.0 (in development)
+=======================
+**Requirements**
+
+* Drop support to Python 3.5.
+
+**Incompatible changes**
+
+* ``@cloup.command`` and ``@group.command`` don't take a ``cls`` argument anymore.
+  Just use the analogous ``click`` decorators if you need to pass a custom class.
+
+**Deprecated**
+
+* ``GroupSection`` was renamed as ``Section``.
+
+**Compatible changes and features**
+
+* Support to option groups is now implemented in ``OptionGroupMixin``.
+* Support to subcommand sections is now implemented in ``SectionMixin``.
+
+
 v0.4.0 (2020-01-10)
 ===================
 This is the last release officially supporting Python 3.5.
@@ -10,7 +39,7 @@ Package-wise:
 
 * changed the internal (non-public) structure of the package
 * no new features or public API changes
-* minor code improvements and fixes.
+* minor code improvements.
 
 Repository-wise:
 

@@ -35,16 +35,12 @@ Cloup
 Cloup (= **Cl**\ick + gr\ **oup**\s) adds to `Click <https://github.com/pallets/click>`_
 the following features:
 
-- **option groups** for ``Command``;
-
-- the possibility to organize the subcommands of a ``Group`` in multiple
-  **help sections**.
-
-Cloup implements these features by providing subclasses of ``Command`` and ``Group``,
-and by defining a new decorator ``@option_group(name, *options, ...)`` decorator.
+- **option groups**;
+- **subcommand sections**: organization of the subcommands of a ``MultiCommand``
+  in multiple help sections.
 
 Currently, cloup only affects how the command help is formatted, it doesn't
-allow to specify constraints on option groups. Group constraints are coming
+allow to specify constraints on option groups. Constraints are coming soon
 though.
 
 .. if-doc-stop-here
