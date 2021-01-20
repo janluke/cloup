@@ -29,7 +29,7 @@ test: ## run tests quickly with the default Python
 
 .PHONY: coverage
 coverage: ## check code coverage quickly with the default Python
-	pytest --cov=cloup --vv
+	pytest --cov=cloup -vv
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
