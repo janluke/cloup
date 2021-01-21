@@ -4,10 +4,7 @@ import pytest
 from click.testing import CliRunner
 
 import cloup
-
-
-def noop(*args, **kwargs):
-    pass
+from cloup import Section
 
 
 @pytest.mark.parametrize('align_option_groups', [True, False], ids=['aligned', 'non-aligned'])
@@ -29,24 +26,34 @@ def test_example_group_help(align_sections, get_example_group):
     assert result.output.strip() == grp.expected_help
 
 
-@pytest.mark.parametrize('method_name, cls, section', [
-    ('command', click.Command, None),
-    ('command', cloup.Command, cloup.Section('A')),
-    ('group', click.Group, cloup.Section('A')),
-    ('group', cloup.Group, None),
-])
-def test_Group_command_decorator(method_name, cls, section):
-    grp = cloup.Group('ciao')
+@pytest.mark.parametrize('subcommand_cls', [
+    click.Command, cloup.Command,  click.Group, cloup.Group
+], ids=['click_Command', 'cloup_Command', 'click_Group', 'cloup_Group'])
+@pytest.mark.parametrize('assign_to_section', [True, False])
+def test_Group_subcommand_decorator(subcommand_cls, assign_to_section):
+    grp = cloup.Group('name')
+    # Use @grp.group if subcommand_class is a Group, else @grp.Command
+    method_name = ('group' if issubclass(subcommand_cls, cloup.Group)
+                   else 'command')
     decorator = getattr(grp, method_name)
-    section = cloup.Section('1')
-    cmd = decorator('cmd', section=section, cls=cls, help='Help')(noop)
-    assert cmd.__class__ is cls
-    assert grp.commands['cmd'] is cmd
-    assert cmd.help == 'Help'
-    if section:
-        assert grp._user_sections[0].commands['cmd'] is cmd
+    # Add a subcommand to the Group using the decorator
+    subcommand_name = 'cmd'
+    section_arg = Section('title') if assign_to_section else None
+    subcommand = decorator(
+        subcommand_name,
+        section=section_arg,
+        cls=subcommand_cls,
+        help='Help'
+    )(noop)
+    assert subcommand.__class__ is subcommand_cls
+    assert subcommand.help == 'Help'
+    assert grp.commands[subcommand_name] is subcommand
+    if assign_to_section:
+        section = grp._user_sections[0]
+        assert section is section_arg
+        assert section.commands[subcommand_name] is subcommand
     else:
-        assert grp._default_section.commands['cmd'] is cmd
+        assert grp._default_section.commands[subcommand_name] is subcommand
 
 
 def test_option_group_decorator_raises_if_group_is_passed_to_contained_option():
