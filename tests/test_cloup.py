@@ -5,6 +5,7 @@ from click.testing import CliRunner
 
 import cloup
 from cloup import Section
+from .util import noop
 
 
 @pytest.mark.parametrize('align_option_groups', [True, False], ids=['aligned', 'non-aligned'])
