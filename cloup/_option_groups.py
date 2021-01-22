@@ -18,7 +18,7 @@ class OptionGroup:
             raise ValueError('name is a mandatory argument')
         self.name = name
         self.help = help
-        self.options = []  # type: Sequence[click.Option]
+        self.options: Sequence[click.Option] = []
 
     def get_help_records(self, ctx: click.Context):
         return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
@@ -158,12 +158,12 @@ def option(
 
 @overload
 def option_group(name: str, help: str, *options) -> OptionDecorator:
-    ...
+    ...  # pragma: no cover
 
 
 @overload
 def option_group(name: str, *options, help: Optional[str] = None) -> OptionDecorator:
-    ...
+    ...  # pragma: no cover
 
 
 def option_group(name: str, *args, **kwargs) -> OptionDecorator:
