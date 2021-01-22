@@ -1,3 +1,4 @@
+import warnings
 from collections import OrderedDict
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union
 
@@ -60,11 +61,20 @@ class Section:
         return 'Section({}, sorted={})'.format(self.title, self.sorted)
 
 
-#: Alias for :class:`Section`. This was the old name of `Section` when the
-#: implementation of the feature was hard-coded and tightly coupled with `cloup.Group`.
-#: **You should not use this.**
-#: TODO: Should I worry about deprecation notices in v0.x?
-GroupSection = Section
+class GroupSection(Section):
+    """This is a deprecated name for :class:`Section`.
+
+    ``GroupSection`` was the old name of `Section` when the implementation of
+    the feature was hard-coded and tightly coupled with `cloup.Group`.
+
+    .. deprecated:: 0.5.0
+        To be removed in v0.6.0. Use ``Section`` instead.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        warnings.warn(
+            'GroupSection was renamed to Section and will be removed in v0.6.0',
+            DeprecationWarning)
 
 
 class SectionMixin:
