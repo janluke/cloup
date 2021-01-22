@@ -3,6 +3,7 @@ import click
 
 import cloup
 from cloup import option, option_group
+from cloup.constraints import If, SetAtLeast
 
 
 def make_example_command(align_option_groups):
@@ -20,7 +21,8 @@ def make_example_command(align_option_groups):
         'Option group B',
         option('--four / --no-four', help='1st option of group B'),
         option('--five', help='2nd option of group B', hidden=True),
-        option('--six', help='3rd option of group B'))
+        option('--six', help='3rd option of group B'),
+        constraint=If('three').then(SetAtLeast(1)))
     @option('--seven', help='first uncategorized option',
             type=click.Choice('yes no ask'.split()))
     @option('--height', help='second uncategorized option')
@@ -45,7 +47,7 @@ Option group A:
   --two TEXT            2nd option of group A
   --three TEXT          3rd option of group A
 
-Option group B:
+Option group B [at least 1 required if --three is set]:
   --four / --no-four    1st option of group B
   --six TEXT            3rd option of group B
 
@@ -53,7 +55,7 @@ Other options:
   --seven [yes|no|ask]  first uncategorized option
   --height TEXT         second uncategorized option
   --help                Show this message and exit.
-    """.strip()
+""".strip()
 
 _EXPECTED_NON_ALIGNED_HELP = """
 Usage: clouptest [OPTIONS]
@@ -66,7 +68,7 @@ Option group A:
   --two TEXT    2nd option of group A
   --three TEXT  3rd option of group A
 
-Option group B:
+Option group B [at least 1 required if --three is set]:
   --four / --no-four  1st option of group B
   --six TEXT          3rd option of group B
 

@@ -20,33 +20,47 @@ Basically, you can specify the optional help string either
 from pprint import pprint
 
 import click
+from click import Choice
 
 import cloup
 from cloup import option, option_group
+from cloup.constraints import If, SetAtLeast, check_constraint, mutually_exclusive
 
 
-@cloup.command('cloup')
+@cloup.command(name='cloup')
+@click.argument('arg', required=False)
 @option_group(
-    'Input options',
+    'First group title',
     "This is a very long description of the option group. I don't think this is "
     "needed very often; still, if you want to provide it, you can pass it as 2nd "
     "positional argument or as keyword argument 'help' after all options.",
-    option('--one', help='1st input option'),
-    option('--two', help='2nd input option'),
-    option('--three', help='3rd input option'),
+    option('--one', type=int, help='a 1st cool option'),
+    option('--two', help='a 2nd cool option'),
+    option('--three', help='a 3rd cool option'),
+    constraint=SetAtLeast(1),
 )
 @option_group(
-    'Output options',
-    option('--four', help='1st output option'),
-    option('--five', help='2nd output option'),
-    option('--six', help='3rd output option'),
-    # help='You can also pass the help as keyword argument after the options.',
+    'Second group name',
+    option('--four', help='a 4th cool option'),
+    option('--five', help='a 5th cool option'),
+    option('--six', help='a 6th cool option'),
+    constraint=If('three').then(SetAtLeast(1)),
 )
-@option('--seven', help='first uncategorized option', type=click.Choice('yes no ask'.split()))
-@option('--height', help='second uncategorized option')
+@option('--seven', help='first uncategorized option', type=Choice('yes no ask'.split()))
+@option('--eight', help='second uncategorized option')
 def main(**kwargs):
     """ A CLI that does nothing. """
-    pprint(kwargs, indent=2)
+
+    # Constraints can be used inside a callback. The [ctx] argument is optional.
+    mutually_exclusive.check(['one', 'six'])
+
+    # The function check_constraint exists for the only reason to make crystal
+    # clear what you are doing. It may be "weird" to call check on some
+    # constraints, because some of them are named as "commands" to the CLI user
+    check_constraint(
+        SetAtLeast(1), on=['one', 'six'])
+
+    pprint(kwargs, indent=3)
 
 
 if __name__ == '__main__':

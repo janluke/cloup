@@ -5,8 +5,9 @@ from collections import defaultdict
 from typing import Callable, List, Optional, Sequence, Tuple, Type, TypeVar, overload
 
 import click
-
 from click import Option, Parameter
+
+from cloup.constraints import Constraint, ConstraintMixin
 
 C = TypeVar('C', bound=Callable)
 
@@ -18,12 +19,15 @@ OptionGroupDecorator = Callable[[C], C]
 
 
 class OptionGroup:
-    def __init__(self, name: str, help: Optional[str] = None):
+    def __init__(self, name: str,
+                 help: Optional[str] = None,
+                 constraint: Optional[Constraint] = None):
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
         self.help = help
         self.options: Sequence[click.Option] = []
+        self.constraint = constraint
 
     def get_help_records(self, ctx: click.Context):
         return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
@@ -69,15 +73,17 @@ class OptionGroupMixin:
     """Implements support to option groups.
 
     .. versionadded:: 0.5.0
+
+    .. important::
+        In order to check the constraints defined on the option groups,
+        a command must inherits from :class:`cloup.ConstraintMixin` too!
     """
 
     def __init__(self, *args, align_option_groups: bool = True, **kwargs):
         self.align_option_groups = align_option_groups
         self.option_groups, self.ungrouped_options = \
             self._option_groups_from_params(kwargs['params'])
-        if len(self.__class__.__mro__) > 1:
-            # This "if" allows using this class as "stand-alone" class
-            super().__init__(*args, **kwargs)   # type: ignore
+        super().__init__(*args, **kwargs)  # type: ignore
 
     @staticmethod
     def _option_groups_from_params(
@@ -104,17 +110,29 @@ class OptionGroupMixin:
         else:
             return self.ungrouped_options
 
+    def get_option_group_title(self, ctx: click.Context, opt_group: OptionGroup) -> str:
+        constraint = opt_group.constraint
+        if constraint:
+            if not isinstance(ctx.command, ConstraintMixin):
+                raise TypeError('Command must inherits from ConstraintMixin in order to '
+                                'use OptionGroup constraints')
+            constraint_help = constraint.help(ctx) if constraint else None
+            if constraint_help:
+                return f'{opt_group.name} [{constraint_help}]'
+        return opt_group.name
+
     def format_option_group(self, ctx: click.Context,
                             formatter: click.HelpFormatter,
-                            option_group: OptionGroup,
+                            opt_group: OptionGroup,
                             help_records: Optional[Sequence] = None):
         if help_records is None:
-            help_records = option_group.get_help_records(ctx)
+            help_records = opt_group.get_help_records(ctx)
         if not help_records:
             return
-        with formatter.section(option_group.name):
-            if option_group.help:
-                formatter.write_text(option_group.help)
+        title = self.get_option_group_title(ctx, opt_group)
+        with formatter.section(title):
+            if opt_group.help:
+                formatter.write_text(opt_group.help)
             formatter.write_dl(help_records)
 
     def format_options(self, ctx: click.Context,
@@ -169,6 +187,7 @@ def option_group(
     name: str,
     help: str,
     *options: OptionDecorator,
+    constraint: Optional[Constraint] = None,
 ) -> OptionGroupDecorator:
     ...  # pragma: no cover
 
@@ -178,6 +197,7 @@ def option_group(
     name: str,
     *options: OptionDecorator,
     help: Optional[str] = None,
+    constraint: Optional[Constraint] = None,
 ) -> OptionGroupDecorator:
     ...  # pragma: no cover
 
@@ -197,22 +217,25 @@ def option_group(name: str, *args, **kwargs) -> OptionDecorator:
     :param name: a mandatory name/title for the group
     :param help: an optional help string for the group
     :param options: option decorators like `click.option`
+    :param constraint: a ``Constraint`` to validate on this option group
     :return: a decorator that attaches the contained options to the decorated
-             function (by monkey-patching it)
+             function
     """
     if args and isinstance(args[0], str):
-        return _option_group(name, options=args[1:], help=args[0])
+        return _option_group(name, options=args[1:], help=args[0], **kwargs)
     else:
         return _option_group(name, options=args, **kwargs)
 
 
 def _option_group(
-    name: str, options: Sequence[OptionDecorator], help: Optional[str] = None
+    name: str,
+    options: Sequence[OptionDecorator],
+    **kwargs,
 ) -> OptionGroupDecorator:
     if not options:
         raise ValueError('you must provide at least one option')
 
-    opt_group = OptionGroup(name, help=help)
+    opt_group = OptionGroup(name, **kwargs)
 
     def decorator(f):
         for opt_decorator in reversed(options):
@@ -223,9 +246,9 @@ def _option_group(
             curr_group = get_option_group_of(new_option)
             if curr_group is not None:
                 raise ValueError(
-                    'option {} was first assigned to {} and then passed '
-                    'as argument to @option_group({!r}, ...)'
-                    .format(new_option.opts, curr_group, name))
+                    f'{new_option} was first assigned to {curr_group} and then '
+                    f'passed as argument to @option_group({name!r}, ...)'
+                )
             new_option.group = opt_group
         return f
 

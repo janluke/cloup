@@ -1,5 +1,6 @@
 from click.testing import CliRunner
 from pytest import fixture
+
 from tests.example_command import make_example_command
 from tests.example_group import make_example_group
 
