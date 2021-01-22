@@ -13,6 +13,9 @@ class Section:
     A group of (sub)commands to show in the same help section of a
     :class:`cloup.MultiCommand`. You can use sections with any `Command`
     that inherits from :class:`SectionMixin`.
+
+    .. versionchanged:: 0.5.0
+        This class was renamed from ``GroupSection`` (deprecated) to ``Section``.
     """
 
     def __init__(self, title: str,
@@ -93,6 +96,8 @@ class SectionMixin:
     "default section", whose title is "Commands" or "Other commands" depending
     on whether it is the only section or not. The default section is the last
     shown section in the help and its commands are listed in lexicographic order.
+
+    .. versionadded:: 0.5.0
     """
 
     def __init__(

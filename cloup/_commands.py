@@ -105,6 +105,9 @@ def group(name: Optional[str] = None, **attrs) -> Callable[[Callable], Group]:
 
     :param name: name of the command
     :param attrs: any argument you can pass to :func:`click.group`
+
+    .. versionchanged:: 0.5.0
+        Removed the ``cls`` argument
     """
     return cast(Group, click.group(name=name, cls=Group, **attrs))
 
@@ -118,5 +121,8 @@ def command(name: Optional[str] = None, **attrs) -> Callable[[Callable], Command
 
     :param name: name of the command
     :param attrs: any argument you can pass to :func:`click.command`
+
+    .. versionchanged:: 0.5.0
+        Removed the ``cls`` argument
     """
     return cast(Command, click.command(name, cls=Command, **attrs))

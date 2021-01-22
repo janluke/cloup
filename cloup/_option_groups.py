@@ -61,7 +61,10 @@ def get_option_group_of(param, default=None):
 
 
 class OptionGroupMixin:
-    """ Implements support to option groups. """
+    """Implements support to option groups.
+
+    .. versionadded:: 0.5.0
+    """
 
     def __init__(self, *args, align_option_groups: bool = True, **kwargs):
         self.align_option_groups = align_option_groups

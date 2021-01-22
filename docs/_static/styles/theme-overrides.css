@@ -47,3 +47,11 @@ dl.field-list ul li {
 td > p {
     margin: 0;
 }
+
+div.versionadded, div.versionchanged {
+    font-style: italic;
+}
+
+span.versionmodified {
+    font-weight: bold;
+}
