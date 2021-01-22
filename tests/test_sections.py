@@ -1,22 +1,18 @@
-#!/usr/bin/env python
+"""Tests for the "subcommand sections" feature/module."""
 import click
 import pytest
 
 import cloup
 from cloup import Section
-from .util import noop
+from tests.util import noop
 
 
-@pytest.mark.parametrize('align_option_groups', [True, False], ids=['aligned', 'non-aligned'])
-def test_example_command_help(runner, align_option_groups, get_example_command):
-    cmd = get_example_command(align_option_groups)
-    result = runner.invoke(cmd, args=('--help',))
-    assert result.exit_code == 0
-    assert result.output.strip() == cmd.expected_help
-
-
-@pytest.mark.parametrize('align_sections', [True, False], ids=['aligned', 'non-aligned'])
-def test_example_group_help(runner, align_sections, get_example_group):
+@pytest.mark.parametrize(
+    'align_sections', [True, False], ids=['aligned', 'non-aligned']
+)
+def test_subcommand_sections_are_correctly_rendered_in_help(
+    runner, align_sections, get_example_group
+):
     grp = get_example_group(align_sections)
     result = runner.invoke(grp, args=('--help',))
     if result.exception:
@@ -25,10 +21,14 @@ def test_example_group_help(runner, align_sections, get_example_group):
     assert result.output.strip() == grp.expected_help
 
 
-@pytest.mark.parametrize('subcommand_cls', [
-    click.Command, cloup.Command,  click.Group, cloup.Group
-], ids=['click_Command', 'cloup_Command', 'click_Group', 'cloup_Group'])
-@pytest.mark.parametrize('assign_to_section', [True, False])
+@pytest.mark.parametrize(
+    'subcommand_cls', [click.Command, cloup.Command,  click.Group, cloup.Group],
+    ids=['click_Command', 'cloup_Command', 'click_Group', 'cloup_Group'],
+)
+@pytest.mark.parametrize(
+    'assign_to_section', [True, False],
+    ids=['with_section', 'without_section'],
+)
 def test_Group_subcommand_decorator(subcommand_cls, assign_to_section):
     grp = cloup.Group('name')
     # Use @grp.group if subcommand_class is a Group, else @grp.Command
@@ -53,15 +53,3 @@ def test_Group_subcommand_decorator(subcommand_cls, assign_to_section):
         assert section.commands[subcommand_name] is subcommand
     else:
         assert grp._default_section.commands[subcommand_name] is subcommand
-
-
-def test_option_group_decorator_raises_if_group_is_passed_to_contained_option():
-    func = cloup.option_group(
-        'a group', cloup.option('--opt', group=cloup.OptionGroup('another group')))
-    with pytest.raises(ValueError):
-        func(noop)
-
-
-def test_option_group_decorator_raises_for_no_options():
-    with pytest.raises(ValueError):
-        cloup.option_group('grp')
