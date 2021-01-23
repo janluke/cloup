@@ -2,14 +2,19 @@
 Implements support to option group.
 """
 from collections import defaultdict
-from typing import Callable, List, Optional, Sequence, Tuple, Type, overload
+from typing import Callable, List, Optional, Sequence, Tuple, Type, TypeVar, overload
 
 import click
 
 from click import Option, Parameter
 
-#: A decorator that registers one or multiple click Options to the decorated function
-OptionDecorator = Callable[[Callable], Callable]
+C = TypeVar('C', bound=Callable)
+
+#: A decorator that registers an option to the wrapped function
+OptionDecorator = Callable[[C], C]
+
+#: A decorator that registers an option group to the wrapped function
+OptionGroupDecorator = Callable[[C], C]
 
 
 class OptionGroup:
@@ -160,12 +165,20 @@ def option(
 
 
 @overload
-def option_group(name: str, help: str, *options) -> OptionDecorator:
+def option_group(
+    name: str,
+    help: str,
+    *options: OptionDecorator,
+) -> OptionGroupDecorator:
     ...  # pragma: no cover
 
 
 @overload
-def option_group(name: str, *options, help: Optional[str] = None) -> OptionDecorator:
+def option_group(
+    name: str,
+    *options: OptionDecorator,
+    help: Optional[str] = None,
+) -> OptionGroupDecorator:
     ...  # pragma: no cover
 
 
@@ -194,8 +207,8 @@ def option_group(name: str, *args, **kwargs) -> OptionDecorator:
 
 
 def _option_group(
-    name: str, options: Sequence[Callable], help: Optional[str] = None
-) -> OptionDecorator:
+    name: str, options: Sequence[OptionDecorator], help: Optional[str] = None
+) -> OptionGroupDecorator:
     if not options:
         raise ValueError('you must provide at least one option')
 
