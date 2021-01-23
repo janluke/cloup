@@ -18,7 +18,7 @@ V0.5.0 (in development)
 
 **Incompatible changes**
 
-* ``@cloup.command`` and ``@group.command`` don't take a ``cls`` argument anymore.
+* ``@cloup.command`` and ``@cloup.group`` don't take a ``cls`` argument anymore.
   Just use the analogous ``click`` decorators if you need to pass a custom class.
 
 **Deprecated**
