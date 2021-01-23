@@ -11,8 +11,8 @@ Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
 class Section:
     """
     A group of (sub)commands to show in the same help section of a
-    :class:`cloup.MultiCommand`. You can use sections with any `Command`
-    that inherits from :class:`SectionMixin`.
+    ``MultiCommand``. You can use sections with any `Command` that inherits
+    from :class:`SectionMixin`.
 
     .. versionchanged:: 0.5.0
         This class was renamed from ``GroupSection`` (deprecated) to ``Section``.
@@ -65,10 +65,8 @@ class Section:
 
 
 class GroupSection(Section):
-    """This is a deprecated name for :class:`Section`.
-
-    ``GroupSection`` was the old name of `Section` when the implementation of
-    the feature was hard-coded and tightly coupled with `cloup.Group`.
+    """Old name of `Section` when the implementation of the feature was
+    hard-coded and tightly coupled to ``cloup.Group``.
 
     .. deprecated:: 0.5.0
         To be removed in v0.6.0. Use ``Section`` instead.

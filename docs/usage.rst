@@ -17,30 +17,42 @@ Cloup adheres to `semantic versioning <https://semver.org/>`_.
 .. attention::
     Since Cloup has not reached v1.0, its API is not to be considered stable.
     This doesn't mean you can't already use it: it is already tested and usable.
-    Just make sure you specify a version constraint in your list of
-    requirements, e.g.::
+    Just make sure you pin the version you are using in your requirements, e.g.::
 
-        cloup==0.3.*
+        cloup==0.5.*
+
+    At each new release, I'll do my best to document what has changed in the
+    :doc:`changelog`.
 
 Option groups
 =============
+This feature is implemented by the :class:`~cloup.OptionGroupMixin` class,
+which :class:`cloup.Command` inherits from.
+
 You can define option groups in two ways or "styles". I'll call them
 
-- nested style,
+- nested style (recommended),
 - flat style.
 
-The full code for the examples shown below can also be found in the
-`examples folder <https://github.com/janLuke/cloup/tree/master/examples>`_ on GitHub.
+If you're an adept of the well-known Pythonic principle (*"there should be one
+way to do it"*), just use the first and ignore the second.
 
-Nested style (recommended)
---------------------------
+Two runnable examples can be found in the
+`examples folder <https://github.com/janLuke/cloup/tree/master/examples>`_
+of the repository.
+
+Nested style
+------------
 In "nested style" you make use of the decorator :func:`cloup.option_group`.
-This decorator is overloaded with two signatures
+This decorator is overloaded with two signatures:
 
 .. code-block:: python
 
     @option_group(name, *options, help=None)  # help as keyword argument
     @option_group(name, help, *options)       # help as 2nd positional argument
+
+The ``name`` is also the title of the corresponding help section. The ``help``
+is an optional additional description of the option group.
 
 .. tabbed:: Code
     :new-group:
@@ -66,6 +78,7 @@ This decorator is overloaded with two signatures
             option('--five', help='2nd output option'),
             option('--six', help='3rd output option'),
         )
+        # The following will be under "Other options" with --help
         @option('--seven', help='first uncategorized option',
                 type=click.Choice(['yes', 'no', 'ask']))
         @option('--height', help='second uncategorized option')
@@ -99,7 +112,8 @@ This decorator is overloaded with two signatures
           --height TEXT         second uncategorized option
           --help                Show this message and exit.
 
-.. note::
+.. admonition:: The default option group
+
     Options that are not assigned to any user-defined option group are listed
     under a section titled "Other options" which is shows at the bottom.
 
@@ -108,10 +122,11 @@ options but this is entirely optional as you can use :func:`click.option` as
 well. The only difference is that :func:`cloup.option` adds a
 :class:`cloup.GroupedOption`, which is nothing more than a
 :class:`click.Option` with an additional attribute called ``group``.
+This attribute will be added anyway.
 
-By default, the columns of all option groups are aligned. Most people find
-this visually pleasing. Nonetheless, you can also format each option group
-independently passing ``align_option_groups=False`` to ``@command()``.
+By default, the columns of all option groups are aligned; I find this visually
+pleasing. Nonetheless, you can also format each option group independently
+passing ``align_option_groups=False`` to ``@command()``.
 
 Flat style
 ----------
@@ -136,19 +151,42 @@ In "flat style", you first define your option groups. Then, you use the
         print(kwargs)
 
 
-Grouping subcommands
+Subcommand sections
 ====================
-You can use :class:`cloup.Group` when you want to organize the subcommands of a
-``Group`` in multiple help sections. The api is trivial and the formatting is
-similar to that of options groups. You can find the full example code
+This feature is implemented mostly by the :class:`~cloup.SectionMixin` class,
+which :class:`cloup.Group` inherits from.
+
+Each help section is represented by a :class:`~cloup.Section` instance, which
+is just a container for commands with a ``title``. A ``Section`` can be:
+
+- *sorted* -- it lists the commands in alphabetical order
+- *unsorted* (default) -- it lists the commands in the order they are added to
+  the section.
+
+You can create a sorted section by passing ``sorted=True`` or by using the
+static method ``Section.sorted()``.
+
+.. admonition:: The default section
+
+    The commands that are not explicitly assigned to a section are assigned to a
+    "default section", which is sorted.
+
+You can find a runnable example that implements part of the help of Git
 `here <https://github.com/janLuke/cloup/blob/master/examples/git_sections.py>`_.
+
+Adding full sections
+--------------------
+My favorite way of defining sections is doing it all in one place below the
+``Group`` itself, as following:
 
 .. tabbed:: Code
     :new-group:
 
     .. code-block:: python
 
-        # import subcommands git_init, git_clone ecc...
+        import cloup
+        from .commands import ( # import your subcommands implemented elsewhere
+            git_init, git_clone, git_rm, git_sparse_checkout, git_mv)
 
         @cloup.group('git')
         def git():
@@ -193,18 +231,18 @@ similar to that of options groups. You can find the full example code
           fake-1           Fake command #1
           fake-2           Fake command #2
 
-.. note::
-    - Sections are shown in the same order they are added to the group.
-    - By default, the commands of a user-defined section are shown in the same
-      order they are listed. Passing ``sorted=True``, you can create a sorted
-      section, i.e. a section where commands are sorted by name.
-    - The default section (titled "Other commands") is a sorted section.
+Each call of ``section()`` creates a new ``Section`` instance and adds it to
+the ``Group``. When you add a section, all the contained subcommands are of
+course added to the ``Group`` (as if you called ``add_command`` for each of
+them).
 
-In alternative, you can create a list of :class:`~cloup.Section` yourself
-and pass it as the ``sections`` argument of :func:`cloup.group`:
+In alternative, you can create a list of ``Section`` objects and pass it as the
+``sections`` argument of :func:`cloup.group`:
 
 .. code-block:: python
 
+    import cloup
+    from cloup import Section
     # import subcommands git_init, git_clone ecc...
 
     SECTIONS = [
@@ -218,6 +256,34 @@ and pass it as the ``sections`` argument of :func:`cloup.group`:
     def git():
         return 0
 
-.. tip::
-    Instead of passing ``sorted=True`` to the constructor, you can create a
-    sorted section by using the static method ``Section.sorted(...)``.
+Adding subcommands
+------------------
+If you prefer, you can also assign a subcommand to a section when you add
+a new one using the decorators ``@group.command`` and ``@group.group`` or
+``group.add_command``; in Cloup, all these methods have indeed an additional
+(optional) argument ``section``.
+
+.. code-block:: python
+
+    import cloup
+    from cloup import Section
+
+    # Define sections without filling them in one place
+    class GitSection:
+        START_WORKING_AREA = Section(
+            'Start a working area (see also: git help tutorial)')
+        WORK_CURRENT_CHANGE = Section(
+            'Work on the current change (see also: git help everyday)'
+
+    @cloup.group('git')
+    def git():
+        return 0
+
+    # Assign each subcommand to a section
+    @git.command('init', section=GitSection.START_WORKING_AREA)
+    def git_init():
+        pass
+
+    @git.command('mv', section=GitSection.WORK_CURRENT_CHANGE)
+    def git_mv():
+        pass
