@@ -27,6 +27,8 @@ V0.5.0 (in development)
 
 **Compatible changes and features**
 
+- **Constraints**. You can now define constraints on option groups and group of
+  parameters in general.
 - Support to option groups is now implemented in ``OptionGroupMixin``.
 - Support to subcommand sections is now implemented in ``SectionMixin``.
 
