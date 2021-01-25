@@ -1,21 +1,21 @@
 """
 Example of options groups, "nested style" (recommended).
 
-The decorator @option_group() is overloaded with two signatures:
+The decorator @option_group() is overloaded with two signatures.
+Basically, you can specify the optional help string either:
 
-   1) @option_group(name: str,
-                    *options: GroupedOption,
-                    help: Optional[str] = None
-                    **kwargs)
+1) as keyword argument, after the options
+    @option_group(name: str,
+                  *options: GroupedOption,
+                  help: Optional[str] = None
+                  constraint: Optional[Constraint] = None)
 
-   2) @option_group(name: str,
-                    help: str,
-                    *options: GroupedOption,
-                    **kwargs)
+2) as 2nd positional argument, before the options
 
-Basically, you can specify the optional help string either
-- as 2nd positional
-- or as keyword argument after the options
+    @option_group(name: str,
+                  help: str,
+                  *options: GroupedOption,
+                  constraint: Optional[Constraint] = None)
 """
 from pprint import pprint
 
@@ -54,11 +54,11 @@ def main(**kwargs):
     # Constraints can be used inside a callback. The [ctx] argument is optional.
     mutually_exclusive.check(['one', 'six'])
 
-    # The function check_constraint exists for the only reason to make crystal
-    # clear what you are doing. It may be "weird" to call check on some
-    # constraints, because some of them are named as "commands" to the CLI user
-    check_constraint(
-        SetAtLeast(1), on=['one', 'six'])
+    # Something like SetAtLeast(1).check(['one', 'six']) may be weird to read.
+    # For this reason, I introduced the function
+    #     check_constraint(constraint, on, [ctx], [error])
+    # which makes things more clear and readable in my opinion.
+    check_constraint(SetAtLeast(1), on=['one', 'six'])
 
     pprint(kwargs, indent=3)
 
