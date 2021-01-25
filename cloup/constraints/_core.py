@@ -36,7 +36,7 @@ class Constraint(abc.ABC):
     def help(self, ctx: Context) -> str:
         """A description of the constraint. """
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         """
         Checks that this constraint is consistent with the parameters, i.e. it
         is compatible and can be satisfied by the input parameters, independently
@@ -72,14 +72,14 @@ class Constraint(abc.ABC):
         """
 
     @overload
-    def check(self, params: Sequence[Parameter], ctx: Optional[Context] = None):
+    def check(self, params: Sequence[Parameter], ctx: Optional[Context] = None) -> None:
         ...  # pragma: no cover
 
     @overload
-    def check(self, params: Iterable[str], ctx: Optional[Context] = None):
+    def check(self, params: Iterable[str], ctx: Optional[Context] = None) -> None:
         ...  # pragma: no cover
 
-    def check(self, params, ctx: Optional[Context] = None):
+    def check(self, params, ctx: Optional[Context] = None) -> None:
         """
         Raises an exception if the constraint is not verified by the input
         parameters in the given (or current) context.
@@ -107,10 +107,10 @@ class Constraint(abc.ABC):
             self.check_consistency(params_objects)
         return self.check_params(params_objects, ctx)
 
-    def with_(self, help: str = '', error: str = ''):
+    def with_(self, help: str = '', error: str = '') -> 'Rephraser':
         return Rephraser(self, help=help, error=error)
 
-    def hidden(self):
+    def hidden(self) -> 'Rephraser':
         """Hides this constraint from the command help. """
         return Rephraser(self, help='')
 
@@ -140,10 +140,10 @@ class BoundConstraint(NamedTuple):
     constraint: Constraint
     param_names: Sequence[str]
 
-    def check(self, ctx: Optional[Context] = None):
+    def check(self, ctx: Optional[Context] = None) -> None:
         self.constraint.check(self.param_names, ctx)
 
-    def __call__(self, ctx: Optional[Context] = None):
+    def __call__(self, ctx: Optional[Context] = None) -> None:
         self.check(ctx)
 
 
@@ -165,7 +165,7 @@ class Operator(Constraint, abc.ABC):
             for c in self.constraints
         )
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         for c in self.constraints:
             c.check_consistency(params)
 
@@ -242,7 +242,7 @@ class Rephraser(Constraint):
         else:
             return self._error(ctx, self._constraint, params)
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         self._constraint.check_consistency(params)
 
     def check_params(self, params: Sequence[Parameter], ctx: Context):
@@ -284,7 +284,7 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
     def help(self, ctx: Context) -> str:
         return self._constraint.help(ctx)
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         self._constraint.check_consistency(params)
 
     def check_params(self, params: Sequence[Parameter], ctx: Context):
@@ -327,7 +327,7 @@ class SetExactly(Constraint):
         return pluralize(
             self._n, zero='all forbidden', many='exactly {count} required')
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         SetAtLeast(self._n).check_consistency(params)
         SetAtMost(self._n).check_consistency(params)
 
@@ -355,7 +355,7 @@ class SetAtLeast(Constraint):
     def help(self, ctx: Context) -> str:
         return 'at least %d required' % self._n
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         n = self._n
         if len(params) < n:
             reason = (
@@ -388,7 +388,7 @@ class SetAtMost(Constraint):
     def help(self, ctx: Context) -> str:
         return 'at most %d should be set' % self._n
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         num_required_opts = len(get_required_params(params))
         if num_required_opts > self._n:
             reason = f'{num_required_opts} of the options are required'
@@ -454,7 +454,7 @@ def check_constraint(
     on: Sequence[str],
     ctx: Optional[Context] = None,
     error: Optional[str] = None,
-):
+) -> None:
     if error is not None:
         return constraint.with_(error=error).check(params=on, ctx=ctx)
     return constraint.check(params=on, ctx=ctx)

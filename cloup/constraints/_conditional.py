@@ -48,7 +48,7 @@ class _IfThen(Constraint):
     def condition(self) -> Predicate:
         return self._condition
 
-    def help(self, ctx: Context):
+    def help(self, ctx: Context) -> str:
         return '%s if %s' % (
             self._then.help(ctx),
             self._condition.description(ctx),
@@ -57,7 +57,7 @@ class _IfThen(Constraint):
     def else_(self, constraint: Constraint) -> '_IfThenElse':
         return _IfThenElse(if_then=self, else_=constraint)
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         self._then.check_consistency(params)
 
     def check_params(self, params: Sequence[Parameter], ctx: Context) -> bool:
@@ -78,13 +78,13 @@ class _IfThenElse(Constraint):
         self._if_then = if_then
         self._else = else_
 
-    def help(self, ctx: Context):
+    def help(self, ctx: Context) -> str:
         return '%s, otherwise %s' % (
             self._if_then.help(ctx),
             self._else.help(ctx)
         )
 
-    def check_consistency(self, params: Sequence[Parameter]):
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
         self._if_then.check_consistency(params)
         self._else.check_consistency(params)
 
