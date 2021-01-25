@@ -57,15 +57,15 @@ class Constraint(abc.ABC):
         """
 
     @abc.abstractmethod
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
         """
         Checks the constraint is satisfied by the input parameters in the
         given context (which determines the values assigned to the parameters).
         You probably don't want to call this method directly.
         Use :meth:`check` instead.
 
-        :param ctx: :class:`click.Context`
         :param params: list of :class:`click.Parameter` instances
+        :param ctx: :class:`click.Context`
         :raises:
             :exc:`~cloup.constraints.UnsatisfiableConstraint`
             :exc:`~cloup.constraints.ConstraintViolated`
@@ -105,7 +105,7 @@ class Constraint(abc.ABC):
                           else params)
         if self.check_consistency_enabled:
             self.check_consistency(params_objects)
-        return self.check_params(ctx, params_objects)
+        return self.check_params(params_objects, ctx)
 
     def with_(self, help: str = '', error: str = ''):
         return Rephraser(self, help=help, error=error)
@@ -179,9 +179,9 @@ class And(Operator):
     """It's satisfied if all operands are satisfied."""
     HELP_SEP = ' and '
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
         for c in self.constraints:
-            c.check_params(ctx, params)
+            c.check_params(params, ctx)
 
     def __and__(self, other) -> 'And':
         if isinstance(other, And):
@@ -193,10 +193,10 @@ class Or(Operator):
     """It's satisfied if at least one of the operands is satisfied."""
     HELP_SEP = ' or '
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
         for c in self.constraints:
             try:
-                return c.check_params(ctx, params)
+                return c.check_params(params, ctx)
             except ConstraintViolated:
                 pass
         raise ConstraintViolated.default(params, self.help(ctx), ctx=ctx)
@@ -245,9 +245,9 @@ class Rephraser(Constraint):
     def check_consistency(self, params: Sequence[Parameter]):
         self._constraint.check_consistency(params)
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
         try:
-            return self._constraint.check_params(ctx, params)
+            return self._constraint.check_params(params, ctx)
         except ConstraintViolated:
             rephrased_error = self._get_rephrased_error(ctx, params)
             if rephrased_error:
@@ -287,8 +287,8 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
     def check_consistency(self, params: Sequence[Parameter]):
         self._constraint.check_consistency(params)
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
-        self._constraint.check_params(ctx, params)
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
+        self._constraint.check_params(params, ctx)
 
     def __repr__(self):
         key_value_pairs = (f'{key}={value}' for key, value in self._attrs.items())
@@ -302,7 +302,7 @@ class _AllRequired(Constraint):
     def help(self, ctx: Context) -> str:
         return 'all required'
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
         values = ctx.params
         falsy_params = [param for param in params if not values[param.name]]
         if any(falsy_params):
@@ -331,7 +331,7 @@ class SetExactly(Constraint):
         SetAtLeast(self._n).check_consistency(params)
         SetAtMost(self._n).check_consistency(params)
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
         n = self._n
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) != n:
@@ -364,7 +364,7 @@ class SetAtLeast(Constraint):
             )
             raise UnsatisfiableConstraint(self, params, reason)
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
         n = self._n
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) < n:
@@ -394,7 +394,7 @@ class SetAtMost(Constraint):
             reason = f'{num_required_opts} of the options are required'
             raise UnsatisfiableConstraint(self, params, reason)
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
         n = self._n
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) > n:

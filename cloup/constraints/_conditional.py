@@ -60,10 +60,10 @@ class _IfThen(Constraint):
     def check_consistency(self, params: Sequence[Parameter]):
         self._then.check_consistency(params)
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]) -> bool:
+    def check_params(self, params: Sequence[Parameter], ctx: Context) -> bool:
         if self._condition(ctx):
             try:
-                self._then.check_params(ctx, params)
+                self._then.check_params(params, ctx)
                 return True
             except ConstraintViolated as err:
                 raise ConstraintViolated(
@@ -88,11 +88,11 @@ class _IfThenElse(Constraint):
         self._if_then.check_consistency(params)
         self._else.check_consistency(params)
 
-    def check_params(self, ctx: Context, params: Sequence[Parameter]):
-        condition_is_true = self._if_then.check_params(ctx, params)
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
+        condition_is_true = self._if_then.check_params(params, ctx)
         if not condition_is_true:
             try:
-                self._else.check_params(ctx, params)
+                self._else.check_params(params, ctx)
             except ConstraintViolated as err:
                 desc = self._if_then.condition.negated_description(ctx)
                 raise ConstraintViolated(f'when {desc}, {err}', ctx=ctx)

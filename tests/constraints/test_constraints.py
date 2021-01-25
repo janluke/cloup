@@ -241,7 +241,7 @@ class TestRephraser:
             rephrased.check(params, ctx=fake_ctx)
         get_error.assert_called_once_with(fake_ctx, wrapped, params)
         wrapped.check_consistency.assert_called_once_with(params)
-        wrapped.check_params.assert_called_once_with(fake_ctx, params)
+        wrapped.check_params.assert_called_once_with(params, fake_ctx)
 
     def test_check_consistency_raises_if_wrapped_constraint_raises(self):
         constraint = mock_constraint(consistent=True)
