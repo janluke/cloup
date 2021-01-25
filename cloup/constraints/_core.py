@@ -333,8 +333,8 @@ class SetExactly(Constraint):
 
     def check_params(self, ctx: Context, params: Sequence[Parameter]):
         n = self._n
-        truthy_params = get_params_whose_value_is_set(params, ctx.params)
-        if len(truthy_params) != n:
+        given_params = get_params_whose_value_is_set(params, ctx.params)
+        if len(given_params) != n:
             reason = pluralize(
                 n, zero='none of the following parameters should be set:\n%s\n',
                 many="exactly {count} of the following parameters should be set:\n%s\n"
@@ -366,8 +366,8 @@ class SetAtLeast(Constraint):
 
     def check_params(self, ctx: Context, params: Sequence[Parameter]):
         n = self._n
-        truthy_params = get_params_whose_value_is_set(params, ctx.params)
-        if len(truthy_params) < n:
+        given_params = get_params_whose_value_is_set(params, ctx.params)
+        if len(given_params) < n:
             raise ConstraintViolated(
                 f"at least {n} of the following options should be set:\n"
                 f"{join_param_labels(params)}.",
@@ -396,8 +396,8 @@ class SetAtMost(Constraint):
 
     def check_params(self, ctx: Context, params: Sequence[Parameter]):
         n = self._n
-        truthy_params = get_params_whose_value_is_set(params, ctx.params)
-        if len(truthy_params) > n:
+        given_params = get_params_whose_value_is_set(params, ctx.params)
+        if len(given_params) > n:
             raise ConstraintViolated(
                 f"no more than {n} of the following options should be set:\n"
                 f"{join_param_labels(params)}.\n",

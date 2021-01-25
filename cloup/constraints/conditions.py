@@ -119,8 +119,7 @@ class _Or(_Operator):
 
 class IsSet(Predicate):
     def __init__(self, param_name: str):
-        """ Satisfied if the argument or option value identified by `param` is
-        truthy. """
+        """ Satisfied if the argument or option value identified by `param` is set. """
         self.param_name = param_name
 
     def description(self, ctx: Context) -> str:
