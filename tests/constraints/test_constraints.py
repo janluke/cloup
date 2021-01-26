@@ -1,8 +1,10 @@
 from functools import partial
+from typing import Sequence
+from unittest import mock
 from unittest.mock import Mock
 
 import pytest
-from click import Command
+from click import Command, Context, Parameter
 from pytest import mark
 
 from cloup.constraints import (
@@ -18,7 +20,7 @@ from tests.util import make_context, make_fake_context, make_options, should_rai
 
 
 def mock_constraint(
-    satisfied=True, consistent=True, help='',
+    satisfied=True, consistent=True, help='help',
     check_error='violated', consistency_error='inconsistent',
     **kwargs,
 ) -> Mock:
@@ -29,8 +31,46 @@ def mock_constraint(
     if not satisfied:
         c.check_params.side_effect = ConstraintViolated(check_error)
     if not consistent:
-        c.check_consistency.side_effect = UnsatisfiableConstraint(c, [], consistency_error)
+        c.check_consistency.side_effect = UnsatisfiableConstraint(
+            c, [], consistency_error)
     return c
+
+
+class FakeConstraint(Constraint):
+    HELP = '__help__'
+    ERROR = '__error__'
+    CONSISTENCY_ERROR = '__inconsistent__'
+
+    def __init__(self, satisfied=True, consistent=True):
+        self.satisfied = satisfied
+        self.consistent = consistent
+
+    def help(self, ctx: Context) -> str:
+        return self.HELP
+
+    def check_consistency(self, params: Sequence[Parameter]) -> None:
+        if not self.consistent:
+            raise UnsatisfiableConstraint(self, params, self.CONSISTENCY_ERROR)
+
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
+        if not self.satisfied:
+            raise ConstraintViolated(self.ERROR)
+
+
+class TestBaseConstraint:
+
+    def test_rephrased_defaults(self):
+        with mock.patch('cloup.constraints._core.Rephraser') as rephraser_cls:
+            fake = FakeConstraint()
+            fake.rephrased(help='ciao')
+            rephraser_cls.assert_called_with(fake, help='ciao', error=None)
+            fake.rephrased(error='ciao')
+            rephraser_cls.assert_called_with(fake, help=None, error='ciao')
+
+    def test_hidden(self, dummy_ctx):
+        hidden = FakeConstraint().hidden()
+        assert isinstance(hidden, Rephraser)
+        assert hidden.help(dummy_ctx) == ''
 
 
 class TestWrapperConstraint:
