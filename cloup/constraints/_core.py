@@ -223,6 +223,8 @@ class Rephraser(Constraint):
         help: Union[None, str, HelpRephraser] = None,
         error: Union[None, str, ErrorRephraser] = None,
     ):
+        if help is None and error is None:
+            raise ValueError('at least one between [help] and [error] must not be None')
         self._constraint = constraint
         self._help = help
         self._error = error

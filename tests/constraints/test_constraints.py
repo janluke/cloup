@@ -251,6 +251,10 @@ class TestAllRequired:
 
 
 class TestRephraser:
+    def test_init_raises_if_neither_help_nor_error_is_provided(self):
+        with pytest.raises(ValueError):
+            Rephraser(FakeConstraint())
+
     def test_help_override_with_string(self, dummy_ctx):
         wrapped = mock_constraint()
         rephrased = Rephraser(wrapped, help='rephrased help')
