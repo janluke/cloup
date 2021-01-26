@@ -107,7 +107,7 @@ class Constraint(abc.ABC):
             self.check_consistency(params_objects)
         return self.check_params(params_objects, ctx)
 
-    def with_(
+    def rephrased(
         self,
         help: Union[None, str, HelpRephraser] = None,
         error: Union[None, str, ErrorRephraser] = None,
@@ -437,18 +437,18 @@ all_required = _AllRequired()
 all_unset = SetExactly(0)
 
 #: Requires the parameters to be either all set or all unset.
-all_or_none = (all_required | all_unset).with_(
+all_or_none = (all_required | all_unset).rephrased(
     help='either all or none should be set',
     error='either all or none of the following options should be set: {param_list}"',
 )
 
 #: Rephrased version of ``SetAtMost(1)``.
-mutually_exclusive = SetAtMost(1).with_(
+mutually_exclusive = SetAtMost(1).rephrased(
     help='mutually exclusive',
 )
 
 #: Rephrased version of ``SetExactly(1)``.
-required_mutually_exclusive = SetExactly(1).with_(
+required_mutually_exclusive = SetExactly(1).rephrased(
     help='required, mutually exclusive',
 )
 
@@ -460,5 +460,5 @@ def check_constraint(
     error: Optional[str] = None,
 ) -> None:
     if error is not None:
-        return constraint.with_(error=error).check(params=on, ctx=ctx)
+        return constraint.rephrased(error=error).check(params=on, ctx=ctx)
     return constraint.check(params=on, ctx=ctx)
