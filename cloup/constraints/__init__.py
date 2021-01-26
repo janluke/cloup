@@ -20,3 +20,4 @@ from ._core import (
 )
 from ._mixin import ConstraintMixin
 from ._conditional import If
+from .conditions import IsSet, Equal, Not
