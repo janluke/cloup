@@ -119,7 +119,7 @@ class _Or(_Operator):
 
 class IsSet(Predicate):
     def __init__(self, param_name: str):
-        """ Satisfied if the argument or option value identified by `param` is set. """
+        """True if the parameter is set."""
         self.param_name = param_name
 
     def description(self, ctx: Context) -> str:
@@ -138,6 +138,7 @@ class IsSet(Predicate):
 
 
 class Equal(Predicate):
+    """True if the parameter value equals ``value``."""
     def __init__(self, param_name: str, value: Any):
         self.param_name = param_name
         self.value = value
