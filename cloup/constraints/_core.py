@@ -107,7 +107,11 @@ class Constraint(abc.ABC):
             self.check_consistency(params_objects)
         return self.check_params(params_objects, ctx)
 
-    def with_(self, help: str = '', error: str = '') -> 'Rephraser':
+    def with_(
+        self,
+        help: Union[None, str, HelpRephraser] = None,
+        error: Union[None, str, ErrorRephraser] = None,
+    ) -> 'Rephraser':
         return Rephraser(self, help=help, error=error)
 
     def hidden(self) -> 'Rephraser':
