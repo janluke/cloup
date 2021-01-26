@@ -67,7 +67,6 @@ class Constraint(abc.ABC):
         :param params: list of :class:`click.Parameter` instances
         :param ctx: :class:`click.Context`
         :raises:
-            :exc:`~cloup.constraints.UnsatisfiableConstraint`
             :exc:`~cloup.constraints.ConstraintViolated`
         """
 
@@ -115,7 +114,7 @@ class Constraint(abc.ABC):
         return Rephraser(self, help=help, error=error)
 
     def hidden(self) -> 'Rephraser':
-        """Hides this constraint from the command help. """
+        """Hides this constraint from the command help."""
         return Rephraser(self, help='')
 
     def bind(self, *param_names: str) -> 'BoundConstraint':
