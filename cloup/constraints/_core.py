@@ -248,7 +248,11 @@ class Rephraser(Constraint):
             return self._error(ctx, self._constraint, params)
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
-        self._constraint.check_consistency(params)
+        try:
+            self._constraint.check_consistency(params)
+        except UnsatisfiableConstraint as exc:
+            raise UnsatisfiableConstraint(
+                self, params=params, reason=exc.reason)
 
     def check_params(self, params: Sequence[Parameter], ctx: Context):
         try:
@@ -290,7 +294,10 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
         return self._constraint.help(ctx)
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
-        self._constraint.check_consistency(params)
+        try:
+            self._constraint.check_consistency(params)
+        except UnsatisfiableConstraint as exc:
+            raise UnsatisfiableConstraint(self, params=params, reason=exc.reason)
 
     def check_params(self, params: Sequence[Parameter], ctx: Context):
         self._constraint.check_params(params, ctx)

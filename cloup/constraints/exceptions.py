@@ -1,11 +1,11 @@
-from typing import Iterable, Optional
+from typing import Iterable, Optional, TYPE_CHECKING
 
 import click
 from click import Context, Parameter
 
 from .util import join_param_labels
 
-if False:
+if TYPE_CHECKING:
     from ._core import Constraint
 
 
@@ -38,7 +38,11 @@ class UnsatisfiableConstraint(Exception):
     def __init__(
         self, constraint: 'Constraint', params: Iterable[Parameter], reason: str
     ):
+        self.constraint = constraint
+        self.params = params
+        self.reason = reason
         param_names = join_param_labels(params)
-        message = (f"\nthe constraint {constraint!r} on the parameters [{param_names}] "
-                   f"cannot be satisfied because\n{reason}")
+        message = (f"\nthe constraint {constraint}\n"
+                   f"defined on parameters [{param_names}]\n"
+                   f"cannot be satisfied because {reason}")
         super().__init__(message)
