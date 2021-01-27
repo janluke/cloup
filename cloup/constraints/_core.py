@@ -351,7 +351,7 @@ class SetAtLeast(Constraint):
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) < n:
             raise ConstraintViolated(
-                f"at least {n} of the following options should be set:\n"
+                f"at least {n} of the following options must be set:\n"
                 f"{join_param_labels(params)}.",
                 ctx=ctx
             )
@@ -381,7 +381,7 @@ class SetAtMost(Constraint):
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) > n:
             raise ConstraintViolated(
-                f"no more than {n} of the following options should be set:\n"
+                f"no more than {n} of the following options must be set:\n"
                 f"{join_param_labels(params)}.\n",
                 ctx=ctx,
             )
@@ -399,11 +399,9 @@ class SetExactly(WrapperConstraint):
         super().__init__(SetAtLeast(n) & SetAtMost(n), n=n)
 
     def help(self, ctx: Context) -> str:
-        return pluralize(
-            count=self._n,
-            zero='all_forbidden',
-            many='exactly {count} required'
-        )
+        if self._n == 0:
+            return 'all forbidden'  # makes sense in conditional constraints
+        return f'exactly {self._n} required'
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
         n = self._n
@@ -411,8 +409,8 @@ class SetExactly(WrapperConstraint):
         if len(given_params) != n:
             reason = pluralize(
                 count=n,
-                zero='none of the following parameters should be set:\n%s\n',
-                many="exactly {count} of the following parameters should be set:\n%s\n"
+                zero='none of the following parameters must be set:\n%s\n',
+                many="exactly {count} of the following parameters must be set:\n%s\n"
             ) % join_param_labels(params)
             raise ConstraintViolated(reason, ctx=ctx)
 
@@ -426,7 +424,7 @@ class SetBetween(WrapperConstraint):
         """
         check_arg(min >= 0, 'min must be non-negative')
         if max is not None:
-            check_arg(min < max, 'should be: min < max. Use SetExactly instead')
+            check_arg(min < max, 'must be: min < max. Use SetExactly instead')
         self._min = min
         self._max = max
         super().__init__(SetAtLeast(min) & SetAtMost(max), min=min, max=max)
@@ -444,7 +442,7 @@ all_unset = SetExactly(0)
 #: Requires the parameters to be either all set or all unset.
 all_or_none = (all_required | all_unset).rephrased(
     help='set all or none',
-    error='either all or none of the following options should be set: {param_list}"',
+    error='either all or none of the following options must be set: {param_list}"',
 )
 
 #: Rephrased version of ``SetAtMost(1)``.
@@ -465,5 +463,5 @@ def check_constraint(
     error: Optional[str] = None,
 ) -> None:
     if error is not None:
-        return constraint.rephrased(error=error).check(params=on, ctx=ctx)
+        constraint = constraint.rephrased(error=error)
     return constraint.check(params=on, ctx=ctx)
