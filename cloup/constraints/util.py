@@ -7,13 +7,20 @@ from click import Context, Option, Parameter
 
 
 def param_value_is_set(param: Parameter, value: Any) -> bool:
-    """Defines what it means for a parameter to be "set"."""
+    """Defines what it means for a parameter of a specific kind to be "set".
+
+    All cases are obvious besides that of boolean options:
+    - (common rule) if the value is ``None``, the parameter is unset;
+    - a parameter that takes multiple values is set if at least one argument is provided;
+    - a boolean **flag** is set only if True;
+    - a boolean option is set if not None, even if it's False.
+    """
     if value is None:
         return False
     elif isinstance(param, Option) and param.is_bool_flag:
-        return value  # boolean flags are "set" if True
+        return value
     elif param.nargs != 1 or param.multiple:
-        return len(value) > 0  # params with multiple values
+        return len(value) > 0
     return True
 
 
