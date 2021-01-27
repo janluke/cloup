@@ -35,4 +35,4 @@ class ConstraintMixin:
 
         # Check constraints against parameter values
         for group in self._optgroup_to_check:
-            group.constraint.check_params(group.options, ctx)
+            group.constraint.check_values(group.options, ctx)

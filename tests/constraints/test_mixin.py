@@ -45,4 +45,4 @@ class TestConstraintMixin:
         assert result.output.strip() == '1, None, 2, None'
         for constraint, opt_names in zip(constraints, [['a', 'b'], ['c', 'd']]):
             assert constraint.check_consistency.call_count == 1
-            assert constraint.check_params.call_count == 1
+            assert constraint.check_values.call_count == 1

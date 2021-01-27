@@ -7,7 +7,7 @@ from typing import (
 import click
 from click import Context, Parameter
 
-from cloup._util import check_value, class_name, make_one_line_repr, make_repr
+from cloup._util import check_arg, class_name, make_one_line_repr, make_repr
 from ._mixin import ConstraintMixin
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 from .util import (
@@ -57,10 +57,12 @@ class Constraint(abc.ABC):
         """
 
     @abc.abstractmethod
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         """
-        Checks the constraint is satisfied by the input parameters in the
-        given context (which determines the values assigned to the parameters).
+        Checks that the constraint is satisfied by the input parameters in the
+        given context, which (among other things) contains the values assigned
+        to the parameters in ``ctx.params``.
+
         You probably don't want to call this method directly.
         Use :meth:`check` instead.
 
@@ -104,7 +106,7 @@ class Constraint(abc.ABC):
                           else params)
         if self.check_consistency_enabled:
             self.check_consistency(params_objects)
-        return self.check_params(params_objects, ctx)
+        return self.check_values(params_objects, ctx)
 
     def rephrased(
         self,
@@ -183,9 +185,9 @@ class And(Operator):
     """It's satisfied if all operands are satisfied."""
     HELP_SEP = ' and '
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         for c in self.constraints:
-            c.check_params(params, ctx)
+            c.check_values(params, ctx)
 
     def __and__(self, other) -> 'And':
         if isinstance(other, And):
@@ -197,10 +199,10 @@ class Or(Operator):
     """It's satisfied if at least one of the operands is satisfied."""
     HELP_SEP = ' or '
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         for c in self.constraints:
             try:
-                return c.check_params(params, ctx)
+                return c.check_values(params, ctx)
             except ConstraintViolated:
                 pass
         raise ConstraintViolated.default(params, self.help(ctx), ctx=ctx)
@@ -255,9 +257,9 @@ class Rephraser(Constraint):
             raise UnsatisfiableConstraint(
                 self, params=params, reason=exc.reason)
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         try:
-            return self._constraint.check_params(params, ctx)
+            return self._constraint.check_values(params, ctx)
         except ConstraintViolated:
             rephrased_error = self._get_rephrased_error(ctx, params)
             if rephrased_error:
@@ -298,8 +300,8 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
         except UnsatisfiableConstraint as exc:
             raise UnsatisfiableConstraint(self, params=params, reason=exc.reason)
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
-        self._constraint.check_params(params, ctx)
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
+        self._constraint.check_values(params, ctx)
 
     def __repr__(self):
         return make_repr(self, **self._attrs)
@@ -311,7 +313,7 @@ class _AllRequired(Constraint):
     def help(self, ctx: Context) -> str:
         return 'all required'
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         values = ctx.params
         falsy_params = [param for param in params if not values[param.name]]
         if any(falsy_params):
@@ -329,7 +331,7 @@ class SetAtLeast(Constraint):
     """Requires a minimum number of parameters to be set."""
 
     def __init__(self, n: int):
-        check_value(n >= 0)
+        check_arg(n >= 0)
         self._n = n
 
     def help(self, ctx: Context) -> str:
@@ -344,7 +346,7 @@ class SetAtLeast(Constraint):
             )
             raise UnsatisfiableConstraint(self, params, reason)
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         n = self._n
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) < n:
@@ -362,7 +364,7 @@ class SetAtMost(Constraint):
     """Puts an upper bound to the number of set parameters."""
 
     def __init__(self, n: int):
-        check_value(n >= 0)
+        check_arg(n >= 0)
         self._n = n
 
     def help(self, ctx: Context) -> str:
@@ -374,7 +376,7 @@ class SetAtMost(Constraint):
             reason = f'{num_required_opts} of the options are required'
             raise UnsatisfiableConstraint(self, params, reason)
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         n = self._n
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) > n:
@@ -392,7 +394,7 @@ class SetExactly(WrapperConstraint):
     """Requires an exact number of parameters to be set."""
 
     def __init__(self, n: int):
-        check_value(n >= 0)
+        check_arg(n >= 0)
         self._n = n
         super().__init__(SetAtLeast(n) & SetAtMost(n), n=n)
 
@@ -403,7 +405,7 @@ class SetExactly(WrapperConstraint):
             many='exactly {count} required'
         )
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         n = self._n
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) != n:
@@ -422,9 +424,9 @@ class SetBetween(WrapperConstraint):
         :param min: must be an integer >= 0
         :param max: must be an integer > min
         """
-        check_value(min >= 0, 'min must be non-negative')
+        check_arg(min >= 0, 'min must be non-negative')
         if max is not None:
-            check_value(min < max, 'should be: min < max. Use SetExactly instead')
+            check_arg(min < max, 'should be: min < max. Use SetExactly instead')
         self._min = min
         self._max = max
         super().__init__(SetAtLeast(min) & SetAtMost(max), min=min, max=max)

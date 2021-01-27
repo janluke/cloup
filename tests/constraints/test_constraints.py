@@ -29,7 +29,7 @@ def mock_constraint(
     c.__or__ = Constraint.__or__
     c.help.return_value = help
     if not satisfied:
-        c.check_params.side_effect = ConstraintViolated(check_error)
+        c.check_values.side_effect = ConstraintViolated(check_error)
     if not consistent:
         c.check_consistency.side_effect = UnsatisfiableConstraint(
             c, [], consistency_error)
@@ -52,7 +52,7 @@ class FakeConstraint(Constraint):
         if not self.consistent:
             raise UnsatisfiableConstraint(self, params, self.CONSISTENCY_ERROR)
 
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context):
         if not self.satisfied:
             raise ConstraintViolated(self.ERROR)
 
@@ -285,7 +285,7 @@ class TestRephraser:
             rephrased.check(params, ctx=fake_ctx)
         get_error.assert_called_once_with(fake_ctx, wrapped, params)
         wrapped.check_consistency.assert_called_once_with(params)
-        wrapped.check_params.assert_called_once_with(params, fake_ctx)
+        wrapped.check_values.assert_called_once_with(params, fake_ctx)
 
     def test_check_consistency_raises_if_wrapped_constraint_raises(self):
         constraint = mock_constraint(consistent=True)

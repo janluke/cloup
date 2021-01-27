@@ -31,11 +31,11 @@ class TestIfThenElse:
         constraint.check(params, ctx=ctx)
 
         if condition_value:
-            then_.check_params.assert_called_once()
-            else_.check_params.assert_not_called()
+            then_.check_values.assert_called_once()
+            else_.check_values.assert_not_called()
         else:
-            then_.check_params.assert_not_called()
-            else_.check_params.assert_called_once()
+            then_.check_values.assert_not_called()
+            else_.check_values.assert_called_once()
 
     def test_If_gives_informative_error_when_used_as_a_constraint(self):
         for attr in ['help', 'check', 'check_consistency']:
