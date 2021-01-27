@@ -325,35 +325,6 @@ class _AllRequired(Constraint):
             )
 
 
-class SetExactly(Constraint):
-    """Requires an exact number of parameters to be set."""
-
-    def __init__(self, n: int):
-        check_value(n >= 0)
-        self._n = n
-
-    def help(self, ctx: Context) -> str:
-        return pluralize(
-            self._n, zero='all forbidden', many='exactly {count} required')
-
-    def check_consistency(self, params: Sequence[Parameter]) -> None:
-        SetAtLeast(self._n).check_consistency(params)
-        SetAtMost(self._n).check_consistency(params)
-
-    def check_params(self, params: Sequence[Parameter], ctx: Context):
-        n = self._n
-        given_params = get_params_whose_value_is_set(params, ctx.params)
-        if len(given_params) != n:
-            reason = pluralize(
-                n, zero='none of the following parameters should be set:\n%s\n',
-                many="exactly {count} of the following parameters should be set:\n%s\n"
-            ) % join_param_labels(params)
-            raise ConstraintViolated(reason, ctx=ctx)
-
-    def __repr__(self):
-        return '%s(%d)' % (class_name(self), self._n)
-
-
 class SetAtLeast(Constraint):
     """Requires a minimum number of parameters to be set."""
 
@@ -415,6 +386,33 @@ class SetAtMost(Constraint):
 
     def __repr__(self):
         return '%s(%d)' % (class_name(self), self._n)
+
+
+class SetExactly(WrapperConstraint):
+    """Requires an exact number of parameters to be set."""
+
+    def __init__(self, n: int):
+        check_value(n >= 0)
+        self._n = n
+        super().__init__(SetAtLeast(n) & SetAtMost(n), n=n)
+
+    def help(self, ctx: Context) -> str:
+        return pluralize(
+            count=self._n,
+            zero='all_forbidden',
+            many='exactly {count} required'
+        )
+
+    def check_params(self, params: Sequence[Parameter], ctx: Context):
+        n = self._n
+        given_params = get_params_whose_value_is_set(params, ctx.params)
+        if len(given_params) != n:
+            reason = pluralize(
+                count=n,
+                zero='none of the following parameters should be set:\n%s\n',
+                many="exactly {count} of the following parameters should be set:\n%s\n"
+            ) % join_param_labels(params)
+            raise ConstraintViolated(reason, ctx=ctx)
 
 
 class SetBetween(WrapperConstraint):
