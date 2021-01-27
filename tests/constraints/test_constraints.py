@@ -224,7 +224,7 @@ class TestSetBetween:
 
     def test_help(self, dummy_ctx):
         help = SetBetween(3, 5).help(dummy_ctx)
-        assert help == 'at least 3, no more than 5'
+        assert help == 'set at least 3, at most 5'
 
 
 class TestAllRequired:

@@ -366,7 +366,7 @@ class SetAtMost(Constraint):
         self._n = n
 
     def help(self, ctx: Context) -> str:
-        return 'at most %d should be set' % self._n
+        return f'set at most {self._n}'
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         num_required_opts = len(get_required_params(params))
@@ -424,13 +424,13 @@ class SetBetween(WrapperConstraint):
         """
         check_value(min >= 0, 'min must be non-negative')
         if max is not None:
-            check_value(min < max, 'should be: min < max. Use ProvideExactly instead')
+            check_value(min < max, 'should be: min < max. Use SetExactly instead')
         self._min = min
         self._max = max
         super().__init__(SetAtLeast(min) & SetAtMost(max), min=min, max=max)
 
     def help(self, ctx: Context) -> str:
-        return f'at least {self._min}, no more than {self._max}'
+        return f'set at least {self._min}, at most {self._max}'
 
 
 #: Requires all the parameters to be set.
@@ -441,7 +441,7 @@ all_unset = SetExactly(0)
 
 #: Requires the parameters to be either all set or all unset.
 all_or_none = (all_required | all_unset).rephrased(
-    help='either all or none should be set',
+    help='set all or none',
     error='either all or none of the following options should be set: {param_list}"',
 )
 
