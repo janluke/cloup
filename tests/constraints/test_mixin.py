@@ -37,11 +37,12 @@ class TestConstraintMixin:
                             constraint=constraints[0])
         @cloup.option_group('second', cloup.option('-c'), cloup.option('-d'),
                             constraint=constraints[1])
-        def cmd(**kwargs):
-            print('okay')
+        def cmd(a, b, c, d):
+            print(f'{a}, {b}, {c}, {d}')
 
-        result = runner.invoke(cmd, args=('-a', '1', '-c', '2'))
+        result = runner.invoke(cmd, args='-a 1 -c 2'.split(), catch_exceptions=False)
         assert result.exit_code == 0
-        assert result.output.strip() == 'okay'
+        assert result.output.strip() == '1, None, 2, None'
         for constraint, opt_names in zip(constraints, [['a', 'b'], ['c', 'd']]):
-            assert constraint.check.call_count == 1
+            assert constraint.check_consistency.call_count == 1
+            assert constraint.check_params.call_count == 1

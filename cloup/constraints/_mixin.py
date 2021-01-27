@@ -8,6 +8,11 @@ class ConstraintMixin:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._params_by_name = {param.name: param for param in self.params}
+        self._optgroup_to_check = (
+            [grp for grp in self.option_groups if grp.constraint]
+            if hasattr(self, 'option_groups')
+            else []
+        )
 
     def get_param_by_name(self, name: str):
         try:
@@ -19,9 +24,15 @@ class ConstraintMixin:
         return [self.get_param_by_name(name) for name in names]
 
     def parse_args(self, ctx, args):
+        from ._core import Constraint
+
+        # Check group consistency *before* parameter parsing
+        if Constraint.check_consistency_enabled:
+            for group in self._optgroup_to_check:
+                group.constraint.check_consistency(group.options)
+
         super().parse_args(ctx, args)
-        # Check OptionGroup's constraints if the command has them
-        if hasattr(self, 'option_groups'):
-            for group in self.option_groups:
-                if group.constraint:
-                    group.constraint.check(group.options, ctx=ctx)
+
+        # Check constraints against parameter values
+        for group in self._optgroup_to_check:
+            group.constraint.check_params(group.options, ctx)
