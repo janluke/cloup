@@ -7,6 +7,7 @@ from typing import Callable, List, Optional, Sequence, Tuple, Type, TypeVar, ove
 import click
 from click import Option, Parameter
 
+from cloup._util import make_repr
 from cloup.constraints import Constraint, ConstraintMixin
 
 C = TypeVar('C', bound=Callable)
@@ -45,12 +46,11 @@ class OptionGroup:
         return len(self.options)
 
     def __repr__(self) -> str:
-        return 'OptionGroup({!r}, help={!r}, options={})'.format(
-            self.name, self.help, self.options)
+        return make_repr(self, self.name, help=self.help, options=self.options)
 
     def __str__(self) -> str:
-        return 'OptionGroup({!r}, help={!r}, options={})'.format(
-            self.name, self.help, [opt.name for opt in self.options])
+        return make_repr(
+            self, self.name, options=[opt.name for opt in self.options])
 
 
 class GroupedOption(click.Option):
