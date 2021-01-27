@@ -7,7 +7,7 @@ from typing import (
 import click
 from click import Context, Parameter
 
-from cloup._util import check_value, class_name
+from cloup._util import check_value, class_name, make_one_line_repr, make_repr
 from ._mixin import ConstraintMixin
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 from .util import (
@@ -132,6 +132,9 @@ class Constraint(abc.ABC):
     def __and__(self, other: 'Constraint') -> 'And':
         return And(self, other)
 
+    def __repr__(self):
+        return f'{class_name(self)}()'
+
 
 class BoundConstraint(NamedTuple):
     """
@@ -173,9 +176,7 @@ class Operator(Constraint, abc.ABC):
             c.check_consistency(params)
 
     def __repr__(self):
-        cls = class_name(self)
-        operands = ', '.join(repr(c) for c in self.constraints)
-        return f'{cls}({operands})'
+        return make_repr(self, *self.constraints)
 
 
 class And(Operator):
@@ -264,12 +265,10 @@ class Rephraser(Constraint):
             raise
 
     def __repr__(self):
-        return (
-            f'{class_name(self)}({self._constraint!r},\n'
-            f'   help={self._help!r},\n'
-            f'   error={self._error!r}\n'
-            f')'
-        )
+        return make_repr(self, self._constraint, help=self._help, error=self._error)
+
+    def __str__(self):
+        return make_one_line_repr(self, self._constraint, help=self._help)
 
 
 class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
@@ -303,9 +302,7 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
         self._constraint.check_params(params, ctx)
 
     def __repr__(self):
-        key_value_pairs = (f'{key}={value}' for key, value in self._attrs.items())
-        attrs = ', '.join(key_value_pairs)
-        return '%s(%s)' % (class_name(self), attrs)
+        return make_repr(self, **self._attrs)
 
 
 class _AllRequired(Constraint):
