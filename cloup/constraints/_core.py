@@ -10,7 +10,13 @@ from click import Context, Parameter
 from cloup._util import check_arg, class_name, make_one_line_repr, make_repr
 from ._mixin import ConstraintMixin
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
-from .util import (get_params_whose_value_is_set, get_required_params, join_param_labels, param_value_is_set, pluralize)
+from .util import (
+    get_params_whose_value_is_set,
+    get_required_params,
+    join_param_labels,
+    param_value_is_set,
+    pluralize,
+)
 
 Op = TypeVar('Op', bound='Operator')
 HelpRephraser = Callable[[Context, 'Constraint'], str]
