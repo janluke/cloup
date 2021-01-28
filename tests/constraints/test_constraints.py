@@ -213,6 +213,25 @@ class TestSetBetween:
         help = SetBetween(3, 5).help(dummy_ctx)
         assert help == 'set at least 3, at most 5'
 
+    def test_check_consistency(self):
+        check_consistency = SetBetween(2, 4).check_consistency
+        check_consistency(make_options('abcd'))
+        with pytest.raises(UnsatisfiableConstraint):
+            check_consistency(make_options('a'))  # too little params
+        with pytest.raises(UnsatisfiableConstraint):
+            check_consistency(make_options('abcde', required=True))  # too many required
+
+    def test_check(self, sample_cmd: Command):
+        ctx = make_context(sample_cmd, 'a1 --opt1=1 --opt3=3 --flag --mul1=4')
+        check = partial(SetBetween(2, 4).check, ctx=ctx)
+        check(['opt1', 'opt2', 'opt3'])  # opt1 and opt3
+        check(['arg1', 'opt2', 'flag'])  # arg1, opt3 and flag
+        check(['def1', 'opt2', 'flag', 'mul1'])  # all
+        with pytest.raises(ConstraintViolated):
+            check(['arg2', 'opt2', 'def1'])  # only def1
+        with pytest.raises(ConstraintViolated):
+            check(['arg1', 'def1', 'def2', 'opt1', 'flag'])  # all
+
 
 class TestAllRequired:
     def test_help(self, dummy_ctx):
