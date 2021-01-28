@@ -1,3 +1,4 @@
+from typing import Optional
 from unittest.mock import Mock
 
 import pytest
@@ -13,7 +14,7 @@ from tests.util import make_context, mark_parametrize, mock_repr
 class FakePredicate(Predicate):
     def __init__(self, value: bool = True,
                  desc: str = 'description',
-                 neg_desc: str = 'negated description'):
+                 neg_desc: Optional[str] = None):
         self.value = value
         self._desc = desc
         self._neg_desc = neg_desc
@@ -22,7 +23,9 @@ class FakePredicate(Predicate):
         return self._desc
 
     def negated_description(self, ctx: Context) -> str:
-        return self._neg_desc
+        if self._neg_desc:
+            return self._neg_desc
+        return super().negated_description(ctx)
 
     def __call__(self, ctx: Context) -> bool:
         return self.value
@@ -108,15 +111,29 @@ class TestIf:
         assert repr(constr) == 'If(<Predicate>, then=<ThenBranch>, else_=<ElseBranch>)'
 
 
+class TestNot:
+    def test_descriptions(self, dummy_ctx):
+        neg = ~FakePredicate(desc='<desc>')
+        assert neg.desc(dummy_ctx) == 'NOT(<desc>)'
+        assert neg.neg_desc(dummy_ctx) == '<desc>'
+
+        neg = ~FakePredicate(desc='<desc>', neg_desc='<neg_desc>')
+        assert neg.desc(dummy_ctx) == '<neg_desc>'
+        assert neg.neg_desc(dummy_ctx) == '<desc>'
+
+    def test_double_negation_returns_original_predicate(self):
+        fake = FakePredicate()
+        assert ~~fake is fake
+
+
 class TestAnd:
     @mark.parametrize('b_value', [False, True])
     @mark.parametrize('a_value', [False, True])
-    def test_check(self, a_value, b_value, sample_cmd):
-        ctx = make_context(sample_cmd, 'blah')
+    def test_evaluation(self, a_value, b_value, dummy_ctx):
         a = FakePredicate(value=a_value)
         b = FakePredicate(value=b_value)
         c = a & b
-        assert c(ctx) == (a_value and b_value)
+        assert c(dummy_ctx) == (a_value and b_value)
 
     def test_operand_merging(self):
         a, b, c, d = (FakePredicate() for _ in range(4))
@@ -135,12 +152,11 @@ class TestAnd:
 class TestOr:
     @mark.parametrize('b_value', [False, True])
     @mark.parametrize('a_value', [False, True])
-    def test_check(self, a_value, b_value, sample_cmd):
-        ctx = make_context(sample_cmd, 'blah')
+    def test_evaluation(self, a_value, b_value, dummy_ctx):
         a = FakePredicate(value=a_value)
         b = FakePredicate(value=b_value)
         c = a | b
-        assert c(ctx) == (a_value or b_value)
+        assert c(dummy_ctx) == (a_value or b_value)
 
     def test_operands_merging(self):
         a, b, c, d = (FakePredicate() for _ in range(4))
@@ -198,7 +214,7 @@ class TestIsSet:
 
 
 class TestEqual:
-    def test_condition_Equal(self, sample_cmd):
+    def test_evaluation(self, sample_cmd):
         ctx = make_context(sample_cmd, 'xxx --bool-opt=0 --flag --tuple 1 2')
         for name, value in ctx.params.items():
             assert Equal(name, value)(ctx)
