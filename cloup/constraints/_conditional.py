@@ -1,13 +1,14 @@
 """
 This modules contains classes to create conditional constraints.
 """
-from typing import Sequence, Union
+from typing import Optional, Sequence, Union
 
 from click import Context, Parameter
 
 from ._core import Constraint
+from .conditions import IsSet, Predicate
 from .exceptions import ConstraintViolated
-from .conditions import Predicate, IsSet
+from .._util import make_repr
 
 
 def as_predicate(arg: Union[str, Predicate]) -> Predicate:
@@ -19,80 +20,44 @@ def as_predicate(arg: Union[str, Predicate]) -> Predicate:
         raise TypeError('arg should be str or Predicate')
 
 
-class If:
-    def __init__(self, condition: Union[str, Predicate]):
+class If(Constraint):
+    def __init__(
+        self, condition: Union[str, Predicate],
+        then: Constraint,
+        else_: Optional[Constraint] = None
+    ):
         self._condition = as_predicate(condition)
-
-    def then(self, constraint: Constraint) -> '_IfThen':
-        return _IfThen(self._condition, then=constraint)
-
-    def __getattr__(self, attr):
-        if attr in ['help', 'check_consistency', 'check']:
-            raise AttributeError(
-                "you started defining a conditional constraint with If(...) "
-                "but forgot to call then(...). `If` is not a constraint, so it "
-                "doesn't have a %s method" % attr
-            )
-        raise AttributeError(attr)
-
-    def __repr__(self) -> str:
-        return 'If(%r)' % self._condition
-
-
-class _IfThen(Constraint):
-    def __init__(self, condition: Predicate, then: Constraint):
-        self._condition = condition
         self._then = then
-
-    @property
-    def condition(self) -> Predicate:
-        return self._condition
-
-    def help(self, ctx: Context) -> str:
-        return '%s if %s' % (
-            self._then.help(ctx),
-            self._condition.description(ctx),
-        )
-
-    def else_(self, constraint: Constraint) -> '_IfThenElse':
-        return _IfThenElse(if_then=self, else_=constraint)
-
-    def check_consistency(self, params: Sequence[Parameter]) -> None:
-        self._then.check_consistency(params)
-
-    def check_values(self, params: Sequence[Parameter], ctx: Context) -> bool:
-        if self._condition(ctx):
-            try:
-                self._then.check_values(params, ctx)
-                return True
-            except ConstraintViolated as err:
-                raise ConstraintViolated(
-                    "when %s, %s" % (self._condition.description(ctx), err),
-                    ctx=ctx,
-                )
-        return False
-
-
-class _IfThenElse(Constraint):
-    def __init__(self, if_then: _IfThen, else_: Constraint):
-        self._if_then = if_then
         self._else = else_
 
     def help(self, ctx: Context) -> str:
-        return '%s, otherwise %s' % (
-            self._if_then.help(ctx),
-            self._else.help(ctx)
-        )
+        condition = self._condition.description(ctx)
+        then_help = self._then.help(ctx)
+        else_help = self._else.help(ctx) if self._else else None
+        if not self._else:
+            return f'{then_help} if {condition}'
+        else:
+            return f'{then_help} if {condition}, otherwise {else_help}'
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
-        self._if_then.check_consistency(params)
-        self._else.check_consistency(params)
+        self._then.check_consistency(params)
+        if self._else:
+            self._else.check_consistency(params)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
-        condition_is_true = self._if_then.check_values(params, ctx)
-        if not condition_is_true:
-            try:
-                self._else.check_values(params, ctx)
-            except ConstraintViolated as err:
-                desc = self._if_then.condition.negated_description(ctx)
-                raise ConstraintViolated(f'when {desc}, {err}', ctx=ctx)
+        condition = self._condition
+        condition_is_true = condition(ctx)
+        branch = self._then if condition_is_true else self._else
+        if branch is None:
+            return
+        try:
+            branch.check_values(params, ctx=ctx)
+        except ConstraintViolated as err:
+            desc = (condition.description(ctx) if condition_is_true
+                    else condition.negated_description(ctx))
+            raise ConstraintViolated(f"when {desc}, {err}", ctx=ctx)
+
+    def __repr__(self) -> str:
+        if self._else:
+            return make_repr(self, self._condition, then=self._then, else_=self._else)
+        return make_repr(self, self._condition, then=self._then)

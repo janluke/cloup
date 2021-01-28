@@ -1,6 +1,7 @@
 from contextlib import contextmanager
 from functools import partial
 from typing import Iterable, List
+from unittest.mock import Mock
 
 import pytest
 from click import Command, Context, Option
@@ -50,3 +51,9 @@ def should_raise(expected_exception, *, when, **kwargs):
         yield
 
     return manager()
+
+
+def mock_repr(value, *args, **kwargs):
+    m = Mock(*args, **kwargs)
+    m.__repr__ = lambda x: value
+    return m

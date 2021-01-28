@@ -44,7 +44,7 @@ from cloup.constraints import If, SetAtLeast, check_constraint, mutually_exclusi
     option('--four', help='a 4th cool option'),
     option('--five', help='a 5th cool option'),
     option('--six', help='a 6th cool option'),
-    constraint=If('three').then(SetAtLeast(1)),
+    constraint=If('three', then=SetAtLeast(1)),
 )
 @option('--seven', help='first uncategorized option', type=Choice('yes no ask'.split()))
 @option('--eight', help='second uncategorized option')

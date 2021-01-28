@@ -13,7 +13,7 @@ def test_option_groups_are_correctly_displayed_in_help(
     runner, align_option_groups, get_example_command
 ):
     cmd = get_example_command(align_option_groups)
-    result = runner.invoke(cmd, args=('--help',))
+    result = runner.invoke(cmd, args=('--help',), catch_exceptions=False)
     assert result.exit_code == 0
     assert result.output.strip() == cmd.expected_help
 

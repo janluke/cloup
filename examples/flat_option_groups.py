@@ -14,7 +14,7 @@ _input = OptionGroup(
 )
 _output = OptionGroup(
     'Output options',
-    constraint=If('three').then(SetAtLeast(1)),
+    constraint=If('three', then=SetAtLeast(1)),
 )
 
 

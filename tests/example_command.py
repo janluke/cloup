@@ -22,7 +22,7 @@ def make_example_command(align_option_groups):
         option('--four / --no-four', help='1st option of group B'),
         option('--five', help='2nd option of group B', hidden=True),  # hidden option
         option('--six', help='3rd option of group B'),
-        constraint=If('three').then(SetAtLeast(1)))
+        constraint=If('three', then=SetAtLeast(1)))
     @option('--seven', help='first uncategorized option',
             type=click.Choice('yes no ask'.split()))
     @option('--height', help='second uncategorized option')

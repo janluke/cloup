@@ -4,68 +4,108 @@ import pytest
 from click import Context
 from pytest import mark
 
-from cloup.constraints import Constraint, If
+from cloup.constraints import ConstraintViolated, If
 from cloup.constraints.conditions import Equal, IsSet, Predicate
 from tests.constraints.test_constraints import FakeConstraint
-from tests.util import make_context, make_options, mark_parametrize
+from tests.util import make_context, mark_parametrize, mock_repr
 
 
 class FakePredicate(Predicate):
-    def __init__(self, value: bool = True, desc='description'):
+    def __init__(self, value: bool = True,
+                 desc: str = 'description',
+                 neg_desc: str = 'negated description'):
         self.value = value
         self._desc = desc
+        self._neg_desc = neg_desc
 
     def description(self, ctx: Context) -> str:
         return self._desc
+
+    def negated_description(self, ctx: Context) -> str:
+        return self._neg_desc
 
     def __call__(self, ctx: Context) -> bool:
         return self.value
 
 
-class TestIfThenElse:
-
-    @mark.parametrize('condition_value', [True, False])
-    def test_the_right_branch_is_checked(self, sample_cmd, condition_value):
-        then_ = Mock(Constraint)
-        else_ = Mock(Constraint)
-        ctx = make_context(sample_cmd, 'arg1 --str-opt=ciao --bool-opt=0')
-        params = ['arg1', 'bool_opt']  # dummy params, irrelevant
-
-        condition = FakePredicate(value=condition_value)
-        constraint = If(condition).then(then_).else_(else_)
-        constraint.check(params, ctx=ctx)
-
-        if condition_value:
-            then_.check_values.assert_called_once()
-            else_.check_values.assert_not_called()
-        else:
-            then_.check_values.assert_not_called()
-            else_.check_values.assert_called_once()
-
-    def test_If_gives_informative_error_when_used_as_a_constraint(self):
-        for attr in ['help', 'check', 'check_consistency']:
-            with pytest.raises(AttributeError, match='forgot to call then'):
-                getattr(If('ciao'), attr)
-        with pytest.raises(AttributeError, match='^pippo$'):
-            getattr(If('ciao'), 'pippo')
+class TestIf:
 
     def test_help(self, sample_cmd):
         ctx = make_context(sample_cmd, 'arg1 --str-opt=ciao --bool-opt=0')
-        a = FakeConstraint(help='_A_')
-        b = FakeConstraint(help='_B_')
-        constraint = If('arg1').then(a).else_(b)
-        help = constraint.help(ctx)
-        assert 'ARG1' in help
-        assert '_A_' in help
-        assert '_B_' in help
+        condition = FakePredicate(desc='<condition>')
+        then_branch = FakeConstraint(help='<a>')
+        else_branch = FakeConstraint(help='<b>')
 
-    def test_operands_check_consistency_is_called(self):
-        a = Mock(Constraint)
-        b = Mock(Constraint)
-        constraint = If('arg1').then(a).else_(b)
-        constraint.check_consistency(make_options('abc'))
-        a.check_consistency.assert_called()
-        b.check_consistency.assert_called()
+        constr = If(condition, then_branch)
+        assert constr.help(ctx) == '<a> if <condition>'
+
+        constr = If(condition, then_branch, else_branch)
+        assert constr.help(ctx) == '<a> if <condition>, otherwise <b>'
+
+    @mark.parametrize('condition_is_true', [True, False])
+    @mark.parametrize(
+        'else_is_provided', [True, False], ids=['else_given', 'else_missing']
+    )
+    def test_branches_check_methods_are_called_correctly(
+        self, sample_cmd, condition_is_true, else_is_provided
+    ):
+        ctx = make_context(sample_cmd, 'arg1 --str-opt=ciao --bool-opt=0')
+        param_names = ['arg1', 'bool_opt']
+        params = sample_cmd.get_params_by_name(param_names)
+
+        then_branch = Mock(wraps=FakeConstraint())
+        else_branch = Mock(wraps=FakeConstraint()) if else_is_provided else None
+        constraint = If(
+            condition=FakePredicate(value=condition_is_true),
+            then=then_branch,
+            else_=else_branch
+        )
+        constraint.check(param_names, ctx=ctx)
+
+        # check_consistency() is called on both branches whatever the condition value is
+        then_branch.check_consistency.assert_called_once_with(params)
+        if else_is_provided:
+            else_branch.check_consistency.assert_called_once_with(params)
+
+        if condition_is_true:
+            then_branch.check_values.assert_called_once_with(params, ctx=ctx)
+            if else_is_provided:
+                else_branch.check_values.assert_not_called()
+        else:
+            then_branch.check_values.assert_not_called()
+            if else_is_provided:
+                else_branch.check_values.assert_called_once_with(params, ctx=ctx)
+
+    def test_error_message(self, sample_cmd):
+        ctx = make_context(sample_cmd, 'arg1 --str-opt=ciao --bool-opt=0')
+        dummy_params = ['arg1', 'bool_opt']
+        then_branch = FakeConstraint(satisfied=False, error='<then_error>')
+        else_branch = FakeConstraint(satisfied=False, error='<else_error>')
+
+        true_predicate = FakePredicate(True, desc='<true>')
+        with pytest.raises(ConstraintViolated) as info:
+            If(true_predicate, then_branch, else_branch).check(dummy_params, ctx=ctx)
+        assert info.value.message == 'when <true>, <then_error>'
+
+        false_predicate = FakePredicate(False, desc='<true>', neg_desc='<false>')
+        with pytest.raises(ConstraintViolated) as info:
+            If(false_predicate, then_branch, else_branch).check(dummy_params, ctx=ctx)
+        assert info.value.message == 'when <false>, <else_error>'
+
+    def test_string_condition_is_equivalent_to_IsSet(self):
+        constr = If('name', FakeConstraint())
+        assert isinstance(constr._condition, IsSet)
+        assert constr._condition.param_name == 'name'
+
+    def test_repr(self):
+        predicate = mock_repr('<Predicate>', spec=FakePredicate, wraps=FakePredicate())
+        then_branch = mock_repr('<ThenBranch>', wraps=FakeConstraint())
+        else_branch = mock_repr('<ElseBranch>', wraps=FakeConstraint())
+
+        constr = If(predicate, then_branch)
+        assert repr(constr) == 'If(<Predicate>, then=<ThenBranch>)'
+        constr = If(predicate, then_branch, else_branch)
+        assert repr(constr) == 'If(<Predicate>, then=<ThenBranch>, else_=<ElseBranch>)'
 
 
 class TestAnd:
