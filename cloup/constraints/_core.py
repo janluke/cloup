@@ -281,7 +281,7 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
 
 
 class _AllRequired(Constraint):
-    """Requires all options to be set."""
+    """Requires all parameters to be set."""
 
     def help(self, ctx: Context) -> str:
         return 'all required'
@@ -324,7 +324,7 @@ class SetAtLeast(Constraint):
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) < n:
             raise ConstraintViolated(
-                f"at least {n} of the following options must be set:\n"
+                f"at least {n} of the following parameters must be set:\n"
                 f"{join_param_labels(params)}.",
                 ctx=ctx
             )
@@ -346,7 +346,7 @@ class SetAtMost(Constraint):
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         num_required_opts = len(get_required_params(params))
         if num_required_opts > self._n:
-            reason = f'{num_required_opts} of the options are required'
+            reason = f'{num_required_opts} of the parameters are required'
             raise UnsatisfiableConstraint(self, params, reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
@@ -354,7 +354,7 @@ class SetAtMost(Constraint):
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) > n:
             raise ConstraintViolated(
-                f"no more than {n} of the following options must be set:\n"
+                f"no more than {n} of the following parameters must be set:\n"
                 f"{join_param_labels(params)}.\n",
                 ctx=ctx,
             )
@@ -390,7 +390,7 @@ class SetExactly(WrapperConstraint):
 
 class SetBetween(WrapperConstraint):
     def __init__(self, min: int, max: int):  # noqa
-        """Satisfied if the number of set options is between ``min`` and ``max``.
+        """Satisfied if the number of set parameters is between ``min`` and ``max``.
 
         :param min: must be an integer >= 0
         :param max: must be an integer > min
@@ -415,7 +415,7 @@ all_unset = SetExactly(0)
 #: Requires the parameters to be either all set or all unset.
 all_or_none = (all_required | all_unset).rephrased(
     help='set all or none',
-    error='either all or none of the following options must be set: {param_list}"',
+    error='either all or none of the following parameters must be set: {param_list}"',
 )
 
 #: Rephrased version of ``SetAtMost(1)``.
