@@ -10,7 +10,7 @@ from click import Context, Parameter
 from cloup._util import check_arg, class_name, make_one_line_repr, make_repr
 from ._mixin import ConstraintMixin
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
-from .util import (get_params_whose_value_is_set, get_required_params, join_param_labels, pluralize)
+from .util import (get_params_whose_value_is_set, get_required_params, join_param_labels, param_value_is_set, pluralize)
 
 Op = TypeVar('Op', bound='Operator')
 HelpRephraser = Callable[[Context, 'Constraint'], str]
@@ -288,14 +288,15 @@ class _AllRequired(Constraint):
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
         values = ctx.params
-        falsy_params = [param for param in params if not values[param.name]]
-        if any(falsy_params):
+        unset_params = [param for param in params
+                        if not param_value_is_set(param, values[param.name])]
+        if any(unset_params):
             raise ConstraintViolated(
                 pluralize(
-                    len(falsy_params),
+                    len(unset_params),
                     one="%s is required",
                     many="the following parameters are required:\n%s\n"
-                ) % join_param_labels(falsy_params),
+                ) % join_param_labels(unset_params),
                 ctx=ctx,
             )
 
