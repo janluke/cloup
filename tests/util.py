@@ -1,4 +1,5 @@
 from contextlib import contextmanager
+from functools import partial
 from typing import Iterable, List
 
 import pytest
@@ -11,12 +12,11 @@ def noop(*args, **kwargs):
     pass
 
 
-def flag_opt(*param_decl):
-    return Option(param_decl, is_flag=True)
-
-
-def multi_opt(*param_decl):
-    return Option(param_decl, multiple=True)
+int_opt = partial(Option, type=int)
+bool_opt = partial(Option, type=bool)
+flag_opt = partial(Option, is_flag=True)
+multi_opt = partial(Option, multiple=True)
+tuple_opt = partial(Option, nargs=3)
 
 
 def mark_parametrize(argnames, *argvalues, **kwargs):
