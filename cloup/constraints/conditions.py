@@ -76,7 +76,7 @@ class Not(Predicate, Generic[P]):
         return self._predicate
 
     def __repr__(self) -> str:
-        return 'Not(%s)' % self._predicate
+        return 'Not(%r)' % self._predicate
 
 
 class _Operator(Predicate, metaclass=abc.ABCMeta):
