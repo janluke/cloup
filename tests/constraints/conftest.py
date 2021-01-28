@@ -1,16 +1,19 @@
 from unittest.mock import Mock
 
 import click
-from click import Command, Context
+from click import Context
 from pytest import fixture
 
 import cloup
+from cloup import Command
 
 
 @fixture()
-def dummy_ctx() -> Context:
+def dummy_ctx():
     """Useful for testing methods that needs a Context but don't actually use it."""
-    return Mock(Context)
+    dummy = Mock(spec_set=Context(Command('name', params=[])))
+    dummy.command.__class__ = Command
+    return dummy
 
 
 @fixture()

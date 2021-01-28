@@ -1,20 +1,25 @@
 from unittest.mock import Mock
 
 import pytest
+from click import Context
 from pytest import mark
 
 from cloup.constraints import Constraint, If
 from cloup.constraints.conditions import Equal, IsSet, Predicate
-from tests.constraints.test_constraints import mock_constraint
+from tests.constraints.test_constraints import FakeConstraint
 from tests.util import make_context, make_options, mark_parametrize
 
 
-def mock_predicate(value=True, desc='') -> Mock:
-    p = Mock(Predicate, return_value=value)
-    p.__and__ = Predicate.__and__
-    p.__or__ = Predicate.__or__
-    p.description.return_value = desc
-    return p
+class FakePredicate(Predicate):
+    def __init__(self, value: bool = True, desc='description'):
+        self.value = value
+        self._desc = desc
+
+    def description(self, ctx: Context) -> str:
+        return self._desc
+
+    def __call__(self, ctx: Context) -> bool:
+        return self.value
 
 
 class TestIfThenElse:
@@ -26,7 +31,7 @@ class TestIfThenElse:
         ctx = make_context(sample_cmd, 'arg1 --opt1=1 --opt3=3')
         params = ['arg1', 'opt3']  # dummy params, irrelevant
 
-        condition = mock_predicate(value=condition_value)
+        condition = FakePredicate(value=condition_value)
         constraint = If(condition).then(then_).else_(else_)
         constraint.check(params, ctx=ctx)
 
@@ -46,8 +51,8 @@ class TestIfThenElse:
 
     def test_help(self, sample_cmd):
         ctx = make_context(sample_cmd, 'arg1 --opt1=1 --opt3=3')
-        a = mock_constraint(help='_A_')
-        b = mock_constraint(help='_B_')
+        a = FakeConstraint(help='_A_')
+        b = FakeConstraint(help='_B_')
         constraint = If('arg1').then(a).else_(b)
         help = constraint.help(ctx)
         assert 'ARG1' in help
@@ -68,13 +73,13 @@ class TestAnd:
     @mark.parametrize('a_value', [False, True])
     def test_check(self, a_value, b_value, sample_cmd):
         ctx = make_context(sample_cmd, 'blah')
-        a = mock_predicate(value=a_value)
-        b = mock_predicate(value=b_value)
+        a = FakePredicate(value=a_value)
+        b = FakePredicate(value=b_value)
         c = a & b
         assert c(ctx) == (a_value and b_value)
 
     def test_operand_merging(self):
-        a, b, c, d = (mock_predicate() for _ in range(4))
+        a, b, c, d = (FakePredicate() for _ in range(4))
         res = (a & b) & c
         assert res.predicates == (a, b, c)
         res = (a & b) & (c & d)
@@ -83,7 +88,7 @@ class TestAnd:
         assert len(res.predicates) == 3
 
     def test_description(self, dummy_ctx):
-        a, b, c = (mock_predicate(desc=name) for name in 'ABC')
+        a, b, c = (FakePredicate(desc=name) for name in 'ABC')
         assert (a & b & c).description(dummy_ctx) == 'A and B and C'
 
 
@@ -92,13 +97,13 @@ class TestOr:
     @mark.parametrize('a_value', [False, True])
     def test_check(self, a_value, b_value, sample_cmd):
         ctx = make_context(sample_cmd, 'blah')
-        a = mock_predicate(value=a_value)
-        b = mock_predicate(value=b_value)
+        a = FakePredicate(value=a_value)
+        b = FakePredicate(value=b_value)
         c = a | b
         assert c(ctx) == (a_value or b_value)
 
     def test_operands_merging(self):
-        a, b, c, d = (mock_predicate() for _ in range(4))
+        a, b, c, d = (FakePredicate() for _ in range(4))
         res = (a | b) | c
         assert res.predicates == (a, b, c)
         res = (a | b) | (c | d)
@@ -107,15 +112,13 @@ class TestOr:
         assert len(res.predicates) == 3
 
     def test_description(self, dummy_ctx):
-        a = mock_predicate(desc='A')
-        b = mock_predicate(desc='B')
-        c = mock_predicate(desc='C')
+        a, b, c = (FakePredicate(desc=desc) for desc in 'ABC')
         assert (a | b | c).description(dummy_ctx) == 'A or B or C'
 
 
 def test_description_with_mixed_operators(dummy_ctx):
     ctx = dummy_ctx
-    a, b, c, d = (mock_predicate(desc=name) for name in 'ABCD')
+    a, b, c, d = (FakePredicate(desc=desc) for desc in 'ABCD')
     assert (a & b & c).desc(ctx) == 'A and B and C'
     assert (a | b | c).desc(ctx) == 'A or B or C'
     assert (a | b & c).desc(ctx) == 'A or (B and C)'

@@ -9,95 +9,82 @@ from pytest import mark
 
 from cloup.constraints import (
     Constraint,
-    Rephraser, SetAtLeast,
+    Rephraser,
+    SetAtLeast,
     SetAtMost,
     SetBetween,
     SetExactly,
-    WrapperConstraint, all_required,
+    all_required,
 )
 from cloup.constraints.exceptions import ConstraintViolated, UnsatisfiableConstraint
 from tests.util import make_context, make_fake_context, make_options, should_raise
 
 
-def mock_constraint(
-    satisfied=True, consistent=True, help='help',
-    check_error='violated', consistency_error='inconsistent',
-    **kwargs,
-) -> Mock:
-    c = Mock(Constraint, **kwargs)
-    c.__and__ = Constraint.__and__
-    c.__or__ = Constraint.__or__
-    c.help.return_value = help
-    if not satisfied:
-        c.check_values.side_effect = ConstraintViolated(check_error)
-    if not consistent:
-        c.check_consistency.side_effect = UnsatisfiableConstraint(
-            c, [], consistency_error)
-    return c
-
-
 class FakeConstraint(Constraint):
-    HELP = '__help__'
-    ERROR = '__error__'
-    CONSISTENCY_ERROR = '__inconsistent__'
+    """Sometimes it's useful to use::
 
-    def __init__(self, satisfied=True, consistent=True):
+        Mock(wraps=FakeConstraint(...))
+
+    to create a test double with characteristics of both a mock and a fake."""
+
+    def __init__(self, satisfied=True, consistent=True, help='help',
+                 error='error', inconsistency_reason='consistency_error'):
         self.satisfied = satisfied
         self.consistent = consistent
+        self._help = help
+        self.error = error
+        self.inconsistency_reason = inconsistency_reason
 
     def help(self, ctx: Context) -> str:
-        return self.HELP
+        return self._help
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         if not self.consistent:
-            raise UnsatisfiableConstraint(self, params, self.CONSISTENCY_ERROR)
+            raise UnsatisfiableConstraint(self, params, self.inconsistency_reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
         if not self.satisfied:
-            raise ConstraintViolated(self.ERROR)
+            raise ConstraintViolated(self.error, ctx=ctx)
 
 
 class TestBaseConstraint:
-
-    def test_rephrased_defaults(self):
+    def test_rephrased_calls_Rephraser_correctly(self):
         with mock.patch('cloup.constraints._core.Rephraser') as rephraser_cls:
-            fake = FakeConstraint()
-            fake.rephrased(help='ciao')
-            rephraser_cls.assert_called_with(fake, help='ciao', error=None)
-            fake.rephrased(error='ciao')
-            rephraser_cls.assert_called_with(fake, help=None, error='ciao')
+            cons = FakeConstraint()
+            cons.rephrased(help='ciao')
+            rephraser_cls.assert_called_with(cons, help='ciao', error=None)
+            cons.rephrased(error='ciao')
+            rephraser_cls.assert_called_with(cons, help=None, error='ciao')
 
-    def test_hidden(self, dummy_ctx):
-        hidden = FakeConstraint().hidden()
+    def test_hidden_constraint_returns_empty_help(self, dummy_ctx):
+        hidden = FakeConstraint(help='non-empty help').hidden()
         assert isinstance(hidden, Rephraser)
         assert hidden.help(dummy_ctx) == ''
 
-
-class TestWrapperConstraint:
-    class FakeWrapper(WrapperConstraint):
-        wrapped = mock_constraint()
-
-        def __init__(self, a, b):
-            super().__init__(self.wrapped, a=a, b=b)
-
-    def test_repr(self):
-        wrapper = self.FakeWrapper(1, 2)
-        assert repr(wrapper) == 'FakeWrapper(a=1, b=2)'
+    @mark.parametrize('satisfied', [True, False])
+    @mark.parametrize('consistent', [True, False])
+    def test__call__raises_iff_check_raises(self, satisfied, consistent):
+        ctx = make_fake_context(make_options('abc'))
+        cons = FakeConstraint(satisfied=satisfied, consistent=consistent)
+        exc_class = UnsatisfiableConstraint if not consistent else ConstraintViolated
+        with should_raise(exc_class, when=not (consistent and satisfied)):
+            cons(['a', 'b'], ctx)
 
 
 class TestAnd:
+
     @mark.parametrize('b_satisfied', [False, True])
     @mark.parametrize('a_satisfied', [False, True])
-    def test_check(self, a_satisfied, b_satisfied, sample_cmd):
-        ctx = make_context(sample_cmd, 'blah')
-        a = mock_constraint(satisfied=a_satisfied)
-        b = mock_constraint(satisfied=b_satisfied)
+    def test_check(self, a_satisfied, b_satisfied):
+        ctx = make_fake_context(make_options(['arg1', 'opt1', 'opt2', 'flag']))
+        a = FakeConstraint(satisfied=a_satisfied)
+        b = FakeConstraint(satisfied=b_satisfied)
         c = a & b
         with should_raise(ConstraintViolated, when=not (a_satisfied and b_satisfied)):
             c.check(params=['arg1', 'opt1'], ctx=ctx)
 
     def test_operand_merging(self):
-        a, b, c, d = (mock_constraint() for _ in range(4))
+        a, b, c, d = (FakeConstraint() for _ in range(4))
         res = (a & b) & c
         assert res.constraints == (a, b, c)
         res = (a & b) & (c & d)
@@ -109,16 +96,16 @@ class TestAnd:
 class TestOr:
     @mark.parametrize('b_satisfied', [False, True])
     @mark.parametrize('a_satisfied', [False, True])
-    def test_check(self, a_satisfied, b_satisfied, sample_cmd):
-        ctx = make_context(sample_cmd, 'blah')
-        a = mock_constraint(satisfied=a_satisfied)
-        b = mock_constraint(satisfied=b_satisfied)
+    def test_check(self, a_satisfied, b_satisfied):
+        ctx = make_fake_context(make_options(['arg1', 'opt1', 'opt2', 'flag']))
+        a = FakeConstraint(satisfied=a_satisfied)
+        b = FakeConstraint(satisfied=b_satisfied)
         c = a | b
         with should_raise(ConstraintViolated, when=not (a_satisfied or b_satisfied)):
             c.check(params=['arg1', 'opt1'], ctx=ctx)
 
     def test_operands_merging(self):
-        a, b, c, d = (mock_constraint() for _ in range(4))
+        a, b, c, d = (FakeConstraint() for _ in range(4))
         res = (a | b) | c
         assert res.constraints == (a, b, c)
         res = (a | b) | (c | d)
@@ -178,8 +165,8 @@ class TestSetAtMost:
     def test_check(self, sample_cmd: Command):
         ctx = make_context(sample_cmd, 'a1 --opt1=1 --opt3=3')
         check = partial(SetAtMost(2).check, ctx=ctx)
-        check(['opt1', 'opt2', 'opt3'])      # opt1 and opt3
-        check(['arg1', 'opt2', 'flag'])      # arg1
+        check(['opt1', 'opt2', 'opt3'])  # opt1 and opt3
+        check(['arg1', 'opt2', 'flag'])  # arg1
         with pytest.raises(ConstraintViolated):
             check(['arg1', 'opt1', 'def1'])  # arg1, opt1, def1
 
@@ -256,12 +243,12 @@ class TestRephraser:
             Rephraser(FakeConstraint())
 
     def test_help_override_with_string(self, dummy_ctx):
-        wrapped = mock_constraint()
+        wrapped = FakeConstraint()
         rephrased = Rephraser(wrapped, help='rephrased help')
         assert rephrased.help(dummy_ctx) == 'rephrased help'
 
     def test_help_override_with_function(self, dummy_ctx):
-        wrapped = mock_constraint()
+        wrapped = FakeConstraint()
         get_help = Mock(return_value='rephrased help')
         rephrased = Rephraser(wrapped, help=get_help)
         assert rephrased.help(dummy_ctx) == 'rephrased help'
@@ -269,7 +256,7 @@ class TestRephraser:
 
     def test_error_is_overridden_passing_string(self):
         fake_ctx = make_fake_context(make_options('abcd'))
-        wrapped = mock_constraint(satisfied=False)
+        wrapped = FakeConstraint(satisfied=False)
         rephrased = Rephraser(wrapped, error='error: {param_list}')
         with pytest.raises(ConstraintViolated) as exc_info:
             rephrased.check(['a', 'b'], ctx=fake_ctx)
@@ -278,26 +265,22 @@ class TestRephraser:
     def test_error_is_overridden_passing_function(self):
         params = make_options('abc')
         fake_ctx = make_fake_context(params)
-        wrapped = mock_constraint(satisfied=False)
+        wrapped = FakeConstraint(satisfied=False)
         get_error = Mock(return_value='rephrased error')
         rephrased = Rephraser(wrapped, error=get_error)
         with pytest.raises(ConstraintViolated, match='rephrased error'):
             rephrased.check(params, ctx=fake_ctx)
         get_error.assert_called_once_with(fake_ctx, wrapped, params)
-        wrapped.check_consistency.assert_called_once_with(params)
-        wrapped.check_values.assert_called_once_with(params, fake_ctx)
 
     def test_check_consistency_raises_if_wrapped_constraint_raises(self):
-        constraint = mock_constraint(consistent=True)
+        constraint = FakeConstraint(consistent=True)
         rephraser = Rephraser(constraint, help='help')
         params = make_options('abc')
         rephraser.check_consistency(params)
-        constraint.check_consistency.assert_called_once_with(params)
 
     def test_check_consistency_doesnt_raise_if_wrapped_constraint_doesnt_raise(self):
-        constraint = mock_constraint(consistent=False)
+        constraint = FakeConstraint(consistent=False)
         rephraser = Rephraser(constraint, help='help')
         params = make_options('abc')
         with pytest.raises(UnsatisfiableConstraint):
             rephraser.check_consistency(params)
-        constraint.check_consistency.assert_called_once_with(params)
