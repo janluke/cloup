@@ -10,18 +10,18 @@ from .exceptions import ConstraintViolated
 from .conditions import Predicate, IsSet
 
 
-def as_condition(arg: Union[str, Predicate]) -> Predicate:
+def as_predicate(arg: Union[str, Predicate]) -> Predicate:
     if isinstance(arg, str):
         return IsSet(arg)
     elif isinstance(arg, Predicate):
         return arg
     else:
-        raise TypeError('arg "condition" should be str or Condition')
+        raise TypeError('arg should be str or Predicate')
 
 
 class If:
     def __init__(self, condition: Union[str, Predicate]):
-        self._condition = as_condition(condition)
+        self._condition = as_predicate(condition)
 
     def then(self, constraint: Constraint) -> '_IfThen':
         return _IfThen(self._condition, then=constraint)
