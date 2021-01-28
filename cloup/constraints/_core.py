@@ -1,6 +1,6 @@
 import abc
 from typing import (
-    Callable, Iterable, NamedTuple, Optional, Sequence, TypeVar, Union,
+    Callable, Iterable, Optional, Sequence, TypeVar, Union,
     overload,
 )
 
@@ -10,9 +10,7 @@ from click import Context, Parameter
 from cloup._util import check_arg, class_name, make_one_line_repr, make_repr
 from ._mixin import ConstraintMixin
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
-from .util import (
-    get_required_params, get_params_whose_value_is_set, join_param_labels, pluralize,
-)
+from .util import (get_params_whose_value_is_set, get_required_params, join_param_labels, pluralize)
 
 Op = TypeVar('Op', bound='Operator')
 HelpRephraser = Callable[[Context, 'Constraint'], str]
@@ -21,13 +19,9 @@ ErrorRephraser = Callable[[Context, 'Constraint', Sequence[Parameter]], str]
 
 class Constraint(abc.ABC):
     """
-    A constraint that can be checked on an arbitrary collection of CLI
+    A constraint that can be checked against an arbitrary collection of CLI
     parameters with respect to a specific :class:`click.Context` (which
-    defines the values assigned to the parameters).
-
-    A ``Constraint`` can be bound to a specific collection of parameters calling
-    the method :meth:`bind` or equivalently :meth:`__call__`, which return an
-    instance of :class:`BoundConstraint`.
+    contains the values assigned to the parameters in ``ctx.params``).
     """
     # TODO: make this a Context setting
     check_consistency_enabled = True
@@ -119,14 +113,10 @@ class Constraint(abc.ABC):
         """Hides this constraint from the command help."""
         return Rephraser(self, help='')
 
-    def bind(self, *param_names: str) -> 'BoundConstraint':
-        """Returns a :class:`BoundConstraint` binding this constraint to the
-        provided parameters. If you see the constraint as a curried function
-        ``c(params)(ctx)``, this is equivalent to calling ``c(params)``. """
-        return BoundConstraint(self, param_names)
-
-    def __call__(self, *param_names: str) -> 'BoundConstraint':
-        return self.bind(*param_names)
+    def __call__(
+        self, param_names: Iterable[str], ctx: Optional[Context] = None
+    ) -> None:
+        return self.check(param_names, ctx=ctx)
 
     def __or__(self, other: 'Constraint') -> 'Or':
         return Or(self, other)
@@ -136,23 +126,6 @@ class Constraint(abc.ABC):
 
     def __repr__(self):
         return f'{class_name(self)}()'
-
-
-class BoundConstraint(NamedTuple):
-    """
-    A constraint bound to a particular set of parameters.
-    ``BoundConstraint`` isn't a subclass of ``Constraint``. It doesn't support
-    operators, it can only be checked against a ``Context`` which contains
-    values for the bound parameters.
-    """
-    constraint: Constraint
-    param_names: Sequence[str]
-
-    def check(self, ctx: Optional[Context] = None) -> None:
-        self.constraint.check(self.param_names, ctx)
-
-    def __call__(self, ctx: Optional[Context] = None) -> None:
-        self.check(ctx)
 
 
 class Operator(Constraint, abc.ABC):
