@@ -76,12 +76,12 @@ class TestAnd:
     @mark.parametrize('b_satisfied', [False, True])
     @mark.parametrize('a_satisfied', [False, True])
     def test_check(self, a_satisfied, b_satisfied):
-        ctx = make_fake_context(make_options(['arg1', 'opt1', 'opt2', 'flag']))
+        ctx = make_fake_context(make_options(['arg1', 'str_opt', 'int_opt', 'flag']))
         a = FakeConstraint(satisfied=a_satisfied)
         b = FakeConstraint(satisfied=b_satisfied)
         c = a & b
         with should_raise(ConstraintViolated, when=not (a_satisfied and b_satisfied)):
-            c.check(params=['arg1', 'opt1'], ctx=ctx)
+            c.check(params=['arg1', 'str_opt'], ctx=ctx)
 
     def test_operand_merging(self):
         a, b, c, d = (FakeConstraint() for _ in range(4))
@@ -97,12 +97,12 @@ class TestOr:
     @mark.parametrize('b_satisfied', [False, True])
     @mark.parametrize('a_satisfied', [False, True])
     def test_check(self, a_satisfied, b_satisfied):
-        ctx = make_fake_context(make_options(['arg1', 'opt1', 'opt2', 'flag']))
+        ctx = make_fake_context(make_options(['arg1', 'str_opt', 'int_opt', 'flag']))
         a = FakeConstraint(satisfied=a_satisfied)
         b = FakeConstraint(satisfied=b_satisfied)
         c = a | b
         with should_raise(ConstraintViolated, when=not (a_satisfied or b_satisfied)):
-            c.check(params=['arg1', 'opt1'], ctx=ctx)
+            c.check(params=['arg1', 'str_opt'], ctx=ctx)
 
     def test_operands_merging(self):
         a, b, c, d = (FakeConstraint() for _ in range(4))
@@ -138,13 +138,13 @@ class TestSetAtLeast:
             check_consistency(make_options('ab'))
 
     def test_check(self, sample_cmd: Command):
-        ctx = make_context(sample_cmd, 'a1 --opt1=1 --opt3=3')
+        ctx = make_context(sample_cmd, 'a1 --str-opt=ciao --bool-opt=0')
         check = partial(SetAtLeast(2).check, ctx=ctx)
-        check(['opt1', 'opt2', 'opt3'])  # opt1 and opt3
-        check(['arg1', 'opt2', 'def1'])  # arg1 and def1
-        check(['arg1', 'opt1', 'def1'])  # arg1, opt1 and def1
+        check(['str_opt', 'int_opt', 'bool_opt'])  # str-opt and bool-opt
+        check(['arg1', 'int_opt', 'def1'])  # arg1 and def1
+        check(['arg1', 'str_opt', 'def1'])  # arg1, str-opt and def1
         with pytest.raises(ConstraintViolated):
-            check(['opt1', 'arg2', 'flag'])  # only opt1 is set
+            check(['str_opt', 'arg2', 'flag'])  # only str-opt is set
 
 
 class TestSetAtMost:
@@ -163,12 +163,12 @@ class TestSetAtMost:
             check_consistency(make_options('abc', required=True))
 
     def test_check(self, sample_cmd: Command):
-        ctx = make_context(sample_cmd, 'a1 --opt1=1 --opt3=3')
+        ctx = make_context(sample_cmd, 'a1 --str-opt=ciao --bool-opt=0')
         check = partial(SetAtMost(2).check, ctx=ctx)
-        check(['opt1', 'opt2', 'opt3'])  # opt1 and opt3
-        check(['arg1', 'opt2', 'flag'])  # arg1
+        check(['str_opt', 'int_opt', 'bool_opt'])  # str-opt and bool-opt
+        check(['arg1', 'int_opt', 'flag'])  # arg1
         with pytest.raises(ConstraintViolated):
-            check(['arg1', 'opt1', 'def1'])  # arg1, opt1, def1
+            check(['arg1', 'str_opt', 'def1'])  # arg1, str-opt, def1
 
 
 class TestSetExactly:
@@ -188,14 +188,14 @@ class TestSetExactly:
             check_consistency(make_options('abcde', required=True))
 
     def test_check(self, sample_cmd: Command):
-        ctx = make_context(sample_cmd, 'a1 --opt1=1 --opt3=3')
+        ctx = make_context(sample_cmd, 'a1 --str-opt=ciao --bool-opt=0')
         check = partial(SetExactly(2).check, ctx=ctx)
-        check(['opt1', 'opt2', 'opt3'])  # opt1 and opt3
-        check(['arg1', 'opt2', 'opt3'])  # arg1 and opt3
+        check(['str_opt', 'int_opt', 'bool_opt'])  # str-opt and bool-opt
+        check(['arg1', 'int_opt', 'bool_opt'])  # arg1 and bool-opt
         with pytest.raises(ConstraintViolated):
-            check(['arg1', 'opt1', 'def1'])  # arg1, opt1, def1
+            check(['arg1', 'str_opt', 'def1'])  # arg1, str-opt, def1
         with pytest.raises(ConstraintViolated):
-            check(['arg1', 'opt2', 'flag'])  # arg1
+            check(['arg1', 'int_opt', 'flag'])  # arg1
 
 
 class TestSetBetween:
@@ -222,15 +222,15 @@ class TestSetBetween:
             check_consistency(make_options('abcde', required=True))  # too many required
 
     def test_check(self, sample_cmd: Command):
-        ctx = make_context(sample_cmd, 'a1 --opt1=1 --opt3=3 --flag --mul1=4')
+        ctx = make_context(sample_cmd, 'a1 --str-opt=ciao --bool-opt=0 --flag --mul1=4')
         check = partial(SetBetween(2, 4).check, ctx=ctx)
-        check(['opt1', 'opt2', 'opt3'])  # opt1 and opt3
-        check(['arg1', 'opt2', 'flag'])  # arg1, opt3 and flag
-        check(['def1', 'opt2', 'flag', 'mul1'])  # all
+        check(['str_opt', 'int_opt', 'bool_opt'])  # str-opt and bool-opt
+        check(['arg1', 'int_opt', 'flag'])  # arg1, bool-opt and flag
+        check(['def1', 'int_opt', 'flag', 'mul1'])  # all
         with pytest.raises(ConstraintViolated):
-            check(['arg2', 'opt2', 'def1'])  # only def1
+            check(['arg2', 'int_opt', 'def1'])  # only def1
         with pytest.raises(ConstraintViolated):
-            check(['arg1', 'def1', 'def2', 'opt1', 'flag'])  # all
+            check(['arg1', 'def1', 'def2', 'str_opt', 'flag'])  # all
 
 
 class TestAllRequired:
@@ -241,19 +241,19 @@ class TestAllRequired:
         all_required.check_consistency(make_options('abc'))
 
     def test_check(self, sample_cmd: Command):
-        ctx = make_context(sample_cmd, 'arg1 --opt1=1 --opt3=3')
+        ctx = make_context(sample_cmd, 'arg1 --str-opt=0 --bool-opt=0')
         check = partial(all_required.check, ctx=ctx)
         check(['arg1'])
-        check(['opt1'])
-        check(['arg1', 'opt1'])
-        check(['arg1', 'opt1', 'opt3'])
-        check(['arg1', 'opt1', 'opt3', 'def1'])
+        check(['str_opt'])
+        check(['arg1', 'str_opt'])
+        check(['arg1', 'str_opt', 'bool_opt'])
+        check(['arg1', 'str_opt', 'bool_opt', 'def1'])
         with pytest.raises(ConstraintViolated):
             check(['arg2'])
         with pytest.raises(ConstraintViolated):
             check(['arg1', 'arg2'])
         with pytest.raises(ConstraintViolated):
-            check(['arg1', 'def1', 'opt2'])
+            check(['arg1', 'def1', 'int_opt'])
 
 
 class TestRephraser:

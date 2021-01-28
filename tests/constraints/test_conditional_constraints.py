@@ -28,8 +28,8 @@ class TestIfThenElse:
     def test_the_right_branch_is_checked(self, sample_cmd, condition_value):
         then_ = Mock(Constraint)
         else_ = Mock(Constraint)
-        ctx = make_context(sample_cmd, 'arg1 --opt1=1 --opt3=3')
-        params = ['arg1', 'opt3']  # dummy params, irrelevant
+        ctx = make_context(sample_cmd, 'arg1 --str-opt=ciao --bool-opt=0')
+        params = ['arg1', 'bool_opt']  # dummy params, irrelevant
 
         condition = FakePredicate(value=condition_value)
         constraint = If(condition).then(then_).else_(else_)
@@ -50,7 +50,7 @@ class TestIfThenElse:
             getattr(If('ciao'), 'pippo')
 
     def test_help(self, sample_cmd):
-        ctx = make_context(sample_cmd, 'arg1 --opt1=1 --opt3=3')
+        ctx = make_context(sample_cmd, 'arg1 --str-opt=ciao --bool-opt=0')
         a = FakeConstraint(help='_A_')
         b = FakeConstraint(help='_B_')
         constraint = If('arg1').then(a).else_(b)
@@ -127,7 +127,7 @@ def test_description_with_mixed_operators(dummy_ctx):
 
 
 class TestIsSet:
-    SHELL_INPUT = 'arg1 --opt3=3 --flag2 --mul1 1 --mul1 2'
+    SHELL_INPUT = 'arg1 --bool-opt=0 --flag2 --mul1 1 --mul1 2'
 
     @mark_parametrize(
         # These cases are relative to [sample_cmd] with [SHELL_INPUT] as input
@@ -135,8 +135,8 @@ class TestIsSet:
         ['param', 'is_set', 'param_kind'],
         ('arg1', True, 'provided argument'),
         ('arg2', False, 'unset argument'),
-        ('opt3', True, 'provided option'),
-        ('opt1', False, 'unprovided option without default'),
+        ('bool_opt', True, 'provided option'),
+        ('str_opt', False, 'unprovided option without default'),
         ('def1', True, 'unprovided option with default'),
         ('flag', False, 'unset boolean flag'),
         ('flag2', True, 'provided boolean flag'),
@@ -152,14 +152,14 @@ class TestIsSet:
     def test_descriptions(self, sample_cmd):
         ctx = make_context(sample_cmd, '')
         assert IsSet('arg1').desc(ctx) == 'ARG1 is set'
-        assert IsSet('opt1').desc(ctx) == '--opt1 is set'
+        assert IsSet('str_opt').desc(ctx) == '--str-opt is set'
         assert IsSet('arg1').neg_desc(ctx) == 'ARG1 is not set'
-        assert IsSet('opt1').neg_desc(ctx) == '--opt1 is not set'
+        assert IsSet('str_opt').neg_desc(ctx) == '--str-opt is not set'
 
 
 class TestEqual:
     def test_condition_Equal(self, sample_cmd):
-        ctx = make_context(sample_cmd, 'xxx --opt3=3 --flag --tuple 1 2')
+        ctx = make_context(sample_cmd, 'xxx --bool-opt=0 --flag --tuple 1 2')
         for name, value in ctx.params.items():
             assert Equal(name, value)(ctx)
             assert not Equal(name, 'blah')(ctx)

@@ -17,8 +17,8 @@ class TestConstraintMixin:
 
         params = [
             Argument(('arg1',)),
-            Option(('--opt1',)),
-            Option(('--opt2', 'option2')),
+            Option(('--str-opt',)),
+            Option(('--int-opt', 'option2')),
         ]
         cmd = Cmd(name='cmd', params=params, callback=noop)
         for param in params:

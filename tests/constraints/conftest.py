@@ -26,9 +26,9 @@ def sample_cmd() -> Command:
     @click.argument('arg1', required=False)
     @click.argument('arg2', required=False)
     # Plain options without default
-    @cloup.option('--opt1')
-    @cloup.option('--opt2')
-    @cloup.option('--opt3')
+    @cloup.option('--str-opt')
+    @cloup.option('--int-opt', type=int)
+    @cloup.option('--bool-opt', type=bool)
     # Flags
     @cloup.option('--flag / --no-flag')
     @cloup.option('--flag2', is_flag=True)
