@@ -470,10 +470,11 @@ required_mutually_exclusive = SetExactly(1).rephrased(
 
 def check_constraint(
     constraint: Constraint,
-    on: Sequence[str],
+    params: Sequence[str],
+    *,
     ctx: Optional[Context] = None,
     error: Optional[str] = None,
 ) -> None:
     if error is not None:
         constraint = constraint.rephrased(error=error)
-    return constraint.check(params=on, ctx=ctx)
+    return constraint.check(params=params, ctx=ctx)
