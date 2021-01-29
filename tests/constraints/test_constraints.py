@@ -70,6 +70,16 @@ class TestBaseConstraint:
         with should_raise(exc_class, when=not (consistent and satisfied)):
             cons(['a', 'b'], ctx)
 
+    def test_check_consistency_is_not_called_when_disabled(self):
+        ctx = make_fake_context(make_options('abc'))
+        dummy_params = ['a', 'b']
+        with Constraint.consistency_checks_toggled(False):
+            assert not Constraint.must_check_consistency()
+            constr = Mock(wraps=FakeConstraint())
+            constr(dummy_params, ctx)
+            assert constr.check_consistency.call_count == 0
+        assert Constraint.must_check_consistency()
+
 
 class TestAnd:
 

@@ -27,7 +27,7 @@ class ConstraintMixin:
         from ._core import Constraint
 
         # Check group consistency *before* parameter parsing
-        if Constraint.check_consistency_enabled:
+        if Constraint.must_check_consistency():
             for group in self._optgroup_to_check:
                 group.constraint.check_consistency(group.options)
 

@@ -34,7 +34,7 @@ def make_fake_context(
     command_cls=cloup.Command,
 ) -> Context:
     """Creates an simple instance of Command with the specified parameters,
-    then create a fake context without actually invoke the command."""
+    then create a fake context without actually invoking the command."""
     return Context(command_cls('fake', params=params, callback=noop))
 
 

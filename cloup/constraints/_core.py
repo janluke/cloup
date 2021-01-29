@@ -1,4 +1,5 @@
 import abc
+from contextlib import contextmanager
 from typing import (
     Callable, Iterable, Optional, Sequence, TypeVar, Union,
     overload,
@@ -29,8 +30,30 @@ class Constraint(abc.ABC):
     parameters with respect to a specific :class:`click.Context` (which
     contains the values assigned to the parameters in ``ctx.params``).
     """
-    # TODO: make this a Context setting
-    check_consistency_enabled = True
+    __check_consistency: bool = True
+
+    @classmethod
+    def must_check_consistency(cls) -> bool:
+        """Returns True if consistency checks are enabled."""
+        return cls.__check_consistency
+
+    @classmethod
+    def toggle_consistency_checks(cls, value: bool):
+        """Enables/disables consistency checks. Enabling means that:
+
+        - :meth:`check` will call :meth:`check_consistency`
+        - :class:`~cloup.ConstraintMixin` will call `check_consistency` on
+          constraints it is responsible for before parsing CLI arguments.
+        """
+        cls.__check_consistency = value
+
+    @classmethod
+    @contextmanager
+    def consistency_checks_toggled(cls, value: bool):
+        value_to_restore = Constraint.__check_consistency
+        cls.__check_consistency = value
+        yield
+        cls.__check_consistency = value_to_restore
 
     @abc.abstractmethod
     def help(self, ctx: Context) -> str:
@@ -38,22 +61,23 @@ class Constraint(abc.ABC):
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         """
-        Checks that this constraint is consistent with the parameters, i.e. it
-        is compatible and can be satisfied by the input parameters, independently
-        from what values will be assigned to them.
+        Performs some sanity checks that detect inconsistencies between this
+        constraints and the properties of the input parameters (e.g. required).
 
         For example, a constraint that requires the parameters to be mutually
         exclusive is not consistent with a group of parameters with multiple
-        options required.
+        required options.
 
-        The only purpose of this method is to catch mistakes of the developer.
-        This checks can be disabled in production setting
-        :data:`check_consistency_enabled` to ``False``.
+        These sanity checks are meant to catch developer's mistakes and don't
+        depend on the values assigned to the parameters; therefore:
+
+        - they can be performed before any parameter parsing
+        - they can be disabled in production (see :meth:`toggle_consistency_checks`)
 
         :param params: list of :class:`click.Parameter` instances
         :raises: :exc:`~cloup.constraints.errors.UnsatisfiableConstraint`
-            if the constraint cannot be satisfied independently from the values
-            provided by the user
+                 if the constraint cannot be satisfied independently from the values
+                 provided by the user
         """
 
     @abc.abstractmethod
@@ -82,8 +106,16 @@ class Constraint(abc.ABC):
 
     def check(self, params, ctx: Optional[Context] = None) -> None:
         """
-        Raises an exception if the constraint is not verified by the input
+        Raises an exception if the constraint is not satisfied by the input
         parameters in the given (or current) context.
+
+        This method calls both :meth:`check_consistency` (if enabled) and
+        :meth:`check_values`.
+
+        .. tip::
+            By default :meth:`check_consistency` is called since it shouldn't
+            have any performance impact. Nonetheless, you can disable it in
+            production passing ``False`` to :meth:`toggle_consistency_checks`.
 
         :param params: an iterable of parameter names or a sequence of
                        :class:`click.Parameter`
@@ -104,7 +136,7 @@ class Constraint(abc.ABC):
         params_objects = (ctx.command.get_params_by_name(params)
                           if isinstance(params[0], str)
                           else params)
-        if self.check_consistency_enabled:
+        if self.must_check_consistency():
             self.check_consistency(params_objects)
         return self.check_values(params_objects, ctx)
 
