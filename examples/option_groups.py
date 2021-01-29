@@ -51,19 +51,11 @@ from cloup.constraints import If, SetAtLeast, check_constraint, mutually_exclusi
 def main(**kwargs):
     """ A CLI that does nothing. """
 
-    # What if a constraint exists in a group of parameters that don't form an
-    # OptionGroup? In this case, you can check constraints inside the function
-    # just by providing the *names* of the parameters; the needed Context is
-    # automatically grabbed using click.get_current_context().
+    # What if you want to define a constraint on a group of parameters that
+    # don't form an OptionGroup? No problem, you can check a constraint on any
+    # group of parameters by providing the *names* of the parameters in a list;
+    # the needed Context is automatically grabbed using click.get_current_context().
     mutually_exclusive(['one', 'six'])
-
-    # Something like SetAtLeast(1)('one', 'six') and conditional constraints
-    # may be weird to read. For this reason, I introduced the function
-    #
-    #     check_constraint(constraint, params, [when], [error], [ctx])
-    #
-    # which makes things more clear and readable in my opinion.
-    check_constraint(SetAtLeast(1), ['one', 'six'])
 
     pprint(kwargs, indent=3)
 
