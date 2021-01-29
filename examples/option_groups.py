@@ -37,7 +37,7 @@ from cloup.constraints import If, SetAtLeast, check_constraint, mutually_exclusi
     option('--one', type=int, help='a 1st cool option'),
     option('--two', help='a 2nd cool option'),
     option('--three', help='a 3rd cool option'),
-    constraint=SetAtLeast(1).hidden(),
+    constraint=SetAtLeast(1),
 )
 @option_group(
     'Second group name',
