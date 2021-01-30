@@ -5,7 +5,7 @@ import click
 
 import cloup
 from cloup import OptionGroup, option
-from cloup.constraints import If, SetAtLeast, mutually_exclusive
+from cloup.constraints import If, RequireAtLeast, mutually_exclusive
 
 _input = OptionGroup(
     'Input options',
@@ -14,7 +14,7 @@ _input = OptionGroup(
 )
 _output = OptionGroup(
     'Output options',
-    constraint=If('three', then=SetAtLeast(1)),
+    constraint=If('three', then=RequireAtLeast(1)),
 )
 
 
@@ -24,7 +24,7 @@ _output = OptionGroup(
 @_input.option('--two', help='2nd input option')
 @_input.option('--three', help='3rd input option')
 # Output options
-@_output.option('--four / --no-four', help='1st output option')
+@_output.option('--four', help='1st output option')
 @_output.option('--five', help='2nd output option')
 @_output.option('--six', help='3rd output option')
 # Other options

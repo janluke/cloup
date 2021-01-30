@@ -1,5 +1,5 @@
 """
-Constraints for option groups.
+Constraints for parameter groups.
 
 .. versionadded: v0.5.0
 """
@@ -13,10 +13,9 @@ from ._core import (
     Constraint,
     Operator, Or, And,
     Rephraser, WrapperConstraint,
-    SetAtLeast, SetAtMost, SetExactly, SetBetween,
-    all_required, all_unset, all_or_none,
-    mutually_exclusive, required_mutually_exclusive,
-    check_constraint,
+    RequireAtLeast, AcceptAtMost, RequireExactly, AcceptBetween,
+    require_all, accept_none, all_or_none,
+    mutually_exclusive,
 )
 from ._mixin import ConstraintMixin
 from ._conditional import If

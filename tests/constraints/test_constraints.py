@@ -10,11 +10,11 @@ from pytest import mark
 from cloup.constraints import (
     Constraint,
     Rephraser,
-    SetAtLeast,
-    SetAtMost,
-    SetBetween,
-    SetExactly,
-    all_required,
+    RequireAtLeast,
+    AcceptAtMost,
+    AcceptBetween,
+    RequireExactly,
+    require_all,
 )
 from cloup.constraints.exceptions import ConstraintViolated, UnsatisfiableConstraint
 from tests.util import make_context, make_fake_context, make_options, should_raise
@@ -126,30 +126,30 @@ class TestOr:
 
 def test_operator_help(dummy_ctx):
     ctx = dummy_ctx
-    a, b, c = SetAtLeast(3), SetAtMost(10), SetExactly(8)
+    a, b, c = RequireAtLeast(3), AcceptAtMost(10), RequireExactly(8)
     a_help, b_help, c_help = (cons.help(ctx) for cons in [a, b, c])
     assert (a | b | c).help(ctx) == f'{a_help} or {b_help} or {c_help}'
     assert (a | b & c).help(ctx) == f'{a_help} or ({b_help} and {c_help})'
 
 
-class TestSetAtLeast:
+class TestRequireAtLeast:
     def test_init_raises_for_invalid_n(self):
-        SetAtLeast(0)
+        RequireAtLeast(0)
         with pytest.raises(ValueError):
-            SetAtLeast(-1)
+            RequireAtLeast(-1)
 
     def test_help(self, dummy_ctx):
-        assert '3' in SetAtLeast(3).help(dummy_ctx)
+        assert '3' in RequireAtLeast(3).help(dummy_ctx)
 
     def test_check_consistency(self):
-        check_consistency = SetAtLeast(3).check_consistency
+        check_consistency = RequireAtLeast(3).check_consistency
         check_consistency(make_options('abc'))
         with pytest.raises(UnsatisfiableConstraint):
             check_consistency(make_options('ab'))
 
     def test_check(self, sample_cmd: Command):
         ctx = make_context(sample_cmd, 'a1 --str-opt=ciao --bool-opt=0')
-        check = partial(SetAtLeast(2).check, ctx=ctx)
+        check = partial(RequireAtLeast(2).check, ctx=ctx)
         check(['str_opt', 'int_opt', 'bool_opt'])  # str-opt and bool-opt
         check(['arg1', 'int_opt', 'def1'])  # arg1 and def1
         check(['arg1', 'str_opt', 'def1'])  # arg1, str-opt and def1
@@ -157,40 +157,42 @@ class TestSetAtLeast:
             check(['str_opt', 'arg2', 'flag'])  # only str-opt is set
 
 
-class TestSetAtMost:
+class TestAcceptAtMost:
     def test_init_raises_for_invalid_n(self):
-        SetAtMost(0)
+        AcceptAtMost(0)
         with pytest.raises(ValueError):
-            SetAtMost(-1)
+            AcceptAtMost(-1)
 
     def test_help(self, dummy_ctx):
-        assert '3' in SetAtMost(3).help(dummy_ctx)
+        assert '3' in AcceptAtMost(3).help(dummy_ctx)
 
     def test_check_consistency(self):
-        check_consistency = SetAtMost(2).check_consistency
+        check_consistency = AcceptAtMost(2).check_consistency
         check_consistency(make_options('abc'))
         with pytest.raises(UnsatisfiableConstraint):
             check_consistency(make_options('abc', required=True))
 
     def test_check(self, sample_cmd: Command):
         ctx = make_context(sample_cmd, 'a1 --str-opt=ciao --bool-opt=0')
-        check = partial(SetAtMost(2).check, ctx=ctx)
+        check = partial(AcceptAtMost(2).check, ctx=ctx)
         check(['str_opt', 'int_opt', 'bool_opt'])  # str-opt and bool-opt
         check(['arg1', 'int_opt', 'flag'])  # arg1
         with pytest.raises(ConstraintViolated):
             check(['arg1', 'str_opt', 'def1'])  # arg1, str-opt, def1
 
 
-class TestSetExactly:
+class TestRequireExactly:
     def test_init_raises_for_invalid_n(self):
         with pytest.raises(ValueError):
-            SetExactly(-1)
+            RequireExactly(0)
+        with pytest.raises(ValueError):
+            RequireExactly(-1)
 
     def test_help(self, dummy_ctx):
-        assert '3' in SetExactly(3).help(dummy_ctx)
+        assert '3' in RequireExactly(3).help(dummy_ctx)
 
     def test_check_consistency(self):
-        check_consistency = SetExactly(3).check_consistency
+        check_consistency = RequireExactly(3).check_consistency
         check_consistency(make_options('abcd'))
         with pytest.raises(UnsatisfiableConstraint):
             check_consistency(make_options('ab'))
@@ -199,7 +201,7 @@ class TestSetExactly:
 
     def test_check(self, sample_cmd: Command):
         ctx = make_context(sample_cmd, 'a1 --str-opt=ciao --bool-opt=0')
-        check = partial(SetExactly(2).check, ctx=ctx)
+        check = partial(RequireExactly(2).check, ctx=ctx)
         check(['str_opt', 'int_opt', 'bool_opt'])  # str-opt and bool-opt
         check(['arg1', 'int_opt', 'bool_opt'])  # arg1 and bool-opt
         with pytest.raises(ConstraintViolated):
@@ -208,23 +210,23 @@ class TestSetExactly:
             check(['arg1', 'int_opt', 'flag'])  # arg1
 
 
-class TestSetBetween:
+class TestAcceptBetween:
     def test_init_raises_for_invalid_n(self):
-        SetBetween(0, 10)
-        SetBetween(0, 1)
+        AcceptBetween(0, 10)
+        AcceptBetween(0, 1)
         with pytest.raises(ValueError):
-            SetBetween(-1, 2)
+            AcceptBetween(-1, 2)
         with pytest.raises(ValueError):
-            SetBetween(2, 2)
+            AcceptBetween(2, 2)
         with pytest.raises(ValueError):
-            SetBetween(3, 2)
+            AcceptBetween(3, 2)
 
     def test_help(self, dummy_ctx):
-        help = SetBetween(3, 5).help(dummy_ctx)
-        assert help == 'set at least 3, at most 5'
+        help = AcceptBetween(3, 5).help(dummy_ctx)
+        assert help == 'at least 3 required, at most 5 accepted'
 
     def test_check_consistency(self):
-        check_consistency = SetBetween(2, 4).check_consistency
+        check_consistency = AcceptBetween(2, 4).check_consistency
         check_consistency(make_options('abcd'))
         with pytest.raises(UnsatisfiableConstraint):
             check_consistency(make_options('a'))  # too little params
@@ -233,7 +235,7 @@ class TestSetBetween:
 
     def test_check(self, sample_cmd: Command):
         ctx = make_context(sample_cmd, 'a1 --str-opt=ciao --bool-opt=0 --flag --mul1=4')
-        check = partial(SetBetween(2, 4).check, ctx=ctx)
+        check = partial(AcceptBetween(2, 4).check, ctx=ctx)
         check(['str_opt', 'int_opt', 'bool_opt'])  # str-opt and bool-opt
         check(['arg1', 'int_opt', 'flag'])  # arg1, bool-opt and flag
         check(['def1', 'int_opt', 'flag', 'mul1'])  # all
@@ -243,16 +245,16 @@ class TestSetBetween:
             check(['arg1', 'def1', 'def2', 'str_opt', 'flag'])  # all
 
 
-class TestAllRequired:
+class TestRequiredAll:
     def test_help(self, dummy_ctx):
-        assert 'all required' in all_required.help(dummy_ctx)
+        assert 'all required' in require_all.help(dummy_ctx)
 
     def test_check_consistency(self):
-        all_required.check_consistency(make_options('abc'))
+        require_all.check_consistency(make_options('abc'))
 
     def test_check(self, sample_cmd: Command):
         ctx = make_context(sample_cmd, 'arg1 --str-opt=0 --bool-opt=0')
-        check = partial(all_required.check, ctx=ctx)
+        check = partial(require_all.check, ctx=ctx)
         check(['arg1'])
         check(['str_opt'])
         check(['arg1', 'str_opt'])

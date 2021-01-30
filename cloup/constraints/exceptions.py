@@ -32,8 +32,8 @@ class ConstraintViolated(click.UsageError):
 
 class UnsatisfiableConstraint(Exception):
     """ Raised if a constraint cannot be satisfied by a group of parameters
-    independently from their values at runtime; e.g. SetAtMost(1) cannot be
-    satisfied if multiple of the parameters are required. """
+    independently from their values at runtime; e.g. mutually_exclusive cannot
+    be satisfied if multiple of the parameters are required. """
 
     def __init__(
         self, constraint: 'Constraint', params: Iterable[Parameter], reason: str

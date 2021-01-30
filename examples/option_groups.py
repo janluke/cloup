@@ -6,7 +6,7 @@ Basically, you can specify the optional help string either:
 
 1) as keyword argument, after the options
     @option_group(name: str,
-                  *options: GroupedOption,
+                  *options: Option,
                   help: Optional[str] = None
                   constraint: Optional[Constraint] = None)
 
@@ -14,8 +14,12 @@ Basically, you can specify the optional help string either:
 
     @option_group(name: str,
                   help: str,
-                  *options: GroupedOption,
+                  *options: Option,
                   constraint: Optional[Constraint] = None)
+
+ATTENTION: this is NOT and doesn't want to be a "meaningful" example!
+My goal here is to show you different ways of using the API in a compact way
+and give you a file that you can run to see how the help is printed out.
 """
 from pprint import pprint
 
@@ -24,29 +28,31 @@ from click import Choice
 
 import cloup
 from cloup import option, option_group
-from cloup.constraints import If, SetAtLeast, check_constraint, mutually_exclusive
+from cloup.constraints import (
+    If, RequireAtLeast, RequireExactly, all_or_none
+)
 
 
 @cloup.command(name='cloup')
 @click.argument('arg', required=False)
 @option_group(
     'First group title',
-    "This is a very long description of the option group. I don't think this is "
+    "this is a very long description of the option group. I don't think this is "
     "needed very often; still, if you want to provide it, you can pass it as 2nd "
     "positional argument or as keyword argument 'help' after all options.",
-    option('--one', type=int, help='a 1st cool option'),
+    option('--one', help='a 1st cool option'),
     option('--two', help='a 2nd cool option'),
     option('--three', help='a 3rd cool option'),
-    constraint=SetAtLeast(1),
+    constraint=RequireAtLeast(1),
 )
 @option_group(
     'Second group name',
     option('--four', help='a 4th cool option'),
     option('--five', help='a 5th cool option'),
     option('--six', help='a 6th cool option'),
-    constraint=If('three', then=SetAtLeast(1)),
+    constraint=If('three', then=RequireExactly(1)),  # conditional constraint
 )
-@option('--seven', help='first uncategorized option', type=Choice('yes no ask'.split()))
+@option('--seven', help='an uncategorized option', type=Choice(['foo', 'bar']))
 @option('--eight', help='second uncategorized option')
 def main(**kwargs):
     """ A CLI that does nothing. """
@@ -55,7 +61,7 @@ def main(**kwargs):
     # don't form an OptionGroup? No problem, you can check a constraint on any
     # group of parameters by providing the *names* of the parameters in a list;
     # the needed Context is automatically grabbed using click.get_current_context().
-    mutually_exclusive(['one', 'six'])
+    all_or_none(['one', 'six'])
 
     pprint(kwargs, indent=3)
 

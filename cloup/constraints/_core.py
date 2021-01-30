@@ -1,8 +1,7 @@
 import abc
 from contextlib import contextmanager
 from typing import (
-    Callable, Iterable, Optional, Sequence, TypeVar, Union,
-    overload,
+    Callable, Iterable, Optional, Sequence, TypeVar, Union, overload
 )
 
 import click
@@ -170,7 +169,7 @@ class Operator(Constraint, abc.ABC):
     """Base class for all n-ary operators defined on constraints. """
 
     #: Used as separator of all constraints' help strings
-    HELP_SEP = ''
+    HELP_SEP: str
 
     def __init__(self, *constraints: Constraint):
         """N-ary operator for constraints.
@@ -278,10 +277,7 @@ class Rephraser(Constraint):
             raise
 
     def __repr__(self):
-        return make_repr(self, self._constraint, help=self._help, error=self._error)
-
-    def __str__(self):
-        return make_one_line_repr(self, self._constraint, help=self._help)
+        return make_one_line_repr(self, help=self._help)
 
 
 class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
@@ -318,8 +314,8 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
         return make_repr(self, **self._attrs)
 
 
-class _AllRequired(Constraint):
-    """Requires all parameters to be set."""
+class _RequireAll(Constraint):
+    """Satisfied if all parameters are set."""
 
     def help(self, ctx: Context) -> str:
         return 'all required'
@@ -339,8 +335,8 @@ class _AllRequired(Constraint):
             )
 
 
-class SetAtLeast(Constraint):
-    """Requires a minimum number of parameters to be set."""
+class RequireAtLeast(Constraint):
+    """Satisfied if the number of set parameters is >= n."""
 
     def __init__(self, n: int):
         check_arg(n >= 0)
@@ -369,18 +365,18 @@ class SetAtLeast(Constraint):
             )
 
     def __repr__(self):
-        return '%s(%d)' % (class_name(self), self._n)
+        return make_repr(self, self._n)
 
 
-class SetAtMost(Constraint):
-    """Puts an upper bound to the number of set parameters."""
+class AcceptAtMost(Constraint):
+    """Satisfied if the number of set parameters is <= n."""
 
     def __init__(self, n: int):
         check_arg(n >= 0)
         self._n = n
 
     def help(self, ctx: Context) -> str:
-        return f'set at most {self._n}'
+        return f'at most {self._n} accepted'
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         num_required_opts = len(get_required_params(params))
@@ -393,26 +389,24 @@ class SetAtMost(Constraint):
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) > n:
             raise ConstraintViolated(
-                f"no more than {n} of the following parameters must be set:\n"
+                f"no more than {n} of the following parameters can be set:\n"
                 f"{join_param_labels(params)}.\n",
                 ctx=ctx,
             )
 
     def __repr__(self):
-        return '%s(%d)' % (class_name(self), self._n)
+        return make_repr(self, self._n)
 
 
-class SetExactly(WrapperConstraint):
+class RequireExactly(WrapperConstraint):
     """Requires an exact number of parameters to be set."""
 
     def __init__(self, n: int):
-        check_arg(n >= 0)
+        check_arg(n > 0)
         self._n = n
-        super().__init__(SetAtLeast(n) & SetAtMost(n), n=n)
+        super().__init__(RequireAtLeast(n) & AcceptAtMost(n), n=n)
 
     def help(self, ctx: Context) -> str:
-        if self._n == 0:
-            return 'all forbidden'  # makes sense in conditional constraints
         return f'exactly {self._n} required'
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
@@ -427,44 +421,44 @@ class SetExactly(WrapperConstraint):
             raise ConstraintViolated(reason, ctx=ctx)
 
 
-class SetBetween(WrapperConstraint):
+class AcceptBetween(WrapperConstraint):
     def __init__(self, min: int, max: int):  # noqa
-        """Satisfied if the number of set parameters is between ``min`` and ``max``.
+        """Satisfied if the number of set parameters is between
+        ``min`` and ``max`` (included).
 
         :param min: must be an integer >= 0
         :param max: must be an integer > min
         """
         check_arg(min >= 0, 'min must be non-negative')
         if max is not None:
-            check_arg(min < max, 'must be: min < max. Use SetExactly instead')
+            check_arg(min < max, 'must be: min < max.')
         self._min = min
         self._max = max
-        super().__init__(SetAtLeast(min) & SetAtMost(max), min=min, max=max)
+        super().__init__(RequireAtLeast(min) & AcceptAtMost(max), min=min, max=max)
 
     def help(self, ctx: Context) -> str:
-        return f'set at least {self._min}, at most {self._max}'
+        return f'at least {self._min} required, at most {self._max} accepted'
 
 
-#: Requires all the parameters to be set.
-all_required = _AllRequired()
+#: Satisfied if all parameters are set.
+require_all = _RequireAll()
 
-#: Alias for ``SetExactly(0)``.
-all_unset = SetExactly(0)
-
-#: Requires the parameters to be either all set or all unset.
-all_or_none = (all_required | all_unset).rephrased(
-    help='set all or none',
-    error='either all or none of the following parameters must be set: {param_list}"',
+#: Satisfied if none of the parameters is set.
+accept_none = AcceptAtMost(0).rephrased(
+    help='all forbidden',
+    error='the following parameters are all forbidden'
 )
 
-#: Rephrased version of ``SetAtMost(1)``.
-mutually_exclusive = SetAtMost(1).rephrased(
+#: Satisfied if either all or none of the parameters are set.
+all_or_none = (require_all | accept_none).rephrased(
+    help='provide all or none',
+    error='either all or none of the following parameters must be set:\n{param_list}',
+)
+
+#: Satisfied if at most one of the parameters is set.
+mutually_exclusive = AcceptAtMost(1).rephrased(
     help='mutually exclusive',
-)
-
-#: Rephrased version of ``SetExactly(1)``.
-required_mutually_exclusive = SetExactly(1).rephrased(
-    help='required, mutually exclusive',
+    error='the following parameters are mutually exclusive:\n{param_list}'
 )
 
 
