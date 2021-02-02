@@ -1,6 +1,5 @@
 import abc
 from typing import (
-    Callable,
     Dict,
     Iterable,
     Optional,
