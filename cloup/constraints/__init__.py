@@ -17,6 +17,6 @@ from ._core import (
     require_all, accept_none, all_or_none,
     mutually_exclusive,
 )
-from ._mixin import ConstraintMixin
+from ._mixin import ConstraintMixin, constraint
 from ._conditional import If
 from .conditions import IsSet, Equal, Not

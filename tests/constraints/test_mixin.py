@@ -1,3 +1,4 @@
+import textwrap
 from unittest.mock import Mock
 
 import click
@@ -35,10 +36,11 @@ class TestConstraintMixin:
         'do_check_consistency', [True, False],
         ids=['consistency', 'no_consistency']
     )
-    def test_option_group_constraints_are_checked(self, runner, do_check_consistency):
+    def test_constraints_are_checked(self, runner, do_check_consistency):
         constraints = [
             Mock(spec_set=Constraint, wraps=FakeConstraint()),
-            Mock(spec_set=Constraint, wraps=FakeConstraint())
+            Mock(spec_set=Constraint, wraps=FakeConstraint()),
+            Mock(spec_set=Constraint, wraps=FakeConstraint()),
         ]
 
         @cloup.command()
@@ -46,6 +48,7 @@ class TestConstraintMixin:
                             constraint=constraints[0])
         @cloup.option_group('second', cloup.option('--c'), cloup.option('--d'),
                             constraint=constraints[1])
+        @cloup.constraint(constraints[2], ['a', 'c'])
         def cmd(a, b, c, d):
             print(f'{a}, {b}, {c}, {d}')
 
@@ -54,10 +57,56 @@ class TestConstraintMixin:
             result = runner.invoke(cmd, args='--a=1 --c=2'.split(), catch_exceptions=False)
 
         assert result.output.strip() == '1, None, 2, None'
-        for constr, opt_names in zip(constraints, [['a', 'b'], ['c', 'd']]):
+        for constr, opt_names in zip(constraints, [['a', 'b'], ['c', 'd'], ['a', 'c']]):
             opts = cmd.get_params_by_name(opt_names)
             if do_check_consistency:
                 constr.check_consistency.assert_called_once_with(opts)
             else:
                 constr.check_consistency.assert_not_called()
             constr.check_values.assert_called_once()
+
+    @mark.parametrize(
+        'show_constraints', [True, False],
+        ids=['enabled', 'disabled']
+    )
+    def test_constraints_are_showed_in_help_only_if_enabled(self, runner, show_constraints):
+        @cloup.command(show_constraints=show_constraints, context_settings={'terminal_width': 80})
+        @cloup.option('--a')
+        @cloup.option('--b')
+        @cloup.option('--c')
+        @cloup.constraint(FakeConstraint(help='a constraint'), ['a', 'b'])
+        @cloup.constraint(FakeConstraint(help='another constraint'), ['b', 'c'])
+        def cmd(a, b, c, d):
+            pass
+
+        result = runner.invoke(cmd, args=['--help'],
+                               catch_exceptions=False,
+                               prog_name='test')
+        out = result.output.strip()
+
+        if show_constraints:
+            expected = textwrap.dedent('''
+                Usage: test [OPTIONS]
+
+                Options:
+                  --a TEXT
+                  --b TEXT
+                  --c TEXT
+                  --help    Show this message and exit.
+
+                Constraints:
+                  {--a, --b}  a constraint
+                  {--b, --c}  another constraint
+            ''').strip()
+            assert out == expected
+        else:
+            expected = textwrap.dedent('''
+                Usage: test [OPTIONS]
+
+                Options:
+                  --a TEXT
+                  --b TEXT
+                  --c TEXT
+                  --help    Show this message and exit.
+            ''').strip()
+            assert out == expected

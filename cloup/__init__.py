@@ -14,4 +14,4 @@ from ._sections import (
 from ._commands import (
     Command, Group, MultiCommand, command, group
 )
-from .constraints import ConstraintMixin
+from .constraints import ConstraintMixin, constraint

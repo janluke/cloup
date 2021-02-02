@@ -73,59 +73,75 @@ class Group(SectionMixin, click.Group):
             sections=sections, align_sections=align_sections,
             **attrs)
 
-    def command(self, name: Optional[str] = None,  # type: ignore
-                section: Optional[Section] = None,
-                cls: Type[click.Command] = Command, **attrs) -> Callable[[Callable], click.Command]:
-        """ Creates a new command and adds it to this group. """
+    def command(  # type: ignore
+        self, name: Optional[str] = None,
+        section: Optional[Section] = None,
+        cls: Optional[Type[click.Command]] = None,
+        **attrs,
+    ):
+        """Creates a new command and adds it to this group."""
+        if cls is None:
+            cls = Command
 
         def decorator(f):
-            cmd = click.command(name=name, cls=cls, **attrs)(f)
+            cmd = command(name=name, cls=cls, **attrs)(f)
             self.add_command(cmd, section=section)
             return cmd
 
         return decorator
 
-    def group(self, name: Optional[str] = None,  # type: ignore
-              section: Optional[Section] = None,
-              cls: Optional[Type[click.Group]] = None,
-              **attrs) -> Callable[[Callable], click.Group]:
+    def group(  # type: ignore
+        self, name: Optional[str] = None,
+        section: Optional[Section] = None,
+        cls: Optional[Type[click.Group]] = None,
+        **attrs,
+    ):
         if cls is None:
             cls = Group
-
-        def decorator(f):
-            cmd = click.group(name=name, cls=cls, **attrs)(f)
-            self.add_command(cmd, section=section)
-            return cmd
-
-        return decorator
+        return self.command(name=name, section=section, cls=cls, **attrs)
 
 
-def group(name: Optional[str] = None, **attrs) -> Callable[[Callable], Group]:
+def group(name: Optional[str] = None, cls: Type[click.Group] = Group, **attrs):
     """ Creates a new :class:`Group` using the decorated function as
     callback. This is just a convenience function equivalent to::
 
         click.group(name, cls=cloup.Group, **attrs)
 
     :param name: name of the command
+    :param cls: type of Group
     :param attrs: any argument you can pass to :func:`click.group`
-
-    .. versionchanged:: 0.5.0
-        Removed the ``cls`` argument
     """
-    return cast(Group, click.group(name=name, cls=Group, **attrs))
+    return cast(Group, click.group(name=name, cls=cls, **attrs))
 
 
-def command(name: Optional[str] = None, **attrs) -> Callable[[Callable], Command]:
+def command(
+    name: Optional[str] = None,
+    cls: Type[click.Command] = Command,
+    **attrs
+):
     """
-    Creates a new :class:`Command` using the decorated function as
-    callback. This is just a convenience function equivalent to::
+    Decorator that creates a new command using the wrapped function as callback.
 
-        click.command(name, cls=cloup.Command, **attrs)
+    The only differences with respect to ``click.commands`` are:
+
+    - this decorator creates a ``cloup.Command`` by default;
+    - this decorator supports ``@constraint``.
 
     :param name: name of the command
+    :param cls: type of click.Command
     :param attrs: any argument you can pass to :func:`click.command`
-
-    .. versionchanged:: 0.5.0
-        Removed the ``cls`` argument
     """
-    return cast(Command, click.command(name, cls=Command, **attrs))
+
+    def wrapper(f):
+        if hasattr(f, '__constraints'):
+            if not issubclass(cls, ConstraintMixin):
+                raise TypeError(
+                    f"a Command must inherits from cloup.ConstraintMixin to support "
+                    f"constraints; {cls} doesn't")
+            constraints = tuple(reversed(f.__constraints))
+            del f.__constraints
+            attrs['constraints'] = constraints
+
+        return click.command(name, cls=cls, **attrs)(f)
+
+    return wrapper

@@ -19,7 +19,8 @@ Basically, you can specify the optional help string either:
 
 ATTENTION: this is NOT and doesn't want to be a "meaningful" example!
 My goal here is to show you different ways of using the API in a compact way
-and give you a file that you can run to see how the help is printed out.
+and give you a file that you can run to see how the help is printed out with
+different settings.
 """
 from pprint import pprint
 
@@ -29,11 +30,11 @@ from click import Choice
 import cloup
 from cloup import option, option_group
 from cloup.constraints import (
-    If, RequireAtLeast, RequireExactly, all_or_none
+    Equal, If, RequireAtLeast, RequireExactly, constraint, mutually_exclusive,
 )
 
 
-@cloup.command(name='cloup')
+@cloup.command(name='cloup', show_constraints=True)
 @click.argument('arg', required=False)
 @option_group(
     'First group title',
@@ -54,15 +55,10 @@ from cloup.constraints import (
 )
 @option('--seven', help='an uncategorized option', type=Choice(['foo', 'bar']))
 @option('--eight', help='second uncategorized option')
+@constraint(mutually_exclusive, ['one', 'two'])
+@constraint(If(Equal('one', '123'), then=RequireExactly(1)), ['seven', 'six'])
 def main(**kwargs):
     """ A CLI that does nothing. """
-
-    # What if you want to define a constraint on a group of parameters that
-    # don't form an OptionGroup? No problem, you can check a constraint on any
-    # group of parameters by providing the *names* of the parameters in a list;
-    # the needed Context is automatically grabbed using click.get_current_context().
-    all_or_none(['one', 'six'])
-
     pprint(kwargs, indent=3)
 
 

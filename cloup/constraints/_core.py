@@ -8,7 +8,6 @@ import click
 from click import Context, Parameter
 
 from cloup._util import check_arg, class_name, make_one_line_repr, make_repr
-from ._mixin import ConstraintMixin
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 from .util import (
     get_params_whose_value_is_set,
@@ -124,11 +123,13 @@ class Constraint(abc.ABC):
             :exc:`~cloup.constraints.ConstraintViolated`
             :exc:`~cloup.constraints.UnsatisfiableConstraint`
         """
+        from ._mixin import ConstraintMixin
+
         if not params:
             raise ValueError("arg 'params' can't be empty")
 
         ctx = click.get_current_context() if ctx is None else ctx
-        if not isinstance(ctx.command, ConstraintMixin):
+        if not isinstance(ctx.command, ConstraintMixin):  # this is needed for mypy
             raise TypeError('constraints work only if the command inherits from '
                             'ConstraintMixin')
 
