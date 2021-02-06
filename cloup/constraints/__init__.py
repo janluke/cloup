@@ -5,18 +5,23 @@ Constraints for parameter groups.
 """
 # flake8: noqa F401
 
-from .exceptions import (
-    ConstraintViolated,
-    UnsatisfiableConstraint,
-)
-from ._core import (
-    Constraint,
-    Operator, Or, And,
-    Rephraser, WrapperConstraint,
-    RequireAtLeast, AcceptAtMost, RequireExactly, AcceptBetween,
-    require_all, accept_none, all_or_none,
-    mutually_exclusive,
-)
-from ._mixin import ConstraintMixin, constraint
 from ._conditional import If
-from .conditions import IsSet, Equal, Not
+from ._core import (
+    AcceptAtMost,
+    AcceptBetween,
+    And,
+    Constraint,
+    Operator,
+    Or,
+    Rephraser,
+    RequireAtLeast,
+    RequireExactly,
+    WrapperConstraint,
+    accept_none,
+    all_or_none,
+    mutually_exclusive,
+    require_all,
+)
+from ._support import ConstraintMixin, constraint
+from .conditions import Equal, IsSet, Not
+from .exceptions import ConstraintViolated, UnsatisfiableConstraint

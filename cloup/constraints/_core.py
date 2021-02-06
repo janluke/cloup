@@ -123,7 +123,7 @@ class Constraint(abc.ABC):
             :exc:`~cloup.constraints.ConstraintViolated`
             :exc:`~cloup.constraints.UnsatisfiableConstraint`
         """
-        from ._mixin import ConstraintMixin
+        from ._support import ConstraintMixin
 
         if not params:
             raise ValueError("arg 'params' can't be empty")

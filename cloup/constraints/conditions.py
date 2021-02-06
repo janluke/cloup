@@ -11,7 +11,7 @@ from typing import Any, Generic, TypeVar
 from click import Context
 
 from .util import param_label_by_name, param_value_by_name, param_value_is_set
-from ._mixin import ConstraintMixin
+from ._support import ConstraintMixin
 from .._util import make_repr
 
 P = TypeVar('P', bound='Predicate')
