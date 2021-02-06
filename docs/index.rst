@@ -1,12 +1,13 @@
 .. include:: ../README.rst
     :end-before: if-doc-stop-here
 
+Table of contents
+-----------------
 .. toctree::
-    :caption: Table of contents
     :maxdepth: 2
 
-    usage
+    pages/usage
     autoapi/index
-    contributing
-    credits
-    changelog
+    pages/contributing
+    pages/credits
+    pages/changelog

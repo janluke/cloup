@@ -22,9 +22,11 @@ V0.5.0 (in development)
 
 **Compatible changes and features**
 
-- Define **constraints** between parameters groups (including ``OptionGroup``'s).
-- Support to option groups is now implemented in ``OptionGroupMixin``.
-- Support to subcommand sections is now implemented in ``SectionMixin``.
+- Added a subpackage for defining **constraints** on parameters groups
+  (including ``OptionGroup``'s).
+- The code for adding support to option groups was extracted to ``OptionGroupMixin``.
+- Most of the code for adding support to subcommand sections was extracted to
+  ``SectionMixin``.
 
 
 v0.4.0 (2020-01-10)
