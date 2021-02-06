@@ -461,15 +461,3 @@ mutually_exclusive = AcceptAtMost(1).rephrased(
     help='mutually exclusive',
     error='the following parameters are mutually exclusive:\n{param_list}'
 )
-
-
-def check_constraint(
-    constraint: Constraint,
-    params: Sequence[str],
-    *,
-    ctx: Optional[Context] = None,
-    error: Optional[str] = None,
-) -> None:
-    if error is not None:
-        constraint = constraint.rephrased(error=error)
-    return constraint.check(params=params, ctx=ctx)
