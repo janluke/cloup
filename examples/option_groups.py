@@ -58,7 +58,7 @@ from cloup.constraints import (
 @constraint(mutually_exclusive, ['one', 'two'])
 @constraint(If(Equal('one', '123'), then=RequireExactly(1)), ['seven', 'six'])
 def main(**kwargs):
-    """ A CLI that does nothing. """
+    """A test program for cloup."""
     pprint(kwargs, indent=3)
 
 
