@@ -12,6 +12,7 @@ from click import Context
 
 from .util import param_label_by_name, param_value_by_name, param_value_is_set
 from ._mixin import ConstraintMixin
+from .._util import make_repr
 
 P = TypeVar('P', bound='Predicate')
 
@@ -91,6 +92,9 @@ class _Operator(Predicate, metaclass=abc.ABCMeta):
             else p.description(ctx)
             for p in self.predicates
         )
+
+    def __repr__(self):
+        return make_repr(self, *self.predicates)
 
 
 class _And(_Operator):
