@@ -36,7 +36,7 @@ Constraints are well-integrated with ``OptionGroup``'s but decoupled from them.
 Thus, you can use them to check *any* group of parameters (for example, options
 belonging to different option groups); you can do that by providing the
 parameter (destination) names (see `Usage with @constraint`_ and
-`Usage inside function`_).
+`Usage inside functions`_).
 
 In order to support constraints, a ``Command`` must inherit from :class:`ConstraintMixin`.
 Of course, ``cloup.Command`` satisfies this requirement.
