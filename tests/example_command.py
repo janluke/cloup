@@ -3,6 +3,7 @@ import click
 
 import cloup
 from cloup import option, option_group
+from cloup.constraints import If, RequireAtLeast
 
 
 def make_example_command(align_option_groups):
@@ -17,10 +18,11 @@ def make_example_command(align_option_groups):
         option('--three', help='3rd option of group A'),
         help='This is a very useful description of group A')
     @option_group(
-        'Option group B',
+        'Option group B', 'Help as positional argument',
         option('--four / --no-four', help='1st option of group B'),
-        option('--five', help='2nd option of group B', hidden=True),
-        option('--six', help='3rd option of group B'))
+        option('--five', help='2nd option of group B', hidden=True),  # hidden option
+        option('--six', help='3rd option of group B'),
+        constraint=If('three', then=RequireAtLeast(1)))
     @option('--seven', help='first uncategorized option',
             type=click.Choice('yes no ask'.split()))
     @option('--height', help='second uncategorized option')
@@ -45,7 +47,8 @@ Option group A:
   --two TEXT            2nd option of group A
   --three TEXT          3rd option of group A
 
-Option group B:
+Option group B [at least 1 required if --three is set]:
+  Help as positional argument
   --four / --no-four    1st option of group B
   --six TEXT            3rd option of group B
 
@@ -53,7 +56,7 @@ Other options:
   --seven [yes|no|ask]  first uncategorized option
   --height TEXT         second uncategorized option
   --help                Show this message and exit.
-    """.strip()
+""".strip()
 
 _EXPECTED_NON_ALIGNED_HELP = """
 Usage: clouptest [OPTIONS]
@@ -66,7 +69,8 @@ Option group A:
   --two TEXT    2nd option of group A
   --three TEXT  3rd option of group A
 
-Option group B:
+Option group B [at least 1 required if --three is set]:
+  Help as positional argument
   --four / --no-four  1st option of group B
   --six TEXT          3rd option of group B
 
@@ -77,4 +81,6 @@ Other options:
 """.strip()
 
 if __name__ == '__main__':
-    make_example_command(False)(['--help'])
+    make_example_command(align_option_groups=True)(
+        ['--help'], prog_name='clouptest'
+    )

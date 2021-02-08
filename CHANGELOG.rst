@@ -16,19 +16,17 @@ V0.5.0 (in development)
 
 - Drop support to Python 3.5.
 
-**Incompatible changes**
-
-- ``@cloup.command`` and ``@cloup.group`` don't take a ``cls`` argument anymore.
-  Just use the analogous ``click`` decorators if you need to pass a custom class.
-
 **Deprecated**
 
 - ``GroupSection`` was renamed as ``Section``.
 
 **Compatible changes and features**
 
-- Support to option groups is now implemented in ``OptionGroupMixin``.
-- Support to subcommand sections is now implemented in ``SectionMixin``.
+- Added a subpackage for defining **constraints** on parameters groups
+  (including ``OptionGroup``'s).
+- The code for adding support to option groups was extracted to ``OptionGroupMixin``.
+- Most of the code for adding support to subcommand sections was extracted to
+  ``SectionMixin``.
 
 
 v0.4.0 (2020-01-10)

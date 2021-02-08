@@ -50,10 +50,10 @@ re-docs: clean-docs docs ## (re)generate Sphinx HTML documentation from scratch
 view-docs: docs ## open the built docs in the default browser
 	$(BROWSER) docs/_build/html/index.html
 
-
 LIVE_DOCS = sphinx-autobuild docs docs/_build/html \
 	--watch *.rst \
 	--watch cloup/**/*.py \
+	--ignore docs/autoapi \
 	--open-browser
 
 .PHONY: live-docs
@@ -101,3 +101,4 @@ pip-compile: ## pin dependencies in requirements/ using the current env
 .PHONY: pip-sync
 pip-sync: pip-compile ## sync development environment with requirements/dev.txt
 	pip-sync requirements/dev.txt
+	pip install -e .

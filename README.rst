@@ -32,19 +32,28 @@ Cloup
     :alt: Documentation Status (latest release)
     :target: https://cloup.readthedocs.io/en/stable/
 
-Cloup (= **Cl**\ick + gr\ **oup**\s) adds to `Click <https://github.com/pallets/click>`_
-the following features:
+Cloup (= **Cl**\ick + gr\ **oup**\s) contains a set of
+`Click <https://github.com/pallets/click>`_ extensions that enable you to:
 
-- **option groups**;
-- **subcommand sections**: organization of the subcommands of a ``MultiCommand``
-  in multiple help sections.
+- define **option groups** with a clean API;
 
-Currently, cloup only affects how the command help is formatted, it doesn't
-allow to specify constraints on option groups. Constraints are coming soon
-though.
+- define **constraints**, including *conditional constraints*, on any group of
+  parameters (e.g. ``mutually_exclusive``, ``RequireAtLeast(1)`` etc.);
+
+- (optionally) show an auto-generated description of defined constraints in the
+  command help;
+
+- organize the subcommands of a ``MultiCommand`` in multiple **help sections**.
+
+These features are implemented in three **mixins** following the same pattern of
+click-contrib extensions. For ease of use, Cloup also provides:
+
+- its own versions of Click commands, obtained by mixing Click classes with the
+  mixins mentioned above;
+- it own versions of Click decorators, for creating such commands.
 
 .. if-doc-stop-here
 
 Documentation
 =============
-Read more at https://cloup.readthedocs.io/.
+Read more at https://cloup.readthedocs.io/en/stable/usage.html

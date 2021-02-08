@@ -1,5 +1,5 @@
--r test.in
--r docs.in
+-r test.txt
+-r docs.txt
 flake8
 mypy
 pip-tools
@@ -7,4 +7,3 @@ tox
 twine
 bump2version
 sphinx-autobuild
--e .
