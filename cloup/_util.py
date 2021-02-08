@@ -50,4 +50,4 @@ def make_repr(obj, *args, _line_len: int = 60, _indent: int = 2, **kwargs) -> st
 
 
 def make_one_line_repr(obj, *args, **kwargs):
-    return make_repr(obj, *args, **kwargs)
+    return make_repr(obj, *args, _line_len=-1, **kwargs)
