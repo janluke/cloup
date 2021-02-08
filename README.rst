@@ -56,4 +56,7 @@ click-contrib extensions. For ease of use, Cloup also provides:
 
 Documentation
 =============
-Read more at https://cloup.readthedocs.io/en/stable/usage.html
+Read more in the documentation:
+
+* `latest release <https://cloup.readthedocs.io/en/stable/>`_
+* `development version <https://cloup.readthedocs.io/en/latest/>`_.
