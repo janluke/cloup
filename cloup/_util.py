@@ -51,3 +51,13 @@ def make_repr(obj, *args, _line_len: int = 60, _indent: int = 2, **kwargs) -> st
 
 def make_one_line_repr(obj, *args, **kwargs):
     return make_repr(obj, *args, _line_len=-1, **kwargs)
+
+
+def pluralize(
+    count: int, zero: str = '', one: str = '', many: str = '',
+) -> str:
+    if count == 0 and zero:
+        return zero
+    if count == 1 and one:
+        return one
+    return many.format(count=count)

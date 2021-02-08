@@ -36,16 +36,6 @@ def get_required_params(params: Iterable[Parameter]) -> List[Parameter]:
     return [p for p in params if p.required]
 
 
-def pluralize(
-    count: int, zero: str = '', one: str = '', many: str = '',
-) -> str:
-    if count == 0 and zero:
-        return zero
-    if count == 1 and one:
-        return one
-    return many.format(count=count)
-
-
 def get_param_label(param: Parameter) -> str:
     if param.param_type_name == 'argument':
         return param.human_readable_name
