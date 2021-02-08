@@ -3,7 +3,7 @@ from typing import Iterable, Optional, TYPE_CHECKING
 import click
 from click import Context, Parameter
 
-from .util import join_param_labels
+from .common import join_param_labels
 
 if TYPE_CHECKING:
     from ._core import Constraint

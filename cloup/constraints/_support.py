@@ -3,7 +3,7 @@ from typing import Iterable, List, NamedTuple, Optional, Sequence, TYPE_CHECKING
 from click import Context, HelpFormatter, Parameter
 
 from ._core import Constraint
-from .util import join_param_labels
+from .common import join_param_labels
 
 if TYPE_CHECKING:
     from .._option_groups import OptionGroup

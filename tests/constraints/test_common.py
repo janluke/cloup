@@ -1,6 +1,6 @@
 from click import Argument, Option
 
-from cloup.constraints.util import get_param_label, param_value_is_set
+from cloup.constraints.common import get_param_label, param_value_is_set
 from tests.util import bool_opt, flag_opt, int_opt, mark_parametrize, multi_opt, tuple_opt
 
 
