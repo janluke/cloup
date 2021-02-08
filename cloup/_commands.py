@@ -25,9 +25,7 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
         super().__init__(*args, **kwargs)
 
 
-class MultiCommand(
-    ConstraintMixin, SectionMixin, click.MultiCommand, metaclass=abc.ABCMeta
-):
+class MultiCommand(SectionMixin, click.MultiCommand, metaclass=abc.ABCMeta):
     """
     A ``click.MultiCommand`` that allows to organize its subcommands in
     multiple help sections and and whose subcommands are, by default, of type
