@@ -344,7 +344,7 @@ class RequireAtLeast(Constraint):
         self._n = n
 
     def help(self, ctx: Context) -> str:
-        return 'at least %d required' % self._n
+        return f'at least {self._n} required'
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         n = self._n
