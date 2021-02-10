@@ -30,7 +30,7 @@ V0.5.0 (in development)
 
 **Project changes**
 
-- Migrated from TravisCI to GitHub Actions
+- Migrated from TravisCI to GitHub Actions.
 
 
 v0.4.0 (2020-01-10)
