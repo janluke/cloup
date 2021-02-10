@@ -33,7 +33,7 @@ V0.5.0 (2021-02-10)
 - Migrated from TravisCI to GitHub Actions.
 
 
-v0.4.0 (2020-01-10)
+v0.4.0 (2021-01-10)
 ===================
 
 **Requirements**
