@@ -5,14 +5,12 @@ Cloup
 ====================  ==========================================================
 **Master branch**     |tests-status| |coverage| |latest-docs|
 --------------------  ----------------------------------------------------------
-**Package**           |pypi-release| |python-versions| |release-docs|
+**Latest release**    |pypi-release| |python-versions| |release-docs|
 ====================  ==========================================================
 
 .. |pypi-release| image:: https://img.shields.io/pypi/v/cloup.svg
     :alt: Latest release on PyPI
     :target: https://pypi.org/project/cloup/
-
-![Tests]()
 
 .. |tests-status| image:: https://github.com/janLuke/cloup/workflows/Tests/badge.svg
     :alt: Tests status
