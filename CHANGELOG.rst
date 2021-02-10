@@ -28,6 +28,10 @@ V0.5.0 (in development)
 - Most of the code for adding support to subcommand sections was extracted to
   ``SectionMixin``.
 
+**Project changes**
+
+- Migrated from TravisCI to GitHub Actions
+
 
 v0.4.0 (2020-01-10)
 ===================
