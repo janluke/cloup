@@ -6,13 +6,23 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python: [ '3.6', '3.7', '3.8', '3.9' ]
-        click: [ '7', '8' ]
         include:
-          - { name: 'Lint',          tox-env: lint,  python: '3.8' }
-          - { name: 'Type checking', tox-env: mypy,  python: '3.8' }
-          - { name: 'Twine check',   tox-env: twine, python: '3.8' }
-          - { name: 'Docs',          tox-env: docs,  python: '3.8' }
+          # Checks
+          - { name: 'Lint',          tox: lint,  python: '3.8' }
+          - { name: 'Type checking', tox: mypy,  python: '3.8' }
+          - { name: 'Twine check',   tox: twine, python: '3.8' }
+          # Test using Click 7
+          - { name: 'Python 3.6, Click 7', tox: 'py36-click7', python: '3.6' }
+          - { name: 'Python 3.7, Click 7', tox: 'py37-click7', python: '3.7' }
+          - { name: 'Python 3.8, Click 7', tox: 'py38-click7', python: '3.8' }
+          - { name: 'Python 3.9, Click 7', tox: 'py39-click7', python: '3.9' }
+          # Test using Click 8
+          - { name: 'Python 3.6, Click 8', tox: 'py36-click8', python: '3.6' }
+          - { name: 'Python 3.7, Click 8', tox: 'py37-click8', python: '3.7' }
+          - { name: 'Python 3.8, Click 8', tox: 'py38-click8', python: '3.8' }
+          - { name: 'Python 3.9, Click 8', tox: 'py39-click8', python: '3.9' }
+          # Docs
+          - { name: 'Docs', tox: docs,  python: '3.8' }
 
     steps:
       - name: Checkout
@@ -28,14 +38,13 @@ jobs:
           python -m pip install -U pip
           pip install -U wheel
           pip install -U setuptools
-          pip install tox tox-gh-actions
+          pip install tox
 
-      - env:
-          TOXENV: ${{ matrix.tox-env }}
-        run: tox
+      - name: Run tox -e ${{ matrix.tox }}
+        run: tox -e ${{ matrix.tox }}
 
-      - name: Run codecov (py38-click7 only)
-        if: ${{ matrix.python == '3.8' && matrix.click == '7' }}
+      - name: Install and run codecov (py38-click7 only)
+        if: ${{ matrix.tox == 'py38-click7' }}
         run: |
           pip install codecov
           codecov
