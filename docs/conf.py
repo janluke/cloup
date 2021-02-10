@@ -40,6 +40,7 @@ extensions = [
     'sphinx.ext.autodoc.typehints',
     'sphinx_panels',
     'sphinx_copybutton',  # adds a copy button to code blocks
+    'versionwarning.extension',
 ]
 
 autoclass_content = 'both'
@@ -56,7 +57,7 @@ autoapi_options = [
     'show-inheritance',
     'show-module-summary',
     'special-members',
-    'imported-members'
+    'imported-members',
 ]
 
 intersphinx_mapping = {
@@ -145,6 +146,21 @@ html_css_files = [
     'styles/tabs-overrides.css',
     'styles/theme-overrides.css',
 ]
+
+versionwarning_messages = {
+    "latest": (
+        "this document is for the development version. "
+        'For the stable version documentation, see <a href="/en/stable/">here</a>.'
+    ),
+}
+# versionwarning_project_version = "latest"    # For debugging locally
+versionwarning_body_selector = "body"
+versionwarning_banner_title = ""
+versionwarning_banner_html = """
+<div id="{id_div}">
+    <strong>Warning:</strong> {message}
+</div>
+"""
 
 # -- Options for HTMLHelp output ---------------------------------------
 

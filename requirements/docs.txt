@@ -67,6 +67,8 @@ sphinx-copybutton==0.3.1
     # via -r requirements/docs.in
 sphinx-panels==0.5.2
     # via -r requirements/docs.in
+sphinx-version-warning==1.1.2
+    # via -r requirements/docs.in
 sphinx==3.4.2
     # via
     #   -r requirements/docs.in
@@ -75,6 +77,7 @@ sphinx==3.4.2
     #   sphinx-book-theme
     #   sphinx-copybutton
     #   sphinx-panels
+    #   sphinx-version-warning
 sphinxcontrib-applehelp==1.0.2
     # via sphinx
 sphinxcontrib-devhelp==1.0.2

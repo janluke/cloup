@@ -17,6 +17,10 @@ p.caption {
     font-size: 2em;
 }
 
+.footer {
+    padding-bottom: 3.5em;
+}
+
 .toctree-wrapper li {
     margin: 0;
 }
@@ -85,4 +89,27 @@ div.versionadded, div.versionchanged {
 
 span.versionmodified {
     font-weight: bold;
+}
+
+#version-warning-banner {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    max-width: 100%;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 0.5em 1em;
+    margin: 0;
+    border-radius: 10px;
+    background: #d40 repeating-linear-gradient(
+        135deg, transparent, transparent 56px, rgba(255, 255, 255, 0.2) 56px,
+        rgba(255, 255, 255, 0.2) 112px );
+    color: white;
+    text-align: center;
+}
+
+#version-warning-banner a {
+    color: white !important;
+    font-weight: bold;
+    text-decoration: underline;
 }

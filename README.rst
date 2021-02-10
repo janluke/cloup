@@ -50,7 +50,7 @@ click-contrib extensions. For ease of use, Cloup also provides:
 
 - its own versions of Click commands, obtained by mixing Click classes with the
   mixins mentioned above;
-- it own versions of Click decorators, for creating such commands.
+- its own versions of Click decorators, for creating such commands.
 
 .. if-doc-stop-here
 
