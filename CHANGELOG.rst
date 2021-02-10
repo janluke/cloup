@@ -10,8 +10,8 @@ Change Log
     **Compatible changes and features**
 
 
-V0.5.0 (in development)
-=======================
+V0.5.0 (2021-02-10)
+===================
 **Requirements**
 
 - Drop support to Python 3.5.
