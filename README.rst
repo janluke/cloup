@@ -3,7 +3,7 @@ Cloup
 ========
 
 ====================  ==========================================================
-**Master branch**     |travis| |coverage| |latest-docs|
+**Master branch**     |tests-status| |coverage| |latest-docs|
 --------------------  ----------------------------------------------------------
 **Package**           |pypi-release| |python-versions| |release-docs|
 ====================  ==========================================================
@@ -12,9 +12,11 @@ Cloup
     :alt: Latest release on PyPI
     :target: https://pypi.org/project/cloup/
 
-.. |travis| image:: https://img.shields.io/travis/com/janluke/cloup/master?label=tests
-    :alt: Travis-CI Build Status
-    :target: https://travis-ci.com/janLuke/cloup?branch=master
+![Tests]()
+
+.. |tests-status| image:: https://github.com/janLuke/cloup/workflows/Tests/badge.svg
+    :alt: Tests status
+    :target: https://github.com/janLuke/cloup/actions?query=workflow%3ATests
 
 .. |coverage| image:: https://codecov.io/github/janLuke/cloup/coverage.svg?branch=master
     :alt: Coverage Status
