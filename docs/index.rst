@@ -7,7 +7,7 @@ Table of contents
     :maxdepth: 2
 
     pages/usage
-    autoapi/index
+    autoapi/cloup/index
     pages/contributing
     pages/credits
     pages/changelog
