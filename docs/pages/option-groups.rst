@@ -107,8 +107,9 @@ with how ``argparse`` format option groups and I think it's visually pleasing.
 Nonetheless, you can also format each option group independently passing
 ``align_option_groups=False`` to ``@command()``.
 
-An alternative way (flat style)
--------------------------------
+
+Alternative usage (flat style)
+------------------------------
 In "flat style", you first define your option groups. Then, you use the
 :meth:`~cloup.OptionGroup.option` decorator of :class:`~cloup.OptionGroup`:
 
@@ -133,18 +134,6 @@ In "flat style", you first define your option groups. Then, you use the
         """ A CLI that does nothing. """
         print(kwargs)
 
-
-Mixin dependencies
-------------------
-This features depends on:
-
-- (*required*) :class:`~cloup.OptionGroupMixin`
-- (*optional*) :class:`~cloup.ConstraintMixin`, if you want to use constraints.
-
-Note that ``cloup.Command`` includes both while ``cloup.Group`` doesn't include
-neither of them: groups should have only a few options, so they should not need
-neither option groups nor constraints.
-
 How it works
 -------------
 At "low level", this feature is implemented by setting (eventually by monkey-patching)
@@ -165,3 +154,21 @@ In order to show option groups in the command help,
     quite inflexible. In future Cloup releases, I could extract help formatting
     to an external (easily swappable) class such as ``HelpGenerator``
     ("``HelpFormatter``" is already taken by Click, with another meaning).
+
+
+Feature support
+---------------
+.. tip::
+    If you use command classes/decorators (re)defined by Cloup, you can skip
+    this section.
+
+This features depends on:
+
+- (*required*) :class:`~cloup.OptionGroupMixin`
+- (*optional*) :class:`~cloup.ConstraintMixin`, if you want to use constraints.
+
+Note that ``cloup.Command`` includes both while ``cloup.Group`` doesn't include
+neither of them: groups should have only a few options, so they should not need
+neither option groups nor constraints. (If you disagree, open an issue describing
+why you need it.) Anyway, you can always add this mixins to ``Group`` with two
+lines of code.
