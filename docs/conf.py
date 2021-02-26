@@ -123,6 +123,7 @@ html_theme_options = {
     "use_issues_button": True,
     "use_edit_page_button": True,
     "home_page_in_toc": False,
+    "extra_navbar": None,
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
