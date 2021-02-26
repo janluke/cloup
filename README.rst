@@ -1,9 +1,9 @@
 ========
-Cloup
+Overview
 ========
 
 ====================  ==========================================================
-**Master branch**     |tests-status| |coverage| |latest-docs|
+**Master branch**     |tests-status| |coverage| |dev-docs|
 --------------------  ----------------------------------------------------------
 **Latest release**    |pypi-release| |python-versions| |release-docs|
 ====================  ==========================================================
@@ -24,7 +24,7 @@ Cloup
     :alt: Supported versions
     :target: https://pypi.org/project/cloup
 
-.. |latest-docs| image:: https://readthedocs.org/projects/cloup/badge/?version=latest
+.. |dev-docs| image:: https://readthedocs.org/projects/cloup/badge/?version=latest
     :alt: Documentation Status (master branch)
     :target: https://cloup.readthedocs.io/en/latest/
 
@@ -45,12 +45,13 @@ Cloup (= **Cl**\ick + gr\ **oup**\s) contains a set of
 
 - organize the subcommands of a ``MultiCommand`` in multiple **help sections**.
 
-These features are implemented in three **mixins** following the same pattern of
-click-contrib extensions. For ease of use, Cloup also provides:
+These features are implemented in three "mixins" following the same pattern of
+click-contrib extensions (`cooperative multiple inheritance <https://medium.com/swlh/cooperative-multiple-inheritance-paradigm-in-python-f048b7ecdb29>`_).
+For ease of use, Cloup also provides:
 
-- its own versions of Click commands, obtained by mixing Click classes with the
-  mixins mentioned above;
-- its own versions of Click decorators, for creating such commands.
+- its own versions of Click commands classes, obtained by mixing Click classes
+  with the above mentioned mixins;
+- its own versions of Click command decorators, for creating such commands.
 
 .. if-doc-stop-here
 

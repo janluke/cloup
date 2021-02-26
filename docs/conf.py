@@ -122,7 +122,7 @@ html_theme_options = {
     "use_repository_button": True,
     "use_issues_button": True,
     "use_edit_page_button": True,
-    "home_page_in_toc": False,
+    "home_page_in_toc": True,
     "extra_navbar": None,
 }
 
