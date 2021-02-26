@@ -4,7 +4,6 @@ from typing import (
     Iterable,
     Optional,
     Type,
-    cast,
 )
 
 import click
@@ -108,7 +107,7 @@ def group(name: Optional[str] = None, cls: Type[click.Group] = Group, **attrs):
     :param cls: type of Group
     :param attrs: any argument you can pass to :func:`click.group`
     """
-    return cast(Group, click.group(name=name, cls=cls, **attrs))
+    return click.group(name=name, cls=cls, **attrs)
 
 
 def command(
