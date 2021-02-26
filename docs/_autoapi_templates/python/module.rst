@@ -20,7 +20,7 @@ Subpackages
 -----------
 .. toctree::
    :titlesonly:
-   :maxdepth: 3
+   :maxdepth: 2
 
 {% for subpackage in visible_subpackages %}
    {{ subpackage.short_name }}/index.rst
@@ -69,7 +69,7 @@ Classes summary
 .. autosummary::
 
 {% for klass in visible_classes %}
-   {{ klass.id }}
+   ~{{ klass.id }}
 {% endfor %}
 {% endif %}
 {% endblock %}
@@ -83,7 +83,7 @@ Functions Summary
 .. autosummary::
 
 {% for function in visible_functions %}
-   {{ function.id }}
+   ~{{ function.id }}
 {% endfor %}
 {% endif %}
 {% endblock %}
@@ -97,7 +97,7 @@ Data Summary
 .. autoapisummary::
 
 {% for data in visible_data %}
-   {{ data.id }}
+   ~{{ data.id }}
 {% endfor %}
 {% endif %}
 {% endblock %} #}
