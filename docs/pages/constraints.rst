@@ -8,46 +8,28 @@ Constraints
 Overview
 --------
 
-.. admonition:: Terminology
-
-    In this section, the use of words **"parameter"** vs **"option"** is not
-    accidental. In Click, a ``Parameter`` can be an ``Option`` or an ``Argument``.
-    Constraints works with both. Most importantly, when I write **"option group"**,
-    I'm referring to an instance of ``OptionGroup``, i.e. objects implicitly
-    created with ``@option_group``, not just a collection of options specified
-    by name.
-
-
-A :class:`Constraint` is essentially a validator for groups of parameters that:
+A :class:`Constraint` is essentially a **validator for groups of parameters** that:
 
 - has a textual description (:meth:`Constraint.help`)
-- when unsatisfied (or unsatisfiable), raises an exception with an
-  appropriate error message
+- when unsatisfied raises an :exc:`~click.UsageError` with an appropriate error
+  message that is handled and displayed by Click
 - it's easily composable with other constraints using logical operators
   and you can easy change its description and/or error message
   (see `Combining and rephrasing`_).
 
-Even though immutability is not enforced (full immutability is not even possible
-in Python), constraints should be treated as immutable objects. In fact, methods
-like :meth:`~Constraint.rephrased` and :meth:`~Constraint.hidden` don't work by
-mutating but by *wrapping* the constraint.
+Constraints are **well-integrated with option groups but decoupled from them.**
+Indeed, you can use them to validate *any* group of parameters by providing
+their (destination) names (see `Specifying parameters by name`_).
 
-Constraints are well-integrated with ``OptionGroup``'s but decoupled from them.
-Thus, you can use them to check *any* group of parameters (for example, options
-belonging to different option groups); you can do that by providing the
-parameter (destination) names (see `Usage with @constraint`_ and
-`Usage inside functions`_).
-
-In order to support constraints, a ``Command`` must inherit from :class:`ConstraintMixin`.
-Of course, ``cloup.Command`` satisfies this requirement.
-
+**Constraints can also be applied conditionally**, e.g. based on the value of
+a parameter (see `Conditional constraints`_).
 
 Implemented constraints
 -----------------------
 ``cloup`` uses the following convention:
 
-- *parametric* constraints are *subclasses* of ``Constraint`` and so they are camel-cased;
-- *non-parametric* constraints are *instances* of ``Constraint`` and so they are
+- **parametric** constraints are *subclasses* of ``Constraint`` and so they are camel-cased;
+- **non-parametric** constraints are *instances* of ``Constraint`` and so they are
   snake-cased.
 
 Parametric constraints
@@ -72,24 +54,28 @@ Non-parametric constraints
 ``mutually_exclusive``  A rephrased version of ``AcceptAtMost(1)``.
 ======================= ==========================================================
 
-Yeah... but what does it mean "set"?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Cloup validates the values available in ``ctx.params`` after argument parsing;
-this is a dictionary created by Click which contains the keyword arguments that
-will be provided to the command callback, meaning that **the source of an option
-value is not necessarily the command line**: it may be a default value or
-eventually an environment variable (if enabled).
-
-That said, Cloup uses the following policy:
+When is a parameter considered to be "set"?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cloup uses the following policy:
 
 - if the value is ``None``, the parameter is unset;
-- a parameter that takes multiple values is set if at least one value is provided,
-  since the default value is an empty tuple;
-- a boolean **flag** is set only if ``True``, since the default value is ``False``;
+- a parameter that takes multiple values is set if at least one value is provided;
+- a boolean **flag** is set only if ``True`` (since the default value is ``False``);
 - a boolean **non-flag** option is set if not ``None``, even if it's ``False``.
 
+.. admonition:: Possible sources of a value
+
+    Cloup validates the values available in ``Context.params`` dictionary after
+    parsing. The source of an option value can be (from higher to lowest priority):
+
+    - the command-line user input
+    - an environment variable (if you enabled it)
+    - `Context.default_map <https://click.palletsprojects.com/en/5.x/commands/#overriding-defaults>`_
+    - the default value of the option (if defined).
+
+
 Conditional constraints
-~~~~~~~~~~~~~~~~~~~~~~~
+-----------------------
 
 :class:`If` allows to define conditional constraints::
 
@@ -178,31 +164,32 @@ If you don't want to show the constraint description, you can use the method
 
 Specifying parameters by name
 -----------------------------
-If you need to define a constraint that involves parameters that don't
-constitute an ``OptionGroup``, you have two options:
+You can apply a constraint on any group of parameters providing their
+**destination names**, i.e. the names of the function arguments they are mapped
+to (by Click). For example:
 
-#. use the constraint as a function inside the command callback (a ``Constraint``
-   is indeed *callable*)
-#. use the ``@cloup.constraint`` decorator.
+=============================================== ===================
+Declaration                                     Destination name
+=============================================== ===================
+``@option('-o')``                               ``o``
+``@option('-o', '--out-path')``                 ``out_path``
+``@option('-o', '--out-path', 'output_path')``  ``output_path``
+=============================================== ===================
 
-In both cases, the involved parameters must be specified providing their
-**destination names**, i.e. the names of the function arguments they are
-mapped to (by Click).
-For example, by default, Click maps an option named ``--input-file`` to the
-function argument ``input_file``. Remember that you can always override the
-default destination name by providing it after the option "command-line name(s)":
+This is useful when you need to apply a constraint on a group of parameters for
+which no ``OptionGroup`` is defined.
 
-.. code-block:: python
+You have two (non-equivalent) options:
 
-    # map this option to 'output_path' rather than 'out_path'
-    @option('-o', '--out-path', 'output_path')
-
+#. using the ``@cloup.constraint`` decorator
+#. using the constraint as a function inside the command callback
+   (a ``Constraint`` is indeed *callable*).
 
 Usage with @constraint
 ~~~~~~~~~~~~~~~~~~~~~~
-In essence, ``@cloup.constraint`` allows to include the constraint as part
-of the command "metadata", which opens new possibilities as opposed to using
-the constraint as a function:
+In essence, ``@cloup.constraint`` allows to include a constraint as part
+of the command "metadata", which opens new possibilities with respect to just
+using the constraint as a function:
 
 - it becomes possible to document the constraints in a section of the help page;
   note that this is disabled by default and can be enabled passing
@@ -210,7 +197,7 @@ the constraint as a function:
 
 - the sanity checks performed to detect *your* mistakes can be performed *before*
   parsing, just after the constraints applied to option groups are checked
-  (see `Checking protocol`_); this is not of huge importance but a nice-to-have.
+  (see `Validation protocol`_); this is not of huge importance but a nice-to-have.
 
 The signature is simple:
 
@@ -275,8 +262,8 @@ Calling a constraint is equivalent to call its :meth:`~Constraint.check` method.
 
 Why do you need to pass the parameter names and not their values?
 That's because values are not enough to generate an error message
-explaining what parameters don't satisfy the constraint. Knowing
-the names, Cloup can reference both the ``Parameter`` instances
+explaining which parameters don't satisfy the constraint. Knowing
+their names, Cloup can reference both the ``Parameter`` instances
 and their values in the current :class:`click.Context`.
 
 Combining and rephrasing
@@ -285,23 +272,33 @@ The available constraints should cover 99% of use cases but if you want to
 combine them or even just change their description and/or the error message,
 you can do that with very little code:
 
-- **to combine constraints** you can use the logical operators ``&`` and ``|``
+- **to combine constraints** you can use the logical operators ``&`` and ``|``;
+  both their validation logic and their description will be combined
 - **to edit the description and/or the error message** of a constraint,
   you can use the method :meth:`~Constraint.rephrased`, which wraps the original
   constraint with a :class:`Rephraser`
 - **to define a new constraint type wrapping another** constraint with
   minimal boilerplate, you can extend :class:`~WrapperConstraint`.
 
-Some examples from Cloup itself:
+Let's see some examples from Cloup itself.
 
 .. code-block:: python
 
-    # {param_list} is a comma-separated list of parameters
     all_or_none = (require_all | accept_none).rephrased(
         help='provide all or none',
         error='either all or none of the following parameters must be set:\n{param_list}',
     )
 
+``rephrased()`` requires at least one argument between ``help`` and ``error``.
+When rephrasing an error, you can pass a format string containing
+``'{param_list}'``, which will be replaced by a comma-separated list of
+parameters.
+
+Let's see how you can define a new parametric constraint now:
+
+.. code-block:: python
+
+    # Option 1: use WrapperConstraint.
     # WrapperConstraint is useful for defining a new constraint type
     # It delegates all methods to the wrapped constraint so you can
     # override only the methods you need to override.
@@ -316,12 +313,15 @@ Some examples from Cloup itself:
         def help(self, ctx: Context) -> str:
             return f'at least {self._min} required, at most {self._max} accepted'
 
-    # An alternative could be the following. Using WrapperConstraint has
-    # some advantage: it creates a new type and has a prettier __repr__
+    # Option 2: use a function.
     def accept_between(min, max):
        return (RequireAtLeast(min) & AcceptAtMost(max)).rephrased(
            help=f'at least {min} required, at most {max} accepted'
        )
+
+Cloup uses ``WrapperConstraint`` internally to stick to the convention described
+in `Implemented constraints`_ and because it has some minor advantages like
+producing constraints having a prettier ``__repr__`` (showed in consistency errors):
 
 .. code-block:: python
 
@@ -331,13 +331,15 @@ Some examples from Cloup itself:
     >>> accept_between(1, 3)
     Rephraser(help='at least 1 required, at most 3 accepted')
 
+These differences are unimportant in most cases, so feel free to use functions
+in your code if you prefer it.
 
-If all this is not useful, just extend ``Constraint``. Look at the code of
-existing constraints if you have any doubt.
+Finally, if all this is not convenient for your case, just extend ``Constraint``,
+it's pretty easy. Use the code of existing constraints as a guide.
 
 
-Checking protocol
------------------
+Validation protocol
+-------------------
 
 A constraint performs two types of checks and there's a method for each type:
 
@@ -371,13 +373,18 @@ added through ``@constraint``.
 If you use a constraint inside a callback, of course, consistency checks can't
 be performed before parsing. All checks are performed together after parsing.
 
-Disabling consistency checks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*Disabling consistency checks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+You can safely skip this section since disabling consistency checks is a
+micro-optimization likely to be completely irrelevant in practice.
+
 Current consistency checks should not have any relevant impact on performance,
 so they are enabled by default. Nonetheless, they are completely useless in
-production and can be turned off (globally) using the class method
-:meth:`Constraint.toggle_consistency_checks`.
-To disable them only in production, you can set an environment variable in the
+production, so I added the possibility to turn them off (globally) using the
+class method :meth:`Constraint.toggle_consistency_checks`. Just because I could.
+
+To disable them only in production, you should set an environment variable in the
 system you use for development, say ``PYTHON_ENV="dev"``; then you can put the
 following code in the entry-point of your program:
 
@@ -385,6 +392,24 @@ following code in the entry-point of your program:
 
     import os
 
+    # Enable consistency checks only if PYTHON_ENV is defined and equal to 'dev'
     Constraint.toggle_consistency_checks(
         os.getenv('PYTHON_ENV') == 'dev'
     )
+
+Have I already mentioned that this is probably not worth the effort?
+
+Feature support
+---------------
+
+.. note::
+    If you use command classes/decorators redefined by Cloup, you can skip
+    this section.
+
+To support constraints, a ``Command`` must inherit from :class:`ConstraintMixin`.
+It's worth noting that ``ConstraintMixin`` integrates with ``OptionGroupMixin``
+but it **doesn't** require it to work.
+
+To use the ``@constraint`` decorator, you must currently use ``@cloup.command``
+as command decorator. Using ``@click.command(..., cls=cloup.Command)`` won't
+work. This may change in the future though.

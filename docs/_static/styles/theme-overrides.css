@@ -79,7 +79,7 @@ dl.field-list ul li {
     margin-bottom: .5em;
 }
 
-td > p {
+td > p, th > p {
     margin: 0;
 }
 
