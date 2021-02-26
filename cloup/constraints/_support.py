@@ -10,6 +10,8 @@ if TYPE_CHECKING:
 
 
 class BoundConstraintSpec(NamedTuple):
+    """A NamedTuple storing a ``Constraint`` and the **names of the parameters**
+    if has check."""
     constraint: Constraint
     params: Sequence[str]
 
@@ -33,6 +35,10 @@ def constraint(constr: Constraint, params: Iterable[str]):
 
 
 class BoundConstraint(NamedTuple):
+    """Internal utility ``NamedTuple`` that represents a ``Constraint``
+    bound to a collection of ``Parameter`` instances.
+    Note: this is not a subclass of Constraint."""
+
     constraint: Constraint
     params: Sequence[Parameter]
 
@@ -59,44 +65,42 @@ class ConstraintMixin:
         show_constraints: bool = False,
         **kwargs
     ):
-        super().__init__(*args, **kwargs)   # type: ignore
-        self._params_by_name = {param.name: param for param in self.params}  # type: ignore
+        """
+        :param args: arguments forwarded to the next class in the MRO
+        :param constraints: sequence of ``BoundConstraintSpec``
+        :param show_constraints:
+            whether to include a "Constraint" section in the command help
+        :param kwargs: keyword arguments forwarded to the next class in the MRO
+        """
+        super().__init__(*args, **kwargs)  # type: ignore
         self.show_constraints = show_constraints
 
-        self._optgroup_constraints: Tuple[BoundConstraint, ...]
-        self._extra_constraints: Tuple[BoundConstraint, ...]
-        self._constraints: Tuple[BoundConstraint, ...]
-        self._init_constraints(
-            constraints,
-            optgroups=getattr(self, 'option_groups', []),  # type: ignore
-        )
+        # This allows constraints to efficiently access parameters by name
+        self._params_by_name = {param.name: param for param in self.params}  # type:ignore
 
-    def _init_constraints(
-        self, constraints: Sequence[BoundConstraintSpec],
-        optgroups: Iterable['OptionGroup']
-    ) -> None:
-        # Collect OptionGroup constraints (if self has option groups) and bind
-        # them to the corresponding OptionGroup options objects.
+        # Collect constraints applied to option groups and bind them to the
+        # corresponding Option instances
+        option_groups: Sequence[OptionGroup] = getattr(self, 'option_groups', [])
         self._optgroup_constraints = tuple(
             BoundConstraint(grp.constraint, grp.options)
-            for grp in optgroups
+            for grp in option_groups
             if grp.constraint is not None
         )
+        # Bind constraints defined via @constraint to Parameter instances
         self._extra_constraints = tuple(
             BoundConstraint(constr, self.get_params_by_name(param_names))
             for constr, param_names in constraints
         )
-        self._constraints = tuple(
-            self._optgroup_constraints + self._extra_constraints)
 
     def parse_args(self, ctx, args):
-        # Check group consistency *before* parsing
+        all_constraints = self._optgroup_constraints + self._extra_constraints
+        # Check parameter groups' consistency *before* parsing
         if Constraint.must_check_consistency():
-            for constr in self._constraints:
+            for constr in all_constraints:
                 constr.check_consistency()
         super().parse_args(ctx, args)
         # Validate constraints against parameter values
-        for constr in self._constraints:
+        for constr in all_constraints:
             constr.check_values(ctx)
 
     def get_param_by_name(self, name: str) -> Parameter:
