@@ -1,10 +1,5 @@
 import abc
-from typing import (
-    Dict,
-    Iterable,
-    Optional,
-    Type,
-)
+from typing import Callable, Dict, Iterable, Optional, Type, cast
 
 import click
 
@@ -114,7 +109,7 @@ def command(
     name: Optional[str] = None,
     cls: Type[click.Command] = Command,
     **attrs
-):
+) -> Callable[[Callable], click.Command]:
     """
     Decorator that creates a new command using the wrapped function as callback.
 
@@ -138,6 +133,7 @@ def command(
             del f.__constraints
             attrs['constraints'] = constraints
 
-        return click.command(name, cls=cls, **attrs)(f)
+        cmd = click.command(name, cls=cls, **attrs)(f)
+        return cast(click.Command, cmd)
 
     return wrapper
