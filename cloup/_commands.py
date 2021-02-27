@@ -64,32 +64,41 @@ class Group(SectionMixin, click.Group):
             sections=sections, align_sections=align_sections,
             **attrs)
 
+    # MyPy complaints because the signature is not compatible with the parent
+    # method signature, which is command(*args, **kwargs). Since the parent
+    # method is implemented calling click.command(name=None, cls=None, **attrs),
+    # any call that works for parent should work for us.
     def command(  # type: ignore
         self, name: Optional[str] = None,
-        section: Optional[Section] = None,
         cls: Optional[Type[click.Command]] = None,
-        **attrs,
+        section: Optional[Section] = None,
+        **kwargs,
     ):
         """Creates a new command and adds it to this group."""
         if cls is None:
             cls = Command
 
         def decorator(f):
-            cmd = command(name=name, cls=cls, **attrs)(f)
+            cmd = command(name=name, cls=cls, **kwargs)(f)
             self.add_command(cmd, section=section)
             return cmd
 
         return decorator
 
+    # MyPy complaints because the signature is not compatible with the parent
+    # method signature, which is group(*args, **kwargs). The "real signature"
+    # of the parent method is command(name=None, cls=None, **attrs), thus
+    # any call that works for parent should work for us, since the order of
+    # named arguments is the same.
     def group(  # type: ignore
         self, name: Optional[str] = None,
-        section: Optional[Section] = None,
         cls: Optional[Type[click.Group]] = None,
-        **attrs,
+        section: Optional[Section] = None,
+        **kwargs,
     ):
         if cls is None:
             cls = Group
-        return self.command(name=name, section=section, cls=cls, **attrs)
+        return self.command(name=name, section=section, cls=cls, **kwargs)
 
 
 def group(
