@@ -24,7 +24,7 @@ V0.6.0 (in development)
 
 **Compatible changes**
 
-- Slightly improved return type of command decorators return.
+- Slightly improved return type (hint) of command decorators.
 - Minor refactoring of ConstraintMixin.
 - Improved the documentation.
 
