@@ -13,7 +13,7 @@ with open('CHANGELOG.rst') as history_file:
 setup(
     # Name, author, description and other info
     name='cloup',
-    version='0.6.0-dev',
+    version='0.6.0',
     author="Gianluca Gippetto",
     author_email='gianluca.gippetto@gmail.com',
     description="Option groups and subcommand help sections for pallets/click",
