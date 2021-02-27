@@ -92,17 +92,21 @@ class Group(SectionMixin, click.Group):
         return self.command(name=name, section=section, cls=cls, **attrs)
 
 
-def group(name: Optional[str] = None, cls: Type[click.Group] = Group, **attrs):
-    """ Creates a new :class:`Group` using the decorated function as
-    callback. This is just a convenience function equivalent to::
+def group(
+    name: Optional[str] = None, cls: Type[Group] = Group, **attrs
+) -> Callable[[Callable], Group]:
+    """Decorator for creating a new :class:`Group`.
 
-        click.group(name, cls=cloup.Group, **attrs)
+    .. note::
+        If you use static type checking, note that the ``cls`` optional argument
+        of this function must be of type ``cloup.Group``, not ``click.Group``.
 
     :param name: name of the command
-    :param cls: type of Group
+    :param cls: type of ``cloup.Group``
     :param attrs: any argument you can pass to :func:`click.group`
     """
-    return click.group(name=name, cls=cls, **attrs)
+    return cast(Callable[[Callable], Group],
+                click.group(name=name, cls=cls, **attrs))
 
 
 def command(
