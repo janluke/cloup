@@ -13,6 +13,8 @@ V0.6.0 (in development)
 =======================
 **Incompatible changes**
 
+- Removed the deprecated ``GroupSection`` as previously announced.
+  Use the new name instead: ``Section``.
 - In ``Group.group()`` and ``Group.command``, the argument ``section`` was moved
   after the ``cls`` argument so that the methods are now fully compatible with
   the same methods in the parent class (the Liskov substitution principle is now

@@ -8,10 +8,6 @@ __version__ = '0.6.0'
 from ._option_groups import (
     GroupedOption, OptionGroup, OptionGroupMixin, option, option_group
 )
-from ._sections import (
-    Section, GroupSection, SectionMixin
-)
-from ._commands import (
-    Command, Group, MultiCommand, command, group
-)
+from ._sections import Section, SectionMixin
+from ._commands import Command, Group, MultiCommand, command, group
 from .constraints import ConstraintMixin, constraint

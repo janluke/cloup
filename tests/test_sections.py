@@ -3,7 +3,7 @@ import click
 import pytest
 
 import cloup
-from cloup import GroupSection, Section
+from cloup import Section
 from tests.util import noop
 
 
@@ -53,14 +53,3 @@ def test_Group_subcommand_decorator(subcommand_cls, assign_to_section):
         assert section.commands[subcommand_name] is subcommand
     else:
         assert grp._default_section.commands[subcommand_name] is subcommand
-
-
-def test_GroupSection_deprecation_warning():
-    with pytest.warns(DeprecationWarning):
-        GroupSection('title')
-
-
-def test_GroupSection_is_removed_in_v0_6():
-    if cloup.__version__ >= '0.6.0':
-        with pytest.raises(ImportError):
-            from cloup import GroupSection  # noqa

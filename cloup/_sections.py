@@ -1,4 +1,3 @@
-import warnings
 from collections import OrderedDict
 from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union
 
@@ -14,8 +13,11 @@ class Section:
     ``MultiCommand``. You can use sections with any `Command` that inherits
     from :class:`SectionMixin`.
 
+    .. versionchanged:: 0.6.0
+        Removed the deprecated old name ``GroupSection``.
+
     .. versionchanged:: 0.5.0
-        This class was renamed from ``GroupSection`` (deprecated) to ``Section``.
+        Introduced the new name ``Section`` and deprecated the old ``GroupSection``.
     """
 
     def __init__(self, title: str,
@@ -62,20 +64,6 @@ class Section:
 
     def __repr__(self) -> str:
         return 'Section({}, sorted={})'.format(self.title, self.sorted)
-
-
-class GroupSection(Section):
-    """Old name of `Section` when the implementation of the feature was
-    hard-coded and tightly coupled to ``cloup.Group``.
-
-    .. deprecated:: 0.5.0
-        To be removed in v0.6.0. Use ``Section`` instead.
-    """
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        warnings.warn(
-            'GroupSection was renamed to Section and will be removed in v0.6.0',
-            DeprecationWarning)
 
 
 class SectionMixin:
