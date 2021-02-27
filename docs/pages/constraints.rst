@@ -373,8 +373,8 @@ added through ``@constraint``.
 If you use a constraint inside a callback, of course, consistency checks can't
 be performed before parsing. All checks are performed together after parsing.
 
-*Disabling consistency checks
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+\*Disabling consistency checks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can safely skip this section since disabling consistency checks is a
 micro-optimization likely to be completely irrelevant in practice.
