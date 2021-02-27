@@ -73,7 +73,7 @@ class Group(SectionMixin, click.Group):
         cls: Optional[Type[click.Command]] = None,
         section: Optional[Section] = None,
         **kwargs,
-    ):
+    ) -> Callable[[Callable], click.Command]:
         """Creates a new command and adds it to this group."""
         if cls is None:
             cls = Command
