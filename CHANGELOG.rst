@@ -2,14 +2,14 @@
 Change Log
 ==========
 
-..  V0.X.X (in development)
+..  v0.X.X (in development)
     =======================
     **Requirements**
     **Incompatible changes**
     **Deprecated**
     **Compatible changes and features**
 
-V0.6.0 (2021-02-28)
+v0.6.0 (2021-02-28)
 ===================
 **Incompatible changes**
 
@@ -28,7 +28,7 @@ V0.6.0 (2021-02-28)
 - Improved the documentation.
 
 
-V0.5.0 (2021-02-10)
+v0.5.0 (2021-02-10)
 ===================
 **Requirements**
 
