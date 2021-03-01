@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 """The setup script."""
-
 from setuptools import setup, find_packages
 
 with open('README.rst') as readme_file:
@@ -13,8 +12,11 @@ with open('CHANGELOG.rst') as history_file:
 setup(
     # Name, author, description and other info
     name='cloup',
-    version='0.6.0',
-    author="Gianluca Gippetto",
+    setup_requires=['setuptools_scm'],
+    use_scm_version={
+        'write_to': 'cloup/_version.py'
+    },
+    author='Gianluca Gippetto',
     author_email='gianluca.gippetto@gmail.com',
     description="Option groups and subcommand help sections for pallets/click",
     long_description=readme + '\n\n' + history,

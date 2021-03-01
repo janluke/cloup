@@ -24,12 +24,11 @@ lint: ## check code, tests and examples with flake8
 	flake8 cloup tests examples
 
 .PHONY: test
-test: ## run tests quickly with the default Python
-	pytest
+test: install ## run tests quickly with the default Python
+	pytest --cov=cloup -vv
 
 .PHONY: coverage
-coverage: ## check code coverage quickly with the default Python
-	pytest --cov=cloup -vv
+coverage: test ## check code coverage quickly with the default Python
 	coverage report -m
 	coverage html
 	$(BROWSER) htmlcov/index.html
