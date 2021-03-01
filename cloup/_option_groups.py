@@ -143,7 +143,8 @@ class OptionGroupMixin:
             records_by_group[group] = group.get_help_records(ctx)
         ungrouped_options = self.get_ungrouped_options(ctx)
         if ungrouped_options:
-            default_group = OptionGroup('Other options' if records_by_group else 'Options')
+            default_group = OptionGroup(
+                'Other options' if records_by_group else 'Options')
             default_group.options = ungrouped_options
             records_by_group[default_group] = default_group.get_help_records(ctx)
 
@@ -154,8 +155,8 @@ class OptionGroupMixin:
                     for records in records_by_group.values()
                     for rec in records)
             )
-            # This is a hacky way to have aligned options groups.
-            # Pad the first column of the first entry of each group to reach option_name_width
+            # This is a hacky way to have aligned options groups: pad the first column
+            # of the first entry of each group to reach option_name_width
             for records in records_by_group.values():
                 first = records[0]
                 pad_width = option_name_width - len(first[0])

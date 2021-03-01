@@ -53,7 +53,8 @@ class Group(SectionMixin, click.Group):
                  align_sections: bool = True, **attrs):
         """
         :param name: name of the command
-        :param commands: dict {name: command}; this command will be added to the default section.
+        :param commands:
+            dict {name: command}; this command will be added to the default section.
         :param sections: a list of Section objects
         :param align_sections: if True, the help column of all columns will be aligned;
             if False, each section will be formatted independently

@@ -54,7 +54,8 @@ class TestConstraintMixin:
 
         with Constraint.consistency_checks_toggled(do_check_consistency):
             assert Constraint.must_check_consistency() == do_check_consistency
-            result = runner.invoke(cmd, args='--a=1 --c=2'.split(), catch_exceptions=False)
+            result = runner.invoke(cmd, args='--a=1 --c=2'.split(),
+                                   catch_exceptions=False)
 
         assert result.output.strip() == '1, None, 2, None'
         for constr, opt_names in zip(constraints, [['a', 'b'], ['c', 'd'], ['a', 'c']]):
@@ -69,8 +70,11 @@ class TestConstraintMixin:
         'show_constraints', [True, False],
         ids=['enabled', 'disabled']
     )
-    def test_constraints_are_showed_in_help_only_if_enabled(self, runner, show_constraints):
-        @cloup.command(show_constraints=show_constraints, context_settings={'terminal_width': 80})
+    def test_constraints_are_showed_in_help_only_if_enabled(
+        self, runner, show_constraints
+    ):
+        @cloup.command(show_constraints=show_constraints,
+                       context_settings={'terminal_width': 80})
         @cloup.option('--a')
         @cloup.option('--b')
         @cloup.option('--c')

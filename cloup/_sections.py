@@ -39,7 +39,8 @@ class Section:
         elif isinstance(commands, dict):
             self.commands = OrderedDict(commands)
         else:
-            raise TypeError('commands must be a list of commands or a dict {name: command}')
+            raise TypeError('the argument "commands" must be a list of commands '
+                            'or a dict {name: command}')
 
     @classmethod
     def sorted(cls, title: str, commands: Subcommands = ()) -> 'Section':
@@ -54,7 +55,8 @@ class Section:
         self.commands[name] = cmd
 
     def list_commands(self) -> List[Tuple[str, click.Command]]:
-        command_list = [(name, cmd) for name, cmd in self.commands.items() if not cmd.hidden]
+        command_list = [(name, cmd) for name, cmd in self.commands.items()
+                        if not cmd.hidden]
         if self.sorted:
             command_list.sort()
         return command_list
@@ -135,9 +137,8 @@ class SectionMixin:
     def add_command(self, cmd: click.Command,
                     name: Optional[str] = None,
                     section: Optional[Section] = None):
-        """
-        Adds a new command. If ``section`` is None, the command is added to the default section.
-        """
+        """Adds a new command. If ``section`` is None, the command is added to
+        the default section."""
         super().add_command(cmd, name)  # type: ignore
         self._add_command_to_section(cmd, name, section)
 
