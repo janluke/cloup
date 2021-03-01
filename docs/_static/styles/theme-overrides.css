@@ -42,6 +42,10 @@ div.navbar_extra_footer {
     display: none;
 }
 
+#overview table:first-of-type {
+    margin: 1.5em 0;
+}
+
 .table tr:last-child {
     border-bottom: 1px solid #dee2e6;
 }
