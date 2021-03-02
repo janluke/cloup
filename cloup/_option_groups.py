@@ -244,10 +244,9 @@ def _option_group(
             # and @cloup.option currently return the same f
             f = opt_decorator(f)
             new_option = f.__click_params__[-1]
-            curr_group = get_option_group_of(new_option)
-            if curr_group is not None:
+            if has_option_group(new_option):
                 raise ValueError(
-                    f'{new_option} was first assigned to {curr_group} and then '
+                    f'{new_option} was first assigned to {new_option.group} and then '
                     f'passed as argument to @option_group({name!r}, ...)'
                 )
             new_option.group = opt_group
