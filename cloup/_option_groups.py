@@ -148,7 +148,7 @@ class OptionGroupMixin:
             default_group.options = ungrouped_options
             records_by_group[default_group] = default_group.get_help_records(ctx)
 
-        if self.align_option_groups:
+        if self.align_option_groups and len(records_by_group) > 1:
             option_name_width = min(
                 max_option_width,
                 max(len(rec[0])
