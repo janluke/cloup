@@ -173,7 +173,7 @@ def option(
     group: Optional[OptionGroup] = None,
     cls: Type[click.Option] = GroupedOption,
     **attrs
-) -> OptionDecorator:
+) -> OptionGroupDecorator:
     def decorator(f):
         func = click.option(*param_decls, cls=cls, **attrs)(f)
         new_option = func.__click_params__[-1]
@@ -203,7 +203,7 @@ def option_group(
     ...  # pragma: no cover
 
 
-def option_group(name: str, *args, **kwargs) -> OptionDecorator:
+def option_group(name, *args, **kwargs):
     """
     Attaches an option group to the command. This decorator is overloaded with
     two signatures::
