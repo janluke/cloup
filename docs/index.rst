@@ -4,6 +4,7 @@
         option groups, constraints for group of parameters and the possibility
         to group the subcommands of a MultiCommand in multiple help sections.
     :keywords: python, click, option groups, help sections, mutually exclusive
+    :google-site-verification: r5SEmg2wwCURBwKSrL_zQJEJbCVsScFhryur7zdFM3s
 
 .. include:: ../README.rst
     :end-before: if-doc-stop-here
