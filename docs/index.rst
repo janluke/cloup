@@ -1,3 +1,10 @@
+.. meta::
+    :description lang=en:
+        Cloup is an extension pack for the popular Click Python library that adds
+        option groups, constraints for group of parameters and the possibility
+        to group the subcommands of a MultiCommand in multiple help sections.
+    :keywords: python, click, option groups, help sections, mutually exclusive
+
 .. include:: ../README.rst
     :end-before: if-doc-stop-here
 
