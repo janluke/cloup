@@ -29,9 +29,9 @@ def test_option_group_constraints_are_checked(runner, get_example_command):
 
     result = runner.invoke(cmd, args='--one=1 --three=3')
     assert result.exit_code == 2
-    expected_error = 'Error: when --three is set, at least 1 of the following ' \
-                     'parameters must be set:\n--four, --five, --six'
-    assert expected_error in result.output
+    error_prefix = ('Error: when --three is set, at least 1 of the following '
+                    'parameters must be set')
+    assert error_prefix in result.output
 
 
 def test_option_group_decorator_raises_if_group_is_passed_to_contained_option():

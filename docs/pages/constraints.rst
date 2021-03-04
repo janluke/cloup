@@ -291,8 +291,8 @@ Let's see some examples from Cloup itself.
 
 ``rephrased()`` requires at least one argument between ``help`` and ``error``.
 When rephrasing an error, you can pass a format string containing
-``'{param_list}'``, which will be replaced by a comma-separated list of
-parameters.
+``'{param_list}'``, which will be replaced by a nicely formatted list of
+parameter names.
 
 Let's see how you can define a new parametric constraint now:
 

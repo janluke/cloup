@@ -10,9 +10,10 @@ from click import Context, Parameter
 from cloup._util import check_arg, class_name, make_one_line_repr, make_repr, pluralize
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 from .common import (
+    format_param_list,
+    get_param_label,
     get_params_whose_value_is_set,
     get_required_params,
-    join_param_labels,
     param_value_is_set,
 )
 
@@ -256,7 +257,7 @@ class Rephraser(Constraint):
         if self._error is None:
             return None
         elif isinstance(self._error, str):
-            return self._error.format(param_list=join_param_labels(params))
+            return self._error.format(param_list=format_param_list(params))
         else:
             return self._error(ctx, self._constraint, params)
 
@@ -328,9 +329,9 @@ class _RequireAll(Constraint):
             raise ConstraintViolated(
                 pluralize(
                     len(unset_params),
-                    one="%s is required",
-                    many="the following parameters are required:\n%s\n"
-                ) % join_param_labels(unset_params),
+                    one=f"{get_param_label(unset_params[0])} is required",
+                    many=f"the following parameters are required:\n"
+                         f"{format_param_list(unset_params)}"),
                 ctx=ctx,
             )
 
@@ -360,7 +361,7 @@ class RequireAtLeast(Constraint):
         if len(given_params) < n:
             raise ConstraintViolated(
                 f"at least {n} of the following parameters must be set:\n"
-                f"{join_param_labels(params)}.",
+                f"{format_param_list(params)}",
                 ctx=ctx
             )
 
@@ -390,7 +391,7 @@ class AcceptAtMost(Constraint):
         if len(given_params) > n:
             raise ConstraintViolated(
                 f"no more than {n} of the following parameters can be set:\n"
-                f"{join_param_labels(params)}.\n",
+                f"{format_param_list(params)}",
                 ctx=ctx,
             )
 
@@ -415,9 +416,9 @@ class RequireExactly(WrapperConstraint):
         if len(given_params) != n:
             reason = pluralize(
                 count=n,
-                zero='none of the following parameters must be set:\n%s\n',
-                many="exactly {count} of the following parameters must be set:\n%s\n"
-            ) % join_param_labels(params)
+                zero='none of the following parameters must be set:\n',
+                many=f'exactly {n} of the following parameters must be set:\n'
+            ) + format_param_list(params)
             raise ConstraintViolated(reason, ctx=ctx)
 
 

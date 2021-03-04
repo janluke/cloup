@@ -41,8 +41,8 @@ from cloup.constraints import (
     "this is a very long description of the option group. I don't think this is "
     "needed very often; still, if you want to provide it, you can pass it as 2nd "
     "positional argument or as keyword argument 'help' after all options.",
-    option('--one', help='a 1st cool option'),
-    option('--two', help='a 2nd cool option'),
+    option('-o', '--one', help='a 1st cool option'),
+    option('-t', '--two', help='a 2nd cool option'),
     option('--three', help='a 3rd cool option'),
     constraint=RequireAtLeast(1),
 )

@@ -288,10 +288,10 @@ class TestRephraser:
     def test_error_is_overridden_passing_string(self):
         fake_ctx = make_fake_context(make_options('abcd'))
         wrapped = FakeConstraint(satisfied=False)
-        rephrased = Rephraser(wrapped, error='error: {param_list}')
+        rephrased = Rephraser(wrapped, error='error:\n{param_list}')
         with pytest.raises(ConstraintViolated) as exc_info:
             rephrased.check(['a', 'b'], ctx=fake_ctx)
-        assert exc_info.value.message == 'error: --a, --b'
+        assert exc_info.value.message == 'error:\n  --a\n  --b\n'
 
     def test_error_is_overridden_passing_function(self):
         params = make_options('abc')

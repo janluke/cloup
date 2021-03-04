@@ -3,7 +3,7 @@ Useful functions used for implementing constraints and predicates.
 """
 from typing import Any, Dict, Iterable, List
 
-from click import Context, Option, Parameter
+from click import Argument, Context, Option, Parameter
 
 
 def param_value_is_set(param: Parameter, value: Any) -> bool:
@@ -44,6 +44,23 @@ def get_param_label(param: Parameter) -> str:
 
 def join_param_labels(params: Iterable[Parameter], sep: str = ', ') -> str:
     return sep.join(get_param_label(p) for p in params)
+
+
+def format_param(param: Parameter) -> str:
+    if isinstance(param, Argument):
+        return param.human_readable_name
+    # return ' | '.join(param.opts)
+    if len(param.opts) == 1:
+        return param.opts[0]
+    short, long = sorted(param.opts, key=len)
+    return f'{long} ({short})'
+
+
+def format_param_list(param_list: Iterable[Parameter], indent=2) -> str:
+    lines = map(format_param, param_list)
+    indentation = ' ' * indent
+    return ''.join(indentation + line + '\n'
+                   for line in lines)
 
 
 def param_label_by_name(ctx, name: str) -> str:
