@@ -1,9 +1,8 @@
-from functools import partial
-from textwrap import dedent
-
 from click import Argument, Option
 
-from cloup.constraints.common import format_param, format_param_list, get_param_label, param_value_is_set
+from cloup.constraints.common import (
+    format_param, format_param_list, get_param_label, param_value_is_set
+)
 from tests.util import bool_opt, flag_opt, int_opt, mark_parametrize, multi_opt, tuple_opt
 
 

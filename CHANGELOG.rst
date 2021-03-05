@@ -12,6 +12,7 @@ Change Log
 v0.7.0 (in development)
 =======================
 **Compatible changes and features**
+
 - In errors, change the way the parameter list is formatted.
   Instead of printing a comma-separated list of single labels: 1) each parameter
   is printed on 2-space indented line and 2) both the short and long name of
