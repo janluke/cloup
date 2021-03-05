@@ -134,17 +134,24 @@ In "flat style", you first define your option groups. Then, you use the
         """ A CLI that does nothing. """
         print(kwargs)
 
-How it works
--------------
-At "low level", this feature is implemented by setting (eventually by monkey-patching)
-a ``group`` attribute in newly added ``Option``'s.
-If an option is assigned to an option group, ``option.group`` is set to the
-corresponding ``OptionGroup`` instance.
+Equivalently, you could pass the option group as an argument to ``cloup.option``:
 
-When ``OptionGroupMixin`` is initialized, it just groups options by their
-``group`` attribute. Options that don't have a ``group`` attribute or have it
-set to ``None`` are collected together and will be part of the "default option
-group" (together with ``--help``).
+.. code-block:: python
+
+    @option('-o', '--one', help='1st input option', group=input_grp)
+
+Note that this works only with ``cloup.option``, not ``click.option``.
+
+How it works
+------------
+This feature is implemented simply by adding an attribute ``group`` to options,
+monkey-patching them if they are not of type ``GroupedOption``. This attribute
+is of type ``OptionGroup`` or ``None``.
+
+When the command is initialized, ``OptionGroupMixin`` just groups all options by
+their ``group`` attribute. Options that don't have a ``group`` attribute or have
+it set to ``None`` are put into the "default option group"
+(together with ``--help``).
 
 In order to show option groups in the command help,
 ``OptionGroupMixin`` "overrides" ``Command.format_options``.
@@ -158,7 +165,7 @@ In order to show option groups in the command help,
 
 Feature support
 ---------------
-.. tip::
+.. note::
     If you use command classes/decorators (re)defined by Cloup, you can skip
     this section.
 
