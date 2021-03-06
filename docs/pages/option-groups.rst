@@ -156,12 +156,6 @@ it set to ``None`` are put into the "default option group"
 In order to show option groups in the command help,
 ``OptionGroupMixin`` "overrides" ``Command.format_options``.
 
-.. note::
-    In Click, help formatting is hard-coded in ``Command`` itself, which is
-    quite inflexible. In future Cloup releases, I could extract help formatting
-    to an external (easily swappable) class such as ``HelpGenerator``
-    ("``HelpFormatter``" is already taken by Click, with another meaning).
-
 
 Feature support
 ---------------
