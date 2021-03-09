@@ -58,8 +58,8 @@ the ``Group`` itself:
 
         # The following lines are here just to show what happens when you add
         # commands without specifying a section: they are added to a default
-        # section, which is titled "Other commands" and shown at the bottom of
-        # the command help
+        # **sorted** section, which is titled "Other commands" and shown at the
+        # bottom of the command help
         git.add_command(cloup.command('fake-2', help='Fake command #2')(f))
         git.add_command(cloup.command('fake-1', help='Fake command #1')(f))
 
