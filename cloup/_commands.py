@@ -10,9 +10,7 @@ from .constraints import ConstraintMixin
 
 class Command(ConstraintMixin, OptionGroupMixin, click.Command):
     """
-    A ``click.Command`` supporting option groups.
-    This class is obtained by mixing :class:`click.Command` with
-    :class:`cloup.OptionGroupMixin`.
+    A ``click.Command`` supporting option groups and constraints.
     """
 
     def __init__(self, *args, **kwargs):
