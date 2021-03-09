@@ -20,7 +20,7 @@ static method ``Section.sorted()``.
 
     The commands that are not explicitly assigned to a section are assigned to a
     default section, which is *sorted*. This section is titled "Other commands",
-    unless it is the only one defined, in which case``cloup.Group`` behaves
+    unless it is the only one defined, in which case ``cloup.Group`` behaves
     like a normal ``click.Group``, naming it just "Commands".
 
 You can find a runnable example that implements part of the help of Git
