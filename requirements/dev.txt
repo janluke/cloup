@@ -86,7 +86,7 @@ jeepney==0.6.0
     # via
     #   keyring
     #   secretstorage
-jinja2==2.11.2
+jinja2==2.11.3
     # via
     #   -r docs.txt
     #   sphinx
