@@ -18,8 +18,6 @@ chardet==4.0.0
     # via requests
 click==7.1.2
     # via sphinx-book-theme
-colorama==0.4.4
-    # via sphinx
 docutils==0.16
     # via
     #   sphinx
@@ -60,18 +58,18 @@ snowballstemmer==2.0.0
 soupsieve==2.1
     # via beautifulsoup4
 sphinx-autoapi==1.5.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-book-theme==0.0.39
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-copybutton==0.3.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-panels==0.5.2
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-version-warning==1.1.2
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx==3.4.2
     # via
-    #   -r requirements/docs.in
+    #   -r docs.in
     #   pydata-sphinx-theme
     #   sphinx-autoapi
     #   sphinx-book-theme
@@ -92,7 +90,7 @@ sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
 unidecode==1.1.2
     # via sphinx-autoapi
-urllib3==1.26.2
+urllib3==1.26.3
     # via requests
 wrapt==1.12.1
     # via astroid
