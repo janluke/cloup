@@ -97,6 +97,12 @@ pip-compile: ## pin dependencies in requirements/ using the current env
 	pip-compile requirements/docs.in
 	pip-compile requirements/dev.in
 
+.PHONY: pip-upgrade
+pip-upgrade: ## upgrade dependencies
+	pip-compile --upgrade requirements/test.in
+	pip-compile --upgrade requirements/docs.in
+	pip-compile --upgrade requirements/dev.in
+
 .PHONY: pip-sync
 pip-sync: pip-compile ## sync development environment with requirements/dev.txt
 	pip-sync requirements/dev.txt
