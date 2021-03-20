@@ -10,11 +10,11 @@ attrs==20.3.0
     # via pytest
 colorama==0.4.4
     # via pytest
-coverage==5.3.1
+coverage==5.5
     # via pytest-cov
 iniconfig==1.1.1
     # via pytest
-packaging==20.8
+packaging==20.9
     # via pytest
 pluggy==0.13.1
     # via pytest
@@ -22,9 +22,9 @@ py==1.10.0
     # via pytest
 pyparsing==2.4.7
     # via packaging
-pytest-cov==2.10.1
+pytest-cov==2.11.1
     # via -r requirements/test.in
-pytest==6.2.1
+pytest==6.2.2
     # via
     #   -r requirements/test.in
     #   pytest-cov
