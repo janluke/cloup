@@ -9,14 +9,16 @@ Change Log
     **Deprecated**
     **Compatible changes and features**
 
-v0.7.0 (in development)
-=======================
+v0.7.0 (2021-03-24)
+===================
 **Compatible changes and features**
 
-- In errors, change the way the parameter list is formatted.
+- In constraint errors, change the way the parameter list is formatted.
   Instead of printing a comma-separated list of single labels: 1) each parameter
   is printed on 2-space indented line and 2) both the short and long name of
-  options is printed.
+  options are printed. See `commit <https://github.com/janLuke/cloup/commit/0280323e481bcca2b941a49c9133b06685e4bbe1>`_
+
+- Minor improvements to code and docs.
 
 
 v0.6.1 (2021-03-01)
