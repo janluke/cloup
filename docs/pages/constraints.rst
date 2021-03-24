@@ -135,24 +135,34 @@ argument or ``@option_group`` (or ``OptionGroup``):
 .. code-block:: python
 
     @option_group(
-        'Output options',
-        option('--four / --no-four', help='1st output option'),
-        option('--five', help='2nd output option'),
-        option('--six', help='3rd output option'),
+        'Option group title',
+        option('-o', '--one', help='an option'),
+        option('-t', '--two', help='a second option'),
+        option('--three', help='a third option'),
         constraint=RequireAtLeast(1),
     )
 
-This code produces the following help section, whose title contains the
-constraint description between square brackets::
+This code produces the following help section; note that the section title
+contains the constraint description between square brackets::
 
-    Output options [at least 1 required]:
-      --four / --no-four    1st output option
-      --five TEXT           2nd output option
-      --six TEXT            3rd output option
+    Option group title [at least 1 required]:
+      -o, --one TEXT  an option
+      -t, --two TEXT  a second option
+      --three TEXT    a third option
 
+If the constraint is violated, the following error is showed::
 
-If you don't want to show the constraint description, you can use the method
-:meth:`~Constraint.hidden`:
+    Error: at least 1 of the following parameters must be set:
+      --one (-o)
+      --two (-t)
+      --three
+
+You can customize both the help description and the error message of a constraint
+using the method :meth:`Constraint.rephrased` (see `Combining and rephrasing`_
+for more).
+
+If you simply want to hide the constraint description in the help, you can use
+the method :meth:`Constraint.hidden`:
 
 .. code-block:: python
 
@@ -291,8 +301,8 @@ Let's see some examples from Cloup itself.
 
 ``rephrased()`` requires at least one argument between ``help`` and ``error``.
 When rephrasing an error, you can pass a format string containing
-``'{param_list}'``, which will be replaced by a nicely formatted list of
-parameter names.
+``'{param_list}'``, which will be replaced by a nicely formatted 2-space indented
+list of parameter names (one line per parameter).
 
 Let's see how you can define a new parametric constraint now:
 
