@@ -1,20 +1,30 @@
 import abc
-from typing import Callable, Dict, Iterable, Optional, Type, cast
+from typing import Callable, Dict, Iterable, Optional, Sequence, Type, cast
 
 import click
 
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
-from .constraints import ConstraintMixin
+from .constraints import ConstraintMixin, BoundConstraintSpec
 
 
 class Command(ConstraintMixin, OptionGroupMixin, click.Command):
     """
     A ``click.Command`` supporting option groups and constraints.
     """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(
+        self, *click_args,
+        constraints: Sequence[BoundConstraintSpec] = (),
+        show_constraints: bool = False,
+        align_option_groups: bool = True,
+        **click_kwargs,
+    ):
+        super().__init__(
+            *click_args,
+            constraints=constraints,
+            show_constraints=show_constraints,
+            align_option_groups=align_option_groups,
+            **click_kwargs)
 
 
 class MultiCommand(SectionMixin, click.MultiCommand, metaclass=abc.ABCMeta):
@@ -27,9 +37,7 @@ class MultiCommand(SectionMixin, click.MultiCommand, metaclass=abc.ABCMeta):
     :class:`SectionMixin`. See the docstring of the two superclasses for more
     details.
     """
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    pass
 
 
 class Group(SectionMixin, click.Group):
