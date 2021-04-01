@@ -22,6 +22,6 @@ from ._core import (
     mutually_exclusive,
     require_all,
 )
-from ._support import ConstraintMixin, constraint
+from ._support import ConstraintMixin, constraint, BoundConstraintSpec
 from .conditions import Equal, IsSet, Not
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
