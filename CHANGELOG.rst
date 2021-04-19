@@ -12,6 +12,7 @@ Change Log
 v0.8.0 (in development)
 =======================
 **License**
+
 - Cloup license changed from MIT to 3-clause BSD, the one used by Click.
 
 
