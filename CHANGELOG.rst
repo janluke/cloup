@@ -9,6 +9,13 @@ Change Log
     **Deprecated**
     **Compatible changes and features**
 
+v0.8.0 (in development)
+=======================
+**License**
+
+- Cloup license changed from MIT to 3-clause BSD, the one used by Click.
+
+
 v0.7.0 (2021-03-24)
 ===================
 **Compatible changes and features**
