@@ -16,13 +16,6 @@ is just a titled container for commands. A ``Section`` can be:
 You can create a sorted section by passing ``sorted=True`` or by using the
 static method ``Section.sorted()``.
 
-.. admonition:: The default section
-
-    The commands that are not explicitly assigned to a section are assigned to a
-    default section, which is *sorted*. This section is titled "Other commands",
-    unless it is the only one defined, in which case ``cloup.Group`` behaves
-    like a normal ``click.Group``, naming it just "Commands".
-
 You can find a runnable example that implements part of the help of Git
 `here <https://github.com/janLuke/cloup/blob/master/examples/git_sections.py>`_.
 
@@ -88,12 +81,10 @@ the ``Group`` itself:
 
 .. admonition:: The default section
 
-    Commands that are not assigned to any user-defined section are listed
-    under a section titled "Other commands" which is shows at the bottom of the
-    command help.
-
-    When the default section is the only one defined, ``cloup.Group`` behaves
-    like a normal ``click.Group``, naming this section just "Commands".
+    All commands that are not explicitly assigned to a section are assigned to a
+    default section, which is *sorted*. This section is titled "Other commands",
+    unless it is the only section defined, in which case ``cloup.Group`` behaves
+    like a normal ``click.Group``, naming it just "Commands".
 
 Each call of ``section()`` creates a new ``Section`` instance and adds it to
 the ``Group``. When you add a section, all the contained subcommands are of
@@ -121,23 +112,21 @@ In alternative, you can create a list of ``Section`` objects and pass it as the
     def git():
         return 0
 
-Adding subcommands
-------------------
-If you prefer, you can also assign a subcommand to a section when you add
-a new subcommand using either:
+Adding subcommands one by one
+-----------------------------
+You can add subcommands one by one as you do in Click, using either:
 
 - the decorators ``@group.command`` and ``@group.group``
 - or ``group.add_command``.
 
-In Cloup, all these methods have indeed an additional (optional) argument
-``section``.
+In Cloup, these methods have indeed an additional (optional) argument ``section``.
 
 .. code-block:: python
 
     import cloup
     from cloup import Section
 
-    # Define sections without filling them in one place
+    # Define sections without filling them
     class Sect:
         START_WORKING_AREA = Section(
             'Start a working area (see also: git help tutorial)')
@@ -155,3 +144,5 @@ In Cloup, all these methods have indeed an additional (optional) argument
     @git.command('mv', section=Sect.WORK_CURRENT_CHANGE)
     def git_mv():
         pass
+
+Note that this mutates the ``Section`` objects.
