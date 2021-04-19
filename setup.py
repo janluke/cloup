@@ -22,11 +22,11 @@ setup(
     long_description=readme + '\n\n' + history,
     long_description_content_type='text/x-rst',
     url='https://github.com/janLuke/cloup',
-    license="MIT license",
+    license="BSD 3-Clause",
     keywords='cloup click option',
     classifiers=[
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: MIT License',
+        'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.6',
