@@ -15,23 +15,48 @@ v0.8.0 (in development)
 
 - Cloup license changed from MIT to 3-clause BSD, the one used by Click.
 
+**Incompatible changes**
+
+* ``OptionGroupMixin`` and ``SectionMixin`` now assume that a
+  ``cloup.HelpFormatter`` will be created by the context and passed in.
+  If you used a custom ``click.HelpFormatter``, you'll need to change your code
+  to use this release.
+
+* ``OptionGroupMixin.format_option_group`` was removed.
+
+* ``SectionMixin.format_section`` was removed.
+
 ** Compatible changes
 
-- Added a custom `Context` class, having the following additional parameters:
+- Cloup now uses its own ``HelpFormatter``:
 
-  * ``align_option_groups = True``,
-  * ``align_sections = True``.
+  * it supports alignment of multiple definition lists, so Cloup doesn't have to
+    rely on a hack to align option groups and alike
 
-  The corresponding arguments in ``OptionGroupMixin`` and ``SectionMixin`` were
-  set to ``None``. By setting them, you can override the context value.
+  * it adds several attributes to fine-tune your generated help string:
+    ``col1_max_width``, ``col_spacing`` and ``row_sep``
+
+  * it overrides ``HelpFormatter.write_dl``, hopefully improving code quality and
+    behaviour.
+
+- Added a custom ``Context`` that:
+
+  * uses ``cloup.HelpFormatter`` as formatter class by default
+  * adds a ``formatter_opts`` attributes that allows to set the default formatter
+    keyword arguments (the same argument can be given to a command to override
+    these defaults).
+  * allows to set the default value for the following Command parameters:
+
+    * ``align_option_groups = True``,
+    * ``align_sections = True``.
 
 - Changed the class hierarchy:
 
-  * added a ``BaseCommand``, extending ``click.Command`` and using the custom
-    ``Context`` by default. This class also "backports" the Click 8.0 class
-    attribute ``context_class``.
+  * added a ``BaseCommand`` class, extending ``click.Command`` and using the custom
+    ``Context`` by default. This class also "back-ports" the Click 8.0 class
+    attribute ``context_class`` and adds the ``formatter_opts`` argument.
 
-  * ``cloup.Command`` and `cloup.MultiCommand` extends ``cloup.BaseCommand``
+  * ``cloup.Command`` and ``cloup.MultiCommand`` extends ``cloup.BaseCommand``
 
   * ``cloup.Group`` now extends ``cloup.MultiCommand``.
 

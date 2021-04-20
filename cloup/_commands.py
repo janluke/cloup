@@ -1,5 +1,5 @@
 import abc
-from typing import Callable, Dict, Iterable, Optional, Sequence, Type, cast
+from typing import Any, Callable, Dict, Iterable, Optional, Sequence, Type, cast
 
 import click
 
@@ -12,12 +12,24 @@ from .constraints import BoundConstraintSpec, ConstraintMixin
 class BaseCommand(click.Command):
     """Base class for cloup commands.
 
-    * It back-ports a feature from Click v8.0, i.e. the ``context_class``
+    * It back-ports a feature from Click v8.0-a1, i.e. the ``context_class``
       class attribute, which is set to ``cloup.Context``.
+
+    * It adds a ``formatter_opts`` instance attribute.
 
     .. versionadded: 0.8.0
     """
     context_class: Type[Context] = Context
+
+    def __init__(
+        self, *args,
+        formatter_opts: Dict[str, Any] = {},
+        **kwargs,
+    ):
+        super().__init__(*args, **kwargs)
+        #: HelpFormatter options that are merged with ``Context.formatter_opts``
+        #: (eventually overriding some values).
+        self.formatter_opts = formatter_opts
 
     def make_context(self, info_name, args, parent=None, **extra) -> Context:
         for key, value in self.context_settings.items():
@@ -32,7 +44,8 @@ class BaseCommand(click.Command):
 
 
 class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
-    """A ``click.Command`` supporting option groups and constraints.
+    """
+    A ``click.Command`` supporting option groups and constraints.
 
     .. versionchanged: 0.8.0
         This class now inherits from :class:`cloup.BaseCommand`.
@@ -40,6 +53,7 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
 
     def __init__(
         self, *click_args,
+        formatter_opts: Dict[str, Any] = {},
         constraints: Sequence[BoundConstraintSpec] = (),
         show_constraints: bool = False,
         align_option_groups: Optional[bool] = None,
@@ -47,6 +61,7 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
     ):
         super().__init__(
             *click_args,
+            formatter_opts=formatter_opts,
             constraints=constraints,
             show_constraints=show_constraints,
             align_option_groups=align_option_groups,
@@ -89,12 +104,12 @@ class Group(MultiCommand, click.Group):
     .. versionchanged: 0.8.0
         This class now inherits from :class:`cloup.MultiCommand`.
     """
-    pass
 
     def __init__(self, name: Optional[str] = None,
                  commands: Optional[Dict[str, click.Command]] = None,
                  sections: Iterable[Section] = (),
                  align_sections: Optional[bool] = None,
+                 formatter_opts: Dict[str, Any] = {},
                  **attrs):
         """
         :param name: name of the command
@@ -108,6 +123,7 @@ class Group(MultiCommand, click.Group):
         super().__init__(
             name=name, commands=commands,
             sections=sections, align_sections=align_sections,
+            formatter_opts=formatter_opts,
             **attrs)
 
     # MyPy complaints because the signature is not compatible with the parent

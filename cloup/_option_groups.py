@@ -10,9 +10,9 @@ import click
 from click import Option, Parameter
 
 from cloup._util import coalesce, make_repr
-from cloup.constraints import (
-    Constraint, ConstraintMixin,
-)
+from cloup.constraints import Constraint
+from cloup.formatting import HelpSection, ensure_is_cloup_formatter
+
 
 C = TypeVar('C', bound=Callable)
 
@@ -59,7 +59,6 @@ class OptionGroup:
         return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
 
     def option(self, *param_decls, **attrs):
-        attrs.setdefault('hidden', self.hidden)
         return option(*param_decls, group=self, **attrs)
 
     def __iter__(self):
@@ -95,8 +94,16 @@ def get_option_group_of(param, default=None):
     return param.group if has_option_group(param) else default
 
 
+# noinspection PyMethodMayBeStatic
 class OptionGroupMixin:
     """Implements support to option groups.
+
+    .. versionchanged:: 0.8.0
+        * This mixin now relies on ``cloup.HelpFormatter`` to align help sections.
+          If a ``click.HelpFormatter`` is used with a ``TypeError`` is raised.
+        * Removed ``format_option_group``
+        * Added ``get_default_option_group``.
+        * Added ``make_option_group_help_section``.
 
     .. versionadded:: 0.5.0
 
@@ -141,70 +148,66 @@ class OptionGroupMixin:
     def get_option_group_title(self, ctx: click.Context, opt_group: OptionGroup) -> str:
         constraint = opt_group.constraint
         if constraint:
-            if not isinstance(ctx.command, ConstraintMixin):
-                raise TypeError('Command must inherits from ConstraintMixin in order to '
-                                'use OptionGroup constraints')
             constraint_help = constraint.help(ctx) if constraint else None
             if constraint_help:
                 return f'{opt_group.name} [{constraint_help}]'
         return opt_group.name
 
-    def format_option_group(self, ctx: click.Context,
-                            formatter: click.HelpFormatter,
-                            opt_group: OptionGroup,
-                            help_records: Optional[Sequence] = None):
-        if help_records is None:
-            help_records = opt_group.get_help_records(ctx)
-        if not help_records:
-            return
-        title = self.get_option_group_title(ctx, opt_group)
-        with formatter.section(title):
-            if opt_group.help:
-                formatter.write_text(opt_group.help)
-            formatter.write_dl(help_records)
+    def make_option_group_help_section(
+        self, group: OptionGroup, ctx: click.Context
+    ) -> HelpSection:
+        """Returns a HelpSection for an OptionGroup, i.e. an object containing
+        the title, the optional description and the options' definitions for
+        this option group.
+
+        .. versionadded:: 0.8.0
+        """
+        heading = self.get_option_group_title(ctx, group)
+        definitions = group.get_help_records(ctx)
+        return HelpSection(heading, definitions, description=group.help)
 
     def must_align_option_groups(
         self, ctx: Optional[click.Context], default=True
     ) -> bool:
+        """
+        .. versionadded: 0.8.0
+        """
         return coalesce(
             self.align_option_groups,
             getattr(ctx, 'align_option_groups', None),
             default,
         )  # type: ignore
 
-    def format_options(self, ctx: click.Context,
-                       formatter: click.HelpFormatter,
-                       max_option_width: int = 30):
-        records_by_group = {}
-        for group in self.option_groups:
-            if group.hidden:
-                continue
-            records_by_group[group] = group.get_help_records(ctx)
-        ungrouped_options = self.get_ungrouped_options(ctx)
-        if ungrouped_options:
-            default_group = OptionGroup(
-                'Other options' if records_by_group else 'Options')
-            default_group.options = ungrouped_options
-            records_by_group[default_group] = default_group.get_help_records(ctx)
+    def get_default_option_group(self, ctx: click.Context) -> OptionGroup:
+        """
+        .. versionadded: 0.8.0
+        """
+        default_group = OptionGroup('Other options')
+        default_group.options = self.get_ungrouped_options(ctx)
+        return default_group
 
-        if self.must_align_option_groups(ctx) and len(records_by_group) > 1:
-            option_name_width = min(
-                max_option_width,
-                max(len(rec[0])
-                    for records in records_by_group.values()
-                    for rec in records)
-            )
-            # This is a hacky way to have aligned options groups: pad the first column
-            # of the first entry of each group to reach option_name_width
-            for records in records_by_group.values():
-                first = records[0]
-                pad_width = option_name_width - len(first[0])
-                if pad_width <= 0:
-                    continue
-                records[0] = (first[0] + ' ' * pad_width, first[1])
+    def format_options(
+        self, ctx: click.Context, formatter: click.HelpFormatter
+    ) -> None:
+        formatter = ensure_is_cloup_formatter(formatter)
+        visible_sections = [
+            self.make_option_group_help_section(group, ctx)
+            for group in self.option_groups
+            if not group.hidden
+        ]
+        if not visible_sections:
+            # No visible option groups. No custom formatting needed.
+            return super().format_options(ctx, formatter)  # type: ignore
 
-        for group, records in records_by_group.items():
-            self.format_option_group(ctx, formatter, group, help_records=records)
+        default_group = self.get_default_option_group(ctx)
+        if not default_group.hidden:
+            visible_sections.append(
+                self.make_option_group_help_section(default_group, ctx))
+
+        formatter.write_many_sections(
+            visible_sections,
+            aligned=self.must_align_option_groups(ctx),
+        )
 
 
 def option(
@@ -246,6 +249,7 @@ def option_group(
     ...  # pragma: no cover
 
 
+# noinspection PyIncorrectDocstring
 def option_group(name, *args, **kwargs):
     """
     Attaches an option group to the command. This decorator is overloaded with
@@ -261,7 +265,7 @@ def option_group(name, *args, **kwargs):
     :param name: a mandatory name/title for the group
     :param help: an optional help string for the group
     :param options: option decorators like `click.option`
-    :param constraint: a ``Constraint`` to validate on this option group`
+    :param constraint: a ``Constraint`` to validate on this option group
     :param hidden: hide this option group
     :return: a decorator that attaches the contained options to the decorated
              function

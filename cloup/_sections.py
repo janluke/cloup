@@ -1,9 +1,16 @@
 from collections import OrderedDict
-from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union
+from typing import (
+    Dict, Iterable, List, Optional, Sequence, TYPE_CHECKING,
+    Tuple, Type, TypeVar, Union, cast,
+)
 
 import click
 
-from cloup._util import coalesce
+from cloup._util import coalesce, listOfNotNone
+from cloup.formatting import HelpSection, ensure_is_cloup_formatter
+
+if TYPE_CHECKING:
+    from cloup._context import Context  # noqa: F401
 
 CommandType = TypeVar('CommandType', bound=Type[click.Command])
 Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
@@ -87,6 +94,10 @@ class SectionMixin:
     on whether it is the only section or not. The default section is the last
     shown section in the help and its commands are listed in lexicographic order.
 
+    .. versionchanged:: 0.8.0
+        This mixin now relies on ``cloup.HelpFormatter`` to align help sections.
+        If a ``click.HelpFormatter`` is used with a ``TypeError`` is raised.
+
     .. versionadded:: 0.5.0
     """
 
@@ -157,6 +168,19 @@ class SectionMixin:
             section_list.append(default_section)
         return section_list
 
+    # noinspection PyMethodMayBeStatic
+    def make_commands_help_section(
+        self, section: Section, help_limit: int = 80
+    ) -> Optional[HelpSection]:
+        visible_subcommands = section.list_commands()
+        if not visible_subcommands:
+            return None
+        return HelpSection(
+            heading=section.title,
+            definitions=[(name, cmd.get_short_help_str(help_limit))
+                         for name, cmd in visible_subcommands]
+        )
+
     def must_align_sections(
         self, ctx: Optional[click.Context], default: bool = True
     ) -> bool:
@@ -166,34 +190,23 @@ class SectionMixin:
             default,
         )  # type: ignore
 
-    def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter):
-        section_list = self.list_sections(ctx)
-        command_name_col_width = None
-        if self.must_align_sections(ctx):
-            command_name_col_width = max(len(name)
-                                         for section in section_list
-                                         for name in section.commands)
-        for section in section_list:
-            self.format_section(ctx, formatter, section, command_name_col_width)
+    def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
+        formatter = ensure_is_cloup_formatter(formatter)
 
-    def format_section(self, ctx: click.Context,
-                       formatter: click.HelpFormatter,
-                       section: Section,
-                       command_col_width: Optional[int] = None):
-        commands = section.list_commands()
-        if not commands:
+        subcommand_sections = self.list_sections(ctx)
+        # Conservative limit. Rely on the formatter for truncating the text precisely.
+        help_limit = (cast(int, formatter.width)
+                      - formatter.current_indent
+                      - formatter.col_spacing)
+        help_sections = listOfNotNone(
+            self.make_commands_help_section(section, help_limit=help_limit)
+            for section in subcommand_sections
+        )
+        if not help_sections:
             return
 
-        if command_col_width is None:
-            command_col_width = max(len(cmd_name) for cmd_name, _ in commands)
-
-        limit = formatter.width - 6 - command_col_width  # type: ignore
-        rows = []
-        for name, cmd in commands:
-            short_help = cmd.get_short_help_str(limit)
-            padded_name = name + ' ' * (command_col_width - len(name))
-            rows.append((padded_name, short_help))
-
-        if rows:
-            with formatter.section(section.title):
-                formatter.write_dl(rows)
+        formatter.write_many_sections(
+            help_sections,
+            aligned=self.must_align_sections(ctx),
+            col2_overflow_strategy="truncate",
+        )

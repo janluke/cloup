@@ -73,3 +73,17 @@ def coalesce(*values: Optional[T], default=None) -> Optional[T]:
         if val is not None:
             return val
     return default
+
+
+def listOfNotNone(iterable: Iterable[Optional[T]]) -> List[T]:
+    return [x for x in iterable if x is not None]
+
+
+def check_positive_int(value, arg_name):
+    error_type = None
+    if not isinstance(value, int):
+        error_type = TypeError
+    elif value <= 0:
+        error_type = ValueError
+    if error_type:
+        raise error_type(f'{arg_name} should be a positive integer. It is: {value}.')
