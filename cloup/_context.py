@@ -2,7 +2,10 @@ import click
 
 
 class Context(click.Context):
-    """A Context that adds a ``formatter_factory`` instance argument."""
+    """A Context that adds a ``formatter_factory`` instance argument.
+
+    .. versionadded: 0.8.0
+    """
 
     def __init__(
         self, *args,

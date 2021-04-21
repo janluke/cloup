@@ -14,6 +14,8 @@ class BaseCommand(click.Command):
 
     * It back-ports a feature from Click v8.0, i.e. the ``context_class``
       class attribute, which is set to ``cloup.Context``.
+
+    .. versionadded: 0.8.0
     """
     context_class: Type[Context] = Context
 
@@ -30,8 +32,10 @@ class BaseCommand(click.Command):
 
 
 class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
-    """
-    A ``click.Command`` supporting option groups and constraints.
+    """A ``click.Command`` supporting option groups and constraints.
+
+    .. versionchanged: 0.8.0
+        This class now inherits from :class:`cloup.BaseCommand`.
     """
 
     def __init__(
@@ -63,6 +67,9 @@ class MultiCommand(
     This class is just a :class:`click.MultiCommand` mixed with
     :class:`SectionMixin`. See the docstring of the two superclasses for more
     details.
+
+    .. versionchanged: 0.8.0
+        This class now inherits from :class:`cloup.BaseCommand`.
     """
     pass
 
@@ -78,6 +85,9 @@ class Group(MultiCommand, click.Group):
     a ``section`` for the created subcommand can be specified.
 
     See the docstring of the two superclasses for more details.
+
+    .. versionchanged: 0.8.0
+        This class now inherits from :class:`cloup.MultiCommand`.
     """
     pass
 
