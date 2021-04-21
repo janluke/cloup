@@ -35,6 +35,11 @@ v0.8.0 (in development)
 
   * ``cloup.Group`` now extends ``cloup.MultiCommand``.
 
+- Hidden option groups. An option group is hidden either if you pass ``hidden=True``
+  when you define it or if all its contained options are hidden.
+  If you set ``hidden=True``, all contained options will have their ``hidden``
+  attribute set to ``True`` automatically.
+
 
 v0.7.0 (2021-03-24)
 ===================

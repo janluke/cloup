@@ -1,4 +1,6 @@
-from typing import Iterable, List, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple
+from typing import (
+    Iterable, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple
+)
 
 from click import Context, HelpFormatter, Parameter
 
@@ -109,8 +111,8 @@ class ConstraintMixin:
         except KeyError:
             raise KeyError(f"there's no CLI parameter named '{name}'")
 
-    def get_params_by_name(self, names: Iterable[str]) -> List[Parameter]:
-        return [self.get_param_by_name(name) for name in names]
+    def get_params_by_name(self, names: Iterable[str]) -> Sequence[Parameter]:
+        return tuple(self.get_param_by_name(name) for name in names)
 
     def format_constraints(self, ctx, formatter) -> None:
         records_gen = (constr.get_help_record(ctx) for constr in self._extra_constraints)

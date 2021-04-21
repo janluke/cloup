@@ -91,3 +91,33 @@ def test_align_option_groups_context_setting(runner, ctx_value, cmd_value, shoul
     expected = dedent(expected).strip()
     end = start + len(expected)
     assert result.output[start:end] == expected
+
+
+def test_that_neither_optgroup_nor_its_options_are_shown_if_optgroup_is_hidden(runner):
+    @cloup.command('name')
+    @cloup.option_group(
+        'Hidden group',
+        cloup.option('--one'),
+        hidden=True
+    )
+    def cmd():
+        pass
+
+    result = runner.invoke(cmd, args=('--help',), catch_exceptions=False)
+    assert 'Hidden group' not in result.output
+    assert '--one' not in result.output
+
+
+def test_that_optgroup_is_hidden_if_all_its_options_are_hidden(runner):
+    @cloup.command('name')
+    @cloup.option_group(
+        'Hidden group',
+        cloup.option('--one', hidden=True),
+        cloup.option('--two', hidden=True),
+    )
+    def cmd():
+        pass
+
+    assert cmd.option_groups[0].hidden
+    result = runner.invoke(cmd, args=('--help',), catch_exceptions=False)
+    assert 'Hidden group' not in result.output

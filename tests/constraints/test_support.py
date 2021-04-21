@@ -31,7 +31,7 @@ class TestConstraintMixin:
         with pytest.raises(KeyError):
             cmd.get_param_by_name('non-existing')
 
-        assert cmd.get_params_by_name(['arg1', 'option2']) == [params[0], params[2]]
+        assert cmd.get_params_by_name(['arg1', 'option2']) == (params[0], params[2])
 
 
 @mark.parametrize(

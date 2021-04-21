@@ -2,13 +2,17 @@
 Implements support to option group.
 """
 from collections import defaultdict
-from typing import Callable, List, Optional, Sequence, Tuple, Type, TypeVar, overload
+from typing import (
+    Callable, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, overload,
+)
 
 import click
 from click import Option, Parameter
 
 from cloup._util import coalesce, make_repr
-from cloup.constraints import Constraint, ConstraintMixin
+from cloup.constraints import (
+    Constraint, ConstraintMixin,
+)
 
 C = TypeVar('C', bound=Callable)
 
@@ -22,18 +26,40 @@ OptionGroupDecorator = Callable[[C], C]
 class OptionGroup:
     def __init__(self, name: str,
                  help: Optional[str] = None,
-                 constraint: Optional[Constraint] = None):
+                 constraint: Optional[Constraint] = None,
+                 hidden: bool = False):
+        """
+        .. versionadded: 0.8.0
+            The ``hidden`` parameter.
+        """
         if not name:
             raise ValueError('name is a mandatory argument')
         self.name = name
         self.help = help
-        self.options: Sequence[click.Option] = []
+        self._options: Sequence[click.Option] = []
         self.constraint = constraint
+        self.hidden = hidden
 
-    def get_help_records(self, ctx: click.Context):
+    @property
+    def options(self) -> Sequence[click.Option]:
+        return self._options
+
+    @options.setter
+    def options(self, options: Iterable[click.Option]) -> None:
+        self._options = opts = tuple(options)
+        if self.hidden:
+            for opt in opts:
+                opt.hidden = True
+        elif all(opt.hidden for opt in opts):
+            self.hidden = True
+
+    def get_help_records(self, ctx: click.Context) -> List[Tuple[str, str]]:
+        if self.hidden:
+            return []
         return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
 
     def option(self, *param_decls, **attrs):
+        attrs.setdefault('hidden', self.hidden)
         return option(*param_decls, group=self, **attrs)
 
     def __iter__(self):
@@ -151,6 +177,8 @@ class OptionGroupMixin:
                        max_option_width: int = 30):
         records_by_group = {}
         for group in self.option_groups:
+            if group.hidden:
+                continue
             records_by_group[group] = group.get_help_records(ctx)
         ungrouped_options = self.get_ungrouped_options(ctx)
         if ungrouped_options:
@@ -189,6 +217,8 @@ def option(
         func = click.option(*param_decls, cls=cls, **attrs)(f)
         new_option = func.__click_params__[-1]
         new_option.group = group
+        if group and group.hidden:
+            new_option.hidden = True
         return func
 
     return decorator
@@ -200,6 +230,7 @@ def option_group(
     help: str,
     *options: OptionDecorator,
     constraint: Optional[Constraint] = None,
+    hidden: bool = False,
 ) -> OptionGroupDecorator:
     ...  # pragma: no cover
 
@@ -210,6 +241,7 @@ def option_group(
     *options: OptionDecorator,
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
+    hidden: bool = False,
 ) -> OptionGroupDecorator:
     ...  # pragma: no cover
 
@@ -219,8 +251,8 @@ def option_group(name, *args, **kwargs):
     Attaches an option group to the command. This decorator is overloaded with
     two signatures::
 
-        @option_group(name: str, *options, help: Optional[str] = None)
-        @option_group(name: str, help: str, *options)
+        @option_group(name: str, *options, help: Optional[str] = None, ...)
+        @option_group(name: str, help: str, *options, ...)
 
     In other words, if the second position argument is a string, it is interpreted
     as the "help" argument. Otherwise, it is interpreted as the first option;
@@ -229,7 +261,8 @@ def option_group(name, *args, **kwargs):
     :param name: a mandatory name/title for the group
     :param help: an optional help string for the group
     :param options: option decorators like `click.option`
-    :param constraint: a ``Constraint`` to validate on this option group
+    :param constraint: a ``Constraint`` to validate on this option group`
+    :param hidden: hide this option group
     :return: a decorator that attaches the contained options to the decorated
              function
     """
@@ -242,6 +275,7 @@ def option_group(name, *args, **kwargs):
 def _option_group(
     name: str,
     options: Sequence[OptionDecorator],
+    hidden: bool = False,
     **kwargs,
 ) -> OptionGroupDecorator:
     if not options:
@@ -261,6 +295,8 @@ def _option_group(
                     f'passed as argument to @option_group({name!r}, ...)'
                 )
             new_option.group = opt_group
+            if hidden:
+                new_option.hidden = True
         return f
 
     return decorator
