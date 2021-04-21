@@ -15,6 +15,26 @@ v0.8.0 (in development)
 
 - Cloup license changed from MIT to 3-clause BSD, the one used by Click.
 
+** Compatible changes
+
+- Added a custom `Context` class, having the following additional parameters:
+
+  * ``align_option_groups = True``,
+  * ``align_sections = True``.
+
+  The corresponding arguments in ``OptionGroupMixin`` and ``SectionMixin`` were
+  set to ``None``. By setting them, you can override the context value.
+
+- Changed the class hierarchy:
+
+  * added a ``BaseCommand``, extending ``click.Command`` and using the custom
+    ``Context`` by default. This class also "backports" the Click 8.0 class
+    attribute ``context_class``.
+
+  * ``cloup.Command`` and `cloup.MultiCommand` extends ``cloup.BaseCommand``
+
+  * ``cloup.Group`` now extends ``cloup.MultiCommand``.
+
 
 v0.7.0 (2021-03-24)
 ===================

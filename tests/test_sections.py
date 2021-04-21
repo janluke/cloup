@@ -1,4 +1,6 @@
 """Tests for the "subcommand sections" feature/module."""
+from textwrap import dedent
+
 import click
 import pytest
 
@@ -53,3 +55,50 @@ def test_Group_subcommand_decorator(subcommand_cls, assign_to_section):
         assert section.commands[subcommand_name] is subcommand
     else:
         assert grp._default_section.commands[subcommand_name] is subcommand
+
+
+@pytest.mark.parametrize(['ctx_value', 'cmd_value', 'should_align'], [
+    pytest.param(True,  None,  True,  id='ctx-yes'),
+    pytest.param(False, None,  False, id='ctx-no'),
+    pytest.param(False, True,  True,  id='none'),
+    pytest.param(True,  False, False, id='ctx-yes_cmd-no'),
+    pytest.param(False, True,  True,  id='ctx-no_cmd-yes'),
+])
+def test_align_sections_context_setting(runner, ctx_value, cmd_value, should_align):
+    @cloup.group(
+        context_settings=dict(align_sections=ctx_value),
+        align_sections=cmd_value,
+    )
+    def cmd(one, much_longer_opt):
+        pass
+
+    cmd.section(
+        "First section",
+        cloup.command('cmd', help='First command help')(noop),
+    )
+
+    cmd.section(
+        "Second section",
+        cloup.command('longer-cmd', help='Second command help')(noop),
+    )
+
+    result = runner.invoke(cmd, args=('--help',))
+    start = result.output.find('First section')
+    if should_align:
+        expected = """
+            First section:
+              cmd         First command help
+
+            Second section:
+              longer-cmd  Second command help"""
+    else:
+        expected = """
+            First section:
+              cmd  First command help
+
+            Second section:
+              longer-cmd  Second command help"""
+
+    expected = dedent(expected).strip()
+    end = start + len(expected)
+    assert result.output[start:end] == expected

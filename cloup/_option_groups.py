@@ -7,7 +7,7 @@ from typing import Callable, List, Optional, Sequence, Tuple, Type, TypeVar, ove
 import click
 from click import Option, Parameter
 
-from cloup._util import make_repr
+from cloup._util import coalesce, make_repr
 from cloup.constraints import Constraint, ConstraintMixin
 
 C = TypeVar('C', bound=Callable)
@@ -79,7 +79,9 @@ class OptionGroupMixin:
         a command must inherits from :class:`cloup.ConstraintMixin` too!
     """
 
-    def __init__(self, *args, align_option_groups: bool = True, **kwargs):
+    def __init__(
+        self, *args, align_option_groups: Optional[bool] = None, **kwargs
+    ):
         self.align_option_groups = align_option_groups
         self.option_groups, self.ungrouped_options = \
             self._option_groups_from_params(kwargs['params'])
@@ -135,6 +137,15 @@ class OptionGroupMixin:
                 formatter.write_text(opt_group.help)
             formatter.write_dl(help_records)
 
+    def must_align_option_groups(
+        self, ctx: Optional[click.Context], default=True
+    ) -> bool:
+        return coalesce(
+            self.align_option_groups,
+            getattr(ctx, 'align_option_groups', None),
+            default,
+        )  # type: ignore
+
     def format_options(self, ctx: click.Context,
                        formatter: click.HelpFormatter,
                        max_option_width: int = 30):
@@ -148,7 +159,7 @@ class OptionGroupMixin:
             default_group.options = ungrouped_options
             records_by_group[default_group] = default_group.get_help_records(ctx)
 
-        if self.align_option_groups and len(records_by_group) > 1:
+        if self.must_align_option_groups(ctx) and len(records_by_group) > 1:
             option_name_width = min(
                 max_option_width,
                 max(len(rec[0])

@@ -1,5 +1,8 @@
 """Generic utilities."""
-from typing import Iterable, List
+from typing import Iterable, List, Optional, TypeVar
+
+
+T = TypeVar('T')
 
 
 def class_name(obj):
@@ -61,3 +64,12 @@ def pluralize(
     if count == 1 and one:
         return one
     return many.format(count=count)
+
+
+def coalesce(*values: Optional[T], default=None) -> Optional[T]:
+    """Returns the first value that is not None (or ``default`` if no such value exists).
+    Inspired by the homonym SQL function."""
+    for val in values:
+        if val is not None:
+            return val
+    return default

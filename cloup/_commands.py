@@ -3,20 +3,42 @@ from typing import Callable, Dict, Iterable, Optional, Sequence, Type, cast
 
 import click
 
+from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
-from .constraints import ConstraintMixin, BoundConstraintSpec
+from .constraints import BoundConstraintSpec, ConstraintMixin
 
 
-class Command(ConstraintMixin, OptionGroupMixin, click.Command):
+class BaseCommand(click.Command):
+    """Base class for cloup commands.
+
+    * It back-ports a feature from Click v8.0, i.e. the ``context_class``
+      class attribute, which is set to ``cloup.Context``.
+    """
+    context_class: Type[Context] = Context
+
+    def make_context(self, info_name, args, parent=None, **extra) -> Context:
+        for key, value in self.context_settings.items():
+            if key not in extra:
+                extra[key] = value
+
+        ctx = self.context_class(self, info_name=info_name, parent=parent, **extra)
+
+        with ctx.scope(cleanup=False):
+            self.parse_args(ctx, args)
+        return ctx
+
+
+class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
     """
     A ``click.Command`` supporting option groups and constraints.
     """
+
     def __init__(
         self, *click_args,
         constraints: Sequence[BoundConstraintSpec] = (),
         show_constraints: bool = False,
-        align_option_groups: bool = True,
+        align_option_groups: Optional[bool] = None,
         **click_kwargs,
     ):
         super().__init__(
@@ -27,7 +49,12 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
             **click_kwargs)
 
 
-class MultiCommand(SectionMixin, click.MultiCommand, metaclass=abc.ABCMeta):
+class MultiCommand(
+    SectionMixin,
+    BaseCommand,
+    click.MultiCommand,
+    metaclass=abc.ABCMeta
+):
     """
     A ``click.MultiCommand`` that allows to organize its subcommands in
     multiple help sections and and whose subcommands are, by default, of type
@@ -40,7 +67,7 @@ class MultiCommand(SectionMixin, click.MultiCommand, metaclass=abc.ABCMeta):
     pass
 
 
-class Group(SectionMixin, click.Group):
+class Group(MultiCommand, click.Group):
     """
     A ``click.Group`` that allows to organize its subcommands in multiple help
     sections and and whose subcommands are, by default, of type
@@ -52,11 +79,13 @@ class Group(SectionMixin, click.Group):
 
     See the docstring of the two superclasses for more details.
     """
+    pass
 
     def __init__(self, name: Optional[str] = None,
                  commands: Optional[Dict[str, click.Command]] = None,
                  sections: Iterable[Section] = (),
-                 align_sections: bool = True, **attrs):
+                 align_sections: Optional[bool] = None,
+                 **attrs):
         """
         :param name: name of the command
         :param commands:
