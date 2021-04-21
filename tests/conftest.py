@@ -1,3 +1,5 @@
+from functools import partial
+
 from click.testing import CliRunner
 from pytest import fixture
 
@@ -7,7 +9,9 @@ from tests.example_group import make_example_group
 
 @fixture()
 def runner():
-    return CliRunner()
+    runner = CliRunner()
+    runner.invoke = partial(runner.invoke, catch_exceptions=True)
+    return runner
 
 
 @fixture(scope='session')

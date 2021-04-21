@@ -3,6 +3,8 @@ from typing import Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVa
 
 import click
 
+from cloup._util import coalesce
+
 CommandType = TypeVar('CommandType', bound=Type[click.Command])
 Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
 
@@ -92,7 +94,7 @@ class SectionMixin:
         self, *args,
         commands: Optional[Dict[str, click.Command]] = None,
         sections: Iterable[Section] = (),
-        align_sections: bool = True,
+        align_sections: Optional[bool] = None,
         **kwargs,
     ):
         """
@@ -155,10 +157,19 @@ class SectionMixin:
             section_list.append(default_section)
         return section_list
 
+    def must_align_sections(
+        self, ctx: Optional[click.Context], default: bool = True
+    ) -> bool:
+        return coalesce(
+            self.align_sections,
+            getattr(ctx, 'align_sections', None),
+            default,
+        )  # type: ignore
+
     def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter):
         section_list = self.list_sections(ctx)
         command_name_col_width = None
-        if self.align_sections:
+        if self.must_align_sections(ctx):
             command_name_col_width = max(len(name)
                                          for section in section_list
                                          for name in section.commands)

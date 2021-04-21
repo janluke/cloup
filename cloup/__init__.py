@@ -8,6 +8,7 @@ __version__ = _version.version
 __version_tuple__ = _version.version_tuple
 
 # flake8: noqa F401
+from ._context import Context
 from ._option_groups import (
     GroupedOption, OptionGroup, OptionGroupMixin, option, option_group
 )
