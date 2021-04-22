@@ -31,13 +31,12 @@ PROJ_DIR = os.path.abspath(os.path.join(__file__, '..', '..'))
 #
 # needs_sphinx = '1.0'
 
-# Add any Sphinx extension module names here, as strings. They can be
-# extensions coming with Sphinx (named 'sphinx.ext.*') or your custom ones.
 extensions = [
+    'sphinx.ext.autodoc',
+    'sphinx.ext.autodoc.typehints',
     'autoapi.extension',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
-    'sphinx.ext.autodoc.typehints',
     'sphinx_panels',
     'sphinx_copybutton',  # adds a copy button to code blocks
     'versionwarning.extension',
@@ -49,6 +48,7 @@ autodoc_typehints = 'description'
 autoapi_type = 'python'
 autoapi_dirs = [os.path.join(PROJ_DIR, 'cloup')]
 autoapi_template_dir = '_autoapi_templates'
+templates_path = [autoapi_template_dir]
 autoapi_keep_files = True
 autoapi_add_toctree_entry = False
 autoapi_options = [
@@ -64,9 +64,6 @@ intersphinx_mapping = {
     'python': ('https://docs.python.org/', None),
     'Click': ('https://click.palletsprojects.com', None)
 }
-
-# Add any paths that contain templates here, relative to this directory.
-templates_path = [autoapi_template_dir]
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
