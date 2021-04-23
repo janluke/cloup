@@ -2,6 +2,7 @@
 from textwrap import dedent
 
 import pytest
+from click import pass_context
 
 import cloup
 from cloup import option
@@ -62,8 +63,9 @@ def test_align_option_groups_context_setting(runner, ctx_value, cmd_value, shoul
     )
     @cloup.option_group('First group', option('--opt', help='first option'))
     @cloup.option_group('Second group', option('--much-longer-opt', help='second option'))
-    def cmd(one, much_longer_opt):
-        pass
+    @pass_context
+    def cmd(ctx, one, much_longer_opt):
+        assert cmd.must_align_groups(ctx) == should_align
 
     result = runner.invoke(cmd, args=('--help',))
     start = result.output.find('First')
@@ -91,6 +93,19 @@ def test_align_option_groups_context_setting(runner, ctx_value, cmd_value, shoul
     expected = dedent(expected).strip()
     end = start + len(expected)
     assert result.output[start:end] == expected
+
+
+def test_context_settings_propagate_to_children(runner):
+    @cloup.group(context_settings=dict(align_option_groups=False))
+    def grp():
+        pass
+
+    @grp.command()
+    @pass_context
+    def cmd(ctx):
+        assert cmd.must_align_groups(ctx) is False
+
+    runner.invoke(grp, ('cmd',))
 
 
 def test_that_neither_optgroup_nor_its_options_are_shown_if_optgroup_is_hidden(runner):

@@ -3,6 +3,7 @@ from textwrap import dedent
 
 import click
 import pytest
+from click import pass_context
 
 import cloup
 from cloup import Section
@@ -69,8 +70,9 @@ def test_align_sections_context_setting(runner, ctx_value, cmd_value, should_ali
         context_settings=dict(align_sections=ctx_value),
         align_sections=cmd_value,
     )
-    def cmd(one, much_longer_opt):
-        pass
+    @pass_context
+    def cmd(ctx, one, much_longer_opt):
+        assert cmd.must_align_sections(ctx) == should_align
 
     cmd.section(
         "First section",
