@@ -6,7 +6,7 @@
 #
 alabaster==0.7.12
     # via sphinx
-astroid==2.5.1
+astroid==2.5.3
     # via sphinx-autoapi
 babel==2.9.0
     # via sphinx
@@ -33,7 +33,7 @@ jinja2==2.11.3
     # via
     #   sphinx
     #   sphinx-autoapi
-lazy-object-proxy==1.5.2
+lazy-object-proxy==1.6.0
     # via astroid
 markupsafe==1.1.1
     # via jinja2
@@ -57,7 +57,7 @@ snowballstemmer==2.1.0
     # via sphinx
 soupsieve==2.2.1
     # via beautifulsoup4
-sphinx-autoapi==1.7.0
+sphinx-autoapi==1.8.0
     # via -r requirements/docs.in
 sphinx-book-theme==0.0.42
     # via -r requirements/docs.in
@@ -67,7 +67,7 @@ sphinx-panels==0.5.2
     # via -r requirements/docs.in
 sphinx-version-warning==1.1.2
     # via -r requirements/docs.in
-sphinx==3.5.3
+sphinx==3.5.4
     # via
     #   -r requirements/docs.in
     #   pydata-sphinx-theme
