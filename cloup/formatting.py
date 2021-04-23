@@ -68,12 +68,14 @@ class HelpFormatter(click.HelpFormatter):
         width: Optional[int] = None,
         max_width: Optional[int] = 80,
         col1_max_width: int = 30,
+        col2_min_width: int = 20,
         col_spacing: int = 2,
         row_sep: str = '',
     ):
         check_positive_int(col1_max_width, 'col1_max_width')
         check_positive_int(col_spacing, 'col_spacing')
         self.col1_max_width = col1_max_width
+        self.col2_min_width = col2_min_width
         self.col_spacing = col_spacing
         self.row_sep = row_sep
         max_width = max_width or 80
@@ -90,8 +92,9 @@ class HelpFormatter(click.HelpFormatter):
         max_width: Optional[int] = None,
         indent_increment: Optional[int] = None,
         col1_max_width: Optional[int] = None,
+        col2_min_width: Optional[int] = None,
         col_spacing: Optional[int] = None,
-        row_sep: Optional[str] = None
+        row_sep: Optional[str] = None,
     ) -> Dict[str, Any]:
         """A utility method for creating a ``formatter_opts`` dictionary to
         pass as context settings or command attribute. This method exists for
@@ -110,11 +113,6 @@ class HelpFormatter(click.HelpFormatter):
             return self.write_aligned_sections(sections, **kwargs)  # type: ignore
         for s in sections:
             self.write_section(s, **kwargs)  # type: ignore
-
-    def compute_col_width(self, strings: Iterable[str], max_width: int) -> int:
-        lengths_under_limit = (length for length in map(len, strings)
-                               if length <= max_width)
-        return max(lengths_under_limit, default=0)
 
     def write_aligned_sections(
         self, sections: Sequence[HelpSection],
@@ -139,20 +137,80 @@ class HelpFormatter(click.HelpFormatter):
                     self.write(self.row_sep)
             self.write_dl(s.definitions, **write_dl_kwargs)
 
+    def compute_col_width(self, strings: Iterable[str], max_width: int) -> int:
+        lengths_under_limit = (length for length in map(len, strings)
+                               if length <= max_width)
+        return max(lengths_under_limit, default=0)
+
+    def determine_col_widths(
+        self,
+        col1_width: Optional[int] = None,
+        rows: Optional[Iterable[Tuple[str, str]]] = None,
+        col1_max_width: Optional[int] = None,
+        col_spacing: Optional[int] = None,
+    ) -> Tuple[int, int]:
+        """
+        Determines the column widths of a definition list. You must provide at
+        least one of ``col1_width`` and ``rows``. The default implementation
+        ignore ``rows`` if ``col1_width`` is provided.
+
+        :param col1_width:
+            the desired value for the 1st column; if provided, ``col1_strings``
+            is ignored.
+        :param rows:
+            iterable of pair of strings; the default implementation ignore this
+            argument if ``col1_width`` is provided.
+        :param col1_max_width:
+            if provided, overrides ``self.col1_max_width``.
+        :param col_spacing:
+            if provided, overrides ``self.col_spacing``.
+        :return: ``(col1_width, col_spacing, col2_width)``
+        """
+        if not (col1_width or rows):
+            raise ValueError(
+                'at least one of col1_width and col1_strings must be provided')
+
+        # Compute 1st column width
+        width = cast(int, self.width)
+        available_width = width - self.current_indent
+        actual_col1_max_width = min(
+            col1_max_width or self.col1_max_width,
+            available_width,
+        )
+        col1_width = min(
+            col1_width
+            or self.compute_col_width((r[0] for r in rows), actual_col1_max_width),
+            actual_col1_max_width
+        )
+        # Derive 2nd column width
+        col_spacing = col_spacing or self.col_spacing
+        col2_width = available_width - col1_width - col_spacing
+        return col1_width, col2_width
+
     def write_dl(  # type: ignore
         self, rows: Sequence[Tuple[str, str]],
         col_max: Optional[int] = None,  # default changed to None wrt parent class
         col_spacing: Optional[int] = None,  # default changed to None wrt parent class
         col1_width: Optional[int] = None,
+        col2_min_width: Optional[int] = None,
         col2_overflow_strategy: str = 'wrap',
     ) -> None:
         """Writes a definition list into the buffer. This is how options
         and commands are usually formatted.
 
+        If there's enough space, definition lists are rendered as a 2-column
+        pseudo-table: if the first column text of a row doesn't fit in the
+        provided/computed ``col1_width``, the 2nd column is printed on the
+        following line.
+
+        If the available space for the 2nd column is below ``self.col2_min_width``,
+        the definition list is rendered as a linear list with each "column"
+        printed on its own line and the 2nd column indented with 4 spaces.
+
         :param rows:
             a list of two item tuples for the terms and values.
         :param col_max:
-            the maximum width for the first column of a definition list; this
+            the maximum width for the 1st column of a definition list; this
             argument is here to not break compatibility with Click; if provided,
             it overrides the attribute ``self.col1_max_width``.
         :param col_spacing:
@@ -163,31 +221,49 @@ class HelpFormatter(click.HelpFormatter):
             the width to use for the first column; if not provided, it's
             computed as the length of the longest string under ``self.col1_max_width``;
             useful when you need to align multiple definition lists.
+        :param col2_min_width:
+            the minimum width for the 2nd column; if the available space for the
+            2nd column is below this threshold, the definition list is printed as
+            a "linear" list, not as a 2-column table.
         :param col2_overflow_strategy:
-            either "wrap" or "truncate".
+            if "wrap", the text is wrapped in multiple lines and shown;
+            if "truncate", the text is truncated to fit a single line.
         """
         if col2_overflow_strategy not in {"wrap", "truncate"}:
-            raise ValueError(f"invalid cl2_overflow_strategy: {col2_overflow_strategy}")
-
-        col1_max_width = col_max or self.col1_max_width
-        col_spacing = col_spacing or self.col_spacing
+            raise ValueError(f"invalid col2_overflow_strategy: {col2_overflow_strategy}")
 
         # |<----------------------- width ------------------------>|
         # |                |<---------- available_width ---------->|
         # | current_indent | col1_width | col_spacing | col2_width |
-        width = cast(int, self.width)
-        available_width = width - self.current_indent
-        col1_strings = (row[0] for row in rows)
-        col1_width = min(
-            col1_width or self.compute_col_width(col1_strings, col1_max_width),
-            col1_max_width,
-            available_width
+
+        col_spacing = col_spacing or self.col_spacing
+        col1_width, col2_width = self.determine_col_widths(
+            col1_width=col1_width,
+            rows=rows,
+            col1_max_width=col_max,
+            col_spacing=col_spacing,
         )
+
+        if col2_width < self.col2_min_width:
+            self.write_linear_dl(rows, col2_overflow_strategy)
+        else:
+            self.write_tabular_dl(
+                rows, col1_width, col_spacing, col2_width,
+                col2_overflow_strategy
+            )
+
+    def write_tabular_dl(
+        self, rows, col1_width, col_spacing, col2_width,
+        col2_overflow_strategy,
+    ) -> None:
+        wrap_overflow = (col2_overflow_strategy == "wrap")
         col1_plus_spacing_width = col1_width + col_spacing
-        col2_width = max(available_width - col1_plus_spacing_width, 10)
-        col2_indentation = " " * (self.current_indent + col1_plus_spacing_width)
 
         current_indentation = " " * self.current_indent
+        col2_indentation = " " * (
+            self.current_indent + max(self.indent_increment, col1_plus_spacing_width)
+        )
+
         for first, second in iter_rows(rows, col_count=2):
             self.write(current_indentation)
             self.write(first)
@@ -203,29 +279,51 @@ class HelpFormatter(click.HelpFormatter):
                 self.write("\n")
                 self.write(col2_indentation)
 
-            if len(second) <= col2_width:
-                self.write(second)
-                self.write("\n")
-            elif col2_overflow_strategy == "wrap":
+            if wrap_overflow:
                 wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
                 lines = wrapped_text.splitlines()
-                for i, line in enumerate(lines):
-                    if i > 0:
-                        self.write(col2_indentation)
-                    self.write(line)
-                    self.write("\n")
+                self.write(lines[0] + "\n")
+                for line in lines[1:]:
+                    self.write(f"{col2_indentation}{line}\n")
             else:
-                self.write(truncate_text(second, col2_width))
+                truncated = truncate_text(second, col2_width)
+                self.write(truncated)
                 self.write("\n")
 
             if self.row_sep:
                 self.write(self.row_sep)
+
+    def write_linear_dl(
+        self, rows: Sequence[Tuple[str, str]],
+        overflow_strategy = 'wrap',
+    ) -> None:
+        descr_max_width = self.width - self.current_indent - self.indent_increment
+        indentation = " " * self.current_indent
+        descr_indentation = " " * (self.current_indent + 4)
+        wrap_overflow = overflow_strategy == "wrap"
+
+        for names, descr in iter_rows(rows, col_count=2):
+            self.write(indentation + names + '\n')
+            if descr:
+                if wrap_overflow:
+                    self.current_indent += 4
+                    self.write_text(descr)
+                    self.current_indent -= 4
+                else:
+                    truncated = truncate_text(descr, descr_max_width)
+                    self.write(descr_indentation + truncated + "\n")
+            self.write("\n")
+        self.buffer.pop()
 
     def __repr__(self):
         return make_repr(
             self, width=self.width, indent_increment=self.indent_increment,
             col1_max_width=self.col1_max_width, col_spacing=self.col_spacing
         )
+
+    def getvalue(self):
+        """Returns the buffer contents."""
+        return "".join(self.buffer)
 
 
 def truncate_text(text: str, max_length: int, placeholder: str = "...") -> str:
