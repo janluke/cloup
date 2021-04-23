@@ -104,6 +104,6 @@ pip-upgrade: ## upgrade dependencies
 	pip-compile --upgrade requirements/dev.in
 
 .PHONY: pip-sync
-pip-sync: pip-compile ## sync development environment with requirements/dev.txt
+pip-sync:  ## sync development environment with requirements/dev.txt
 	pip-sync requirements/dev.txt
 	pip install -e .
