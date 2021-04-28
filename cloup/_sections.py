@@ -208,5 +208,5 @@ class SectionMixin:
         formatter.write_many_sections(
             help_sections,
             aligned=self.must_align_sections(ctx),
-            col2_overflow_strategy="truncate",
+            truncate_col2=True,
         )

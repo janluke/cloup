@@ -4,6 +4,7 @@ from typing import Any, Dict, Optional
 import click
 
 import cloup
+from cloup._util import coalesce
 from cloup.formatting import FormatterMaker, HelpFormatter
 
 
@@ -57,8 +58,14 @@ class Context(click.Context):
         **ctx_kwargs,
     ):
         super().__init__(*ctx_args, **ctx_kwargs)
-        self.align_option_groups = align_option_groups
-        self.align_sections = align_sections
+        self.align_option_groups = coalesce(
+            align_option_groups,
+            getattr(self.parent, 'align_option_groups', None),
+        )
+        self.align_sections = coalesce(
+            align_sections,
+            getattr(self.parent, 'align_sections', None),
+        )
 
         if cloup.warnings.formatter_opts_conflict:
             _warn_if_formatter_opts_conflict(
