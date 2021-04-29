@@ -87,3 +87,7 @@ def check_positive_int(value, arg_name):
         error_type = ValueError
     if error_type:
         raise error_type(f'{arg_name} should be a positive integer. It is: {value}.')
+
+
+def identity(x: T) -> T:
+    return x

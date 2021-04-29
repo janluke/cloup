@@ -1,15 +1,16 @@
+import dataclasses as dc
 import shutil
 import textwrap
 from itertools import chain
 from typing import (
-    Any, Callable, Dict, Iterable, NamedTuple, Optional, Sequence, Tuple, cast,
+    Any, Callable, Dict, Iterable, Optional, Sequence, Tuple, cast,
 )
 
 import click
 from click._compat import term_len
 from click.formatting import iter_rows, wrap_text
 
-from cloup._util import check_positive_int, make_repr
+from cloup._util import check_positive_int, identity, make_repr
 
 # It's not worth it to require typing_extensions just define this as a Protocol.
 FormatterMaker = Callable[..., 'HelpFormatter']
@@ -31,7 +32,8 @@ def ensure_is_cloup_formatter(formatter: click.HelpFormatter) -> 'HelpFormatter'
     raise TypeError(FORMATTER_TYPE_ERROR)
 
 
-class HelpSection(NamedTuple):
+@dc.dataclass
+class HelpSection:
     """A container for a help section data."""
     heading: str
 
@@ -40,6 +42,69 @@ class HelpSection(NamedTuple):
 
     #: Optional long description of the section.
     description: Optional[str] = None
+
+
+IStyler = Callable[[str], str]
+
+
+@dc.dataclass(frozen=True)
+class Style:
+    fg: Optional[str] = None
+    bg: Optional[str] = None
+    bold: bool = False
+    dim: bool = False
+    underline: bool = False
+    blink: bool = False
+    reverse: bool = False
+    text_transform: Optional[IStyler] = None
+    _click_kwargs: dict = dc.field(init=False, default_factory=dict)
+
+    def __post_init__(self):
+        click_kwargs = dc.asdict(self)
+        click_kwargs.pop('text_transform')
+        click_kwargs.pop('_click_kwargs')
+        object.__setattr__(self, '_click_kwargs', {
+            key: (None if not value else value)
+            for key, value in click_kwargs.items()
+        })
+
+    def __call__(self, text: str) -> str:
+        if self.text_transform:
+            text = self.text_transform(text)
+        return click.style(text, **self._click_kwargs)
+
+
+@dc.dataclass(frozen=True)
+class HelpTheme:
+    prog: IStyler = identity
+    heading: IStyler = identity
+    col1: IStyler = identity
+    col2: IStyler = identity
+    epilog: IStyler = identity
+
+    def with_(
+        self, prog: Optional[IStyler] = None,
+        heading: Optional[IStyler] = None,
+        col1: Optional[IStyler] = None,
+        col2: Optional[IStyler] = None,
+        epilog: Optional[IStyler] = None,
+    ) -> 'HelpTheme':
+        return HelpTheme(
+            prog = prog or self.prog,
+            heading = heading or self.heading,
+            col1 = col1 or self.col1,
+            col2 = col2 or self.col2,
+            epilog = epilog or self.epilog
+        )
+
+    @staticmethod
+    def dark():
+        return HelpTheme(
+            prog=Style(fg='bright_yellow'),
+            heading=Style(fg='bright_white'),
+            col1=Style(fg='bright_yellow'),
+            epilog=Style(fg='bright_white'),
+        )
 
 
 # noinspection PyMethodMayBeStatic
@@ -80,9 +145,10 @@ class HelpFormatter(click.HelpFormatter):
         width: Optional[int] = None,
         max_width: Optional[int] = 80,
         col1_max_width: int = 30,
-        col2_min_width: int = 20,
+        col2_min_width: int = 35,
         col_spacing: int = 2,
         row_sep: str = '',
+        theme: HelpTheme = HelpTheme(),
     ):
         check_positive_int(col1_max_width, 'col1_max_width')
         check_positive_int(col_spacing, 'col_spacing')
@@ -90,6 +156,7 @@ class HelpFormatter(click.HelpFormatter):
         self.col2_min_width = col2_min_width
         self.col_spacing = col_spacing
         self.row_sep = row_sep
+        self.theme = theme
         max_width = max_width or 80
         width = (
             width or click.formatting.FORCED_WIDTH
@@ -98,6 +165,7 @@ class HelpFormatter(click.HelpFormatter):
         super().__init__(
             width=width, max_width=max_width, indent_increment=indent_increment
         )
+        self.width: int = width
 
     @staticmethod
     def opts(
@@ -108,17 +176,28 @@ class HelpFormatter(click.HelpFormatter):
         col2_min_width: Optional[int] = None,
         col_spacing: Optional[int] = None,
         row_sep: Optional[str] = None,
+        theme: Optional[HelpTheme] = None,
     ) -> Dict[str, Any]:
         """A utility method for creating a ``formatter_opts`` dictionary to
         pass as context settings or command attribute. This method exists for
         one only reason: it enables auto-complete for formatter options, thus
         improving the developer experience."""
-        return {key: val for key, val in locals().items()
-                if val is not None}
+        return {key: val for key, val in locals().items() if val is not None}
 
     @property
     def available_width(self) -> int:
         return cast(int, self.width) - self.current_indent
+
+    def write_usage(self, prog, args="", prefix=None):
+        if prefix is None:
+            prefix = 'Usage: '
+        prefix = self.theme.heading(prefix)
+        prog = self.theme.prog(prog)
+        super().write_usage(prog, args, prefix)
+
+    def write_heading(self, heading):
+        styled_heading = self.theme.heading(heading + ':')
+        self.write(" " * self.current_indent + styled_heading + "\n")
 
     def write_many_sections(
         self, sections: Sequence[HelpSection],
@@ -229,9 +308,14 @@ class HelpFormatter(click.HelpFormatter):
         )
         current_indentation = " " * self.current_indent
 
+        # Use getattr to work around issue: https://github.com/python/mypy/issues/5485
+        col1_styler: IStyler = getattr(self.theme, 'col1')
+        col2_styler: IStyler = getattr(self.theme, 'col2')
+
         for first, second in iter_rows(rows, col_count=2):
             self.write(current_indentation)
-            self.write(first)
+            styled_first = col1_styler(first)
+            self.write(styled_first)
             if not second:
                 self.write('\n')
                 self.write(self.row_sep)
@@ -247,11 +331,12 @@ class HelpFormatter(click.HelpFormatter):
 
             if truncate_col2:
                 truncated = truncate_text(second, col2_width)
-                self.write(truncated)
+                styled_truncated = col2_styler(truncated)
+                self.write(styled_truncated)
                 self.write("\n")
             else:
                 wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
-                lines = wrapped_text.splitlines()
+                lines = [col2_styler(line) for line in wrapped_text.splitlines()]
                 self.write(lines[0] + "\n")
                 for line in lines[1:]:
                     self.write(f"{col2_indentation}{line}\n")
@@ -266,29 +351,34 @@ class HelpFormatter(click.HelpFormatter):
         descr_max_width = self.width - descr_total_indent
         current_indentation = " " * self.current_indent
         descr_indentation = " " * descr_total_indent
+        # Use getattr to work around issue: https://github.com/python/mypy/issues/5485
+        col1_styler: IStyler = getattr(self.theme, 'col1')
+        col2_styler: IStyler = getattr(self.theme, 'col2')
 
         for names, descr in iter_rows(dl, col_count=2):
-            self.write(current_indentation + names + '\n')
+            self.write(current_indentation + col1_styler(names) + '\n')
             if descr:
                 if truncate_descr:
                     truncated = truncate_text(descr, descr_max_width)
-                    self.write(descr_indentation + truncated + "\n")
+                    styled_truncated = col2_styler(truncated)
+                    self.write(descr_indentation + styled_truncated + "\n")
                 else:
                     self.current_indent += descr_extra_indent
-                    self.write_text(descr)
+                    styled_descr = col2_styler(descr)
+                    self.write_text(styled_descr)
                     self.current_indent -= descr_extra_indent
             self.write("\n")
         self.buffer.pop()  # pop last newline
+
+    def write_epilog(self, epilog):
+        styled_epilog = self.theme.epilog(epilog)
+        self.write(" " * self.current_indent + styled_epilog)
 
     def __repr__(self):
         return make_repr(
             self, width=self.width, indent_increment=self.indent_increment,
             col1_max_width=self.col1_max_width, col_spacing=self.col_spacing
         )
-
-    def getvalue(self):
-        """Returns the buffer contents."""
-        return "".join(self.buffer)
 
 
 def truncate_text(

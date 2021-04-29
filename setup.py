@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 """The setup script."""
-from setuptools import setup, find_packages
+
+from setuptools import find_packages, setup
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -10,7 +11,6 @@ with open('CHANGELOG.rst') as history_file:
     history = history_file.read()
 
 setup(
-    # Name, author, description and other info
     name='cloup',
     setup_requires=['setuptools_scm'],
     use_scm_version={
@@ -39,6 +39,7 @@ setup(
     include_package_data=True,
     python_requires='>=3.6',
     install_requires=[
-        'click>=7.0,<9.0'
+        'click >=7.0, <9.0',
+        'dataclasses; python_version<="3.6"',
     ],
 )
