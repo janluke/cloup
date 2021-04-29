@@ -42,6 +42,12 @@ class BaseCommand(click.Command):
             self.parse_args(ctx, args)
         return ctx
 
+    # Differently from Click, this doesn't indent the epilog.
+    def format_epilog(self, ctx, formatter):
+        if self.epilog:
+            formatter.write_paragraph()
+            formatter.write_text(self.epilog)
+
 
 class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
     """
