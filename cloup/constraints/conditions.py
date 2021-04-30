@@ -100,6 +100,12 @@ class _Operator(Predicate, metaclass=abc.ABCMeta):
 class _And(_Operator):
     DESC_SEP = ' and '
 
+    def negated_description(self, ctx: Context) -> str:
+        return ' or '.join(
+            '(%s)' % p.neg_desc(ctx) if isinstance(p, _Operator) else p.neg_desc(ctx)
+            for p in self.predicates
+        )
+
     def __call__(self, ctx: Context) -> bool:
         return all(p(ctx) for p in self.predicates)
 
@@ -111,6 +117,12 @@ class _And(_Operator):
 
 class _Or(_Operator):
     DESC_SEP = ' or '
+
+    def negated_description(self, ctx: Context) -> str:
+        return ' and '.join(
+            '(%s)' % p.neg_desc(ctx) if isinstance(p, _Operator) else p.neg_desc(ctx)
+            for p in self.predicates
+        )
 
     def __call__(self, ctx: Context) -> bool:
         return any(p(ctx) for p in self.predicates)

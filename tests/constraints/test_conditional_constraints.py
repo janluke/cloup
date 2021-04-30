@@ -147,9 +147,10 @@ class TestAnd:
         res = (a & b) & (c | d)
         assert len(res.predicates) == 3
 
-    def test_description(self, dummy_ctx):
+    def test_descriptions(self, dummy_ctx):
         a, b, c = (FakePredicate(desc=name) for name in 'ABC')
         assert (a & b & c).description(dummy_ctx) == 'A and B and C'
+        assert (a & b & c).neg_desc(dummy_ctx) == 'NOT(A) or NOT(B) or NOT(C)'
 
 
 class TestOr:
@@ -170,9 +171,10 @@ class TestOr:
         res = (a | b) | (c & d)
         assert len(res.predicates) == 3
 
-    def test_description(self, dummy_ctx):
+    def test_descriptions(self, dummy_ctx):
         a, b, c = (FakePredicate(desc=desc) for desc in 'ABC')
         assert (a | b | c).description(dummy_ctx) == 'A or B or C'
+        assert (a | b | c).neg_desc(dummy_ctx) == 'NOT(A) and NOT(B) and NOT(C)'
 
 
 def test_description_with_mixed_operators(dummy_ctx):
