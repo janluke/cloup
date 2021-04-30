@@ -453,7 +453,8 @@ accept_none = AcceptAtMost(0).rephrased(
 #: Satisfied if either all or none of the parameters are set.
 all_or_none = (require_all | accept_none).rephrased(
     help='provide all or none',
-    error='either all or none of the following parameters must be set:\n{param_list}',
+    error='the following parameters should be provided all together (or none of '
+          'them should be provided):\n{param_list}',
 )
 
 #: Satisfied if at most one of the parameters is set.
