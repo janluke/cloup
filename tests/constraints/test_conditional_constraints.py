@@ -193,22 +193,22 @@ class TestIsSet:
     @mark_parametrize(
         # These cases are relative to [sample_cmd] with [SHELL_INPUT] as input
         # "provided" means provided by the user in the command line
-        ['param', 'is_set', 'param_kind'],
-        ('arg1', True, 'provided argument'),
-        ('arg2', False, 'unset argument'),
-        ('bool_opt', True, 'provided option'),
-        ('str_opt', False, 'unprovided option without default'),
-        ('def1', True, 'unprovided option with default'),
-        ('flag', False, 'unset boolean flag'),
-        ('flag2', True, 'provided boolean flag'),
-        ('mul1', True, 'provided multi-option'),
-        ('mul2', False, 'unprovided multi-option'),
-        ('tuple', False, 'unprovided option with nargs>1'),
+        ['param', 'is_set'],
+        pytest.param('arg1',     True,  id='provided argument'),
+        pytest.param('arg2',     False, id='unset argument'),
+        pytest.param('bool_opt', True,  id='provided option'),
+        pytest.param('str_opt',  False, id='unprovided option without default'),
+        pytest.param('def1',     True,  id='unprovided option with default'),
+        pytest.param('flag',     False, id='unset boolean flag'),
+        pytest.param('flag2',    True,  id='provided boolean flag'),
+        pytest.param('mul1',     True,  id='provided multi-option'),
+        pytest.param('mul2',     False, id='unprovided multi-option'),
+        pytest.param('tuple',    False, id='unprovided option with nargs>1'),
     )
-    def test_evaluation(self, sample_cmd, param, is_set, param_kind):
+    def test_evaluation(self, sample_cmd, param, is_set):
         ctx = make_context(sample_cmd, self.SHELL_INPUT)
-        assert IsSet(param)(ctx) == is_set, param_kind
-        assert ~IsSet(param)(ctx) != is_set, param_kind
+        assert IsSet(param)(ctx) == is_set
+        assert ~IsSet(param)(ctx) != is_set
 
     def test_descriptions(self, sample_cmd):
         ctx = make_context(sample_cmd, '')
