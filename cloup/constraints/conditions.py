@@ -83,7 +83,7 @@ class Not(Predicate, Generic[P]):
 class _Operator(Predicate, metaclass=abc.ABCMeta):
     DESC_SEP: str
 
-    def __init__(self, *predicates):
+    def __init__(self, *predicates: Predicate):
         self.predicates = predicates
 
     def description(self, ctx: Context) -> str:
@@ -101,7 +101,7 @@ class _And(_Operator):
     DESC_SEP = ' and '
 
     def __call__(self, ctx: Context) -> bool:
-        return all(c(ctx.params) for c in self.predicates)
+        return all(p(ctx) for p in self.predicates)
 
     def __and__(self, other: 'Predicate') -> '_And':
         if isinstance(other, _And):
@@ -113,7 +113,7 @@ class _Or(_Operator):
     DESC_SEP = ' or '
 
     def __call__(self, ctx: Context) -> bool:
-        return any(c(ctx.params) for c in self.predicates)
+        return any(p(ctx) for p in self.predicates)
 
     def __or__(self, other: 'Predicate') -> '_Or':
         if isinstance(other, _Or):

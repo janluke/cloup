@@ -20,14 +20,17 @@ class FakePredicate(Predicate):
         self._neg_desc = neg_desc
 
     def description(self, ctx: Context) -> str:
+        assert isinstance(ctx, Context)
         return self._desc
 
     def negated_description(self, ctx: Context) -> str:
+        assert isinstance(ctx, Context)
         if self._neg_desc:
             return self._neg_desc
         return super().negated_description(ctx)
 
     def __call__(self, ctx: Context) -> bool:
+        assert isinstance(ctx, Context)
         return self.value
 
 
