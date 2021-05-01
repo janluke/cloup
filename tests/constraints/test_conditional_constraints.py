@@ -1,3 +1,4 @@
+from itertools import combinations
 from typing import Optional
 from unittest.mock import Mock
 
@@ -6,7 +7,7 @@ from click import Context
 from pytest import mark
 
 from cloup.constraints import ConstraintViolated, If
-from cloup.constraints.conditions import Equal, IsSet, Predicate
+from cloup.constraints.conditions import AllSet, AnySet, Equal, IsSet, Predicate
 from tests.constraints.test_constraints import FakeConstraint
 from tests.util import make_context, mark_parametrize, mock_repr
 
@@ -98,10 +99,16 @@ class TestIf:
             If(false_predicate, then_branch, else_branch).check(dummy_params, ctx=ctx)
         assert info.value.message == 'when <false>, <else_error>'
 
-    def test_string_condition_is_equivalent_to_IsSet(self):
+    def test_init_with_string_as_condition(self):
         constr = If('name', FakeConstraint())
         assert isinstance(constr._condition, IsSet)
         assert constr._condition.param_name == 'name'
+
+    def test_init_with_sequence_of_strings_as_condition(self):
+        param_names = ('opt1', 'opt2')
+        constr = If(param_names, FakeConstraint())
+        assert isinstance(constr._condition, AllSet)
+        assert constr._condition.param_names == param_names
 
     def test_repr(self):
         predicate = mock_repr('<Predicate>', spec=FakePredicate, wraps=FakePredicate())
@@ -232,3 +239,66 @@ class TestEqual:
         p = Equal('arg1', 'value')
         assert p.desc(ctx) == 'ARG1="value"'
         assert p.neg_desc(ctx) == 'ARG1!="value"'
+
+
+class TestAllSet:
+    def test_evaluation_of_true_predicates(self, sample_cmd):
+        ctx = make_context(sample_cmd, 'xxx --bool-opt=0 --flag --tuple 1 2')
+        set_params = ['arg1', 'bool_opt', 'flag', 'tuple']
+        for n in range(1, len(set_params)):
+            for param_group in combinations(set_params, n):
+                true = AllSet(*param_group)
+                assert true(ctx), param_group
+                assert not (~true)(ctx), param_group
+
+    def test_evaluation_of_false_predicates(self, sample_cmd):
+        ctx = make_context(sample_cmd, 'xxx --bool-opt=0 --flag --tuple 1 2')
+        param_groups = [('arg1', 'arg2'), ('arg1', 'int_opt'), ('arg2', 'str_opt')]
+        for param_group in param_groups:
+            false = AllSet(*param_group)
+            assert not false(ctx), param_group
+            assert (~false)(ctx), param_group
+
+    def test_descriptions(self, sample_cmd):
+        ctx = make_context(sample_cmd, '')
+        assert AllSet('arg1').desc(ctx) == 'ARG1 is set'
+        assert AllSet('arg1').neg_desc(ctx) == 'ARG1 is not set'
+
+        assert AllSet('arg1', 'flag').desc(ctx) \
+               == 'ARG1 and --flag are both set'
+        assert AllSet('arg1', 'flag').neg_desc(ctx) \
+               == 'ARG1 and --flag are not both set'
+
+        assert AllSet('arg1', 'flag', 'int_opt').desc(ctx) \
+               == 'ARG1, --flag and --int-opt are all set'
+        assert AllSet('arg1', 'flag', 'int_opt').neg_desc(ctx) \
+               == 'ARG1, --flag and --int-opt are not all set'
+
+
+class TestAnySet:
+    def test_evaluation(self, sample_cmd):
+        ctx = make_context(sample_cmd, 'xxx --bool-opt=0 --flag --tuple 1 2')
+        set_params = ['arg1', 'bool_opt', 'flag', 'tuple']
+        unset_params = ['arg2', 'int_opt', 'str_opt']
+        for set_param in set_params:
+            true = AnySet(*unset_params, set_param)
+            assert true(ctx)
+            assert not (~true)(ctx)
+        false = AnySet(*unset_params)
+        assert not false(ctx)
+        assert (~false)(ctx)
+
+    def test_descriptions(self, sample_cmd):
+        ctx = make_context(sample_cmd, '')
+        assert AnySet('arg1').desc(ctx) == 'ARG1 is set'
+        assert AnySet('arg1').neg_desc(ctx) == 'ARG1 is not set'
+
+        assert AnySet('arg1', 'flag').desc(ctx) \
+               == 'either ARG1 or --flag is set'
+        assert AnySet('arg1', 'flag').neg_desc(ctx) \
+               == 'neither ARG1 nor --flag is set'
+
+        assert AnySet('arg1', 'flag', 'int_opt').desc(ctx) \
+               == 'any of ARG1, --flag and --int-opt is set'
+        assert AnySet('arg1', 'flag', 'int_opt').neg_desc(ctx) \
+               == 'none of ARG1, --flag and --int-opt is set'

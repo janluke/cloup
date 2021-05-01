@@ -1,7 +1,7 @@
 """
 Useful functions used for implementing constraints and predicates.
 """
-from typing import Any, Dict, Iterable, List
+from typing import Any, Dict, Iterable, List, Sequence
 
 from click import Argument, Context, Option, Parameter
 
@@ -46,6 +46,14 @@ def join_param_labels(params: Iterable[Parameter], sep: str = ', ') -> str:
     return sep.join(get_param_label(p) for p in params)
 
 
+def join_with_and(strings: Sequence[str], sep: str = ', ') -> str:
+    if not strings:
+        return ''
+    if len(strings) == 1:
+        return strings[0]
+    return sep.join(strings[:-1]) + ' and ' + strings[-1]
+
+
 def format_param(param: Parameter) -> str:
     if isinstance(param, Argument):
         return param.human_readable_name
@@ -65,6 +73,11 @@ def format_param_list(param_list: Iterable[Parameter], indent=2) -> str:
 
 def param_label_by_name(ctx, name: str) -> str:
     return get_param_label(ctx.command.get_param_by_name(name))
+
+
+def get_param_labels(ctx, param_names: Iterable[str]) -> List[str]:
+    params = ctx.command.get_params_by_name(param_names)
+    return [get_param_label(param) for param in params]
 
 
 def param_value_by_name(ctx: Context, name: str) -> Any:

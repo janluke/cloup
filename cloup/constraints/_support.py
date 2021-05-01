@@ -125,3 +125,10 @@ class ConstraintMixin:
         super().format_help(ctx, formatter)  # type: ignore
         if self.show_constraints:
             self.format_constraints(ctx, formatter)
+
+
+def ensure_constraints_support(command) -> ConstraintMixin:
+    if isinstance(command, ConstraintMixin):
+        return command
+    raise TypeError(
+        'a Command must inherits from ConstraintMixin to support constraints')

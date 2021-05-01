@@ -6,26 +6,44 @@ from typing import Optional, Sequence, Union
 from click import Context, Parameter
 
 from ._core import Constraint
-from .conditions import IsSet, Predicate
+from .conditions import AllSet, IsSet, Predicate
 from .exceptions import ConstraintViolated
 from .._util import make_repr
 
 
-def as_predicate(arg: Union[str, Predicate]) -> Predicate:
+def as_predicate(arg: Union[str, Sequence[str], Predicate]) -> Predicate:
     if isinstance(arg, str):
         return IsSet(arg)
     elif isinstance(arg, Predicate):
         return arg
+    elif isinstance(arg, Sequence):
+        return AllSet(*arg)
     else:
-        raise TypeError('arg should be str or Predicate')
+        raise TypeError('arg should be a string, a list of string or a Predicate')
 
 
 class If(Constraint):
     def __init__(
-        self, condition: Union[str, Predicate],
+        self, condition: Union[str, Sequence[str], Predicate],
         then: Constraint,
         else_: Optional[Constraint] = None
     ):
+        """
+        Checks one constraint or another depending on the truth value of the condition.
+
+        .. versionchanged: 0.8.0
+            You can now pass a sequence of parameter names as condition, which
+            corresponds to the predicate ``AllSet(*param_names)``.
+
+        :param condition:
+            can be either an instance of ``Predicate`` or (more often) the name of a
+            parameter or a list/tuple of parameters that must be all set for the
+            condition to be true.
+        :param then:
+            a constraint checked if the condition is true.
+        :param else_:
+            an (optional) constraint checked if the condition is false.
+        """
         self._condition = as_predicate(condition)
         self._then = then
         self._else = else_

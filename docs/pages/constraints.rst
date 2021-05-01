@@ -81,15 +81,20 @@ Conditional constraints
 
     If(condition, then, [else_])
 
-- ``condition`` is either a concrete instance of :class:`~conditions.Predicate`
-  or the name of a parameter; passing the name is a shortcut for ``IsSet(name)``
-- ``then`` is an instance of ``Constraint``
-- ``else_`` is another instance of ``Constraint`` or ``None``.
+- ``condition`` can be;
+
+    - a concrete instance of :class:`~conditions.Predicate`
+    - a parameter name; this is a shortcut for ``IsSet(param_name)``
+    - a list/tuple of parameter names; this is a shortcut for ``AllSet(*param_names)``.
+- ``then`` is the constraint checked when the condition is true.
+- ``else_`` is an optional constraint checked when the condition is false.
 
 Available predicates can be imported from ``cloup.constraints`` and are:
 
 .. autosummary::
     IsSet
+    AllSet
+    AnyIsSet
     Equal
 
 For example:
@@ -107,6 +112,9 @@ For example:
 
     # Equivalent to:
     If(IsSet('param'), then=require_all, else_=accept_none)
+
+    # If "arg" and "opt" are both set, then require exactly 1 param
+    If(['arg', 'opt'], then=RequireExactly(1))
 
     # Another example... of course the else branch is optional
     If(Equal('param', 'value'), then=RequireAtLeast(1))

@@ -10,8 +10,11 @@ from typing import Any, Generic, TypeVar
 
 from click import Context
 
-from .common import param_label_by_name, param_value_by_name, param_value_is_set
-from ._support import ConstraintMixin
+from ._support import ensure_constraints_support
+from .common import (
+    get_param_labels, join_with_and, param_label_by_name, param_value_by_name,
+    param_value_is_set,
+)
 from .._util import make_repr
 
 P = TypeVar('P', bound='Predicate')
@@ -145,16 +148,79 @@ class IsSet(Predicate):
         return '%s is not set' % param_label_by_name(ctx, self.param_name)
 
     def __call__(self, ctx: Context) -> bool:
-        if not isinstance(ctx.command, ConstraintMixin):
-            raise TypeError(
-                'a Command must inherits from ConstraintMixin to support constraints')
-        param = ctx.command.get_param_by_name(self.param_name)
+        command = ensure_constraints_support(ctx.command)
+        param = command.get_param_by_name(self.param_name)
         value = param_value_by_name(ctx, self.param_name)
         return param_value_is_set(param, value)
 
 
+class AllSet(Predicate):
+    """True if all parameters are set.
+
+    .. versionadded: 0.8.0
+    """
+    def __init__(self, *param_names: str):
+        if not param_names:
+            raise ValueError('you must provide at least one param name')
+        self.param_names = param_names
+
+    def negated_description(self, ctx: Context) -> str:
+        labels = get_param_labels(ctx, self.param_names)
+        if len(labels) == 1:
+            return f'{labels[0]} is not set'
+        pronoun = 'both' if len(labels) == 2 else 'all'
+        return f'{join_with_and(labels)} are not {pronoun} set'
+
+    def description(self, ctx: Context) -> str:
+        labels = get_param_labels(ctx, self.param_names)
+        if len(labels) == 1:
+            return f'{labels[0]} is set'
+        pronoun = 'both' if len(labels) == 2 else 'all'
+        return f'{join_with_and(labels)} are {pronoun} set'
+
+    def __call__(self, ctx: Context) -> bool:
+        command = ensure_constraints_support(ctx.command)
+        params = command.get_params_by_name(self.param_names)
+        return all(param_value_is_set(param, ctx.params[param.name])
+                   for param in params)
+
+
+class AnySet(Predicate):
+    """True if any parameter is set.
+
+    .. versionadded: 0.8.0
+    """
+    def __init__(self, *param_names: str):
+        if not param_names:
+            raise ValueError('you must provide at least one param name')
+        self.param_names = param_names
+
+    def negated_description(self, ctx: Context) -> str:
+        labels = get_param_labels(ctx, self.param_names)
+        if len(labels) == 1:
+            return f'{labels[0]} is not set'
+        if len(labels) == 2:
+            return 'neither {} nor {} is set'.format(*labels)
+        return f'none of {join_with_and(labels)} is set'
+
+    def description(self, ctx: Context) -> str:
+        labels = get_param_labels(ctx, self.param_names)
+        if len(labels) == 1:
+            return f'{labels[0]} is set'
+        if len(labels) == 2:
+            return 'either {} or {} is set'.format(*labels)
+        return f'any of {join_with_and(labels)} is set'
+
+    def __call__(self, ctx: Context) -> bool:
+        command = ensure_constraints_support(ctx.command)
+        params = command.get_params_by_name(self.param_names)
+        return any(param_value_is_set(param, ctx.params[param.name])
+                   for param in params)
+
+
 class Equal(Predicate):
     """True if the parameter value equals ``value``."""
+
     def __init__(self, param_name: str, value: Any):
         self.param_name = param_name
         self.value = value
