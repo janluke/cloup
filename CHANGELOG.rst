@@ -9,6 +9,15 @@ Change Log
     **Deprecated**
     **Compatible changes and features**
 
+v0.7.1 (2021-05-02)
+===================
+- Fixed a bug with ``&`` and ``|`` ``Predicate`` operators giving ``AttributeError``
+  when used.
+- Fixed the error message of ``accept_none`` which didn't include ``{param_list}``.
+- Improved ``all_or_none`` error message.
+- Minor docs fixes.
+
+
 v0.7.0 (2021-03-24)
 ===================
 **Compatible changes and features**
