@@ -1,4 +1,5 @@
 """Tests for the "subcommand sections" feature/module."""
+
 import click
 import pytest
 
@@ -15,14 +16,23 @@ def test_subcommand_sections_are_correctly_rendered_in_help(
 ):
     grp = get_example_group(align_sections)
     result = runner.invoke(grp, args=('--help',))
-    if result.exception:
-        raise result.exception
     assert result.exit_code == 0
-    assert result.output.strip() == grp.expected_help
+    help_text = result.output.strip()
+    click_major = int(click.__version__.split('.')[0])
+    if align_sections and click_major >= 8 and click.__version__ != '8.0.0a1':
+        fail_reason = (
+            "Click 8 fixes a minor issue with make_default_short_help() that produces a "
+            "slightly different command descriptions. This test will pass starting "
+            "from Cloup v0.8.0."
+        )
+        with pytest.xfail(fail_reason):
+            assert help_text == grp.expected_help
+    else:
+        assert help_text == grp.expected_help
 
 
 @pytest.mark.parametrize(
-    'subcommand_cls', [click.Command, cloup.Command,  click.Group, cloup.Group],
+    'subcommand_cls', [click.Command, cloup.Command, click.Group, cloup.Group],
     ids=['click_Command', 'cloup_Command', 'click_Group', 'cloup_Group'],
 )
 @pytest.mark.parametrize(
