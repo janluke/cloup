@@ -234,6 +234,16 @@ class HelpFormatter(click.HelpFormatter):
             self.write_dl(
                 s.definitions, col1_width=col1_width, truncate_col2=truncate_col2)
 
+    def write_text(self, text, style: Optional[IStyler] = None) -> None:
+        if style is None or style is identity:
+            return super().write_text(text)
+        text_width = max(self.available_width, 11)
+        lines = wrap_text(text, text_width, preserve_paragraphs=True).splitlines()
+        styled_lines = indent_lines(map(style, lines), width=self.current_indent)
+        wrapped_text = "\n".join(styled_lines)
+        self.write(wrapped_text)
+        self.write("\n")
+
     def compute_col1_width(self, rows: Iterable[Sequence[str]], max_width: int) -> int:
         col1_lengths = (term_len(r[0]) for r in rows)
         lengths_under_limit = (length for length in col1_lengths if length <= max_width)
@@ -364,8 +374,7 @@ class HelpFormatter(click.HelpFormatter):
                     self.write(descr_indentation + styled_truncated + "\n")
                 else:
                     self.current_indent += descr_extra_indent
-                    styled_descr = col2_styler(descr)
-                    self.write_text(styled_descr)
+                    self.write_text(descr, col2_styler)
                     self.current_indent -= descr_extra_indent
             self.write("\n")
         self.buffer.pop()  # pop last newline
