@@ -190,8 +190,8 @@ class HelpFormatter(click.HelpFormatter):
 
     def write_usage(self, prog, args="", prefix=None):
         if prefix is None:
-            prefix = 'Usage: '
-        prefix = self.theme.heading(prefix)
+            prefix = 'Usage:'
+        prefix = self.theme.heading(prefix) + ' '
         prog = self.theme.prog(prog)
         super().write_usage(prog, args, prefix)
 
