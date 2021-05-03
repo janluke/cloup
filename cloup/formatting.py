@@ -76,21 +76,23 @@ class Style:
 
 @dc.dataclass(frozen=True)
 class HelpTheme:
-    prog: IStyler = identity
+    #: Style of the command name.
+    command: IStyler = identity
+    #: Style of help section headings.
     heading: IStyler = identity
     col1: IStyler = identity
     col2: IStyler = identity
     epilog: IStyler = identity
 
     def with_(
-        self, prog: Optional[IStyler] = None,
+        self, command: Optional[IStyler] = None,
         heading: Optional[IStyler] = None,
         col1: Optional[IStyler] = None,
         col2: Optional[IStyler] = None,
         epilog: Optional[IStyler] = None,
     ) -> 'HelpTheme':
         return HelpTheme(
-            prog = prog or self.prog,
+            command = command or self.command,
             heading = heading or self.heading,
             col1 = col1 or self.col1,
             col2 = col2 or self.col2,
@@ -100,7 +102,7 @@ class HelpTheme:
     @staticmethod
     def dark():
         return HelpTheme(
-            prog=Style(fg='bright_yellow'),
+            command=Style(fg='bright_yellow'),
             heading=Style(fg='bright_white'),
             col1=Style(fg='bright_yellow'),
             epilog=Style(fg='bright_white'),
@@ -192,7 +194,7 @@ class HelpFormatter(click.HelpFormatter):
         if prefix is None:
             prefix = 'Usage:'
         prefix = self.theme.heading(prefix) + ' '
-        prog = self.theme.prog(prog)
+        prog = self.theme.command(prog)
         super().write_usage(prog, args, prefix)
 
     def write_heading(self, heading):
