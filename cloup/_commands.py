@@ -46,7 +46,7 @@ class BaseCommand(click.Command):
     def format_epilog(self, ctx, formatter):
         if self.epilog:
             formatter.write_paragraph()
-            formatter.write_text(self.epilog)
+            formatter.write_epilog(self.epilog)
 
 
 class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
