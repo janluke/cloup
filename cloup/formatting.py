@@ -7,7 +7,6 @@ from typing import (
 )
 
 import click
-from click._compat import term_len
 from click.formatting import iter_rows, wrap_text
 
 from cloup._util import check_positive_int, identity, indent_lines, make_repr
@@ -32,6 +31,10 @@ def ensure_is_cloup_formatter(formatter: click.HelpFormatter) -> 'HelpFormatter'
     if isinstance(formatter, HelpFormatter):
         return formatter
     raise TypeError(FORMATTER_TYPE_ERROR)
+
+
+def unstyled_len(string: str) -> int:
+    return len(click.unstyle(string))
 
 
 @dc.dataclass
@@ -195,7 +198,7 @@ class HelpFormatter(click.HelpFormatter):
         self.write(wrapped_text, "\n")
 
     def compute_col1_width(self, rows: Iterable[Sequence[str]], max_width: int) -> int:
-        col1_lengths = (term_len(r[0]) for r in rows)
+        col1_lengths = (unstyled_len(r[0]) for r in rows)
         lengths_under_limit = (length for length in col1_lengths if length <= max_width)
         return max(lengths_under_limit, default=0)
 
@@ -278,7 +281,7 @@ class HelpFormatter(click.HelpFormatter):
                 self.write("\n", self.row_sep)
                 continue
 
-            first_display_length = term_len(first)
+            first_display_length = unstyled_len(first)
             if first_display_length <= col1_width:
                 spaces_to_col2 = col1_plus_spacing - first_display_length
                 self.write(" " * spaces_to_col2)
@@ -325,8 +328,7 @@ class HelpFormatter(click.HelpFormatter):
         self.buffer.pop()  # pop last newline
 
     def write_epilog(self, epilog):
-        styled_epilog = self.theme.epilog(epilog)
-        self.write(" " * self.current_indent, styled_epilog)
+        self.write_text(epilog, self.theme.epilog)
 
     def __repr__(self):
         return make_repr(
