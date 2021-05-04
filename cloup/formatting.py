@@ -276,9 +276,8 @@ class HelpFormatter(click.HelpFormatter):
         )
         current_indentation = " " * self.current_indent
 
-        # Use getattr to work around issue: https://github.com/python/mypy/issues/5485
-        col1_styler: IStyler = getattr(self.theme, 'col1')
-        col2_styler: IStyler = getattr(self.theme, 'col2')
+        col1_styler = self.theme.col1
+        col2_styler = self.theme.col2
 
         for first, second in iter_rows(rows, col_count=2):
             self.write(current_indentation, col1_styler(first))
@@ -314,9 +313,9 @@ class HelpFormatter(click.HelpFormatter):
         descr_max_width = self.width - descr_total_indent
         current_indentation = " " * self.current_indent
         descr_indentation = " " * descr_total_indent
-        # Use getattr to work around issue: https://github.com/python/mypy/issues/5485
-        col1_styler: IStyler = getattr(self.theme, 'col1')
-        col2_styler: IStyler = getattr(self.theme, 'col2')
+
+        col1_styler = self.theme.col1
+        col2_styler = self.theme.col2
 
         for names, descr in iter_rows(dl, col_count=2):
             self.write(current_indentation + col1_styler(names) + '\n')
