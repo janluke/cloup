@@ -88,7 +88,7 @@ class HelpFormatter(click.HelpFormatter):
     def __init__(
         self, indent_increment: int = 2,
         width: Optional[int] = None,
-        max_width: Optional[int] = 80,
+        max_width: Optional[int] = None,
         col1_max_width: int = 30,
         col2_min_width: int = 35,
         col_spacing: int = 2,
