@@ -150,7 +150,7 @@ class HelpFormatter(click.HelpFormatter):
     def write_heading(self, heading: str) -> None:
         if self.current_indent:
             self.write(" " * self.current_indent)
-        self.write(self.theme.heading(heading + ':'), "\n")
+        self.write(self.theme.heading(heading + ":"), "\n")
 
     def write_many_sections(
         self, sections: Sequence[HelpSection],
