@@ -9,11 +9,9 @@ from typing import (
 import click
 from click import Option, Parameter
 
-from cloup import HelpFormatter
 from cloup._util import coalesce, make_repr
 from cloup.constraints import Constraint
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
-
 
 C = TypeVar('C', bound=Callable)
 
@@ -156,10 +154,10 @@ class OptionGroupMixin:
         .. versionadded:: 0.8.0
         """
         return HelpSection(
-            heading = group.name,
-            definitions = group.get_help_records(ctx),
-            description = group.help,
-            constraint = group.constraint.help(ctx) if group.constraint else None
+            heading=group.name,
+            definitions=group.get_help_records(ctx),
+            description=group.help,
+            constraint=group.constraint.help(ctx) if group.constraint else None
         )
 
     def must_align_option_groups(
@@ -183,7 +181,7 @@ class OptionGroupMixin:
         return default_group
 
     def format_options(
-        self, ctx: click.Context, formatter: HelpFormatter
+        self, ctx: click.Context, formatter: click.HelpFormatter
     ) -> None:
         formatter = ensure_is_cloup_formatter(formatter)
         visible_sections = [
