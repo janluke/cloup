@@ -1,5 +1,5 @@
 import warnings
-from typing import Any, Dict, Optional
+from typing import Any, Callable, Dict, List, Optional
 
 import click
 
@@ -8,7 +8,9 @@ from cloup._util import coalesce
 from cloup.formatting import FormatterMaker, HelpFormatter
 
 
-def _warn_if_formatter_settings_conflict(ctx_key, formatter_key, ctx_kwargs, formatter_settings):
+def _warn_if_formatter_settings_conflict(
+    ctx_key: str, formatter_key: str, ctx_kwargs: dict, formatter_settings: dict
+) -> None:
     if (ctx_key in ctx_kwargs) and (formatter_key in formatter_settings):
         from textwrap import dedent
         formatter_arg = f'formatter_settings.{formatter_key}'
@@ -93,3 +95,87 @@ class Context(click.Context):
     def make_formatter(self) -> HelpFormatter:
         opts = self.get_formatter_settings()
         return self.formatter_class(**opts)
+
+    @staticmethod
+    def settings(
+        *, auto_envvar_prefix: Optional[bool] = None,
+        default_map: Optional[Dict[str, Any]] = None,
+        terminal_width: Optional[int] = None,
+        max_content_width: Optional[int] = None,
+        resilient_parsing: Optional[bool] = None,
+        allow_extra_args: Optional[bool] = None,
+        allow_interspersed_args: Optional[bool] = None,
+        ignore_unknown_options: Optional[bool] = None,
+        help_option_names: Optional[List[str]] = None,
+        token_normalize_func: Optional[Callable[[str], str]] = None,
+        color: Optional[bool] = None,
+        show_default: Optional[bool] = None,
+        align_option_groups: Optional[bool] = None,
+        align_sections: Optional[bool] = None,
+        formatter_settings: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """
+        :param auto_envvar_prefix:
+            the prefix to use for automatic environment variables. If this is
+            `None` then reading from environment variables is disabled. This
+            does not affect manually set environment variables which are always
+            read.
+        :param default_map:
+            a dictionary (like object) with default values for parameters.
+        :param terminal_width:
+            the width of the terminal.  The default is inherit from parent
+            context.  If no context defines the terminal width then auto
+            detection will be applied.
+        :param max_content_width:
+            the maximum width for content rendered by Click (this currently
+            only affects help pages).  This defaults to 80 characters if not
+            overridden. In other words: even if the terminal is larger than
+            that, Click will not format things wider than 80 characters by
+            default.  In addition to that, formatters might add some safety
+            mapping on the right.
+        :param resilient_parsing:
+            if this flag is enabled then Click will parse without any
+            interactivity or callback invocation. Default values will also be
+            ignored. This is useful for implementing things such as completion
+            support.
+        :param allow_extra_args:
+            if this is set to `True` then extra arguments at the end will not
+            raise an error and will be kept on the context. The default is to
+            inherit from the command.
+        :param allow_interspersed_args:
+            if this is set to `False` then options and arguments cannot be
+            mixed.  The default is to inherit from the command.
+        :param ignore_unknown_options:
+            instructs click to ignore options it does not know and keeps them
+            for later processing.
+        :param help_option_names:
+            optionally a list of strings that define how the default help
+            parameter is named. The default is ``['--help']``.
+        :param token_normalize_func:
+            an optional function that is used to normalize tokens (options,
+            choices, etc.). This for instance can be used to implement case
+            insensitive behavior.
+        :param color:
+            controls if the terminal supports ANSI colors or not. The default
+            is autodetection. This is only needed if ANSI codes are used in
+            texts that Click prints which is by default not the case. This for
+            instance would affect help output.
+        :param show_default: Show defaults for all options. If not set,
+            defaults to the value from a parent context. Overrides an
+            option's ``show_default`` argument.
+        :param align_option_groups:
+            if True, align the definition lists of all option groups of a command.
+            You can override this by setting the corresponding argument of ``Command``
+            (but you probably shouldn't: be consistent).
+        :param align_sections:
+            if True, align the definition lists of all subcommands of a group.
+            You can override this by setting the corresponding argument of ``Group``
+            (but you probably shouldn't: be consistent).
+        :param formatter_settings:
+            keyword arguments forwarded to :class:`HelpFormatter` in ``make_formatter``.
+            This args are merged with those of the (eventual) parent context and then
+            merged again (being overridden) by those of the command.
+            **Tip**: use the static method :meth:`HelpFormatter.opts` to create this
+            dictionary, so that you can be guided by your IDE.
+        """
+        return {key: val for key, val in locals().items() if val is not None}
