@@ -103,9 +103,13 @@ class HelpFormatter(click.HelpFormatter):
         self.row_sep = row_sep
         self.theme = theme
         max_width = max_width or 80
+        # We subtract 1 to the terminal width to leave space for the new line character.
+        # Otherwise, when we write a line that is long exactly terminal_size (without \n)
+        # the \n is printed on a new terminal line, leading to a useless empty line.
         width = (
-            width or click.formatting.FORCED_WIDTH
-            or min(max_width, shutil.get_terminal_size((80, 100)).columns)
+            width
+            or click.formatting.FORCED_WIDTH
+            or min(max_width, shutil.get_terminal_size((80, 100)).columns - 1)
         )
         super().__init__(
             width=width, max_width=max_width, indent_increment=indent_increment
