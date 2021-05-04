@@ -81,6 +81,13 @@ class HelpTheme(NamedTuple):
 
 @dc.dataclass(frozen=True)
 class Style:
+    """Wraps ``click.style`` for a better integration with :class:`HelpTheme`.
+    This is conceptually equivalent to ``functools.partial(click.style, **kwargs)``.
+    The difference is in the improved developer experience: with this class,
+    you get auto-complete, typing and a shorter alias. This class also doesn't
+    include arguments of ``click-style`` that are useless in this context, and
+    add the argument ``text_transform``.
+    """
     fg: Optional[str] = None
     bg: Optional[str] = None
     bold: bool = False
@@ -88,6 +95,7 @@ class Style:
     underline: bool = False
     blink: bool = False
     reverse: bool = False
+    #: A generic text transformation; use it to pass function like ``str.upper``.
     text_transform: Optional[IStyler] = None
     _click_kwargs: dict = dc.field(init=False, default_factory=dict)
 
