@@ -11,9 +11,10 @@ from click.formatting import iter_rows, wrap_text
 
 from cloup._util import check_positive_int, identity, indent_lines, make_repr
 
-# It's not worth it to require typing_extensions just define this as a Protocol.
 from cloup.styling import HelpTheme, IStyler
 
+
+# It's not worth to require typing_extensions just define this as a Protocol.
 FormatterMaker = Callable[..., 'HelpFormatter']
 
 FORMATTER_TYPE_ERROR = """
