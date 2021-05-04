@@ -67,6 +67,16 @@ class HelpTheme(NamedTuple):
             epilog=Style(fg='bright_white'),
         )
 
+    @staticmethod
+    def light():
+        return HelpTheme(
+            command=Style(fg='yellow'),
+            heading=Style(fg='bright_blue'),
+            constraint=Style(fg='red'),
+            col1=Style(fg='yellow'),
+            epilog=Style(fg='bright_black'),
+        )
+
 
 @dc.dataclass(frozen=True)
 class Style:
