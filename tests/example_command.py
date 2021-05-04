@@ -47,7 +47,7 @@ Option group A:
   --two TEXT            2nd option of group A
   --three TEXT          3rd option of group A
 
-Option group B [at least 1 required if --three is set]:
+Option group B (at least 1 required if --three is set):
   Help as positional argument
   --four / --no-four    1st option of group B
   --six TEXT            3rd option of group B
@@ -69,7 +69,7 @@ Option group A:
   --two TEXT    2nd option of group A
   --three TEXT  3rd option of group A
 
-Option group B [at least 1 required if --three is set]:
+Option group B (at least 1 required if --three is set):
   Help as positional argument
   --four / --no-four  1st option of group B
   --six TEXT          3rd option of group B

@@ -10,7 +10,7 @@ import click
 from click._compat import term_len
 from click.formatting import iter_rows, wrap_text
 
-from cloup._util import check_positive_int, identity, make_repr
+from cloup._util import check_positive_int, identity, indent_lines, make_repr
 
 # It's not worth it to require typing_extensions just define this as a Protocol.
 FormatterMaker = Callable[..., 'HelpFormatter']
@@ -40,8 +40,11 @@ class HelpSection:
     #: Rows with 2 columns each.
     definitions: Sequence[Tuple[str, str]]
 
-    #: Optional long description of the section.
+    #: (Optional) long description of the section.
     description: Optional[str] = None
+
+    #: (Optional) option group constraint description
+    constraint: Optional[str] = None
 
 
 IStyler = Callable[[str], str]
@@ -80,13 +83,22 @@ class HelpTheme:
     command: IStyler = identity
     #: Style of help section headings.
     heading: IStyler = identity
+    #: Style of an option group constraint description.
+    constraint: IStyler = identity
+    #: Style of a help section descriptions.
+    description: IStyler = identity
+    #: Style of the first column of a definition list.
     col1: IStyler = identity
+    #: Style of the second column of a definition list.
     col2: IStyler = identity
+    #: Style of the epilog
     epilog: IStyler = identity
 
     def with_(
         self, command: Optional[IStyler] = None,
         heading: Optional[IStyler] = None,
+        description: Optional[IStyler] = None,
+        constraint: Optional[IStyler] = None,
         col1: Optional[IStyler] = None,
         col2: Optional[IStyler] = None,
         epilog: Optional[IStyler] = None,
@@ -94,6 +106,8 @@ class HelpTheme:
         return HelpTheme(
             command = command or self.command,
             heading = heading or self.heading,
+            description = description or self.description,
+            constraint = constraint or self.constraint,
             col1 = col1 or self.col1,
             col2 = col2 or self.col2,
             epilog = epilog or self.epilog
@@ -104,6 +118,7 @@ class HelpTheme:
         return HelpTheme(
             command=Style(fg='bright_yellow'),
             heading=Style(fg='bright_white'),
+            constraint=Style(fg='red'),
             col1=Style(fg='bright_yellow'),
             epilog=Style(fg='bright_white'),
         )
@@ -200,9 +215,10 @@ class HelpFormatter(click.HelpFormatter):
         prog = self.theme.command(prog)
         super().write_usage(prog, args, prefix)
 
-    def write_heading(self, heading):
-        styled_heading = self.theme.heading(heading + ':')
-        self.write(" " * self.current_indent + styled_heading + "\n")
+    def write_heading(self, heading: str) -> None:
+        if self.current_indent:
+            self.write(" " * self.current_indent)
+        self.write(self.theme.heading(heading + ':'), "\n")
 
     def write_many_sections(
         self, sections: Sequence[HelpSection],
@@ -231,11 +247,16 @@ class HelpFormatter(click.HelpFormatter):
         col1_width: Optional[int] = None,
         truncate_col2: bool = False,
     ) -> None:
-        with self.section(s.heading):
+        theme = self.theme
+        heading = s.heading
+        if s.constraint:
+            constraint_help = theme.constraint(f'({s.constraint})')
+            heading += f' {constraint_help}'
+        with self.section(heading):
             if s.description:
-                self.write_text(s.description)
-                if self.row_sep:
-                    self.write(self.row_sep)
+                self.write_text(s.description, theme.description)
+            if self.row_sep and (s.constraint or s.description):
+                self.write(self.row_sep)
             self.write_dl(
                 s.definitions, col1_width=col1_width, truncate_col2=truncate_col2)
 

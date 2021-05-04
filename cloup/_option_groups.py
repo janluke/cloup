@@ -9,6 +9,7 @@ from typing import (
 import click
 from click import Option, Parameter
 
+from cloup import HelpFormatter
 from cloup._util import coalesce, make_repr
 from cloup.constraints import Constraint
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
@@ -145,14 +146,6 @@ class OptionGroupMixin:
         else:
             return self.ungrouped_options
 
-    def get_option_group_title(self, ctx: click.Context, opt_group: OptionGroup) -> str:
-        constraint = opt_group.constraint
-        if constraint:
-            constraint_help = constraint.help(ctx) if constraint else None
-            if constraint_help:
-                return f'{opt_group.name} [{constraint_help}]'
-        return opt_group.name
-
     def make_option_group_help_section(
         self, group: OptionGroup, ctx: click.Context
     ) -> HelpSection:
@@ -162,9 +155,12 @@ class OptionGroupMixin:
 
         .. versionadded:: 0.8.0
         """
-        heading = self.get_option_group_title(ctx, group)
-        definitions = group.get_help_records(ctx)
-        return HelpSection(heading, definitions, description=group.help)
+        return HelpSection(
+            heading = group.name,
+            definitions = group.get_help_records(ctx),
+            description = group.help,
+            constraint = group.constraint.help(ctx) if group.constraint else None
+        )
 
     def must_align_option_groups(
         self, ctx: Optional[click.Context], default=True
@@ -187,7 +183,7 @@ class OptionGroupMixin:
         return default_group
 
     def format_options(
-        self, ctx: click.Context, formatter: click.HelpFormatter
+        self, ctx: click.Context, formatter: HelpFormatter
     ) -> None:
         formatter = ensure_is_cloup_formatter(formatter)
         visible_sections = [
@@ -195,8 +191,7 @@ class OptionGroupMixin:
             for group in self.option_groups
             if not group.hidden
         ]
-        if not visible_sections:
-            # No visible option groups. No custom formatting needed.
+        if not visible_sections:  # No visible option groups. No custom formatting needed.
             return super().format_options(ctx, formatter)  # type: ignore
 
         default_group = self.get_default_option_group(ctx)
