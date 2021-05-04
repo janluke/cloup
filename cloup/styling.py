@@ -10,12 +10,17 @@ IStyler = Callable[[str], str]
 
 
 class HelpTheme(NamedTuple):
-    """Stylesheet for various elements of the help page.
+    """A collection of styles for several elements of the help page.
 
-    **Implementation note:** this should have been a frozen ``dataclass``
-    but I had to use ``NamedTuple`` instead to work around a MyPy issue:
-    https://github.com/python/mypy/issues/5485. Don't rely on this class being
-    a ``NamedTuple`` because this will probably change in the future.
+    A "style" is just a function or a callable that takes a string and returns
+    a styled version of it. This means you can use your favorite styling/color
+    library (like rich, colorful etc). Nonetheless, given that Click has some
+    basic styling functionality built-in, Cloup provides the :class:`Style`
+    class, which is a wrapper of the ``click.style`` function.
+
+    *Implementation note:* this should have been a frozen ``dataclass``
+    but I had to use ``NamedTuple`` instead to work around a MyPy issue
+    (https://github.com/python/mypy/issues/5485).
     """
     #: Style of the command name.
     command: IStyler = identity
