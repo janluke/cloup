@@ -2,18 +2,19 @@ import click
 
 import cloup
 from cloup import HelpFormatter
-from cloup.formatting import HelpTheme, Style
+from cloup.styling import HelpTheme
 from examples.manim.config import cfg
 from examples.manim.render import render
 
 VERSION = '0.5.0'
 CONTEXT_SETTINGS = dict(
-    help_option_names = ["-h", "--help"],
-    formatter_opts = HelpFormatter.opts(
-        theme = HelpTheme.dark().with_(
-            epilog=Style(fg='bright_green')
-        )
+    help_option_names=["-h", "--help"],
+    align_option_groups=False,
+    formatter_opts=HelpFormatter.opts(
+        row_sep='\n',
+        theme=HelpTheme.dark(),
     ),
+    # color=False,
 )
 
 
@@ -30,7 +31,6 @@ def main():
 
 main.add_command(render)
 main.add_command(cfg)
-
 
 if __name__ == "__main__":
     main()
