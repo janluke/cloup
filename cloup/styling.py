@@ -47,15 +47,11 @@ class HelpTheme(NamedTuple):
         col2: Optional[IStyler] = None,
         epilog: Optional[IStyler] = None,
     ) -> 'HelpTheme':
-        return HelpTheme(
-            command = command or self.command,
-            heading = heading or self.heading,
-            description = description or self.description,
-            constraint = constraint or self.constraint,
-            col1 = col1 or self.col1,
-            col2 = col2 or self.col2,
-            epilog = epilog or self.epilog
-        )
+        kwargs = {key: val for key, val in locals().items() if val is not None}
+        kwargs.pop('self')
+        if kwargs:
+            return self._replace(**kwargs)
+        return self
 
     @staticmethod
     def dark():
