@@ -10,7 +10,7 @@ VERSION = '0.5.0'
 CONTEXT_SETTINGS = dict(
     help_option_names=["-h", "--help"],
     align_option_groups=False,
-    formatter_opts=HelpFormatter.opts(
+    formatter_settings=HelpFormatter.settings(
         row_sep='\n',
         theme=HelpTheme.dark(),
     ),

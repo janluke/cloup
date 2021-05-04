@@ -42,7 +42,7 @@ v0.8.0 (in development)
 - Added a custom ``Context`` that:
 
   * uses ``cloup.HelpFormatter`` as formatter class by default
-  * adds a ``formatter_opts`` attributes that allows to set the default formatter
+  * adds a ``formatter_settings`` attributes that allows to set the default formatter
     keyword arguments (the same argument can be given to a command to override
     these defaults).
   * allows to set the default value for the following Command parameters:
@@ -54,7 +54,7 @@ v0.8.0 (in development)
 
   * added a ``BaseCommand`` class, extending ``click.Command`` and using the custom
     ``Context`` by default. This class also "back-ports" the Click 8.0 class
-    attribute ``context_class`` and adds the ``formatter_opts`` argument.
+    attribute ``context_class`` and adds the ``formatter_settings`` argument.
 
   * ``cloup.Command`` and ``cloup.MultiCommand`` extends ``cloup.BaseCommand``
 

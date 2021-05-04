@@ -15,7 +15,7 @@ class BaseCommand(click.Command):
     * It back-ports a feature from Click v8.0-a1, i.e. the ``context_class``
       class attribute, which is set to ``cloup.Context``.
 
-    * It adds a ``formatter_opts`` instance attribute.
+    * It adds a ``formatter_settings`` instance attribute.
 
     .. versionadded: 0.8.0
     """
@@ -23,13 +23,13 @@ class BaseCommand(click.Command):
 
     def __init__(
         self, *args,
-        formatter_opts: Dict[str, Any] = {},
+        formatter_settings: Dict[str, Any] = {},
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
-        #: HelpFormatter options that are merged with ``Context.formatter_opts``
+        #: HelpFormatter options that are merged with ``Context.formatter_settings``
         #: (eventually overriding some values).
-        self.formatter_opts = formatter_opts
+        self.formatter_settings = formatter_settings
 
     def make_context(self, info_name, args, parent=None, **extra) -> Context:
         for key, value in self.context_settings.items():
@@ -59,7 +59,7 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
 
     def __init__(
         self, *click_args,
-        formatter_opts: Dict[str, Any] = {},
+        formatter_settings: Dict[str, Any] = {},
         constraints: Sequence[BoundConstraintSpec] = (),
         show_constraints: bool = False,
         align_option_groups: Optional[bool] = None,
@@ -67,7 +67,7 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
     ):
         super().__init__(
             *click_args,
-            formatter_opts=formatter_opts,
+            formatter_settings=formatter_settings,
             constraints=constraints,
             show_constraints=show_constraints,
             align_option_groups=align_option_groups,
@@ -115,7 +115,7 @@ class Group(MultiCommand, click.Group):
                  commands: Optional[Dict[str, click.Command]] = None,
                  sections: Iterable[Section] = (),
                  align_sections: Optional[bool] = None,
-                 formatter_opts: Dict[str, Any] = {},
+                 formatter_settings: Dict[str, Any] = {},
                  **attrs):
         """
         :param name: name of the command
@@ -129,7 +129,7 @@ class Group(MultiCommand, click.Group):
         super().__init__(
             name=name, commands=commands,
             sections=sections, align_sections=align_sections,
-            formatter_opts=formatter_opts,
+            formatter_settings=formatter_settings,
             **attrs)
 
     # MyPy complaints because the signature is not compatible with the parent

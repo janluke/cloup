@@ -113,7 +113,7 @@ class HelpFormatter(click.HelpFormatter):
         self.width: int = width
 
     @staticmethod
-    def opts(
+    def settings(
         *, width: Optional[int] = None,
         max_width: Optional[int] = None,
         indent_increment: Optional[int] = None,
@@ -123,7 +123,7 @@ class HelpFormatter(click.HelpFormatter):
         row_sep: Optional[str] = None,
         theme: Optional[HelpTheme] = None,
     ) -> Dict[str, Any]:
-        """A utility method for creating a ``formatter_opts`` dictionary to
+        """A utility method for creating a ``formatter_settings`` dictionary to
         pass as context settings or command attribute. This method exists for
         one only reason: it enables auto-complete for formatter options, thus
         improving the developer experience."""

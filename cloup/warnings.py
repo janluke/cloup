@@ -8,4 +8,4 @@ This is an alternative to using ``warnings.filterwarnings`` that:
 - can be used by Cloup itself to skip the checks that (may) generate a warning.
 """
 
-formatter_opts_conflict = True
+formatter_settings_conflict = True
