@@ -190,6 +190,9 @@ class HelpFormatter(click.HelpFormatter):
     def available_width(self) -> int:
         return cast(int, self.width) - self.current_indent
 
+    def write(self, *strings: str):
+        self.buffer += strings
+
     def write_usage(self, prog, args="", prefix=None):
         if prefix is None:
             prefix = 'Usage:'
@@ -243,8 +246,7 @@ class HelpFormatter(click.HelpFormatter):
         lines = wrap_text(text, text_width, preserve_paragraphs=True).splitlines()
         styled_lines = indent_lines(map(style, lines), width=self.current_indent)
         wrapped_text = "\n".join(styled_lines)
-        self.write(wrapped_text)
-        self.write("\n")
+        self.write(wrapped_text, "\n")
 
     def compute_col1_width(self, rows: Iterable[Sequence[str]], max_width: int) -> int:
         col1_lengths = (term_len(r[0]) for r in rows)
@@ -325,12 +327,9 @@ class HelpFormatter(click.HelpFormatter):
         col2_styler: IStyler = getattr(self.theme, 'col2')
 
         for first, second in iter_rows(rows, col_count=2):
-            self.write(current_indentation)
-            styled_first = col1_styler(first)
-            self.write(styled_first)
+            self.write(current_indentation, col1_styler(first))
             if not second:
-                self.write('\n')
-                self.write(self.row_sep)
+                self.write("\n", self.row_sep)
                 continue
 
             first_display_length = term_len(first)
@@ -338,20 +337,18 @@ class HelpFormatter(click.HelpFormatter):
                 spaces_to_col2 = col1_plus_spacing - first_display_length
                 self.write(" " * spaces_to_col2)
             else:
-                self.write("\n")
-                self.write(col2_indentation)
+                self.write("\n", col2_indentation)
 
             if truncate_col2:
                 truncated = truncate_text(second, col2_width)
                 styled_truncated = col2_styler(truncated)
-                self.write(styled_truncated)
-                self.write("\n")
+                self.write(styled_truncated, "\n")
             else:
                 wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
                 lines = [col2_styler(line) for line in wrapped_text.splitlines()]
-                self.write(lines[0] + "\n")
+                self.write(lines[0], "\n")
                 for line in lines[1:]:
-                    self.write(f"{col2_indentation}{line}\n")
+                    self.write(col2_indentation, line, "\n")
             if self.row_sep:
                 self.write(self.row_sep)
 
@@ -373,7 +370,7 @@ class HelpFormatter(click.HelpFormatter):
                 if truncate_descr:
                     truncated = truncate_text(descr, descr_max_width)
                     styled_truncated = col2_styler(truncated)
-                    self.write(descr_indentation + styled_truncated + "\n")
+                    self.write(descr_indentation, styled_truncated, "\n")
                 else:
                     self.current_indent += descr_extra_indent
                     self.write_text(descr, col2_styler)
@@ -383,7 +380,7 @@ class HelpFormatter(click.HelpFormatter):
 
     def write_epilog(self, epilog):
         styled_epilog = self.theme.epilog(epilog)
-        self.write(" " * self.current_indent + styled_epilog)
+        self.write(" " * self.current_indent, styled_epilog)
 
     def __repr__(self):
         return make_repr(
