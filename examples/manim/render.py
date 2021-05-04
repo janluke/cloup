@@ -15,7 +15,7 @@ from cloup import option, option_group
 
 
 @cloup.command()
-@click.argument("file", type=Path, required=True)
+@click.argument("script_path", type=Path, required=True)
 @click.argument("scene_names", required=False, nargs=-1)
 @option_group(
     "Global options",
@@ -139,10 +139,5 @@ from cloup import option, option_group
     option("--jupyter", is_flag=True, help="Using jupyter notebook magic."),
 )
 def render(**kwargs):
-    """Render SCENE(S) from the input FILE.
-
-    FILE is the file path of the script.
-
-    SCENES is an optional list of scenes in the file.
-    """
+    """Render some or all scenes defined in a Python script."""
     pprint(kwargs, indent=2)
