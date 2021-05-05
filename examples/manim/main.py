@@ -11,12 +11,17 @@ CONTEXT_SETTINGS = Context.settings(
     help_option_names=["-h", "--help"],
     align_option_groups=False,
     align_sections=True,  # subcommand sections
-    # show_default=True,
     # color=False,
     formatter_settings=HelpFormatter.settings(
+        max_width=90,
         theme=HelpTheme.dark().with_(
-            # heading=Style(fg='bright_blue'),
-            constraint=Style(fg='red')
+            # command=None,
+            heading=Style(fg='bright_white', underline=True),
+            constraint=Style(fg='red'),
+            # description=None,
+            # col1=None,
+            col2=Style(dim=True),
+            epilog=Style(fg='red'),
         ),
         indent_increment=2,
         # row_sep='\n',
