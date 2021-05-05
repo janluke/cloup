@@ -1,6 +1,9 @@
 """Generic utilities."""
-from typing import Iterable, List, Optional, TypeVar
+from typing import Any, Dict, Iterable, List, Optional, TypeVar
 
+import click
+
+click_version_tuple = click.__version__.split('.')
 
 T = TypeVar('T')
 
@@ -91,3 +94,28 @@ def check_positive_int(value, arg_name):
 
 def identity(x: T) -> T:
     return x
+
+
+class FrozenSpaceMeta(type):
+    def __setattr__(cls, key, value):
+        raise Exception("you can't set attributes on this class")
+
+    def asdict(cls) -> Dict[str, Any]:
+        return {k: v for k, v in vars(cls).items() if not k.startswith('_')}
+
+    def __contains__(cls, item: str) -> bool:
+        return bool(getattr(cls, item))
+
+
+class FrozenSpace(metaclass=FrozenSpaceMeta):
+    """A class used just as frozen namespace for constants."""
+
+    def __init__(self):
+        raise Exception(
+            "this class is just a namespace for constants, it's not instantiable.")
+
+
+def pop_many(d: dict, *keys: str) -> dict:
+    for key in keys:
+        d.pop(key)
+    return d

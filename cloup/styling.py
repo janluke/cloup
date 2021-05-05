@@ -1,12 +1,13 @@
 import dataclasses as dc
+from types import SimpleNamespace
 from typing import Callable, NamedTuple, Optional
 
 import click
 
-from cloup._util import identity
+from cloup._util import FrozenSpace, click_version_tuple, identity, pop_many
 
-#: A callable that takes a string and returns a styled version of it.
 IStyle = Callable[[str], str]
+"""A callable that takes a string and returns a styled version of it."""
 
 
 class HelpTheme(NamedTuple):
@@ -81,34 +82,70 @@ class HelpTheme(NamedTuple):
 
 @dc.dataclass(frozen=True)
 class Style:
-    """Wraps ``click.style`` for a better integration with :class:`HelpTheme`.
-    This is conceptually equivalent to ``functools.partial(click.style, **kwargs)``.
-    The difference is in the improved developer experience: with this class,
-    you get auto-complete, typing and a shorter alias. This class also doesn't
-    include arguments of ``click-style`` that are useless in this context, and
-    add the argument ``text_transform``.
+    """Wraps func:`click.style` for a better integration with :class:`HelpTheme`.
+
+    Available colors are defined as static constants in :class:`click.styling.Color`.
+
+    Arguments are set to ``None`` by default. Passing ``False`` to boolean args
+    or ``Color.reset`` as color causes a reset code to be inserted.
+
+    This class is conceptually to a partial application of :func:`click.style`
+    (see :func:`functools.partial` if you don't know what "partial" means).
+    This class has one argument less (``reset``, which is always ``True``)
+    and an argument more (``text_transform``).
+
+    See func:`click.style` for more info.
+
+    .. warning::
+        The arguments ``overline``, ``italic`` and ``strikethrough`` are only
+        supported in Click 8 and will be ignored if you are using Click 7.
+
+    .. versionadded: 0.8.0
     """
     fg: Optional[str] = None
     bg: Optional[str] = None
-    bold: bool = False
-    dim: bool = False
-    underline: bool = False
-    blink: bool = False
-    reverse: bool = False
+    bold: Optional[bool] = None
+    dim: Optional[bool] = None
+    underline: Optional[bool] = None
+    overline: Optional[bool] = None
+    italic: Optional[bool] = None
+    blink: Optional[bool] = None
+    reverse: Optional[bool] = None
+    strikethrough: Optional[bool] = None
     #: A generic text transformation; use it to pass function like ``str.upper``.
     text_transform: Optional[IStyle] = None
-    _click_kwargs: dict = dc.field(init=False, default_factory=dict)
-
-    def __post_init__(self):
-        click_kwargs = dc.asdict(self)
-        click_kwargs.pop('text_transform')
-        click_kwargs.pop('_click_kwargs')
-        object.__setattr__(self, '_click_kwargs', {
-            key: (None if not value else value)
-            for key, value in click_kwargs.items()
-        })
+    _style_kwargs: Optional[dict] = dc.field(init=False, default=None)
 
     def __call__(self, text: str) -> str:
+        if self._style_kwargs is None:
+            kwargs = pop_many(dc.asdict(self), 'text_transform', '_style_kwargs')
+            if int(click_version_tuple[0]) < 8:
+                # These arguments are not supported in Click < 8. Ignore them.
+                pop_many(kwargs, 'overline', 'italic', 'strikethrough')
+            object.__setattr__(self, '_style_kwargs', kwargs)
+        else:
+            kwargs = self._style_kwargs
+
         if self.text_transform:
             text = self.text_transform(text)
-        return click.style(text, **self._click_kwargs)
+        return click.style(text, **kwargs)
+
+
+class Color(FrozenSpace):
+    black = "black"
+    red = "red"
+    green = "green"
+    yellow = "yellow"
+    blue = "blue"
+    magenta = "magenta"
+    cyan = "cyan"
+    white = "white"
+    reset = "reset"
+    bright_black = "bright_black"
+    bright_red = "bright_red"
+    bright_green = "bright_green"
+    bright_yellow = "bright_yellow"
+    bright_blue = "bright_blue"
+    bright_magenta = "bright_magenta"
+    bright_cyan = "bright_cyan"
+    bright_white = "bright_white"
