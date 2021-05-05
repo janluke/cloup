@@ -11,7 +11,7 @@ from cloup.formatting import FormatterMaker, HelpFormatter
 def _warn_if_formatter_settings_conflict(
     ctx_key: str, formatter_key: str, ctx_kwargs: dict, formatter_settings: dict
 ) -> None:
-    if (ctx_key in ctx_kwargs) and (formatter_key in formatter_settings):
+    if ctx_kwargs.get(ctx_key) and formatter_settings.get(formatter_key):
         from textwrap import dedent
         formatter_arg = f'formatter_settings.{formatter_key}'
         warnings.warn(dedent(f"""
