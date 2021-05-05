@@ -11,7 +11,7 @@ from click.formatting import iter_rows, wrap_text
 
 from cloup._util import check_positive_int, identity, indent_lines, make_repr
 
-from cloup.styling import HelpTheme, IStyler
+from cloup.styling import HelpTheme, IStyle
 
 
 # It's not worth to require typing_extensions just define this as a Protocol.
@@ -193,7 +193,7 @@ class HelpFormatter(click.HelpFormatter):
             self.write_dl(
                 s.definitions, col1_width=col1_width, truncate_col2=truncate_col2)
 
-    def write_text(self, text, style: Optional[IStyler] = None) -> None:
+    def write_text(self, text, style: Optional[IStyle] = None) -> None:
         if style is None or style is identity:
             return super().write_text(text)
         text_width = max(self.available_width, 11)

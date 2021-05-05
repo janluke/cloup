@@ -6,7 +6,7 @@ import click
 from cloup._util import identity
 
 #: A callable that takes a string and returns a styled version of it.
-IStyler = Callable[[str], str]
+IStyle = Callable[[str], str]
 
 
 class HelpTheme(NamedTuple):
@@ -23,34 +23,34 @@ class HelpTheme(NamedTuple):
     (https://github.com/python/mypy/issues/5485).
     """
     #: Style of the command name.
-    command: IStyler = identity
+    command: IStyle = identity
 
     #: Style of help section headings.
-    heading: IStyler = identity
+    heading: IStyle = identity
 
     #: Style of an option group constraint description.
-    constraint: IStyler = identity
+    constraint: IStyle = identity
 
     #: Style of a help section descriptions.
-    description: IStyler = identity
+    description: IStyle = identity
 
     #: Style of the first column of a definition list.
-    col1: IStyler = identity
+    col1: IStyle = identity
 
     #: Style of the second column of a definition list.
-    col2: IStyler = identity
+    col2: IStyle = identity
 
     #: Style of the epilog.
-    epilog: IStyler = identity
+    epilog: IStyle = identity
 
     def with_(
-        self, command: Optional[IStyler] = None,
-        heading: Optional[IStyler] = None,
-        description: Optional[IStyler] = None,
-        constraint: Optional[IStyler] = None,
-        col1: Optional[IStyler] = None,
-        col2: Optional[IStyler] = None,
-        epilog: Optional[IStyler] = None,
+        self, command: Optional[IStyle] = None,
+        heading: Optional[IStyle] = None,
+        description: Optional[IStyle] = None,
+        constraint: Optional[IStyle] = None,
+        col1: Optional[IStyle] = None,
+        col2: Optional[IStyle] = None,
+        epilog: Optional[IStyle] = None,
     ) -> 'HelpTheme':
         kwargs = {key: val for key, val in locals().items() if val is not None}
         kwargs.pop('self')
@@ -96,7 +96,7 @@ class Style:
     blink: bool = False
     reverse: bool = False
     #: A generic text transformation; use it to pass function like ``str.upper``.
-    text_transform: Optional[IStyler] = None
+    text_transform: Optional[IStyle] = None
     _click_kwargs: dict = dc.field(init=False, default_factory=dict)
 
     def __post_init__(self):
