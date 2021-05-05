@@ -138,12 +138,10 @@ class HelpFormatter(click.HelpFormatter):
     def available_width(self) -> int:
         return cast(int, self.width) - self.current_indent
 
-    def write(self, *strings: str):
+    def write(self, *strings: str) -> None:
         self.buffer += strings
 
-    def write_usage(self, prog, args="", prefix=None):
-        if prefix is None:
-            prefix = 'Usage:'
+    def write_usage(self, prog: str, args: str = "", prefix: str = 'Usage:') -> None:
         prefix = self.theme.heading(prefix) + ' '
         prog = self.theme.command(prog)
         super().write_usage(prog, args, prefix)
@@ -193,7 +191,7 @@ class HelpFormatter(click.HelpFormatter):
             self.write_dl(
                 s.definitions, col1_width=col1_width, truncate_col2=truncate_col2)
 
-    def write_text(self, text, style: Optional[IStyle] = None) -> None:
+    def write_text(self, text: str, style: Optional[IStyle] = None) -> None:
         if style is None or style is identity:
             return super().write_text(text)
         text_width = max(self.available_width, 11)
@@ -331,7 +329,7 @@ class HelpFormatter(click.HelpFormatter):
             self.write("\n")
         self.buffer.pop()  # pop last newline
 
-    def write_epilog(self, epilog):
+    def write_epilog(self, epilog: str) -> None:
         self.write_text(epilog, self.theme.epilog)
 
     def __repr__(self):
