@@ -61,7 +61,7 @@ class HelpFormatter(click.HelpFormatter):
     - more attributes for controlling the output of the formatter
     - a ``col1_width`` parameter in :meth:`write_dl` that allows to align
       multiple definition lists
-    - definition lists are formatted in "wide" (tabular) or "narrow" form depending
+    - definition lists are formatted in tabular or "linear" form depending
       on whether there's enough space to accomodate the 2nd column (the minimum
       width for the 2nd columns is ``col2_min_width``)
     - the first column width, when not explicitly given in ``write_dl`` is
@@ -257,17 +257,20 @@ class HelpFormatter(click.HelpFormatter):
         col2_width = self.available_width - col1_width - col_spacing
 
         if col2_width < self.col2_min_width:
-            self.write_narrow_dl(rows, truncate_col2)
+            self.write_linear_dl(rows, truncate_col2)
         else:
-            self.write_wide_dl(
+            self.write_tabular_dl(
                 rows, col1_width, col_spacing, col2_width, truncate_col2)
 
-    def write_wide_dl(
+    def write_tabular_dl(
         self, rows: Sequence[Tuple[str, str]],
         col1_width: int, col_spacing: int, col2_width: int,
         truncate_col2: bool,
     ) -> None:
-
+        """Formats a definition list as a 2-column "pseudo-table". If the first
+        column of a row exceeds ``col1_width``, the 2nd column is written on
+        the subsequent line. This is the standard way of formatting definition
+        lists and it's the default if there's enough space."""
         col1_plus_spacing = col1_width + col_spacing
         col2_indentation = " " * (
             self.current_indent + max(self.indent_increment, col1_plus_spacing)
@@ -303,9 +306,12 @@ class HelpFormatter(click.HelpFormatter):
             if self.row_sep:
                 self.write(self.row_sep)
 
-    def write_narrow_dl(
+    def write_linear_dl(
         self, dl: Sequence[Tuple[str, str]], truncate_descr: bool = False,
     ) -> None:
+        """Formats a definition list as a "linear list". This is the default when
+        the available width for the definitions (2nd column) is below
+        ``self.col2_min_width``."""
         descr_extra_indent = max(3, self.indent_increment)
         descr_total_indent = self.current_indent + descr_extra_indent
         descr_max_width = self.width - descr_total_indent
