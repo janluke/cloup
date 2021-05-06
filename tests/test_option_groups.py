@@ -6,10 +6,10 @@ from click import pass_context
 
 import cloup
 from cloup import option
-from tests.util import parametrize, noop
+from tests.util import mark_parametrize, noop
 
 
-@parametrize(
+@mark_parametrize(
     ['tabular_help', 'align_option_groups'],
     pytest.param(True, True, id='tabular-aligned'),
     pytest.param(True, False, id='tabular-non_aligned'),

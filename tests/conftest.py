@@ -16,21 +16,16 @@ def runner():
 
 @fixture(scope='session')
 def get_example_command():
-    aligned_cmd = make_example_command(align_option_groups=True)
-    non_aligned_cmd = make_example_command(align_option_groups=False)
-
-    def get_command(align_option_groups):
-        return aligned_cmd if align_option_groups else non_aligned_cmd
+    def get_command(tabular_help=True, align_option_groups=True):
+        return make_example_command(
+            align_option_groups=align_option_groups, tabular_help=tabular_help)
 
     return get_command
 
 
 @fixture(scope='session')
 def get_example_group():
-    aligned_cmd = make_example_group(align_sections=True)
-    non_aligned_cmd = make_example_group(align_sections=False)
-
     def get_group(align_sections):
-        return aligned_cmd if align_sections else non_aligned_cmd
+        return make_example_group(align_sections=align_sections)
 
     return get_group

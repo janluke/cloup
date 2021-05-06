@@ -20,7 +20,7 @@ multi_opt = partial(Option, multiple=True)
 tuple_opt = partial(Option, nargs=3)
 
 
-def parametrize(argnames, *argvalues, **kwargs):
+def mark_parametrize(argnames, *argvalues, **kwargs):
     return pytest.mark.parametrize(argnames, argvalues, **kwargs)
 
 
