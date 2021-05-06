@@ -142,14 +142,16 @@ class HelpFormatter(click.HelpFormatter):
         self.buffer += strings
 
     def write_usage(self, prog: str, args: str = "", prefix: str = 'Usage:') -> None:
-        prefix = self.theme.heading(prefix) + ' '
+        prefix = prefix + ' '
         prog = self.theme.command(prog)
         super().write_usage(prog, args, prefix)
 
-    def write_heading(self, heading: str) -> None:
+    def write_heading(self, heading: str, newline: bool = True) -> None:
         if self.current_indent:
             self.write(" " * self.current_indent)
-        self.write(self.theme.heading(heading + ":"), "\n")
+        self.write(self.theme.heading(heading + ":"))
+        if newline:
+            self.write('\n')
 
     def write_many_sections(
         self, sections: Sequence[HelpSection],
@@ -179,11 +181,19 @@ class HelpFormatter(click.HelpFormatter):
         truncate_col2: bool = False,
     ) -> None:
         theme = self.theme
-        heading = s.heading
+        self.write("\n")
+        self.write_heading(s.heading, newline=not s.constraint)
         if s.constraint:
-            constraint_help = theme.constraint(f'({s.constraint})')
-            heading += f' {constraint_help}'
-        with self.section(heading):
+            constraint_text = f'[{s.constraint}]'
+            available_width = self.available_width - len(s.heading) - len(': ')
+            if len(constraint_text) <= available_width:
+                self.write(" ", theme.constraint(constraint_text), "\n")
+            else:
+                self.write("\n")
+                with self.indentation():
+                    self.write_text(constraint_text, theme.constraint)
+
+        with self.indentation():
             if s.description:
                 self.write_text(s.description, theme.description)
             if self.row_sep and (s.constraint or s.description):

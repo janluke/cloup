@@ -6,17 +6,23 @@ from click import pass_context
 
 import cloup
 from cloup import option
-from tests.util import noop
+from tests.util import parametrize, noop
 
 
-@pytest.mark.parametrize(
-    'align_option_groups', [True, False], ids=['aligned', 'non-aligned']
+@parametrize(
+    ['tabular_help', 'align_option_groups'],
+    pytest.param(True, True, id='tabular-aligned'),
+    pytest.param(True, False, id='tabular-non_aligned'),
+    pytest.param(False, None, id='linear'),
 )
 def test_option_groups_are_correctly_displayed_in_help(
-    runner, align_option_groups, get_example_command
+    runner, tabular_help, align_option_groups, get_example_command
 ):
-    cmd = get_example_command(align_option_groups)
-    result = runner.invoke(cmd, args=('--help',), catch_exceptions=False)
+    cmd = get_example_command(
+        tabular_help=tabular_help,
+        align_option_groups=align_option_groups
+    )
+    result = runner.invoke(cmd, args=('--help',))
     assert result.exit_code == 0
     assert result.output.strip() == cmd.expected_help
 
