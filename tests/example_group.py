@@ -88,4 +88,4 @@ Other commands:
 
 
 if __name__ == '__main__':
-    make_example_group(True)(['--help'])
+    make_example_group(align_sections=False)(['--help'], prog_name='git')

@@ -12,6 +12,7 @@ import click
 
 import cloup
 from cloup import option, option_group
+from cloup.constraints import AcceptAtMost
 
 
 @cloup.command()
@@ -137,6 +138,7 @@ from cloup import option, option_group
         help="Show the output file in the file browser.",
     ),
     option("--jupyter", is_flag=True, help="Using jupyter notebook magic."),
+    constraint=AcceptAtMost(3)
 )
 def render(**kwargs):
     """Render some or all scenes defined in a Python script."""

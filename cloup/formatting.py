@@ -10,9 +10,7 @@ import click
 from click.formatting import iter_rows, wrap_text
 
 from cloup._util import check_positive_int, identity, indent_lines, make_repr
-
 from cloup.styling import HelpTheme, IStyle
-
 
 # It's not worth to require typing_extensions just define this as a Protocol.
 FormatterMaker = Callable[..., 'HelpFormatter']
@@ -293,28 +291,27 @@ class HelpFormatter(click.HelpFormatter):
         for first, second in iter_rows(rows, col_count=2):
             self.write(current_indentation, col1_styler(first))
             if not second:
-                self.write("\n", self.row_sep)
-                continue
-
-            first_display_length = unstyled_len(first)
-            if first_display_length <= col1_width:
-                spaces_to_col2 = col1_plus_spacing - first_display_length
-                self.write(" " * spaces_to_col2)
+                self.write("\n")
             else:
-                self.write("\n", col2_indentation)
+                first_display_length = unstyled_len(first)
+                if first_display_length <= col1_width:
+                    spaces_to_col2 = col1_plus_spacing - first_display_length
+                    self.write(" " * spaces_to_col2)
+                else:
+                    self.write("\n", col2_indentation)
 
-            if truncate_col2:
-                truncated = truncate_text(second, col2_width)
-                styled_truncated = col2_styler(truncated)
-                self.write(styled_truncated, "\n")
-            else:
-                wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
-                lines = [col2_styler(line) for line in wrapped_text.splitlines()]
-                self.write(lines[0], "\n")
-                for line in lines[1:]:
-                    self.write(col2_indentation, line, "\n")
+                if truncate_col2:
+                    truncated = truncate_text(second, col2_width)
+                    styled_truncated = col2_styler(truncated)
+                    self.write(styled_truncated, "\n")
+                else:
+                    wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
+                    lines = [col2_styler(line) for line in wrapped_text.splitlines()]
+                    self.write(lines[0], "\n")
+                    for line in lines[1:]:
+                        self.write(col2_indentation, line, "\n")
             if self.row_sep:
-                self.write(self.row_sep)
+                self.write(current_indentation, self.row_sep)
 
     def write_linear_dl(
         self, dl: Sequence[Tuple[str, str]], truncate_descr: bool = False,
