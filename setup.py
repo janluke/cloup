@@ -39,7 +39,7 @@ setup(
     include_package_data=True,
     python_requires='>=3.6',
     install_requires=[
-        'click >=7.0, <9.0',
+        'click >=7.1, <9.0',
         'dataclasses; python_version<="3.6"',
     ],
 )
