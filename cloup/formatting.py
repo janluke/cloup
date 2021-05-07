@@ -199,13 +199,15 @@ class HelpFormatter(click.HelpFormatter):
             self.write_dl(
                 s.definitions, col1_width=col1_width, truncate_col2=truncate_col2)
 
-    def write_text(self, text: str, style: Optional[IStyle] = None) -> None:
-        if style is None or style is identity:
-            return super().write_text(text)
-        text_width = max(self.available_width, 11)
-        lines = wrap_text(text, text_width, preserve_paragraphs=True).splitlines()
-        styled_lines = indent_lines(map(style, lines), width=self.current_indent)
-        wrapped_text = "\n".join(styled_lines)
+    def write_text(self, text: str, style: IStyle = identity) -> None:
+        wrapped = wrap_text(
+            text, self.width - self.current_indent, preserve_paragraphs=True)
+        if style is identity:
+            wrapped_text = textwrap.indent(wrapped, prefix=' ' * self.current_indent)
+        else:
+            styled_lines = map(style, wrapped.splitlines())
+            lines = indent_lines(styled_lines, width=self.current_indent)
+            wrapped_text = "\n".join(lines)
         self.write(wrapped_text, "\n")
 
     def compute_col1_width(self, rows: Iterable[Sequence[str]], max_width: int) -> int:

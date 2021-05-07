@@ -63,8 +63,8 @@ Usage: clouptest [OPTIONS]
 
 Option group A: [at most 2 accepted]
   This is a very useful description of group A. This is a rarely used feature
-  but, as the others, needs to be tested. I'm making this unnecessarily long
-  in order to test wrapping.
+  but, as the others, needs to be tested. I'm making this unnecessarily long in
+  order to test wrapping.
   --one TEXT            The one thing you need to run this command.
   --two TEXT            This is long description that should be wrapped into
                         multiple lines so that the entire text stays inside the
@@ -89,8 +89,8 @@ Usage: clouptest [OPTIONS]
 
 Option group A: [at most 2 accepted]
   This is a very useful description of group A. This is a rarely used feature
-  but, as the others, needs to be tested. I'm making this unnecessarily long
-  in order to test wrapping.
+  but, as the others, needs to be tested. I'm making this unnecessarily long in
+  order to test wrapping.
   --one TEXT    The one thing you need to run this command.
   --two TEXT    This is long description that should be wrapped into multiple
                 lines so that the entire text stays inside the allowed width.
@@ -114,14 +114,14 @@ Usage: clouptest [OPTIONS]
 
 Option group A: [at most 2 accepted]
   This is a very useful description of group A. This is a rarely used feature
-  but, as the others, needs to be tested. I'm making this unnecessarily long
-  in order to test wrapping.
+  but, as the others, needs to be tested. I'm making this unnecessarily long in
+  order to test wrapping.
   --one TEXT
      The one thing you need to run this command.
 
   --two TEXT
-     This is long description that should be wrapped into multiple lines so
-     that the entire text stays inside the allowed width.
+     This is long description that should be wrapped into multiple lines so that
+     the entire text stays inside the allowed width.
 
   --three TEXT
      The 3rd option of group A.
@@ -147,6 +147,6 @@ Other options:
 
 
 if __name__ == '__main__':
-    make_example_command(align_option_groups=True, tabular_help=True)(
+    make_example_command(align_option_groups=False, tabular_help=True)(
         ['--help'], prog_name='clouptest'
     )
