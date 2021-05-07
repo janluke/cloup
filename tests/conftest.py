@@ -10,7 +10,7 @@ from tests.example_group import make_example_group
 @fixture()
 def runner():
     runner = CliRunner()
-    runner.invoke = partial(runner.invoke, catch_exceptions=True)
+    runner.invoke = partial(runner.invoke, catch_exceptions=False)
     return runner
 
 
