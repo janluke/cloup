@@ -109,7 +109,7 @@ def test_context_settings_propagate_to_children(runner):
     @grp.command()
     @pass_context
     def cmd(ctx):
-        assert cmd.must_align_groups(ctx) is False
+        assert cmd.must_align_option_groups(ctx) is False
 
     runner.invoke(grp, ('cmd',))
 
