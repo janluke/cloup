@@ -1,9 +1,11 @@
 # flake8: noqa E128
+from typing import cast
+
 import click
 
 import cloup
 from cloup import Command, HelpFormatter, option, option_group
-from cloup.constraints import AcceptAtMost, If, RequireAtLeast, mutually_exclusive
+from cloup.constraints import AcceptAtMost, If, RequireAtLeast
 
 
 def make_example_command(
@@ -52,8 +54,8 @@ def make_example_command(
     else:
         expected_help = _LINEAR_HELP
 
-    cmd.expected_help = expected_help
-    return cmd
+    cmd.expected_help = expected_help   # type: ignore
+    return cast(Command, cmd)
 
 
 _TABULAR_ALIGNED_HELP = """
