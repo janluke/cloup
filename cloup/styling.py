@@ -1,5 +1,4 @@
 import dataclasses as dc
-from types import SimpleNamespace
 from typing import Callable, NamedTuple, Optional
 
 import click
