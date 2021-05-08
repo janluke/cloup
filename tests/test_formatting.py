@@ -1,12 +1,145 @@
+from textwrap import dedent
+
+import click
 import pytest
 
-from cloup.formatting import truncate_text
+from cloup import HelpFormatter
+from cloup.formatting import truncate_text, unstyled_len
+from cloup.styling import HelpTheme, Style
+
+LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
+ROWS = [
+    ('-l, --long-option-name TEXT', LOREM),
+    ('--another-option INT', LOREM),
+    ('--short', LOREM),
+]
 
 
-TEXT = "1234 678 012345"
-@pytest.mark.parametrize('start, end, expected', [    # noqa: E302
-    pytest.param(3,  7,  "...",         id="0-7"),
-    pytest.param(7,  11, "1234...",     id="7-11"),
+def test_write_dl_with_col1_max_width_equal_to_longest_col1_value():
+    formatter = HelpFormatter(width=80, col1_max_width=len(ROWS[0][0]))
+    formatter.current_indent = 4
+    expected = """
+    -l, --long-option-name TEXT  Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    --another-option INT         Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    --short                      Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    """[1:-4]
+    formatter.write_dl(ROWS)
+    assert formatter.getvalue() == expected
+
+
+def test_formatter_excludes_rows_exceeding_col1_max_width_from_col1_width_computation():
+    formatter = HelpFormatter(width=80, col1_max_width=len('--short'))
+    formatter.current_indent = 4
+    expected = """
+    -l, --long-option-name TEXT
+             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+             eiusmod tempor.
+    --another-option INT
+             Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+             eiusmod tempor.
+    --short  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+             eiusmod tempor.
+    """[1:-4]
+    formatter.write_dl(ROWS)
+    assert formatter.getvalue() == expected
+
+
+def test_col2_min_width():
+    formatter = HelpFormatter(width=80)
+    formatter.current_indent = 4
+    formatter.col2_min_width = (
+        formatter.available_width - len(ROWS[0][0]) - formatter.col_spacing)
+    expected = """
+    -l, --long-option-name TEXT  Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    --another-option INT         Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    --short                      Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    """[1:-4]
+    formatter.write_dl(ROWS)
+    assert formatter.getvalue() == expected
+
+    formatter.buffer = []
+    formatter.col2_min_width += 1
+    expected = """
+    -l, --long-option-name TEXT
+       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+       tempor.
+
+    --another-option INT
+       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+       tempor.
+
+    --short
+       Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+       tempor.
+    """[1:-4]
+    formatter.write_dl(ROWS)
+    assert formatter.getvalue() == expected
+
+
+def test_row_sep():
+    formatter = HelpFormatter(row_sep='-' * 76 + '\n')
+    formatter.current_indent = 4
+    expected = """
+    -l, --long-option-name TEXT  Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    ----------------------------------------------------------------------------
+    --another-option INT         Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    ----------------------------------------------------------------------------
+    --short                      Lorem ipsum dolor sit amet, consectetur
+                                 adipiscing elit, sed do eiusmod tempor.
+    ----------------------------------------------------------------------------
+    """[1:-4]
+    formatter.write_dl(ROWS)
+    assert formatter.getvalue() == expected
+
+
+def test_formatter_settings_creation():
+    assert HelpFormatter.settings() == {}
+    assert HelpFormatter.settings(
+        width=None, max_width=None,
+        indent_increment=4, col_spacing=3
+    ) == dict(indent_increment=4, col_spacing=3)
+
+
+def test_write_heading():
+    formatter = HelpFormatter(theme=HelpTheme(
+        heading=Style(fg='blue', bold=True),
+    ))
+    formatter.write_heading('Title')
+    assert formatter.getvalue() == click.style('Title:', fg='blue', bold=True) + '\n'
+
+
+def test_write_text_with_styles():
+    formatter = HelpFormatter(width=80)
+    formatter.current_indent = 4
+    WRAPPED = dedent("""
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat."""[1:])
+    INPUT_TEXT = ' '.join(WRAPPED.split())
+    indentation = ' ' * formatter.current_indent
+    style = Style(fg='yellow')
+    EXPECTED = '\n'.join(
+        indentation + style(line) for line in WRAPPED.splitlines()
+    )
+    formatter.write_text(INPUT_TEXT, style=style)
+    actual = formatter.getvalue().rstrip()
+    for line in actual.splitlines():
+        assert unstyled_len(line) <= formatter.width
+    assert actual == EXPECTED
+
+
+@pytest.mark.parametrize('start, end, expected', [  # noqa: E302
+    pytest.param(3, 7, "...", id="0-7"),
+    pytest.param(7, 11, "1234...", id="7-11"),
     pytest.param(11, 15, "1234 678...", id="11-15"),
     pytest.param(15, 17, "1234 678 012345", id="15+"),
 ])
