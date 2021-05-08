@@ -153,6 +153,16 @@ class IsSet(Predicate):
         value = param_value_by_name(ctx, self.param_name)
         return param_value_is_set(param, value)
 
+    def __and__(self, other: Predicate):
+        if isinstance(other, IsSet):
+            return AllSet(self.param_name, other.param_name)
+        return super().__and__(other)
+
+    def __or__(self, other: Predicate):
+        if isinstance(other, IsSet):
+            return AnySet(self.param_name, other.param_name)
+        return super().__and__(other)
+
 
 class AllSet(Predicate):
     """True if all parameters are set.

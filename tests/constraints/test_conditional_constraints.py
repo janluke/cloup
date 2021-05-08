@@ -224,6 +224,14 @@ class TestIsSet:
         assert IsSet('arg1').neg_desc(ctx) == 'ARG1 is not set'
         assert IsSet('str_opt').neg_desc(ctx) == '--str-opt is not set'
 
+    def test_and_with_predicate_of_the_same_type(self):
+        res = IsSet('opt1') & IsSet('opt2')
+        assert res == AllSet('opt1', 'opt2')
+
+    def test_or_with_predicate_of_the_same_type(self):
+        res = IsSet('opt1') | IsSet('opt2')
+        assert res == AnySet('opt1', 'opt2')
+
 
 class TestEqual:
     def test_evaluation(self, sample_cmd):
