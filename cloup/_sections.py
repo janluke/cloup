@@ -1,7 +1,7 @@
 from collections import OrderedDict
 from typing import (
     Dict, Iterable, List, Optional, Sequence, TYPE_CHECKING,
-    Tuple, Type, TypeVar, Union, cast,
+    Tuple, Type, TypeVar, Union
 )
 
 import click
@@ -195,11 +195,8 @@ class SectionMixin:
 
         subcommand_sections = self.list_sections(ctx)
         # Conservative limit. Rely on the formatter for truncating the text precisely.
-        help_limit = (cast(int, formatter.width)
-                      - formatter.current_indent
-                      - formatter.col_spacing)
         help_sections = listOfNotNone(
-            self.make_commands_help_section(section, help_limit=help_limit)
+            self.make_commands_help_section(section, help_limit=formatter.available_width)
             for section in subcommand_sections
         )
         if not help_sections:
