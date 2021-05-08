@@ -194,6 +194,15 @@ class AllSet(Predicate):
         return all(param_value_is_set(param, ctx.params[param.name])
                    for param in params)
 
+    def __and__(self, other: Predicate):
+        if isinstance(other, AllSet):
+            return AllSet(*self.param_names, *other.param_names)
+        return super().__and__(other)
+
+    def __eq__(self, other):
+        return (isinstance(other, AllSet)
+                and sorted(self.param_names) == sorted(other.param_names))
+
 
 class AnySet(Predicate):
     """True if any parameter is set.
@@ -226,6 +235,15 @@ class AnySet(Predicate):
         params = command.get_params_by_name(self.param_names)
         return any(param_value_is_set(param, ctx.params[param.name])
                    for param in params)
+
+    def __or__(self, other: Predicate):
+        if isinstance(other, AnySet):
+            return AnySet(*self.param_names, *other.param_names)
+        return super().__and__(other)
+
+    def __eq__(self, other):
+        return (isinstance(other, AnySet)
+                and sorted(self.param_names) == sorted(other.param_names))
 
 
 class Equal(Predicate):
