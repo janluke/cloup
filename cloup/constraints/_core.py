@@ -444,10 +444,10 @@ class AcceptBetween(WrapperConstraint):
 #: Satisfied if all parameters are set.
 require_all = _RequireAll()
 
-#: Satisfied if none of the parameters is set.
+#: Satisfied if none of the parameters is set. Useful only in conditional constraints.
 accept_none = AcceptAtMost(0).rephrased(
     help='all forbidden',
-    error='the following parameters are all forbidden:\n{param_list}'
+    error='the following parameters should not be provided:\n{param_list}'
 )
 
 #: Satisfied if either all or none of the parameters are set.
