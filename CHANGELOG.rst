@@ -11,59 +11,99 @@ Change Log
 
 v0.8.0 (in development)
 =======================
+
+**Overview**
+
+- This was a pretty large release. The focus was on the implementation of a
+  custom ``HelpFormatter``. This in turn required several structural changes,
+  like the implementation of a custom ``Context`` and the definition of a saner
+  class hierarchy for Cloup command classes.
+
 **License**
 
 - Cloup license changed from MIT to 3-clause BSD, the one used by Click.
 
 **Incompatible changes**
 
-* ``OptionGroupMixin`` and ``SectionMixin`` now assume that a
-  ``cloup.HelpFormatter`` will be created by the context and passed in.
+* Formatting methods of ``OptionGroupMixin`` and ``SectionMixin`` now expects
+  the ``formatter`` to be a ``cloup.HelpFormatter``.
   If you used a custom ``click.HelpFormatter``, you'll need to change your code
-  to use this release.
+  if you want to use this release. If you used ``click-help-colors``, keep in
+  mind that the new formatter has built-in styling capabilities so you don't
+  need ``click-help-colors`` anymore.
 
 * ``OptionGroupMixin.format_option_group`` was removed.
 
 * ``SectionMixin.format_section`` was removed.
 
-** Compatible changes
+**Compatible changes**
 
 - Cloup now uses its own ``HelpFormatter``:
 
   * it supports alignment of multiple definition lists, so Cloup doesn't have to
-    rely on a hack to align option groups and alike
+    rely on a hack (padding) to align option groups and alike
 
-  * it adds several attributes to fine-tune your generated help string:
+  * it adds theming of the help page, i.e. styling of several elements of the
+    help page
+
+  * it has an additional way to format definition lists (implemented with the
+    method ``write_linear_dl``) that kicks in when the available width for the
+    standard 2-column format is not enough (precisely, when the width available
+    for the 2nd column is below ``formatter.col2_min_width``)
+
+  * it adds several attributes to fine-tune and customize the generated help:
     ``col1_max_width``, ``col_spacing`` and ``row_sep``
 
-  * it overrides ``HelpFormatter.write_dl``, hopefully improving code quality and
-    behaviour.
+  * it fixes a couple of Click minor bugs and decides the column width of
+    definition lists in a slightly smarter way that makes a better use of the
+    available space.
 
 - Added a custom ``Context`` that:
 
   * uses ``cloup.HelpFormatter`` as formatter class by default
-  * adds a ``formatter_settings`` attributes that allows to set the default formatter
-    keyword arguments (the same argument can be given to a command to override
-    these defaults).
+  * adds a ``formatter_settings`` attributes that allows to set the default
+    formatter keyword arguments (the same argument can be given to a command to
+    override these defaults). You can use the static method
+    ``HelpFormatter.settings`` to create such a dictionary
   * allows to set the default value for the following Command parameters:
 
-    * ``align_option_groups = True``,
-    * ``align_sections = True``.
+    * ``align_option_groups=True``,
+    * ``align_sections=True``
 
-- Changed the class hierarchy:
+  * has a ``Context.setting`` static method that facilitates the creation of a
+    ``context_settings`` dictionary (you get the help of your IDE).
 
-  * added a ``BaseCommand`` class, extending ``click.Command`` and using the custom
-    ``Context`` by default. This class also "back-ports" the Click 8.0 class
-    attribute ``context_class`` and adds the ``formatter_settings`` argument.
+- Organized command classes in hierarchy:
+
+  * added a ``BaseCommand`` class, extending ``click.Command`` and using the
+    custom ``Context`` by default. This class also "back-ports" the Click 8.0
+    class attribute ``context_class`` and adds the ``formatter_settings``
+    argument.
 
   * ``cloup.Command`` and ``cloup.MultiCommand`` extends ``cloup.BaseCommand``
 
   * ``cloup.Group`` now extends ``cloup.MultiCommand``.
 
-- Hidden option groups. An option group is hidden either if you pass ``hidden=True``
-  when you define it or if all its contained options are hidden.
+- Hidden option groups. An option group is hidden either if you pass
+  ``hidden=True`` when you define it or if all its contained options are hidden.
   If you set ``hidden=True``, all contained options will have their ``hidden``
   attribute set to ``True`` automatically.
+
+- Adds the conditions ``AllSet`` and ``AnySet``.
+
+    * The ``and`` of two or more ``IsSet`` conditions returns an ``AllSet`` condition.
+    * The ``or`` of two or more ``IsSet`` conditions returns an ``AnySet`` condition.
+
+- Changed the error messages of ``all_or_none`` and ``accept_none``.
+
+
+v0.7.1 (2021-05-02)
+===================
+- Fixed a bug with ``&`` and ``|`` ``Predicate`` operators giving ``AttributeError``
+  when used.
+- Fixed the error message of ``accept_none`` which didn't include ``{param_list}``.
+- Improved ``all_or_none`` error message.
+- Minor docs fixes.
 
 
 v0.7.0 (2021-03-24)
