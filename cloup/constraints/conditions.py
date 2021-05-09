@@ -245,10 +245,6 @@ class AnySet(Predicate):
             return AnySet(*self.param_names, *other.param_names)
         return super().__or__(other)
 
-    def __eq__(self, other):
-        return (isinstance(other, AnySet)
-                and sorted(self.param_names) == sorted(other.param_names))
-
 
 class Equal(Predicate):
     """True if the parameter value equals ``value``."""
