@@ -105,10 +105,10 @@ class FrozenSpaceMeta(type):
         raise Exception("you can't set attributes on this class")
 
     def asdict(cls) -> Dict[str, Any]:
-        return cls._dict
+        return cls._dict   # type: ignore
 
     def __contains__(cls, item: str) -> bool:
-        return item in cls._dict
+        return item in cls.asdict()
 
     def __getitem__(cls, item):
         return cls._dict[item]
