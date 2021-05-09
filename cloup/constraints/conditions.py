@@ -164,7 +164,7 @@ class IsSet(Predicate):
     def __or__(self, other: Predicate):
         if isinstance(other, IsSet):
             return AnySet(self.param_name, other.param_name)
-        return super().__and__(other)
+        return super().__or__(other)
 
 
 class AllSet(Predicate):

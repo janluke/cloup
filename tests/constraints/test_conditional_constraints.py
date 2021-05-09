@@ -7,7 +7,7 @@ from click import Context
 from pytest import mark
 
 from cloup.constraints import ConstraintViolated, If
-from cloup.constraints.conditions import AllSet, AnySet, Equal, IsSet, Predicate
+from cloup.constraints.conditions import AllSet, AnySet, Equal, IsSet, Predicate, _And, _Or
 from tests.constraints.test_constraints import FakeConstraint
 from tests.util import make_context, mark_parametrize, mock_repr
 
@@ -224,13 +224,20 @@ class TestIsSet:
         assert IsSet('arg1').neg_desc(ctx) == 'ARG1 is not set'
         assert IsSet('str_opt').neg_desc(ctx) == '--str-opt is not set'
 
-    def test_and_with_predicate_of_the_same_type(self):
-        res = IsSet('opt1') & IsSet('opt2')
-        assert res == AllSet('opt1', 'opt2')
+    def test_and(self):
+        a, b, c = IsSet('opt1'), IsSet('opt2'), Equal('opt2', 'value')
+        assert a & b == AllSet('opt1', 'opt2')
+        assert a & c == _And(a, c)
 
-    def test_or_with_predicate_of_the_same_type(self):
-        res = IsSet('opt1') | IsSet('opt2')
-        assert res == AnySet('opt1', 'opt2')
+    def test_or(self):
+        a, b, c = IsSet('opt1'), IsSet('opt2'), Equal('opt2', 'value')
+        assert a | b == AnySet('opt1', 'opt2')
+        assert a | c == _Or(a, c)
+
+    def test_eq(self):
+        assert IsSet('a') == IsSet('a')
+        assert IsSet('a') != IsSet('b')
+        assert IsSet('a') != Equal('a', 'ciao')
 
 
 class TestEqual:
