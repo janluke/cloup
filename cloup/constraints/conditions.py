@@ -60,7 +60,10 @@ class Predicate(abc.ABC):
         return _And(self, other)
 
     def __repr__(self):
-        return '%s()' % self.__class__.__name__
+        return make_repr(self, *vars(self).values())
+
+    def __eq__(self, other):
+        return self.__class__ == other.__class__ and vars(self) == vars(other)
 
 
 class Not(Predicate, Generic[P]):
