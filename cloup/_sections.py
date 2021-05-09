@@ -1,7 +1,6 @@
 from collections import OrderedDict
 from typing import (
-    Dict, Iterable, List, Optional, Sequence, TYPE_CHECKING,
-    Tuple, Type, TypeVar, Union
+    Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union
 )
 
 import click
@@ -9,8 +8,6 @@ import click
 from cloup._util import coalesce, listOfNotNone
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
-if TYPE_CHECKING:
-    from cloup._context import Context  # noqa: F401
 
 CommandType = TypeVar('CommandType', bound=Type[click.Command])
 Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
