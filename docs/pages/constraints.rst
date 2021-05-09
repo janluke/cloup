@@ -94,7 +94,7 @@ Available predicates can be imported from ``cloup.constraints`` and are:
 .. autosummary::
     IsSet
     AllSet
-    AnyIsSet
+    AnySet
     Equal
 
 For example:
