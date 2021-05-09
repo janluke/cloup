@@ -23,5 +23,5 @@ from ._core import (
     require_all,
 )
 from ._support import ConstraintMixin, constraint, BoundConstraintSpec
-from .conditions import Equal, IsSet, Not
+from .conditions import AllSet, AnySet, Equal, IsSet, Not
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
