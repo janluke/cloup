@@ -60,30 +60,35 @@ class Predicate(abc.ABC):
         return _And(self, other)
 
     def __repr__(self):
-        return make_repr(self, *vars(self).values())
+        return make_repr(self, *self._public_fields().values())
+
+    def _public_fields(self):
+        return {k: v for k, v in vars(self).items() if not k.startswith('_')}
 
     def __eq__(self, other):
-        return self.__class__ == other.__class__ and vars(self) == vars(other)
+        return isinstance(other, self.__class__) and (
+            self._public_fields() == other._public_fields()
+        )
 
 
 class Not(Predicate, Generic[P]):
     def __init__(self, predicate: P):
-        self._predicate = predicate
+        self.predicate = predicate
 
     def description(self, ctx: Context) -> str:
-        return self._predicate.negated_description(ctx)
+        return self.predicate.negated_description(ctx)
 
     def negated_description(self, ctx: Context) -> str:
-        return self._predicate.description(ctx)
+        return self.predicate.description(ctx)
 
     def __call__(self, ctx: Context) -> bool:
-        return not self._predicate(ctx)
+        return not self.predicate(ctx)
 
     def __invert__(self) -> P:
-        return self._predicate
+        return self.predicate
 
     def __repr__(self) -> str:
-        return 'Not(%r)' % self._predicate
+        return 'Not(%r)' % self.predicate
 
 
 class _Operator(Predicate, metaclass=abc.ABCMeta):
