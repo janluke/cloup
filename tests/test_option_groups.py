@@ -5,8 +5,8 @@ import pytest
 from click import pass_context
 
 import cloup
-from cloup import option
-from tests.util import mark_parametrize, noop
+from cloup import OptionGroup, option
+from tests.util import make_options, mark_parametrize, noop
 
 
 @mark_parametrize(
@@ -142,3 +142,13 @@ def test_that_optgroup_is_hidden_if_all_its_options_are_hidden(runner):
     assert cmd.option_groups[0].hidden
     result = runner.invoke(cmd, args=('--help',), catch_exceptions=False)
     assert 'Hidden group' not in result.output
+
+
+def test_option_group_options_setter_set_the_hidden_attr_of_options():
+    opts = make_options('abc')
+    group = OptionGroup('name')
+    group.options = opts
+    assert not any(opt.hidden for opt in opts)
+    group.hidden = True
+    group.options = opts
+    assert all(opt.hidden for opt in opts)
