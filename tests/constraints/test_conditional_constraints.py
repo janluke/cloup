@@ -255,6 +255,11 @@ class TestEqual:
         assert p.desc(ctx) == 'ARG1="value"'
         assert p.neg_desc(ctx) == 'ARG1!="value"'
 
+    def test_eq(self):
+        assert Equal('name', 'value') == Equal('name', 'value')
+        assert Equal('name', 'foo') != Equal('name', 'bar')
+        assert Equal('foo', 'value') != Equal('bar', 'value')
+
 
 class TestAllSet:
     def test_evaluation_of_true_predicates(self, sample_cmd):
@@ -289,6 +294,18 @@ class TestAllSet:
         assert AllSet('arg1', 'flag', 'int_opt').neg_desc(ctx) \
                == 'ARG1, --flag and --int-opt are not all set'
 
+    def test_and(self):
+        allset1 = AllSet('a', 'b')
+        allset2 = AllSet('c', 'd')
+        anyset = AnySet('foo', 'bar')
+        assert allset1 & allset2 == AllSet('a', 'b', 'c', 'd')
+        assert allset1 & anyset == _And(allset1, anyset)
+
+    def test_eq(self):
+        assert AllSet('a', 'b') == AllSet('a', 'b')
+        assert AllSet('a') != AllSet('a', 'b')
+        assert AllSet('a', 'b') != AnySet('a', 'b')
+
 
 class TestAnySet:
     def test_evaluation(self, sample_cmd):
@@ -317,3 +334,15 @@ class TestAnySet:
                == 'any of ARG1, --flag and --int-opt is set'
         assert AnySet('arg1', 'flag', 'int_opt').neg_desc(ctx) \
                == 'none of ARG1, --flag and --int-opt is set'
+
+    def test_or(self):
+        anyset1 = AnySet('a', 'b')
+        anyset2 = AnySet('c', 'd')
+        allset = AllSet('foo', 'bar')
+        assert anyset1 | anyset2 == AnySet('a', 'b', 'c', 'd')
+        assert anyset1 | allset == _Or(anyset1, allset)
+
+    def test_eq(self):
+        assert AnySet('a', 'b') == AnySet('a', 'b')
+        assert AnySet('a') != AnySet('a', 'b')
+        assert AnySet('a', 'b') != AllSet('a', 'b')

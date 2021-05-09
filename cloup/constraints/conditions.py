@@ -247,7 +247,7 @@ class AnySet(Predicate):
     def __or__(self, other: Predicate):
         if isinstance(other, AnySet):
             return AnySet(*self.param_names, *other.param_names)
-        return super().__and__(other)
+        return super().__or__(other)
 
     def __eq__(self, other):
         return (isinstance(other, AnySet)
