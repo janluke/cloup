@@ -207,10 +207,6 @@ class AllSet(Predicate):
             return AllSet(*self.param_names, *other.param_names)
         return super().__and__(other)
 
-    def __eq__(self, other):
-        return (isinstance(other, AllSet)
-                and sorted(self.param_names) == sorted(other.param_names))
-
 
 class AnySet(Predicate):
     """True if any of the listed parameters is set.
