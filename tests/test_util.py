@@ -1,4 +1,6 @@
-from cloup._util import make_repr
+import pytest
+
+from cloup._util import check_positive_int, make_repr
 
 
 def test_make_repr():
@@ -15,3 +17,15 @@ def test_make_repr():
                  "   name='Alan',\n"
                  "   surname='Turing'\n"
                  ")")
+
+
+def test_check_positive_int():
+    check_positive_int(1, 'name')
+    with pytest.raises(ValueError):
+        check_positive_int(0, 'name')
+    with pytest.raises(ValueError):
+        check_positive_int(-1, 'name')
+    with pytest.raises(TypeError):
+        check_positive_int(None, 'name')
+    with pytest.raises(TypeError):
+        check_positive_int(1.23, 'name')
