@@ -173,7 +173,7 @@ class IsSet(Predicate):
 
 
 class AllSet(Predicate):
-    """True if all parameters are set.
+    """True if all listed parameters are set.
 
     .. versionadded: 0.8.0
     """
@@ -213,7 +213,7 @@ class AllSet(Predicate):
 
 
 class AnySet(Predicate):
-    """True if any parameter is set.
+    """True if any of the listed parameters is set.
 
     .. versionadded: 0.8.0
     """
