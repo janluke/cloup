@@ -41,4 +41,3 @@ def test_Color():
     for k, v in d.items():
         assert k in Color
         assert Color[k] == v
-

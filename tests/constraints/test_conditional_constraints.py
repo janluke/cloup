@@ -7,7 +7,9 @@ from click import Context
 from pytest import mark
 
 from cloup.constraints import ConstraintViolated, If
-from cloup.constraints.conditions import AllSet, AnySet, Equal, IsSet, Predicate, _And, _Or
+from cloup.constraints.conditions import (
+    AllSet, AnySet, Equal, IsSet, Predicate, _And, _Or
+)
 from tests.constraints.test_constraints import FakeConstraint
 from tests.util import make_context, mark_parametrize, mock_repr
 
