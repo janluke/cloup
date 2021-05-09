@@ -97,14 +97,21 @@ def identity(x: T) -> T:
 
 
 class FrozenSpaceMeta(type):
+    def __init__(cls, *args):
+        d = {k: v for k, v in vars(cls).items() if not k.startswith('_')}
+        type.__setattr__(cls, '_dict', d)
+
     def __setattr__(cls, key, value):
         raise Exception("you can't set attributes on this class")
 
     def asdict(cls) -> Dict[str, Any]:
-        return {k: v for k, v in vars(cls).items() if not k.startswith('_')}
+        return cls._dict
 
     def __contains__(cls, item: str) -> bool:
-        return bool(getattr(cls, item))
+        return item in cls._dict
+
+    def __getitem__(cls, item):
+        return cls._dict[item]
 
 
 class FrozenSpace(metaclass=FrozenSpaceMeta):

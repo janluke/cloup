@@ -27,7 +27,18 @@ def test_unsupported_style_args_are_ignored_in_click_7():
 
 
 def test_Color():
+    assert Color.red == 'red'
+    assert Color.bright_blue == 'bright_blue'
+
     with pytest.raises(Exception, match="it's not instantiable"):
         Color()
     with pytest.raises(Exception, match="you can't set attributes on this class"):
         Color.red = 'blue'
+
+    assert 'red' in Color
+    assert 'pippo' not in Color
+    d = Color.asdict()
+    for k, v in d.items():
+        assert k in Color
+        assert Color[k] == v
+
