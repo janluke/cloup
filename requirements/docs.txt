@@ -63,6 +63,8 @@ sphinx-book-theme==0.0.42
     # via -r requirements/docs.in
 sphinx-copybutton==0.3.1
     # via -r requirements/docs.in
+sphinx-issues==1.2.0
+    # via -r requirements/docs.in
 sphinx-panels==0.5.2
     # via -r requirements/docs.in
 sphinx-version-warning==1.1.2
@@ -74,6 +76,7 @@ sphinx==3.5.4
     #   sphinx-autoapi
     #   sphinx-book-theme
     #   sphinx-copybutton
+    #   sphinx-issues
     #   sphinx-panels
     #   sphinx-version-warning
 sphinxcontrib-applehelp==1.0.2

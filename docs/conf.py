@@ -40,6 +40,7 @@ extensions = [
     'sphinx_panels',
     'sphinx_copybutton',  # adds a copy button to code blocks
     'versionwarning.extension',
+    'sphinx_issues',  # link to GitHub issues and PRs
 ]
 
 autoclass_content = 'both'
@@ -78,6 +79,8 @@ master_doc = 'index'
 project = 'cloup'
 copyright = "2020, Gianluca Gippetto"
 author = "Gianluca Gippetto"
+
+issues_github_path = "janLuke/cloup"
 
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|, also used in various other places throughout

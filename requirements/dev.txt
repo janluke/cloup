@@ -206,6 +206,8 @@ sphinx-book-theme==0.0.42
     # via -r requirements\docs.txt
 sphinx-copybutton==0.3.1
     # via -r requirements\docs.txt
+sphinx-issues==1.2.0
+    # via -r requirements\docs.txt
 sphinx-panels==0.5.2
     # via -r requirements\docs.txt
 sphinx-version-warning==1.1.2
@@ -218,6 +220,7 @@ sphinx==3.5.4
     #   sphinx-autobuild
     #   sphinx-book-theme
     #   sphinx-copybutton
+    #   sphinx-issues
     #   sphinx-panels
     #   sphinx-version-warning
 sphinxcontrib-applehelp==1.0.2
