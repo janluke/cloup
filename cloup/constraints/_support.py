@@ -8,7 +8,7 @@ from ._core import Constraint
 from .common import join_param_labels
 
 if TYPE_CHECKING:
-    from .._option_groups import OptionGroup
+    from .._option_groups import OptionGroup   # pragma: no cover
 
 
 class BoundConstraintSpec(NamedTuple):

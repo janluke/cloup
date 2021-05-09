@@ -32,7 +32,7 @@ class OptionGroup:
             The ``hidden`` parameter.
         """
         if not name:
-            raise ValueError('name is a mandatory argument')
+            raise ValueError('name is a mandatory argument')   # pragma: no cover
         self.name = name
         self.help = help
         self._options: Sequence[click.Option] = []
