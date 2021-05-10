@@ -3,7 +3,7 @@ Implements support to option group.
 """
 from collections import defaultdict
 from typing import (
-    Callable, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, overload,
+    Callable, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, cast, overload,
 )
 
 import click
@@ -166,11 +166,12 @@ class OptionGroupMixin:
         """
         .. versionadded: 0.8.0
         """
-        return coalesce(
+        align = coalesce(
             self.align_option_groups,
             getattr(ctx, 'align_option_groups', None),
             default,
-        )  # type: ignore
+        )
+        return cast(bool, align)
 
     def get_default_option_group(self, ctx: click.Context) -> OptionGroup:
         """

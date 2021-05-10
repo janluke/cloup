@@ -181,11 +181,12 @@ class SectionMixin:
     def must_align_sections(
         self, ctx: Optional[click.Context], default: bool = True
     ) -> bool:
-        return coalesce(
+        align = coalesce(
             self.align_sections,
             getattr(ctx, 'align_sections', None),
             default,
-        )  # type: ignore
+        )
+        return cast(bool, align)
 
     def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
         formatter = ensure_is_cloup_formatter(formatter)
