@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from typing import (
-    Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union
+    Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union, cast,
 )
 
 import click
@@ -166,16 +166,15 @@ class SectionMixin:
         return section_list
 
     # noinspection PyMethodMayBeStatic
-    def make_commands_help_section(
-        self, section: Section, help_limit: int = 80
-    ) -> Optional[HelpSection]:
+    def make_commands_help_section(self, section: Section) -> Optional[HelpSection]:
         visible_subcommands = section.list_commands()
         if not visible_subcommands:
             return None
         return HelpSection(
             heading=section.title,
-            definitions=[(name, cmd.get_short_help_str(help_limit))
-                         for name, cmd in visible_subcommands]
+            definitions=[
+                (name, cmd.get_short_help_str) for name, cmd in visible_subcommands
+            ]
         )
 
     def must_align_sections(
@@ -192,16 +191,13 @@ class SectionMixin:
         formatter = ensure_is_cloup_formatter(formatter)
 
         subcommand_sections = self.list_sections(ctx)
-        # Conservative limit. Rely on the formatter for truncating the text precisely.
         help_sections = listOfNotNone(
-            self.make_commands_help_section(section, help_limit=formatter.available_width)
+            self.make_commands_help_section(section)
             for section in subcommand_sections
         )
         if not help_sections:
             return
 
         formatter.write_many_sections(
-            help_sections,
-            aligned=self.must_align_sections(ctx),
-            truncate_col2=True,
+            help_sections, aligned=self.must_align_sections(ctx)
         )

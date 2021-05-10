@@ -3,11 +3,11 @@ import shutil
 import textwrap
 from itertools import chain
 from typing import (
-    Any, Callable, Dict, Iterable, Optional, Sequence, Tuple, cast,
+    Any, Callable, Dict, Iterable, Iterator, Optional, Sequence, Tuple, Union, cast,
 )
 
 import click
-from click.formatting import iter_rows, wrap_text
+from click.formatting import wrap_text
 
 from cloup._util import check_positive_int, identity, indent_lines, make_repr
 from cloup.styling import HelpTheme, IStyle
@@ -36,13 +36,17 @@ def unstyled_len(string: str) -> int:
     return len(click.unstyle(string))
 
 
-@dc.dataclass
+Definition = Tuple[str, Union[str, Callable[[int], str]]]
+
+
+@dc.dataclass()
 class HelpSection:
     """A container for a help section data."""
     heading: str
 
-    #: Rows with 2 columns each.
-    definitions: Sequence[Tuple[str, str]]
+    #: Rows with 2 columns each. The 2nd element of each row can also be a function
+    #: taking an integer (the available width for the 2nd column) and returning a string.
+    definitions: Sequence[Definition]
 
     #: (Optional) long description of the section.
     description: Optional[str] = None
@@ -154,30 +158,20 @@ class HelpFormatter(click.HelpFormatter):
     def write_many_sections(
         self, sections: Sequence[HelpSection],
         aligned: bool = True,
-        truncate_col2: bool = False,
     ) -> None:
-        kwargs = dict(truncate_col2=truncate_col2)
         if aligned:
-            return self.write_aligned_sections(sections, **kwargs)  # type: ignore
+            return self.write_aligned_sections(sections)
         for s in sections:
-            self.write_section(s, **kwargs)  # type: ignore
+            self.write_section(s)
 
-    def write_aligned_sections(
-        self, sections: Sequence[HelpSection], truncate_col2: bool = False
-    ) -> None:
+    def write_aligned_sections(self, sections: Sequence[HelpSection]) -> None:
         """Writes multiple aligned definition lists."""
         all_rows = chain.from_iterable(dl.definitions for dl in sections)
         col1_width = self.compute_col1_width(all_rows, self.col1_max_width)
         for s in sections:
-            self.write_section(
-                s, col1_width=col1_width,
-                truncate_col2=truncate_col2)
+            self.write_section(s, col1_width=col1_width)
 
-    def write_section(
-        self, s: HelpSection,
-        col1_width: Optional[int] = None,
-        truncate_col2: bool = False,
-    ) -> None:
+    def write_section(self, s: HelpSection, col1_width: Optional[int] = None) -> None:
         theme = self.theme
         self.write("\n")
         self.write_heading(s.heading, newline=not s.constraint)
@@ -196,8 +190,7 @@ class HelpFormatter(click.HelpFormatter):
                 self.write_text(s.description, theme.description)
             if self.row_sep and (s.constraint or s.description):
                 self.write(self.row_sep)
-            self.write_dl(
-                s.definitions, col1_width=col1_width, truncate_col2=truncate_col2)
+            self.write_dl(s.definitions, col1_width=col1_width)
 
     def write_text(self, text: str, style: IStyle = identity) -> None:
         wrapped = wrap_text(
@@ -210,17 +203,16 @@ class HelpFormatter(click.HelpFormatter):
             wrapped_text = "\n".join(lines)
         self.write(wrapped_text, "\n")
 
-    def compute_col1_width(self, rows: Iterable[Sequence[str]], max_width: int) -> int:
+    def compute_col1_width(self, rows: Iterable[Definition], max_width: int) -> int:
         col1_lengths = (unstyled_len(r[0]) for r in rows)
         lengths_under_limit = (length for length in col1_lengths if length <= max_width)
         return max(lengths_under_limit, default=0)
 
     def write_dl(  # type: ignore
-        self, rows: Sequence[Tuple[str, str]],
+        self, rows: Sequence[Definition],
         col_max: Optional[int] = None,  # default changed to None wrt parent class
         col_spacing: Optional[int] = None,  # default changed to None wrt parent class
         col1_width: Optional[int] = None,
-        truncate_col2: bool = False,
     ) -> None:
         """Writes a definition list into the buffer. This is how options
         and commands are usually formatted.
@@ -248,8 +240,6 @@ class HelpFormatter(click.HelpFormatter):
             the width to use for the first column; if not provided, it's
             computed as the length of the longest string under ``self.col1_max_width``;
             useful when you need to align multiple definition lists.
-        :param truncate_col2:
-            if ``True``, the text of the 2nd column is truncated to fit one line.
         """
         # |<----------------------- width ------------------------>|
         # |                |<---------- available_width ---------->|
@@ -267,15 +257,13 @@ class HelpFormatter(click.HelpFormatter):
         col2_width = self.available_width - col1_width - col_spacing
 
         if col2_width < self.col2_min_width:
-            self.write_linear_dl(rows, truncate_col2)
+            self.write_linear_dl(rows)
         else:
-            self.write_tabular_dl(
-                rows, col1_width, col_spacing, col2_width, truncate_col2)
+            self.write_tabular_dl(rows, col1_width, col_spacing, col2_width)
 
     def write_tabular_dl(
-        self, rows: Sequence[Tuple[str, str]],
+        self, rows: Sequence[Definition],
         col1_width: int, col_spacing: int, col2_width: int,
-        truncate_col2: bool,
     ) -> None:
         """Formats a definition list as a 2-column "pseudo-table". If the first
         column of a row exceeds ``col1_width``, the 2nd column is written on
@@ -290,7 +278,7 @@ class HelpFormatter(click.HelpFormatter):
         col1_styler = self.theme.col1
         col2_styler = self.theme.col2
 
-        for first, second in iter_rows(rows, col_count=2):
+        for first, second in iter_defs(rows, col2_width):
             self.write(current_indentation, col1_styler(first))
             if not second:
                 self.write("\n")
@@ -302,45 +290,33 @@ class HelpFormatter(click.HelpFormatter):
                 else:
                     self.write("\n", col2_indentation)
 
-                if truncate_col2:
-                    truncated = truncate_text(second, col2_width)
-                    styled_truncated = col2_styler(truncated)
-                    self.write(styled_truncated, "\n")
-                else:
-                    wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
-                    lines = [col2_styler(line) for line in wrapped_text.splitlines()]
-                    self.write(lines[0], "\n")
-                    for line in lines[1:]:
-                        self.write(col2_indentation, line, "\n")
+                wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
+                lines = [col2_styler(line) for line in wrapped_text.splitlines()]
+                self.write(lines[0], "\n")
+                for line in lines[1:]:
+                    self.write(col2_indentation, line, "\n")
+
             if self.row_sep:
                 self.write(current_indentation, self.row_sep)
 
-    def write_linear_dl(
-        self, dl: Sequence[Tuple[str, str]], truncate_descr: bool = False,
-    ) -> None:
+    def write_linear_dl(self, dl: Sequence[Definition]) -> None:
         """Formats a definition list as a "linear list". This is the default when
         the available width for the definitions (2nd column) is below
         ``self.col2_min_width``."""
-        descr_extra_indent = max(3, self.indent_increment)
-        descr_total_indent = self.current_indent + descr_extra_indent
-        descr_max_width = self.width - descr_total_indent
+        help_extra_indent = max(3, self.indent_increment)
+        help_total_indent = self.current_indent + help_extra_indent
+        help_max_width = self.width - help_total_indent
         current_indentation = " " * self.current_indent
-        descr_indentation = " " * descr_total_indent
 
         col1_styler = self.theme.col1
         col2_styler = self.theme.col2
 
-        for names, descr in iter_rows(dl, col_count=2):
+        for names, help in iter_defs(dl, help_max_width):
             self.write(current_indentation + col1_styler(names) + '\n')
-            if descr:
-                if truncate_descr:
-                    truncated = truncate_text(descr, descr_max_width)
-                    styled_truncated = col2_styler(truncated)
-                    self.write(descr_indentation, styled_truncated, "\n")
-                else:
-                    self.current_indent += descr_extra_indent
-                    self.write_text(descr, col2_styler)
-                    self.current_indent -= descr_extra_indent
+            if help:
+                self.current_indent += help_extra_indent
+                self.write_text(help, col2_styler)
+                self.current_indent -= help_extra_indent
             self.write("\n")
         self.buffer.pop()  # pop last newline
 
@@ -354,8 +330,12 @@ class HelpFormatter(click.HelpFormatter):
         )
 
 
-def truncate_text(
-    text: str, max_length: int, placeholder: str = "..."
-) -> str:
-    text = " ".join(text.split())
-    return textwrap.shorten(text, width=max_length, placeholder=placeholder)
+def iter_defs(rows: Iterable[Definition], col2_width: int) -> Iterator[Tuple[str, str]]:
+    for row in rows:
+        if len(row) == 1:
+            yield row[0], ''
+        elif len(row) == 2:
+            second = row[1](col2_width) if callable(row[1]) else row[1]
+            yield row[0], second
+        else:
+            raise ValueError(f'invalid row length: {len(row)}')

@@ -1,10 +1,9 @@
 from textwrap import dedent
 
 import click
-import pytest
 
 from cloup import HelpFormatter
-from cloup.formatting import truncate_text, unstyled_len
+from cloup.formatting import unstyled_len
 from cloup.styling import HelpTheme, Style
 
 LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
@@ -135,14 +134,3 @@ def test_write_text_with_styles():
     for line in actual.splitlines():
         assert unstyled_len(line) <= formatter.width
     assert actual == EXPECTED
-
-
-@pytest.mark.parametrize('start, end, expected', [  # noqa: E302
-    pytest.param(3, 7, "...", id="0-7"),
-    pytest.param(7, 11, "1234...", id="7-11"),
-    pytest.param(11, 15, "1234 678...", id="11-15"),
-    pytest.param(15, 17, "1234 678 012345", id="15+"),
-])
-def test_truncate_text(start, end, expected):
-    for i in range(start, end):
-        assert truncate_text("1234 678 012345", i) == expected, i
