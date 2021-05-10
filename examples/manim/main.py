@@ -1,3 +1,8 @@
+"""
+Example based on the CLI of Manim Community, which actually uses Cloup.
+This example shows how a real-world application could look like and serves to me
+as a test bench for trying out styling and formatting.
+"""
 import click
 
 import cloup
@@ -13,17 +18,17 @@ CONTEXT_SETTINGS = Context.settings(
     align_sections=True,  # subcommand sections
     # color=False,
     formatter_settings=HelpFormatter.settings(
-        max_width=90,
+        # max_width=80,
         theme=HelpTheme.dark().with_(
-            # command=None,
+            # invoked_command=None,
             heading=Style(fg='bright_white', underline=True),
             constraint=Style(fg='red'),
-            # description=None,
+            # section_help=None,
             # col1=None,
             col2=Style(dim=True),
-            epilog=Style(fg='red'),
+            epilog=Style(fg='bright_white', italic=True),
         ),
-        indent_increment=2,
+        # indent_increment=2,
         # row_sep='\n',
     ),
 )
