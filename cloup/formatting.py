@@ -49,7 +49,7 @@ class HelpSection:
     definitions: Sequence[Definition]
 
     #: (Optional) long description of the section.
-    description: Optional[str] = None
+    help: Optional[str] = None
 
     #: (Optional) option group constraint description
     constraint: Optional[str] = None
@@ -186,9 +186,9 @@ class HelpFormatter(click.HelpFormatter):
                     self.write_text(constraint_text, theme.constraint)
 
         with self.indentation():
-            if s.description:
-                self.write_text(s.description, theme.description)
-            if self.row_sep and (s.constraint or s.description):
+            if s.help:
+                self.write_text(s.help, theme.section_help)
+            if self.row_sep and (s.constraint or s.help):
                 self.write(self.row_sep)
             self.write_dl(s.definitions, col1_width=col1_width)
 

@@ -156,7 +156,7 @@ class OptionGroupMixin:
         return HelpSection(
             heading=group.name,
             definitions=group.get_help_records(ctx),
-            description=group.help,
+            help=group.help,
             constraint=group.constraint.help(ctx) if group.constraint else None
         )
 

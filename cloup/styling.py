@@ -31,8 +31,8 @@ class HelpTheme(NamedTuple):
     #: Style of an option group constraint description.
     constraint: IStyle = identity
 
-    #: Style of a help section description.
-    description: IStyle = identity
+    #: Style of the help text of a section (the optional paragraph below the heading).
+    section_help: IStyle = identity
 
     #: Style of the first column of a definition list (options and command names).
     col1: IStyle = identity
