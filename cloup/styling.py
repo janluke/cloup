@@ -22,8 +22,8 @@ class HelpTheme(NamedTuple):
     but I had to use ``NamedTuple`` instead to work around a MyPy issue
     (https://github.com/python/mypy/issues/5485).
     """
-    #: Style of the command name.
-    command: IStyle = identity
+    #: Style of the invoked command name (in Usage).
+    invoked_command: IStyle = identity
 
     #: Style of help section headings.
     heading: IStyle = identity
@@ -31,13 +31,13 @@ class HelpTheme(NamedTuple):
     #: Style of an option group constraint description.
     constraint: IStyle = identity
 
-    #: Style of a help section descriptions.
+    #: Style of a help section description.
     description: IStyle = identity
 
-    #: Style of the first column of a definition list.
+    #: Style of the first column of a definition list (options and command names).
     col1: IStyle = identity
 
-    #: Style of the second column of a definition list.
+    #: Style of the second column of a definition list (help text).
     col2: IStyle = identity
 
     #: Style of the epilog.
@@ -61,7 +61,7 @@ class HelpTheme(NamedTuple):
     @staticmethod
     def dark():
         return HelpTheme(
-            command=Style(fg='bright_yellow'),
+            invoked_command=Style(fg='bright_yellow'),
             heading=Style(fg='bright_white'),
             constraint=Style(fg='red'),
             col1=Style(fg='bright_yellow'),
@@ -71,7 +71,7 @@ class HelpTheme(NamedTuple):
     @staticmethod
     def light():
         return HelpTheme(
-            command=Style(fg='yellow'),
+            invoked_command=Style(fg='yellow'),
             heading=Style(fg='bright_blue'),
             constraint=Style(fg='red'),
             col1=Style(fg='yellow'),

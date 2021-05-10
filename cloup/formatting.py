@@ -145,7 +145,7 @@ class HelpFormatter(click.HelpFormatter):
 
     def write_usage(self, prog: str, args: str = "", prefix: str = 'Usage:') -> None:
         prefix = prefix + ' '
-        prog = self.theme.command(prog)
+        prog = self.theme.invoked_command(prog)
         super().write_usage(prog, args, prefix)
 
     def write_heading(self, heading: str, newline: bool = True) -> None:
