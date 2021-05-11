@@ -1,9 +1,12 @@
+"""
+Tip: in your editor, set a ruler at 80 characters.
+"""
 from textwrap import dedent
 
 import click
 
 from cloup import HelpFormatter
-from cloup.formatting import unstyled_len
+from cloup.formatting import HelpSection, unstyled_len
 from cloup.styling import HelpTheme, Style
 
 LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
@@ -134,3 +137,25 @@ def test_write_text_with_styles():
     for line in actual.splitlines():
         assert unstyled_len(line) <= formatter.width
     assert actual == EXPECTED
+
+
+def test_write_section_print_long_constraint_on_a_new_line():
+    formatter = HelpFormatter(width=72, indent_increment=4)
+    section = HelpSection(
+        'The heading',
+        [('term', 'This is the definition.')],
+        help='This is the help.',
+        constraint="""
+            This is a long constraint description that doesn't fit the line xx.
+        """.strip()
+    )
+    expected = dedent("""
+        The heading:
+            [This is a long constraint description that doesn't fit the line
+            xx.]
+            This is the help.
+            term  This is the definition.
+        """)
+    formatter.write_section(section)
+    actual = formatter.getvalue()
+    assert actual == expected
