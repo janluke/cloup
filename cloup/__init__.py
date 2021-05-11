@@ -9,6 +9,7 @@ __version__ = _version.version
 __version_tuple__ = _version.version_tuple
 
 # flake8: noqa F401
+from .styling import HelpTheme, Style, Color
 from .formatting import HelpFormatter
 from ._context import Context
 from ._option_groups import (
