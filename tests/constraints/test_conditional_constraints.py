@@ -11,7 +11,7 @@ from cloup.constraints.conditions import (
     AllSet, AnySet, Equal, IsSet, Predicate, _And, _Or
 )
 from tests.constraints.test_constraints import FakeConstraint
-from tests.util import make_context, mark_parametrize, mock_repr
+from tests.util import make_context, parametrize, mock_repr
 
 
 class FakePredicate(Predicate):
@@ -199,7 +199,7 @@ def test_description_with_mixed_operators(dummy_ctx):
 class TestIsSet:
     SHELL_INPUT = 'arg1 --bool-opt=0 --flag2 --mul1 1 --mul1 2'
 
-    @mark_parametrize(
+    @parametrize(
         # These cases are relative to [sample_cmd] with [SHELL_INPUT] as input
         # "provided" means provided by the user in the command line
         ['param', 'is_set'],

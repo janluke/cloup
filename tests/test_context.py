@@ -4,15 +4,15 @@ import pytest
 
 import cloup
 from cloup import Context
-from tests.util import mark_parametrize
+from tests.util import parametrize
 
 
-@mark_parametrize(
+@parametrize(
     ['ctx_arg_name', 'formatter_arg_name'],
     pytest.param('terminal_width', 'width', id='width'),
     pytest.param('max_content_width', 'max_width', id='max_width'),
 )
-@mark_parametrize(
+@parametrize(
     ['ctx_arg_value', 'formatter_arg_value', 'should_warn'],
     pytest.param(80, None, False, id='only_ctx'),
     pytest.param(None, 90, False, id='only_formatter'),
@@ -37,7 +37,7 @@ def test_warning_is_raised_iff_arg_is_provided_both_as_context_and_formatter_arg
         assert len(warns) == 0
 
 
-@mark_parametrize(
+@parametrize(
     ['ctx_arg_name', 'formatter_arg_name'],
     pytest.param('terminal_width', 'width', id='width'),
     pytest.param('max_content_width', 'max_width', id='max_width'),

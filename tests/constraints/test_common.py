@@ -3,10 +3,10 @@ from click import Argument, Option
 from cloup.constraints.common import (
     format_param, format_param_list, get_param_label, join_with_and, param_value_is_set,
 )
-from tests.util import bool_opt, flag_opt, int_opt, mark_parametrize, multi_opt, tuple_opt
+from tests.util import bool_opt, flag_opt, int_opt, parametrize, multi_opt, tuple_opt
 
 
-@mark_parametrize(
+@parametrize(
     'param_init,    value,      expected',
     (Argument,      None,       False),
     (Argument,      'bu',       True),
