@@ -8,6 +8,16 @@ __version__ = _version.version
 __version_tuple__ = _version.version_tuple
 
 # flake8: noqa F401
+from click import (
+    argument,
+    confirmation_option,
+    help_option,
+    pass_context,
+    pass_obj,
+    password_option,
+    version_option,
+)
+
 from . import warnings
 from .styling import (
     HelpTheme,

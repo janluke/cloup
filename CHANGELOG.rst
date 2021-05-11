@@ -1,6 +1,6 @@
-==========
-Change Log
-==========
+=========
+Changelog
+=========
 
 ..  v0.X.X (in development)
     =======================
@@ -95,6 +95,10 @@ v0.8.0 (in development)
     * The ``or`` of two or more ``IsSet`` conditions returns an ``AnySet`` condition.
 
 - Changed the error messages of ``all_or_none`` and ``accept_none``.
+
+- The following Click decorators are now exported by Cloup: ``argument``,
+  ``confirmation_option``, ``help_option``, ``pass_context``, ``pass_obj``,
+  ``password_option`` and ``version_option``.
 
 
 v0.7.1 (2021-05-02)
