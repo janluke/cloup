@@ -122,10 +122,10 @@ def test_write_text_with_styles():
     formatter = HelpFormatter(width=80)
     formatter.current_indent = 4
     WRAPPED = dedent("""
-    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-    consequat."""[1:])
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+        consequat."""[1:])
     INPUT_TEXT = ' '.join(WRAPPED.split())
     indentation = ' ' * formatter.current_indent
     style = Style(fg='yellow')
