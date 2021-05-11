@@ -16,10 +16,10 @@ from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 C = TypeVar('C', bound=Callable)
 
 #: A decorator that registers an option to the wrapped function
-OptionDecorator = Callable[[C], C]
+OptionAdder = Callable[[C], C]
 
 #: A decorator that registers an option group to the wrapped function
-OptionGroupDecorator = Callable[[C], C]
+OptionGroupAdder = Callable[[C], C]
 
 
 class OptionGroup:
@@ -210,7 +210,7 @@ def option(
     group: Optional[OptionGroup] = None,
     cls: Type[click.Option] = GroupedOption,
     **attrs
-) -> OptionGroupDecorator:
+) -> OptionGroupAdder:
     def decorator(f):
         func = click.option(*param_decls, cls=cls, **attrs)(f)
         new_option = func.__click_params__[-1]
@@ -226,21 +226,21 @@ def option(
 def option_group(
     name: str,
     help: str,
-    *options: OptionDecorator,
+    *options: OptionAdder,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> OptionGroupDecorator:
+) -> OptionGroupAdder:
     ...  # pragma: no cover
 
 
 @overload
 def option_group(
     name: str,
-    *options: OptionDecorator,
+    *options: OptionAdder,
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> OptionGroupDecorator:
+) -> OptionGroupAdder:
     ...  # pragma: no cover
 
 
@@ -273,10 +273,10 @@ def option_group(name, *args, **kwargs):
 
 def _option_group(
     name: str,
-    options: Sequence[OptionDecorator],
+    options: Sequence[OptionAdder],
     hidden: bool = False,
     **kwargs,
-) -> OptionGroupDecorator:
+) -> OptionGroupAdder:
     if not options:
         raise ValueError('you must provide at least one option')
 
