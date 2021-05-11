@@ -11,12 +11,12 @@ from pprint import pprint
 import click
 
 import cloup
-from cloup import option, option_group
+from cloup import argument, option, option_group
 
 
 @cloup.command()
-@click.argument("script_path", type=Path, required=True)
-@click.argument("scene_names", required=False, nargs=-1)
+@argument("script_path", type=Path, required=True)
+@argument("scene_names", required=False, nargs=-1)
 @option_group(
     "Global options",
     option(
