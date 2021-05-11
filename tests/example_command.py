@@ -18,7 +18,8 @@ def make_example_command(
         formatter_settings=HelpFormatter.settings(
             width=80,
             col2_min_width=30 if tabular_help else 80,
-        )
+        ),
+        epilog='Made with love by Gianluca.'
     )
     @option_group(
         'Option group A',
@@ -82,6 +83,8 @@ Other options:
   --seven [yes|no|ask]  First uncategorized option.
   --height TEXT         Second uncategorized option.
   --help                Show this message and exit.
+
+Made with love by Gianluca.
 """.strip()
 
 _TABULAR_NON_ALIGNED_HELP = """
@@ -107,6 +110,8 @@ Other options:
   --seven [yes|no|ask]  First uncategorized option.
   --height TEXT         Second uncategorized option.
   --help                Show this message and exit.
+
+Made with love by Gianluca.
 """.strip()
 
 _LINEAR_HELP = """
@@ -145,6 +150,8 @@ Other options:
 
   --help
      Show this message and exit.
+
+Made with love by Gianluca.
 """.strip()
 
 
