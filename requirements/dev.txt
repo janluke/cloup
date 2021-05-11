@@ -10,7 +10,7 @@ alabaster==0.7.12
     #   sphinx
 appdirs==1.4.4
     # via virtualenv
-astroid==2.5.3
+astroid==2.5.6
     # via
     #   -r requirements\docs.txt
     #   sphinx-autoapi
@@ -18,17 +18,18 @@ atomicwrites==1.4.0
     # via
     #   -r requirements\test.txt
     #   pytest
-attrs==20.3.0
+attrs==21.2.0
     # via
     #   -r requirements\test.txt
     #   pytest
-babel==2.9.0
+babel==2.9.1
     # via
     #   -r requirements\docs.txt
     #   sphinx
 beautifulsoup4==4.9.3
     # via
     #   -r requirements\docs.txt
+    #   pydata-sphinx-theme
     #   sphinx-book-theme
 bleach==3.3.0
     # via readme-renderer
@@ -63,6 +64,7 @@ distlib==0.3.1
 docutils==0.16
     # via
     #   -r requirements\docs.txt
+    #   pydata-sphinx-theme
     #   readme-renderer
     #   sphinx
     #   sphinx-book-theme
@@ -71,7 +73,7 @@ filelock==3.0.12
     # via
     #   tox
     #   virtualenv
-flake8==3.9.1
+flake8==3.9.2
     # via -r requirements/dev.in
 idna==2.10
     # via
@@ -138,13 +140,13 @@ py==1.10.0
     #   tox
 pycodestyle==2.7.0
     # via flake8
-pydata-sphinx-theme==0.4.3
+pydata-sphinx-theme==0.6.3
     # via
     #   -r requirements\docs.txt
     #   sphinx-book-theme
 pyflakes==2.3.1
     # via flake8
-pygments==2.8.1
+pygments==2.9.0
     # via
     #   -r requirements\docs.txt
     #   readme-renderer
@@ -156,7 +158,7 @@ pyparsing==2.4.7
     #   packaging
 pytest-cov==2.11.1
     # via -r requirements\test.txt
-pytest==6.2.3
+pytest==6.2.4
     # via
     #   -r requirements\test.txt
     #   pytest-cov
@@ -181,9 +183,9 @@ requests==2.25.1
     #   requests-toolbelt
     #   sphinx
     #   twine
-rfc3986==1.4.0
+rfc3986==1.5.0
     # via twine
-six==1.15.0
+six==1.16.0
     # via
     #   bleach
     #   livereload
@@ -198,11 +200,11 @@ soupsieve==2.2.1
     # via
     #   -r requirements\docs.txt
     #   beautifulsoup4
-sphinx-autoapi==1.8.0
+sphinx-autoapi==1.8.1
     # via -r requirements\docs.txt
 sphinx-autobuild==2021.3.14
     # via -r requirements/dev.in
-sphinx-book-theme==0.0.42
+sphinx-book-theme==0.1.0
     # via -r requirements\docs.txt
 sphinx-copybutton==0.3.1
     # via -r requirements\docs.txt
@@ -255,7 +257,7 @@ toml==0.10.2
     #   tox
 tornado==6.1
     # via livereload
-tox==3.23.0
+tox==3.23.1
     # via -r requirements/dev.in
 tqdm==4.60.0
     # via twine
@@ -263,7 +265,7 @@ twine==3.4.1
     # via -r requirements/dev.in
 typed-ast==1.4.3
     # via mypy
-typing-extensions==3.7.4.3
+typing-extensions==3.10.0.0
     # via mypy
 unidecode==1.2.0
     # via
@@ -273,7 +275,7 @@ urllib3==1.26.4
     # via
     #   -r requirements\docs.txt
     #   requests
-virtualenv==20.4.4
+virtualenv==20.4.6
     # via tox
 webencodings==0.5.1
     # via bleach
