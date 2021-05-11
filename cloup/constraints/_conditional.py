@@ -31,7 +31,7 @@ class If(Constraint):
         """
         Checks one constraint or another depending on the truth value of the condition.
 
-        .. versionchanged: 0.8.0
+        .. versionchanged:: 0.8.0
             You can now pass a sequence of parameter names as condition, which
             corresponds to the predicate ``AllSet(*param_names)``.
 

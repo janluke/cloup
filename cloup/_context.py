@@ -29,7 +29,7 @@ class Context(click.Context):
 
     Look up :class:`click.Context` for the list of all arguments.
 
-    .. versionadded: 0.8.0
+    .. versionadded:: 0.8.0
 
     :param ctx_args:
         arguments forwarded to :class:`click.Context`.

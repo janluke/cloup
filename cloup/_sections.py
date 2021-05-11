@@ -95,6 +95,9 @@ class SectionMixin:
         This mixin now relies on ``cloup.HelpFormatter`` to align help sections.
         If a ``click.HelpFormatter`` is used with a ``TypeError`` is raised.
 
+    .. versionchanged:: 0.8.0
+        Removed ``format_section``. Added ``make_commands_help_section``.
+
     .. versionadded:: 0.5.0
     """
 

@@ -1,7 +1,7 @@
 """
 Constraints for parameter groups.
 
-.. versionadded: v0.5.0
+.. versionadded:: v0.5.0
 """
 # flake8: noqa F401
 

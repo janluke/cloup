@@ -99,7 +99,7 @@ class Style:
         The arguments ``overline``, ``italic`` and ``strikethrough`` are only
         supported in Click 8 and will be ignored if you are using Click 7.
 
-    .. versionadded: 0.8.0
+    .. versionadded:: 0.8.0
     """
     fg: Optional[str] = None
     bg: Optional[str] = None

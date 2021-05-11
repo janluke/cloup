@@ -28,7 +28,7 @@ class OptionGroup:
                  constraint: Optional[Constraint] = None,
                  hidden: bool = False):
         """
-        .. versionadded: 0.8.0
+        .. versionadded:: 0.8.0
             The ``hidden`` parameter.
         """
         if not name:
@@ -98,11 +98,12 @@ class OptionGroupMixin:
     """Implements support to option groups.
 
     .. versionchanged:: 0.8.0
-        * This mixin now relies on ``cloup.HelpFormatter`` to align help sections.
-          If a ``click.HelpFormatter`` is used with a ``TypeError`` is raised.
-        * Removed ``format_option_group``
-        * Added ``get_default_option_group``.
-        * Added ``make_option_group_help_section``.
+        This mixin now relies on ``cloup.HelpFormatter`` to align help sections.
+        If a ``click.HelpFormatter`` is used with a ``TypeError`` is raised.
+
+    .. versionchanged:: 0.8.0
+        Removed ``format_option_group``. Added ``get_default_option_group`` and
+        ``make_option_group_help_section``.
 
     .. versionadded:: 0.5.0
 
@@ -164,7 +165,7 @@ class OptionGroupMixin:
         self, ctx: Optional[click.Context], default=True
     ) -> bool:
         """
-        .. versionadded: 0.8.0
+        .. versionadded:: 0.8.0
         """
         align = coalesce(
             self.align_option_groups,
@@ -175,7 +176,7 @@ class OptionGroupMixin:
 
     def get_default_option_group(self, ctx: click.Context) -> OptionGroup:
         """
-        .. versionadded: 0.8.0
+        .. versionadded:: 0.8.0
         """
         default_group = OptionGroup('Other options')
         default_group.options = self.get_ungrouped_options(ctx)

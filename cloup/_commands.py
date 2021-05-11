@@ -17,7 +17,7 @@ class BaseCommand(click.Command):
 
     * It adds a ``formatter_settings`` instance attribute.
 
-    .. versionadded: 0.8.0
+    .. versionadded:: 0.8.0
     """
     context_class: Type[Context] = Context
 
@@ -53,7 +53,7 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
     """
     A ``click.Command`` supporting option groups and constraints.
 
-    .. versionchanged: 0.8.0
+    .. versionchanged:: 0.8.0
         This class now inherits from :class:`cloup.BaseCommand`.
     """
 
@@ -89,7 +89,7 @@ class MultiCommand(
     :class:`SectionMixin`. See the docstring of the two superclasses for more
     details.
 
-    .. versionchanged: 0.8.0
+    .. versionchanged:: 0.8.0
         This class now inherits from :class:`cloup.BaseCommand`.
     """
     pass
@@ -107,7 +107,7 @@ class Group(MultiCommand, click.Group):
 
     See the docstring of the two superclasses for more details.
 
-    .. versionchanged: 0.8.0
+    .. versionchanged:: 0.8.0
         This class now inherits from :class:`cloup.MultiCommand`.
     """
 

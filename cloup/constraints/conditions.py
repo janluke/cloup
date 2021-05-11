@@ -175,7 +175,7 @@ class IsSet(Predicate):
 class AllSet(Predicate):
     """True if all listed parameters are set.
 
-    .. versionadded: 0.8.0
+    .. versionadded:: 0.8.0
     """
     def __init__(self, *param_names: str):
         if not param_names:
@@ -211,7 +211,7 @@ class AllSet(Predicate):
 class AnySet(Predicate):
     """True if any of the listed parameters is set.
 
-    .. versionadded: 0.8.0
+    .. versionadded:: 0.8.0
     """
     def __init__(self, *param_names: str):
         if not param_names:
