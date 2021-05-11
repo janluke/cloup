@@ -27,7 +27,13 @@ class OptionGroup:
                  help: Optional[str] = None,
                  constraint: Optional[Constraint] = None,
                  hidden: bool = False):
-        """
+        """Contains the information of an option group and identifies it.
+        Note that, as far as the clients of this library are concerned, an
+        ``OptionGroups`` acts as a "marker" for options, not as a container for
+        related options. When you call ``@optgroup.option(...)`` you are not
+        adding an option to a container, you are just adding an option marked
+        with this option group.
+
         .. versionadded:: 0.8.0
             The ``hidden`` parameter.
         """
