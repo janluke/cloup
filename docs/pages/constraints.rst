@@ -83,9 +83,10 @@ Conditional constraints
 
 - ``condition`` can be;
 
-    - a concrete instance of :class:`~conditions.Predicate`
-    - a parameter name; this is a shortcut for ``IsSet(param_name)``
-    - a list/tuple of parameter names; this is a shortcut for ``AllSet(*param_names)``.
+  - a concrete instance of :class:`~conditions.Predicate`
+  - a parameter name; this is a shortcut for ``IsSet(param_name)``
+  - a list/tuple of parameter names; this is a shortcut for ``AllSet(*param_names)``.
+
 - ``then`` is the constraint checked when the condition is true.
 - ``else_`` is an optional constraint checked when the condition is false.
 
