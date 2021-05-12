@@ -4,26 +4,30 @@ Changelog
 
 ..  v0.X.X (in development)
     =======================
-    **Requirements**
-    **Incompatible changes**
-    **Deprecated**
-    **Compatible changes and features**
+    Requirements
+    ------------
+    Incompatible changes
+    --------------------
+    Deprecated
+    ----------
+    Compatible changes and features
+    -------------------------------
 
 v0.8.0 (in development)
 =======================
 
-**Overview**
+This was a pretty large release. The focus was on the implementation of a
+custom ``HelpFormatter``. This in turn required several structural changes,
+like the implementation of a custom ``Context`` and the definition of a saner
+class hierarchy for Cloup command classes.
 
-- This was a pretty large release. The focus was on the implementation of a
-  custom ``HelpFormatter``. This in turn required several structural changes,
-  like the implementation of a custom ``Context`` and the definition of a saner
-  class hierarchy for Cloup command classes.
-
-**License**
+License
+-------
 
 - Cloup license changed from MIT to 3-clause BSD, the one used by Click.
 
-**Incompatible changes**
+Incompatible changes
+--------------------
 
 * Formatting methods of ``OptionGroupMixin`` and ``SectionMixin`` now expects
   the ``formatter`` to be a ``cloup.HelpFormatter``.
@@ -36,7 +40,8 @@ v0.8.0 (in development)
 
 * ``SectionMixin.format_section`` was removed.
 
-**Compatible changes**
+Compatible changes
+------------------
 
 - Cloup now uses its own ``HelpFormatter``:
 
@@ -88,8 +93,8 @@ v0.8.0 (in development)
 
 - Adds the conditions ``AllSet`` and ``AnySet``.
 
-    * The ``and`` of two or more ``IsSet`` conditions returns an ``AllSet`` condition.
-    * The ``or`` of two or more ``IsSet`` conditions returns an ``AnySet`` condition.
+  * The ``and`` of two or more ``IsSet`` conditions returns an ``AllSet`` condition.
+  * The ``or`` of two or more ``IsSet`` conditions returns an ``AnySet`` condition.
 
 - Changed the error messages of ``all_or_none`` and ``accept_none``.
 
@@ -97,6 +102,11 @@ v0.8.0 (in development)
   ``confirmation_option``, ``help_option``, ``pass_context``, ``pass_obj``,
   ``password_option`` and ``version_option``.
 
+Docs
+----
+- Switch theme to ``furo``.
+
+--------------------------------------------------------------------------------
 
 v0.7.1 (2021-05-02)
 ===================
@@ -109,7 +119,8 @@ v0.7.1 (2021-05-02)
 
 v0.7.0 (2021-03-24)
 ===================
-**Compatible changes and features**
+Compatible changes and features
+-------------------------------
 
 - In constraint errors, the way the parameter list is formatted has changed.
   Instead of printing a comma-separated list of single labels:
@@ -121,6 +132,7 @@ v0.7.0 (2021-03-24)
 
 - Minor improvements to code and docs.
 
+--------------------------------------------------------------------------------
 
 v0.6.1 (2021-03-01)
 ===================
@@ -144,7 +156,8 @@ the package.
 
 v0.6.0 (2021-02-28)
 ===================
-**Incompatible changes**
+Incompatible changes
+--------------------
 
 - Removed the deprecated ``GroupSection`` as previously announced.
   Use the new name instead: ``Section``.
@@ -154,24 +167,29 @@ v0.6.0 (2021-02-28)
   If you (wisely) passed ``section`` and ``cls`` as keyword arguments in your
   code, you don't need to change anything.
 
-**Compatible changes**
+Compatible changes
+------------------
 
 - Slightly improved return type (hint) of command decorators.
 - Minor refactoring of ConstraintMixin.
 - Improved the documentation.
 
+--------------------------------------------------------------------------------
 
 v0.5.0 (2021-02-10)
 ===================
-**Requirements**
+Requirements
+------------
 
 - Drop support to Python 3.5.
 
-**Deprecated**
+Deprecated
+----------
 
 - ``GroupSection`` was renamed as ``Section``.
 
-**Compatible changes and features**
+Compatible changes and features
+-------------------------------
 
 - Added a subpackage for defining **constraints** on parameters groups
   (including ``OptionGroup``'s).
@@ -179,28 +197,34 @@ v0.5.0 (2021-02-10)
 - Most of the code for adding support to subcommand sections was extracted to
   ``SectionMixin``.
 
-**Project changes**
+Project changes
+---------------
 
 - Migrated from TravisCI to GitHub Actions.
 
+--------------------------------------------------------------------------------
 
 v0.4.0 (2021-01-10)
 ===================
 
-**Requirements**
+Requirements
+------------
 
 - This is the last release officially supporting Python 3.5.
 
-**Compatible changes and features**
+Compatible changes and features
+-------------------------------
 
 - Changed the internal (non-public) structure of the package.
 - Minor code improvements.
 
-**Repository-wise:**
+Project changes
+---------------
 
 - New documentation (hosted by ReadTheDocs)
 - Tox, TravisCI, Makefile completely rewritten.
 
+--------------------------------------------------------------------------------
 
 v0.3.0 (2020-03-26)
 ===================
@@ -218,6 +242,7 @@ Other changes
 - Aligned option groups (option ``align_option_groups`` with default ``True``).
 - More refactoring and testing.
 
+--------------------------------------------------------------------------------
 
 v0.2.0 (2020-03-11)
 ===================
@@ -227,6 +252,7 @@ v0.2.0 (2020-03-11)
 - Backward incompatible change:
     - rename ``CloupCommand`` and ``CloupGroup`` resp. to just ``Command`` and ``Group``.
 
+--------------------------------------------------------------------------------
 
 v0.1.0 (2020-02-25)
 ===================
