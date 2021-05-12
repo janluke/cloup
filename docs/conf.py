@@ -25,10 +25,15 @@ copyright = "2020, Gianluca Gippetto"
 author = "Gianluca Gippetto"
 issues_github_path = "janLuke/cloup"
 
+extlinks = {
+    "issue": ("https://github.com/janLuke/cloup/issues/%s", "issue "),
+    "pr": ("https://github.com/janLuke/cloup/pull/%s", "pull request "),
+}
+
 # The version info for the project you're documenting, acts as replacement
 # for |version| and |release|.
 _version = tuple(map(str, cloup.__version_tuple__))
-version = '.'.join(_version[:4])
+version = '.'.join(_version[:3])
 release = '.'.join(_version)
 
 language = "en"
@@ -72,16 +77,36 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 
 
 # -- Options for HTML output ---------------------------------------------------
-html_title = f"Cloup v{version}: option groups for Click"
-html_theme = "sphinx_book_theme"
+html_title = f"cloup v{version}"
+html_theme = "furo"
+
+primary_color = "#0094ff"
+darker_primary_color = "#007bd3"
+def primary_color_alpha(alpha): return "#2a5adf" + "{:02x}".format(int(alpha * 255))
+
+font_size_normal = "var(--font-size--normal)"
+font_size_small = "var(--font-size--small)"
+font_size_small_3 = "var(--font-size--small--3)"
+
 html_theme_options = {
-    "repository_url": "https://github.com/janluke/cloup",
-    "path_to_docs": "docs",
-    "use_repository_button": True,
-    "use_issues_button": True,
-    "use_edit_page_button": True,
-    "home_page_in_toc": True,
-    "extra_navbar": None,
+    "light_logo": "logo.svg",
+    "dark_logo": "logo-dark-mode.svg",
+    "sidebar_hide_name": True,
+    # Furo theme CSS variables: https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_index.scss
+    "light_css_variables": {
+        "color-brand-primary": darker_primary_color,
+        "color-brand-content": darker_primary_color,
+        "toc-title-font-size": font_size_small_3,
+        "toc-font-size": font_size_small,
+        "toc-item-spacing-horizontal": "1.5rem",
+        "code-font-size": font_size_small,
+        "admonition-font-size": font_size_small,
+        "admonition-title-font-size": font_size_normal,
+    },
+    "dark_css_variables": {
+        "color-brand-primary": primary_color,
+        "color-brand-content": primary_color,
+    },
 }
 pygments_style = 'default'  # name of the Pygments (syntax highlighting) style
 
@@ -90,20 +115,16 @@ pygments_style = 'default'  # name of the Pygments (syntax highlighting) style
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-def primary_color_with_alpha(alpha):
-    return "rgba(0, 113, 188, %f)" % alpha
-
 panels_css_variables = {
-    "tabs-color-label-active": primary_color_with_alpha(1.0),
-    "tabs-color-label-inactive": primary_color_with_alpha(0.5),
-    "tabs-color-overline": primary_color_with_alpha(0.2),
-    # "tabs-color-underline": "rgb(207, 236, 238)",
+    "tabs-color-label-active": darker_primary_color,
+    "tabs-color-label-inactive": "var(--color-foreground-muted)",
+    "tabs-color-overline": "var(--tabs--border)",
+    "tabs-color-underline": "var(--tabs--border)",
     # "tabs-size-label": "1rem",
 }
 panels_add_bootstrap_css = False
 html_css_files = [
-    'styles/copybutton-overrides.css',
-    'styles/tabs-overrides.css',
+    'styles/extensions-overrides.css',
     'styles/theme-overrides.css',
 ]
 
