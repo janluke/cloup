@@ -15,11 +15,11 @@ from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
 C = TypeVar('C', bound=Callable)
 
-#: A decorator that registers an option to the wrapped function
 OptionAdder = Callable[[C], C]
+"""A decorator that registers an option to the wrapped function."""
 
-#: A decorator that registers an option group to the wrapped function
 OptionGroupAdder = Callable[[C], C]
+"""A decorator that registers an option group to the wrapped function."""
 
 
 class OptionGroup:
