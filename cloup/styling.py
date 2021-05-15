@@ -1,3 +1,7 @@
+"""
+This module defines the classes that support the styling and theming of commands
+help page.
+"""
 import dataclasses as dc
 from typing import Callable, NamedTuple, Optional
 
@@ -22,29 +26,30 @@ class HelpTheme(NamedTuple):
     but I had to use ``NamedTuple`` instead to work around a MyPy issue
     (https://github.com/python/mypy/issues/5485).
     """
-    #: Style of the invoked command name (in Usage).
+
     invoked_command: IStyle = identity
+    """Style of the invoked command name (in Usage)."""
 
-    #: Style of the invoked command description (below "Usage").
     command_help: IStyle = identity
+    """Style of the invoked command description (below Usage)."""
 
-    #: Style of help section headings.
     heading: IStyle = identity
+    """Style of help section headings."""
 
-    #: Style of an option group constraint description.
     constraint: IStyle = identity
+    """Style of an option group constraint description."""
 
-    #: Style of the help text of a section (the optional paragraph below the heading).
     section_help: IStyle = identity
+    """Style of the help text of a section (the optional paragraph below the heading)."""
 
-    #: Style of the first column of a definition list (options and command names).
     col1: IStyle = identity
+    """Style of the first column of a definition list (options and command names)."""
 
-    #: Style of the second column of a definition list (help text).
     col2: IStyle = identity
+    """Style of the second column of a definition list (help text)."""
 
-    #: Style of the epilog.
     epilog: IStyle = identity
+    """Style of the epilog."""
 
     def with_(
         self, invoked_command: Optional[IStyle] = None,
