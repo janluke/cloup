@@ -85,7 +85,7 @@ class HelpTheme(NamedTuple):
 
 @dc.dataclass(frozen=True)
 class Style:
-    """Wraps func:`click.style` for a better integration with :class:`HelpTheme`.
+    """Wraps :func:`click.style` for a better integration with :class:`HelpTheme`.
 
     Available colors are defined as static constants in :class:`click.styling.Color`.
 
@@ -97,7 +97,7 @@ class Style:
     This class has one argument less (``reset``, which is always ``True``)
     and an argument more (``text_transform``).
 
-    See func:`click.style` for more info.
+    See :func:`click.style` for more info.
 
     .. warning::
         The arguments ``overline``, ``italic`` and ``strikethrough`` are only
@@ -115,8 +115,10 @@ class Style:
     blink: Optional[bool] = None
     reverse: Optional[bool] = None
     strikethrough: Optional[bool] = None
-    #: A generic text transformation; use it to pass function like ``str.upper``.
+
     text_transform: Optional[IStyle] = None
+    """A generic text transformation; use it to pass functions like ``str.upper``."""
+
     _style_kwargs: Optional[dict] = dc.field(init=False, default=None)
 
     def __call__(self, text: str) -> str:
