@@ -55,16 +55,15 @@ Submodules
 
 {% set visible_classes = visible_children|selectattr("type", "equalto", "class")|list %}
 {% set visible_functions = visible_children|selectattr("type", "equalto", "function")|list %}
-{% set visible_data = visible_children|selectattr("type", "equalto", "data")|list %}
-
+{% set visible_attributes = visible_children|selectattr("type", "equalto", "data")|list %}
 {% if "show-module-summary" in autoapi_options
-    and (visible_classes or visible_functions or visible_data) %}
+    and (visible_classes or visible_functions or visible_attributes) %}
                                                          {# if show-summaries #}
 {# === CLASSES SUMMARY === #}
 {% block classes scoped %}
 {% if visible_classes %}
-Classes summary
----------------
+Classes
+-------
 
 .. autosummary::
 
@@ -77,8 +76,8 @@ Classes summary
 {# === FUNCTIONS SUMMARY === #}
 {% block functions scoped %}
 {% if visible_functions %}
-Functions Summary
------------------
+Functions
+---------
 
 .. autosummary::
 
@@ -88,19 +87,19 @@ Functions Summary
 {% endif %}
 {% endblock %}
 
-{# === DATA SUMMARY === #}
-{# {% block data scoped %}
-{% if visible_data %}
-Data Summary
-------------
+{# === ATTTRIBUTES SUMMARY === #}
+{% block attributes scoped %}
+{% if visible_attributes %}
+Attributes
+----------
 
 .. autoapisummary::
 
-{% for data in visible_data %}
-   ~{{ data.id }}
+{% for data in visible_attributes %}
+   {{ data.id }}
 {% endfor %}
 {% endif %}
-{% endblock %} #}
+{% endblock %}
 
 {% endif %}                                           {# endif show-summaries #}
 
