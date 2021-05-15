@@ -1,28 +1,32 @@
+.. highlight:: none
+
 Subcommand sections
 ===================
 
-.. highlight:: none
+Cloup allows to organize the subcommand of a ``Group`` (or, more in general, of
+a ``MultiCommand``) in multiple help sections. Each such help section is
+represented by a :class:`~cloup.Section` instance, which is just a titled
+container for commands.
 
-This feature is implemented mostly by the :class:`~cloup.SectionMixin` class,
-which :class:`cloup.Group` inherits from.
-
-Each help section is represented by a :class:`~cloup.Section` instance, which
-is just a titled container for commands. A ``Section`` can be:
+A ``Section`` can be:
 
 - *sorted* -- it lists the commands in alphabetical order
-- *unsorted* (default) -- it lists the commands in the order they are added to
+- *unsorted* -- it lists the commands in the order they are added to
   the section.
 
-You can create a sorted section by passing ``sorted=True`` or by using the
-static method ``Section.sorted()``.
+All sections defined by the developer are unsorted by default. You can create a
+sorted section by passing ``sorted=True`` or by using the static method
+``Section.sorted()``.
 
 You can find a runnable example that implements part of the help of Git
 `here <https://github.com/janLuke/cloup/blob/master/examples/git_sections.py>`_.
+The code below is based on that example.
 
-Specify full sections
----------------------
+Adding sections to a ``Group``
+------------------------------
+
 My favorite way of defining sections is doing it all in one place, just below
-the ``Group`` itself:
+the ``Group`` itself, as follows:
 
 .. tabbed:: Code
     :new-group:
@@ -42,6 +46,7 @@ the ``Group`` itself:
             git_clone,
             git_init
         )
+
         git.section(
             'Work on the current change (see also: git help everyday)',
             git_rm,
@@ -82,7 +87,7 @@ the ``Group`` itself:
 .. admonition:: The default section
 
     All commands that are not explicitly assigned to a section are assigned to a
-    default section, which is *sorted*. This section is titled "Other commands",
+    "default section", which is *sorted*. This section is titled "Other commands",
     unless it is the only section defined, in which case ``cloup.Group`` behaves
     like a normal ``click.Group``, naming it just "Commands".
 
@@ -112,8 +117,9 @@ In alternative, you can create a list of ``Section`` objects and pass it as the
     def git():
         return 0
 
-Adding subcommands one by one
------------------------------
+
+Adding a command to a ``Section``
+---------------------------------
 You can add subcommands one by one as you do in Click, using either:
 
 - the decorators ``@group.command`` and ``@group.group``
@@ -126,7 +132,8 @@ In Cloup, these methods have indeed an additional (optional) argument ``section`
     import cloup
     from cloup import Section
 
-    # Define sections without filling them
+    # Define sections without filling them.
+    # I'm using a class as a namespace here. This is not needed.
     class Sect:
         START_WORKING_AREA = Section(
             'Start a working area (see also: git help tutorial)')
@@ -145,4 +152,6 @@ In Cloup, these methods have indeed an additional (optional) argument ``section`
     def git_mv():
         pass
 
-Note that this mutates the ``Section`` objects.
+Note that (differently from what happens with option groups) every time you add
+a subcommand specifying a section, you are mutating the corresponding ``Section``
+object.
