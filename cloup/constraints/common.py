@@ -1,5 +1,5 @@
 """
-Useful functions used for implementing constraints and predicates.
+Useful functions used to implement constraints and predicates.
 """
 from typing import Any, Dict, Iterable, List, Sequence
 
