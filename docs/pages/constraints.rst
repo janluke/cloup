@@ -44,15 +44,15 @@ Parametric constraints
 Non-parametric constraints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-======================= ==========================================================
-``require_all``         Requires all parameters to be set.
------------------------ ----------------------------------------------------------
-``accept_none``         Requires all parameters to be unset.
------------------------ ----------------------------------------------------------
-``all_or_none``         Satisfied if either all or none of the parameters are set.
------------------------ ----------------------------------------------------------
-``mutually_exclusive``  A rephrased version of ``AcceptAtMost(1)``.
-======================= ==========================================================
+=========================== ============================================================
+:data:`require_all`          Requires all parameters to be set.
+--------------------------- ------------------------------------------------------------
+:data:`accept_none`          Requires all parameters to be unset.
+--------------------------- ------------------------------------------------------------
+:data:`all_or_none`          Satisfied if either all or none of the parameters are set.
+--------------------------- ------------------------------------------------------------
+:data:`mutually_exclusive`   A rephrased version of ``AcceptAtMost(1)``.
+=========================== ============================================================
 
 When is a parameter considered to be "set"?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
