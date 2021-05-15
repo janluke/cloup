@@ -41,16 +41,17 @@ Definition = Tuple[str, Union[str, Callable[[int], str]]]
 class HelpSection:
     """A container for a help section data."""
     heading: str
+    """Help section title."""
 
-    #: Rows with 2 columns each. The 2nd element of each row can also be a function
-    #: taking an integer (the available width for the 2nd column) and returning a string.
     definitions: Sequence[Definition]
+    """Rows with 2 columns each. The 2nd element of each row can also be a function
+    taking an integer (the available width for the 2nd column) and returning a string."""
 
-    #: (Optional) long description of the section.
     help: Optional[str] = None
+    """(Optional) long description of the section."""
 
-    #: (Optional) option group constraint description
     constraint: Optional[str] = None
+    """(Optional) option group constraint description."""
 
 
 # noinspection PyMethodMayBeStatic
