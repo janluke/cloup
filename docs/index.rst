@@ -1,3 +1,5 @@
+:tocdepth: 2
+
 .. meta::
     :description lang=en:
         Cloup is an extension pack for the popular Click Python library that adds
@@ -9,13 +11,31 @@
 .. include:: ../README.rst
     :end-before: if-doc-stop-here
 
-Table of contents
------------------
+User Guide
+==========
+
 .. toctree::
+    :caption: User Guide
     :maxdepth: 2
 
-    pages/usage
+    pages/installation
+    pages/option-groups
+    pages/constraints
+    pages/sections
+
+
+.. toctree::
+    :caption: API Reference
+    :hidden:
+
     autoapi/cloup/index
+
+
+.. toctree::
+    :caption: Development
+    :hidden:
+
+    GitHub Repository <https://github.com/janluke/cloup>
     pages/contributing
     pages/credits
     pages/changelog
