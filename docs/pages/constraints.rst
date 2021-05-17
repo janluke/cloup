@@ -1,28 +1,29 @@
 
-Constraints
-===========
 .. currentmodule:: cloup.constraints
 .. highlight:: none
 
+Constraints
+===========
 
 Overview
 --------
 
-A :class:`Constraint` is essentially a **validator for groups of parameters** that:
+A :class:`Constraint` is essentially a validator for groups of parameters that:
 
 - has a textual description (:meth:`Constraint.help`)
 - when unsatisfied raises an :exc:`~click.UsageError` with an appropriate error
-  message that is handled and displayed by Click
-- it's easily composable with other constraints using logical operators
-  and you can easy change its description and/or error message
-  (see `Combining and rephrasing`_).
+  message that is handled and displayed by Click.
 
 Constraints are **well-integrated with option groups but decoupled from them.**
 Indeed, you can use them to validate *any* group of parameters by providing
-their (destination) names (see `Specifying parameters by name`_).
+their (destination) names (see `Specifying parameters to constrain by name`_).
 
-**Constraints can also be applied conditionally**, e.g. based on the value of
+Constraints can also be applied **conditionally**, e.g. based on the value of
 a parameter (see `Conditional constraints`_).
+
+Constraints are easily composable using logical operators and you can easily
+change its description and/or error message  (see `Combining and rephrasing constraints`_).
+
 
 Implemented constraints
 -----------------------
@@ -151,10 +152,19 @@ argument or ``@option_group`` (or ``OptionGroup``):
         constraint=RequireAtLeast(1),
     )
 
-This code produces the following help section; note that the section title
-contains the constraint description between square brackets::
+This code produces the following help section with the constraint description
+between square brackets on the right of the option group name::
 
-    Option group title [at least 1 required]:
+    Option group title: [at least 1 required]
+      -o, --one TEXT  an option
+      -t, --two TEXT  a second option
+      --three TEXT    a third option
+
+If the constraint description doesn't fit into the section heading line, it is
+printed on the next line::
+
+    Option group title:
+      [this is a very long constraint description that doesn't fit into the heading line]
       -o, --one TEXT  an option
       -t, --two TEXT  a second option
       --three TEXT    a third option
@@ -167,7 +177,7 @@ If the constraint is violated, the following error is showed::
       --three
 
 You can customize both the help description and the error message of a constraint
-using the method :meth:`Constraint.rephrased` (see `Combining and rephrasing`_
+using the method :meth:`Constraint.rephrased` (see `Combining and rephrasing constraints`_
 for more).
 
 If you simply want to hide the constraint description in the help, you can use
@@ -181,14 +191,14 @@ the method :meth:`Constraint.hidden`:
     )
 
 
-Specifying parameters by name
------------------------------
+Specifying parameters to constrain by name
+------------------------------------------
 You can apply a constraint on any group of parameters providing their
 **destination names**, i.e. the names of the function arguments they are mapped
 to (by Click). For example:
 
 =============================================== ===================
-Declaration                                     Destination name
+Declaration                                     Name
 =============================================== ===================
 ``@option('-o')``                               ``o``
 ``@option('-o', '--out-path')``                 ``out_path``
@@ -236,11 +246,12 @@ Here's a meaningless example just to show how to use the API:
     @option('--opt-2')
     @option('--opt-3')
     @option('--opt-4')
-    @option('--opt-5')
     @constraint(mutually_exclusive, ['opt_1', 'opt_2'])
-    @constraint(If('opt_1', then=RequireExactly(1)), ['opt_3', 'opt_5'])
-    def cmd(opt_1, opt_2, opt_3, opt_4, opt_5):
+    @constraint(If('opt_1', then=RequireExactly(1)), ['opt_3', 'opt_4'])
+    def cmd(opt_1, opt_2, opt_3, opt_4):
         print('ciao')
+
+.. _show-constraints:
 
 Passing ``show_constraints=True`` as above will produce the following section at
 the bottom of the command help::
@@ -252,8 +263,8 @@ the bottom of the command help::
 Even in this case, you can still hide a specific constraint by calling the method
 :meth:`~Constraint.hidden` on it.
 
-Usage inside functions
-~~~~~~~~~~~~~~~~~~~~~~
+Usage as functions
+~~~~~~~~~~~~~~~~~~
 You may consider this option if you are not interested in documenting constraints
 in the help page *and* you find it more readable than ``@constraint``.
 
@@ -267,26 +278,14 @@ in the help page *and* you find it more readable than ``@constraint``.
         mutually_exclusive(['opt_1', 'opt_4'])
 
         If(Equal('opt_1', 'value'), then=RequireExactly(1))([
-            'opt_2', 'opt_3'
+            'opt_2', 'opt_3', 'opt_4'
         ])
 
 Calling a constraint is equivalent to call its :meth:`~Constraint.check` method.
 
-.. important::
-    The ``check()`` method **needs** a ``click.Context`` to work. Nonetheless,
-    you are not required to provide it explicitly because the current context is
-    automatically obtained using :func:`click.get_current_context`. This works as
-    long as you call ``check()`` (or the constraint itself) in places where an
-    a Click context is guaranteed to be defined.
 
-Why do you need to pass the parameter names and not their values?
-That's because values are not enough to generate an error message
-explaining which parameters don't satisfy the constraint. Knowing
-their names, Cloup can reference both the ``Parameter`` instances
-and their values in the current :class:`click.Context`.
-
-Combining and rephrasing
-------------------------
+Combining and rephrasing constraints
+------------------------------------
 The available constraints should cover 99% of use cases but if you want to
 combine them or even just change their description and/or the error message,
 you can do that with very little code:
