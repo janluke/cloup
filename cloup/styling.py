@@ -106,7 +106,7 @@ class HelpTheme(NamedTuple):
 class Style:
     """Wraps :func:`click.style` for a better integration with :class:`HelpTheme`.
 
-    Available colors are defined as static constants in :class:`click.styling.Color`.
+    Available colors are defined as static constants in :class:`Color`.
 
     Arguments are set to ``None`` by default. Passing ``False`` to boolean args
     or ``Color.reset`` as color causes a reset code to be inserted.
@@ -156,6 +156,7 @@ class Style:
 
 
 class Color(FrozenSpace):
+    """Colors accepted by :class:`Style` and :func:`click.style`."""
     black = "black"
     red = "red"
     green = "green"
