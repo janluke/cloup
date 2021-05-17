@@ -13,6 +13,7 @@ IStyle = Callable[[str], str]
 """A callable that takes a string and returns a styled version of it."""
 
 
+# noinspection PyUnresolvedReferences
 class HelpTheme(NamedTuple):
     """A collection of styles for several elements of the help page.
 
@@ -22,9 +23,22 @@ class HelpTheme(NamedTuple):
     basic styling functionality built-in, Cloup provides the :class:`Style`
     class, which is a wrapper of the ``click.style`` function.
 
-    *Implementation note:* this should have been a frozen ``dataclass``
-    but I had to use ``NamedTuple`` instead to work around a MyPy issue
-    (https://github.com/python/mypy/issues/5485).
+    :param invoked_command:
+        Style of the invoked command name (in Usage).
+    :param command_help:
+        Style of the invoked command description (below Usage).
+    :param heading:
+        Style of help section headings.
+    :param constraint:
+        Style of an option group constraint description.
+    :param section_help:
+        Style of the help text of a section (the optional paragraph below the heading).
+    :param col1:
+        Style of the first column of a definition list (options and command names).
+    :param col2:
+        Style of the second column of a definition list (help text).
+    :param epilog:
+        Style of the epilog.
     """
 
     invoked_command: IStyle = identity
