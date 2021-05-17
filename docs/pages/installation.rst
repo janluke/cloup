@@ -8,14 +8,16 @@ To install the **latest release**, run::
 Cloup adheres to `semantic versioning <https://semver.org/>`_.
 
 .. important::
-    As of v0.5, I don't expect to do introduce any major backward incompatibility.
-    Nonetheless, since Cloup has not reached v1.0, its API is not to be
-    considered stable. This doesn't mean you can't already safely use it:
-    it is already tested and usable. Just make sure you pin the version you are
-    using in your requirements, e.g.::
+    Since Cloup has not reached v1.0, its API is not to be considered stable.
+    This doesn't mean you can't already use it: it is already extensively tested
+    and documented. Just make sure you pin the version you are using in your
+    requirements, e.g.
 
-        cloup==0.5.*
+    .. parsed-literal::
 
-    At each new release, I'll do my best to document what has changed in the
-    :doc:`changelog`.
+        cloup ~= \ |release|\
+
+    Patch releases are guaranteed to be backward-compatible even before v1.0.
+
+    At each new release, you can check the :doc:`changelog`.
 
