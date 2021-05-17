@@ -9,23 +9,27 @@
     :google-site-verification: r5SEmg2wwCURBwKSrL_zQJEJbCVsScFhryur7zdFM3s
 
 .. include:: ../README.rst
-    :end-before: if-doc-stop-here
+    :end-before: docs-home-end
 
-User Guide
+
+User guide
 ==========
+Please, note that Cloup documentation doesn't replace
+`Click documentation <https://click.palletsprojects.com/en/8.0.x/>`_.
 
 .. toctree::
-    :caption: User Guide
+    :caption: User guide
     :maxdepth: 2
 
     pages/installation
     pages/option-groups
     pages/constraints
     pages/sections
+    pages/formatting
 
 
 .. toctree::
-    :caption: API Reference
+    :caption: API reference
     :hidden:
 
     autoapi/cloup/index
@@ -33,6 +37,7 @@ User Guide
 
 .. toctree::
     :caption: Development
+    :maxdepth: 2
     :hidden:
 
     GitHub Repository <https://github.com/janluke/cloup>

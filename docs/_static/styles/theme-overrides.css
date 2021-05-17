@@ -6,7 +6,7 @@ h1, h2, h3 {
     color: var(--color-brand-primary);
 }
 
-#overview .caption {
+#user-guide .caption {
     display: none;
 }
 
