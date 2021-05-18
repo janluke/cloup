@@ -148,6 +148,15 @@ class HelpFormatter(click.HelpFormatter):
         prog = self.theme.invoked_command(prog)
         super().write_usage(prog, args, prefix)
 
+    def write_command_help_text(self, cmd: click.Command) -> None:
+        help_text = cmd.help or ''
+        if cmd.deprecated:
+            help_text = '(DEPRECATED) ' + help_text
+        if help_text:
+            self.write_paragraph()
+            with self.indentation():
+                self.write_text(help_text, style=self.theme.command_help)
+
     def write_heading(self, heading: str, newline: bool = True) -> None:
         if self.current_indent:
             self.write(" " * self.current_indent)

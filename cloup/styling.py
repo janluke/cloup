@@ -25,6 +25,9 @@ class HelpTheme(NamedTuple):
     #: Style of the invoked command name (in Usage).
     invoked_command: IStyle = identity
 
+    #: Style of the invoked command description (below "Usage").
+    command_help: IStyle = identity
+
     #: Style of help section headings.
     heading: IStyle = identity
 
@@ -45,6 +48,7 @@ class HelpTheme(NamedTuple):
 
     def with_(
         self, invoked_command: Optional[IStyle] = None,
+        command_help: Optional[IStyle] = None,
         heading: Optional[IStyle] = None,
         constraint: Optional[IStyle] = None,
         section_help: Optional[IStyle] = None,

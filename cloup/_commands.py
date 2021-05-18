@@ -47,6 +47,9 @@ class BaseCommand(click.Command):
             formatter.write_paragraph()
             formatter.write_epilog(self.epilog)
 
+    def format_help_text(self, ctx, formatter):
+        formatter.write_command_help_text(self)
+
 
 class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
     """
