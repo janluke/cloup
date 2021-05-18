@@ -72,22 +72,26 @@ class HelpFormatter(click.HelpFormatter):
     .. versionadded:: 0.8.0
 
     :param indent_increment:
-        indentation width
+        width of each indentation increment.
     :param width:
-        content line width; by default it's initialized as the minimum of
-        the terminal width and the argument ``max_width``.
+        content line width; by default it's initialized to
+        ``min(terminal_width - 1, max_width)`` where ``max_width`` is another argument.
     :param max_width:
-        maximum content line width (corresponds to ``Context.max_content_width``.
-        Used to compute ``width`` if it is not provided; ignored otherwise.
+        maximum content line width (equivalent to ``Context.max_content_width``).
+        Used to compute ``width`` when it is not provided, ignored otherwise.
     :param col1_max_width:
-        the maximum width of the first column of a definition list.
+        the maximum width of the first column of a definition list; as in Click,
+        if the text of a row exceeds this threshold, the 2nd column is printed
+        on a new line.
     :param col2_min_width:
         the minimum width for the second column of a definition list; if the
         available space is less than this value, the formatter switches from the
-        standard 2-column layout to the "linear layout" when formatting
-        definition lists.
+        standard 2-column layout to the "linear layout" (that this decision
+        is taken for each definition list). If you want to always use the linear
+        layout, you can set this argument to a very high number (or ``math.inf``).
+        If you never want it (not recommended), you can set this argument to zero.
     :param col_spacing:
-        the (minimum) number of spaces between the columns of a definition list.
+        the number of spaces between the column boundaries of a definition list.
     :param row_sep:
         a string printed after each row of a definition list (including the last).
     :param theme:

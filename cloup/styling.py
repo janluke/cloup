@@ -83,6 +83,7 @@ class HelpTheme(NamedTuple):
 
     @staticmethod
     def dark():
+        """A theme assuming a dark terminal background color."""
         return HelpTheme(
             invoked_command=Style(fg='bright_yellow'),
             heading=Style(fg='bright_white', bold=True),
@@ -93,6 +94,7 @@ class HelpTheme(NamedTuple):
 
     @staticmethod
     def light():
+        """A theme assuming a light terminal background color."""
         return HelpTheme(
             invoked_command=Style(fg='yellow'),
             heading=Style(fg='bright_blue'),
@@ -111,16 +113,27 @@ class Style:
     Arguments are set to ``None`` by default. Passing ``False`` to boolean args
     or ``Color.reset`` as color causes a reset code to be inserted.
 
-    This class is conceptually to a partial application of :func:`click.style`
-    (see :func:`functools.partial` if you don't know what "partial" means).
-    This class has one argument less (``reset``, which is always ``True``)
-    and an argument more (``text_transform``).
+    With respect to :func:`click.style`, this class:
 
-    See :func:`click.style` for more info.
+    - has an argument less, ``reset``, which is always ``True``
+    - add the ``text_transform``.
 
     .. warning::
         The arguments ``overline``, ``italic`` and ``strikethrough`` are only
         supported in Click 8 and will be ignored if you are using Click 7.
+
+    :param fg: foreground color
+    :param bg: background color
+    :param bold:
+    :param dim:
+    :param underline:
+    :param overline:
+    :param italic:
+    :param blink:
+    :param reverse:
+    :param strikethrough:
+    :param text_transform:
+        a generic string transformation; useful to apply functions like ``str.upper``
 
     .. versionadded:: 0.8.0
     """
@@ -134,9 +147,7 @@ class Style:
     blink: Optional[bool] = None
     reverse: Optional[bool] = None
     strikethrough: Optional[bool] = None
-
     text_transform: Optional[IStyle] = None
-    """A generic text transformation; use it to pass functions like ``str.upper``."""
 
     _style_kwargs: Optional[dict] = dc.field(init=False, default=None)
 
