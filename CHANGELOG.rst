@@ -73,16 +73,13 @@ v0.8.0 (in development)
   * has a ``Context.setting`` static method that facilitates the creation of a
     ``context_settings`` dictionary (you get the help of your IDE).
 
-- Organized command classes in hierarchy:
+- Added a base class ``BaseCommand`` for ``Command`` and ``Group`` that:
 
-  * added a ``BaseCommand`` class, extending ``click.Command`` and using the
-    custom ``Context`` by default. This class also "back-ports" the Click 8.0
-    class attribute ``context_class`` and adds the ``formatter_settings``
-    argument.
+  - extends ``click.Command``
+  - back-ports Click 8.0 class attribute ``context_class`` and set it to ``cloup.Context``
+  - adds the ``formatter_settings``argument
 
-  * ``cloup.Command`` and ``cloup.MultiCommand`` extends ``cloup.BaseCommand``
-
-  * ``cloup.Group`` now extends ``cloup.MultiCommand``.
+- The class ``MultiCommand`` was removed, being useless.
 
 - Hidden option groups. An option group is hidden either if you pass
   ``hidden=True`` when you define it or if all its contained options are hidden.

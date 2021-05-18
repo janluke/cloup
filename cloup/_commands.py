@@ -1,4 +1,3 @@
-import abc
 from typing import Any, Callable, Dict, Iterable, Optional, Sequence, Type, cast
 
 import click
@@ -74,28 +73,7 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
             **click_kwargs)
 
 
-class MultiCommand(
-    SectionMixin,
-    BaseCommand,
-    click.MultiCommand,
-    metaclass=abc.ABCMeta
-):
-    """
-    A ``click.MultiCommand`` that allows to organize its subcommands in
-    multiple help sections and and whose subcommands are, by default, of type
-    :class:`cloup.Command`.
-
-    This class is just a :class:`click.MultiCommand` mixed with
-    :class:`SectionMixin`. See the docstring of the two superclasses for more
-    details.
-
-    .. versionchanged:: 0.8.0
-        This class now inherits from :class:`cloup.BaseCommand`.
-    """
-    pass
-
-
-class Group(MultiCommand, click.Group):
+class Group(SectionMixin, BaseCommand, click.Group):
     """
     A ``click.Group`` that allows to organize its subcommands in multiple help
     sections and and whose subcommands are, by default, of type
@@ -108,7 +86,7 @@ class Group(MultiCommand, click.Group):
     See the docstring of the two superclasses for more details.
 
     .. versionchanged:: 0.8.0
-        This class now inherits from :class:`cloup.MultiCommand`.
+        This class now inherits from :class:`cloup.BaseCommand`.
     """
 
     def __init__(self, name: Optional[str] = None,

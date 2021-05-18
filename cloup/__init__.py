@@ -41,7 +41,6 @@ from ._commands import (
     BaseCommand,
     Command,
     Group,
-    MultiCommand,
     command,
     group,
 )
