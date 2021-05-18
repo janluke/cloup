@@ -44,10 +44,10 @@ class HelpTheme(NamedTuple):
     epilog: IStyle = identity
 
     def with_(
-        self, command: Optional[IStyle] = None,
+        self, invoked_command: Optional[IStyle] = None,
         heading: Optional[IStyle] = None,
-        description: Optional[IStyle] = None,
         constraint: Optional[IStyle] = None,
+        section_help: Optional[IStyle] = None,
         col1: Optional[IStyle] = None,
         col2: Optional[IStyle] = None,
         epilog: Optional[IStyle] = None,
