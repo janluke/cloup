@@ -290,14 +290,15 @@ def option_group(name, *args, **kwargs):
 def _option_group(
     name: str,
     options: Sequence[OptionAdder],
+    help: Optional[str] = None,
+    constraint: Optional[Constraint] = None,
     hidden: bool = False,
-    **kwargs,
 ) -> OptionGroupAdder:
     if not options:
         raise ValueError('you must provide at least one option')
 
     def decorator(f):
-        opt_group = OptionGroup(name, **kwargs)
+        opt_group = OptionGroup(name, help=help, constraint=constraint, hidden=hidden)
         for opt_decorator in reversed(options):
             # Note: the assignment is just a precaution, as both click.option
             # and @cloup.option currently return the same f
