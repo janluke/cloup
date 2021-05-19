@@ -89,14 +89,14 @@ Basic example
     @option_group(
         "Cool options",
         option('--foo', help='This text should describe the option --foo.'),
-        option('--bar', help='This text should descrive the option --bar.'),
+        option('--bar', help='This text should describe the option --bar.'),
         constraint=mutually_exclusive,
     )
     @option_group(
         "Other cool options",
         "This is the optional description of this option group.",
         option('--pippo', help='This text should describe the option --pippo.'),
-        option('--pluto', help='This text should descrive the option --pluto.'),
+        option('--pluto', help='This text should describe the option --pluto.'),
         constraint=RequireAtLeast(1),
     )
     def cmd(**kwargs):
