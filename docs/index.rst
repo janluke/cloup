@@ -36,7 +36,7 @@ Please, note that Cloup documentation doesn't replace
 
 
 .. toctree::
-    :caption: Development
+    :caption: Project
     :maxdepth: 2
     :hidden:
 
