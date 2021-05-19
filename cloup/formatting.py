@@ -12,8 +12,6 @@ from click.formatting import wrap_text
 from cloup._util import check_positive_int, identity, indent_lines, make_repr
 from cloup.styling import HelpTheme, IStyle
 
-# It's not worth to require typing_extensions just define this as a Protocol.
-FormatterMaker = Callable[..., 'HelpFormatter']
 
 FORMATTER_TYPE_ERROR = """
 since cloup v0.8.0, this class relies on cloup.HelpFormatter to align help
@@ -143,8 +141,11 @@ class HelpFormatter(click.HelpFormatter):
     def write(self, *strings: str) -> None:
         self.buffer += strings
 
-    def write_usage(self, prog: str, args: str = "", prefix: str = 'Usage:') -> None:
-        prefix = self.theme.heading(prefix + ' ')
+    def write_usage(
+        self, prog: str, args: str = "", prefix: Optional[str] = 'Usage:'
+    ) -> None:
+        if prefix:
+            prefix = self.theme.heading(prefix + ' ')
         prog = self.theme.invoked_command(prog)
         super().write_usage(prog, args, prefix)
 

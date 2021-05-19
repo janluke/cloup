@@ -1,11 +1,11 @@
 import warnings
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Type
 
 import click
 
 import cloup
 from cloup._util import coalesce
-from cloup.formatting import FormatterMaker, HelpFormatter
+from cloup.formatting import HelpFormatter
 
 
 def _warn_if_formatter_settings_conflict(
@@ -53,7 +53,7 @@ class Context(click.Context):
         **Tip**: use the static method :meth:`HelpFormatter.opts` to create this
         dictionary, so that you can be guided by your IDE.
     """
-    formatter_class: FormatterMaker = HelpFormatter
+    formatter_class: Type[HelpFormatter] = HelpFormatter
 
     def __init__(
         self, *ctx_args,
