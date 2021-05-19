@@ -1,11 +1,12 @@
 from typing import (
-    Iterable, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple
+    Iterable, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple,
 )
 
 from click import Context, HelpFormatter, Parameter
 
 from ._core import Constraint
 from .common import join_param_labels
+from .._util import coalesce
 
 if TYPE_CHECKING:
     from .._option_groups import OptionGroup   # pragma: no cover
@@ -64,7 +65,7 @@ class ConstraintMixin:
     def __init__(
         self, *args,
         constraints: Sequence[BoundConstraintSpec] = (),
-        show_constraints: bool = False,
+        show_constraints: Optional[bool] = None,
         **kwargs
     ):
         """
@@ -123,7 +124,12 @@ class ConstraintMixin:
 
     def format_help(self, ctx, formatter: HelpFormatter) -> None:
         super().format_help(ctx, formatter)  # type: ignore
-        if self.show_constraints:
+        # By default, don't show constraints
+        must_show_constraints = bool(coalesce(
+            self.show_constraints,
+            getattr(ctx, "show_constraints", None),
+        ))
+        if must_show_constraints:
             self.format_constraints(ctx, formatter)
 
 

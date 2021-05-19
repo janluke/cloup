@@ -69,15 +69,27 @@ def test_constraints_are_checked_according_to_protocol(runner, do_check_consiste
         constr.check_values.assert_called_once()
 
 
-@mark.parametrize(
-    'show_constraints', [True, False],
-    ids=['enabled', 'disabled']
-)
-def test_constraints_are_showed_in_help_only_if_feature_is_enabled(
-    runner, show_constraints
+@mark.parametrize('ctx_show_constraints', [None, True, False])
+@mark.parametrize('show_constraints', [None, True, False])
+def test_constraints_are_shown_in_help_only_if_feature_is_enabled(
+    runner, show_constraints, ctx_show_constraints
 ):
-    @cloup.command(show_constraints=show_constraints,
-                   context_settings={'terminal_width': 80})
+    # The default is False
+    should_show_constraints = False
+    # The context parameter overrides the default (if not None)
+    if ctx_show_constraints is not None:
+        should_show_constraints = ctx_show_constraints
+    # The command parameter overrides the context value (if not None)
+    if show_constraints is not None:
+        should_show_constraints = show_constraints
+
+    @cloup.command(
+        show_constraints=show_constraints,
+        context_settings={
+            'show_constraints': ctx_show_constraints,
+            'terminal_width': 80,
+        }
+    )
     @cloup.option('--a')
     @cloup.option('--b')
     @cloup.option('--c')
@@ -91,7 +103,7 @@ def test_constraints_are_showed_in_help_only_if_feature_is_enabled(
                            prog_name='test')
     out = result.output.strip()
 
-    if show_constraints:
+    if should_show_constraints:
         expected = textwrap.dedent('''
             Usage: test [OPTIONS]
 
