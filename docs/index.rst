@@ -41,6 +41,7 @@ Please, note that Cloup documentation doesn't replace
     :hidden:
 
     GitHub Repository <https://github.com/janluke/cloup>
+    Donate <https://www.paypal.com/donate?hosted_button_id=4GTN24HXPMNBJ>
     pages/contributing
     pages/credits
     pages/changelog
