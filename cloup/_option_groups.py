@@ -296,9 +296,8 @@ def _option_group(
     if not options:
         raise ValueError('you must provide at least one option')
 
-    opt_group = OptionGroup(name, **kwargs)
-
     def decorator(f):
+        opt_group = OptionGroup(name, **kwargs)
         for opt_decorator in reversed(options):
             # Note: the assignment is just a precaution, as both click.option
             # and @cloup.option currently return the same f
