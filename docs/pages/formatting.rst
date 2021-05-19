@@ -277,3 +277,17 @@ You can disable the linear layout settings ``min_col2_width=0``.
 
 You make the linear layout your default layout by settings ``min_col2_width`` to
 a large number, possibly ``math.inf``.
+
+
+Minor differences with Click
+----------------------------
+
+- The width of the 1st column of a definition list is computed excluding the
+  rows that exceeds ``col1_max_width``; this results in a better use of space in
+  many cases, especially with ``align_option_groups=False``.
+
+- The default ``short_help``'s of commands actually use all the available
+  terminal width (in Click, they don't; see "Related issue" of
+  `this Click issue <https://github.com/pallets/click/issues/1849>`_)
+
+- The command epilog is not indented (this is just my subjective preference).
