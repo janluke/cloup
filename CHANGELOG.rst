@@ -29,16 +29,18 @@ License
 Incompatible changes
 --------------------
 
-* Formatting methods of ``OptionGroupMixin`` and ``SectionMixin`` now expects
+- Formatting methods of ``OptionGroupMixin`` and ``SectionMixin`` now expects
   the ``formatter`` to be a ``cloup.HelpFormatter``.
   If you used a custom ``click.HelpFormatter``, you'll need to change your code
   if you want to use this release. If you used ``click-help-colors``, keep in
   mind that the new formatter has built-in styling capabilities so you don't
   need ``click-help-colors`` anymore.
 
-* ``OptionGroupMixin.format_option_group`` was removed.
+- ``OptionGroupMixin.format_option_group`` was removed.
 
-* ``SectionMixin.format_section`` was removed.
+- ``SectionMixin.format_section`` was removed.
+
+- The class ``MultiCommand`` was removed, being useless.
 
 Compatible changes
 ------------------
@@ -82,9 +84,7 @@ Compatible changes
 
   - extends ``click.Command``
   - back-ports Click 8.0 class attribute ``context_class`` and set it to ``cloup.Context``
-  - adds the ``formatter_settings``argument
-
-- The class ``MultiCommand`` was removed, being useless.
+  - adds the ``formatter_settings`` argument
 
 - Hidden option groups. An option group is hidden either if you pass
   ``hidden=True`` when you define it or if all its contained options are hidden.
@@ -105,6 +105,8 @@ Compatible changes
 Docs
 ----
 - Switch theme to ``furo``.
+- Added section "Help formatting and theming".
+- Improved all sections.
 
 --------------------------------------------------------------------------------
 
