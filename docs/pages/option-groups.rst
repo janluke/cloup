@@ -10,6 +10,7 @@ The recommended way of defining option groups is through the decorator
 :func:`~cloup.option_group`.
 
 .. autofunction:: cloup.option_group
+    :noindex:
 
 .. tabbed:: Code
     :new-group:
