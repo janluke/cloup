@@ -34,7 +34,7 @@ from cloup.constraints import (
 )
 
 
-@cloup.command(name='cloup', show_constraints=True)
+@cloup.command(name='cloup', show_constraints=True, no_args_is_help=True)
 @click.argument('arg', required=False)
 @option_group(
     'First group title',

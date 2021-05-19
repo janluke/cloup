@@ -18,7 +18,7 @@ _output = OptionGroup(
 )
 
 
-@cloup.command('cloup_flat', align_option_groups=True)
+@cloup.command('cloup_flat', align_option_groups=True, no_args_is_help=True)
 # Input options
 @_input.option('-o', '--one', help='1st input option')
 @_input.option('--two', help='2nd input option')
