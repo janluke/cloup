@@ -4,30 +4,28 @@ Changelog
 
 ..  v0.X.X (in development)
     =======================
-    Requirements
-    ------------
     Incompatible changes
     --------------------
     Deprecated
     ----------
-    Compatible changes and features
-    -------------------------------
+    Compatible changes
+    ------------------
+
 
 v0.8.0 (in development)
 =======================
 
-This was a pretty large release. The focus was on the implementation of a
-custom ``HelpFormatter``. This in turn required several structural changes,
-like the implementation of a custom ``Context`` and the definition of a saner
-class hierarchy for Cloup command classes.
-
-License
--------
+Project changes
+---------------
 
 - Cloup license changed from MIT to 3-clause BSD, the one used by Click.
+- Added a donation button.
 
 Incompatible changes
 --------------------
+
+These incompatible changes don't affect the most "external" API used by most
+clients of this library.
 
 - Formatting methods of ``OptionGroupMixin`` and ``SectionMixin`` now expects
   the ``formatter`` to be a ``cloup.HelpFormatter``.
@@ -132,8 +130,8 @@ v0.7.1 (2021-05-02)
 
 v0.7.0 (2021-03-24)
 ===================
-Compatible changes and features
--------------------------------
+Compatible changes
+------------------
 
 - In constraint errors, the way the parameter list is formatted has changed.
   Instead of printing a comma-separated list of single labels:
@@ -201,8 +199,8 @@ Deprecated
 
 - ``GroupSection`` was renamed as ``Section``.
 
-Compatible changes and features
--------------------------------
+Compatible changes
+------------------
 
 - Added a subpackage for defining **constraints** on parameters groups
   (including ``OptionGroup``'s).
@@ -225,8 +223,8 @@ Requirements
 
 - This is the last release officially supporting Python 3.5.
 
-Compatible changes and features
--------------------------------
+Compatible changes
+------------------
 
 - Changed the internal (non-public) structure of the package.
 - Minor code improvements.
@@ -241,8 +239,8 @@ Project changes
 
 v0.3.0 (2020-03-26)
 ===================
-Backward incompatible API changes
----------------------------------
+Incompatible changes
+--------------------
 - ``option_groups`` decorator now takes options as positional arguments ``*options``;
 - ``Group.section`` decorator now takes sections as positional arguments ``*sections``;
 - ``align_sections_help`` was renamed to ``align_sections``;
