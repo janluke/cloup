@@ -169,7 +169,7 @@ printed on the next line::
       -t, --two TEXT  a second option
       --three TEXT    a third option
 
-If the constraint is violated, the following error is showed::
+If the constraint is violated, the following error is shown::
 
     Error: at least 1 of the following parameters must be set:
       --one (-o)
@@ -339,7 +339,7 @@ Let's see how you can define a new parametric constraint now:
 
 Cloup uses ``WrapperConstraint`` internally to stick to the convention described
 in `Implemented constraints`_ and because it has some minor advantages like
-producing constraints having a prettier ``__repr__`` (showed in consistency errors):
+producing constraints having a prettier ``__repr__`` (shown in consistency errors):
 
 .. code-block:: python
 
