@@ -66,8 +66,8 @@ class HelpTheme(NamedTuple):
     def dark():
         return HelpTheme(
             invoked_command=Style(fg='bright_yellow'),
-            heading=Style(fg='bright_white'),
-            constraint=Style(fg='red'),
+            heading=Style(fg='bright_white', bold=True),
+            constraint=Style(fg='magenta'),
             col1=Style(fg='bright_yellow'),
             epilog=Style(fg='bright_white'),
         )
