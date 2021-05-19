@@ -24,12 +24,27 @@ def param_value_is_set(param: Parameter, value: Any) -> bool:
     return True
 
 
+def get_param_name(param: Parameter) -> str:
+    """Returns the name of a parameter casted to ``str``.
+    Use this function to avoid typing errors in places where you expect a parameter
+    having a name.
+    """
+    if param.name is None:
+        raise TypeError(
+            'param.name is required to be a string in this context.\n'
+            'Hint: param.name is None only when parameter.expose_value is False, '
+            'so you are probably using such option incorrectly.'
+        )
+    return param.name
+
+
 def get_params_whose_value_is_set(
     params: Iterable[Parameter], values: Dict[str, Any]
 ) -> List[Parameter]:
     """Filters ``params`` returning only the parameters that have a value.
     Boolean flags are considered "set" if their value is ``True``."""
-    return [p for p in params if param_value_is_set(p, values[p.name])]
+    return [p for p in params
+            if param_value_is_set(p, values[get_param_name(p)])]
 
 
 def get_required_params(params: Iterable[Parameter]) -> List[Parameter]:

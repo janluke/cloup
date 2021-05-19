@@ -12,7 +12,11 @@ from click import Context
 
 from ._support import ensure_constraints_support
 from .common import (
-    get_param_labels, join_with_and, param_label_by_name, param_value_by_name,
+    get_param_labels,
+    get_param_name,
+    join_with_and,
+    param_label_by_name,
+    param_value_by_name,
     param_value_is_set,
 )
 from .._util import make_repr
@@ -199,7 +203,7 @@ class AllSet(Predicate):
     def __call__(self, ctx: Context) -> bool:
         command = ensure_constraints_support(ctx.command)
         params = command.get_params_by_name(self.param_names)
-        return all(param_value_is_set(param, ctx.params[param.name])
+        return all(param_value_is_set(param, ctx.params[get_param_name(param)])
                    for param in params)
 
     def __and__(self, other: Predicate):
@@ -237,7 +241,7 @@ class AnySet(Predicate):
     def __call__(self, ctx: Context) -> bool:
         command = ensure_constraints_support(ctx.command)
         params = command.get_params_by_name(self.param_names)
-        return any(param_value_is_set(param, ctx.params[param.name])
+        return any(param_value_is_set(param, ctx.params[get_param_name(param)])
                    for param in params)
 
     def __or__(self, other: Predicate):

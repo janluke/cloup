@@ -12,6 +12,7 @@ from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 from .common import (
     format_param_list,
     get_param_label,
+    get_param_name,
     get_params_whose_value_is_set,
     get_required_params,
     param_value_is_set,
@@ -324,7 +325,7 @@ class _RequireAll(Constraint):
     def check_values(self, params: Sequence[Parameter], ctx: Context):
         values = ctx.params
         unset_params = [param for param in params
-                        if not param_value_is_set(param, values[param.name])]
+                        if not param_value_is_set(param, values[get_param_name(param)])]
         if any(unset_params):
             raise ConstraintViolated(
                 pluralize(
