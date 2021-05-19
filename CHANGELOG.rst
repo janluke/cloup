@@ -42,6 +42,16 @@ Incompatible changes
 
 - The class ``MultiCommand`` was removed, being useless.
 
+- The ``OptionGroupMixin`` attribute ``align_option_groups`` is now ``None`` by default.
+  Functionally, nothing changes: option groups are aligned by default.
+
+- The ``SectionMixin`` attribute ``align_sections`` is now ``None`` by default.
+  Functionally, nothing changes: subcommand sections are aligned by default.
+
+- The ``ConstraintMixin`` attribute ``show_constraints`` is now ``None`` by default.
+  Functionally, nothing changes: constraints are **not** shown by default.
+
+
 Compatible changes
 ------------------
 
@@ -72,10 +82,11 @@ Compatible changes
     formatter keyword arguments (the same argument can be given to a command to
     override these defaults). You can use the static method
     ``HelpFormatter.settings`` to create such a dictionary
-  * allows to set the default value for the following Command parameters:
+  * allows to set the default value for the following ``Command``/``Group`` args:
 
-    * ``align_option_groups=True``,
-    * ``align_sections=True``
+    * ``align_option_groups``,
+    * ``align_sections``
+    * ``show_constraints``
 
   * has a ``Context.setting`` static method that facilitates the creation of a
     ``context_settings`` dictionary (you get the help of your IDE).
