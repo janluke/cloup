@@ -1,6 +1,6 @@
-===================
-Author and Credits
-===================
+=======
+Credits
+=======
 
 Author
 ------
@@ -9,12 +9,8 @@ Author
 Credits
 -------
 
-- For implementing option groups, I started from the idea of
-  `@chrisjsewell <https://github.com/chrisjsewell>`_
-  presented in `this comment <https://github.com/pallets/click/issues/373#issuecomment-515293746>`_.
+- This library stands on the shoulders of `Click <https://click.palletsprojects.com>`_.
 
-- This package was bootstrapped with Cookiecutter_ and the
-  `audreyr/cookiecutter-pypackage`_ project template.
-
-.. _Cookiecutter: https://github.com/cookiecutter/cookiecutter
-.. _`audreyr/cookiecutter-pypackage`: https://github.com/audreyfeldroy/cookiecutter-pypackage
+- The following `comment <https://github.com/pallets/click/issues/373#issuecomment-515293746>`_
+  by `@chrisjsewell <https://github.com/chrisjsewell>`_ helped me getting started
+  with the implementation of this library when I knew nothing about Click internals.

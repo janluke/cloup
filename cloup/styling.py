@@ -1,3 +1,7 @@
+"""
+This module defines the classes that support the styling and theming of commands
+help page.
+"""
 import dataclasses as dc
 from typing import Callable, NamedTuple, Optional
 
@@ -9,6 +13,7 @@ IStyle = Callable[[str], str]
 """A callable that takes a string and returns a styled version of it."""
 
 
+# noinspection PyUnresolvedReferences
 class HelpTheme(NamedTuple):
     """A collection of styles for several elements of the help page.
 
@@ -18,33 +23,47 @@ class HelpTheme(NamedTuple):
     basic styling functionality built-in, Cloup provides the :class:`Style`
     class, which is a wrapper of the ``click.style`` function.
 
-    *Implementation note:* this should have been a frozen ``dataclass``
-    but I had to use ``NamedTuple`` instead to work around a MyPy issue
-    (https://github.com/python/mypy/issues/5485).
+    :param invoked_command:
+        Style of the invoked command name (in Usage).
+    :param command_help:
+        Style of the invoked command description (below Usage).
+    :param heading:
+        Style of help section headings.
+    :param constraint:
+        Style of an option group constraint description.
+    :param section_help:
+        Style of the help text of a section (the optional paragraph below the heading).
+    :param col1:
+        Style of the first column of a definition list (options and command names).
+    :param col2:
+        Style of the second column of a definition list (help text).
+    :param epilog:
+        Style of the epilog.
     """
-    #: Style of the invoked command name (in Usage).
+
     invoked_command: IStyle = identity
+    """Style of the invoked command name (in Usage)."""
 
-    #: Style of the invoked command description (below "Usage").
     command_help: IStyle = identity
+    """Style of the invoked command description (below Usage)."""
 
-    #: Style of help section headings.
     heading: IStyle = identity
+    """Style of help section headings."""
 
-    #: Style of an option group constraint description.
     constraint: IStyle = identity
+    """Style of an option group constraint description."""
 
-    #: Style of the help text of a section (the optional paragraph below the heading).
     section_help: IStyle = identity
+    """Style of the help text of a section (the optional paragraph below the heading)."""
 
-    #: Style of the first column of a definition list (options and command names).
     col1: IStyle = identity
+    """Style of the first column of a definition list (options and command names)."""
 
-    #: Style of the second column of a definition list (help text).
     col2: IStyle = identity
+    """Style of the second column of a definition list (help text)."""
 
-    #: Style of the epilog.
     epilog: IStyle = identity
+    """Style of the epilog."""
 
     def with_(
         self, invoked_command: Optional[IStyle] = None,
@@ -64,6 +83,7 @@ class HelpTheme(NamedTuple):
 
     @staticmethod
     def dark():
+        """A theme assuming a dark terminal background color."""
         return HelpTheme(
             invoked_command=Style(fg='bright_yellow'),
             heading=Style(fg='bright_white', bold=True),
@@ -74,6 +94,7 @@ class HelpTheme(NamedTuple):
 
     @staticmethod
     def light():
+        """A theme assuming a light terminal background color."""
         return HelpTheme(
             invoked_command=Style(fg='yellow'),
             heading=Style(fg='bright_blue'),
@@ -85,23 +106,34 @@ class HelpTheme(NamedTuple):
 
 @dc.dataclass(frozen=True)
 class Style:
-    """Wraps func:`click.style` for a better integration with :class:`HelpTheme`.
+    """Wraps :func:`click.style` for a better integration with :class:`HelpTheme`.
 
-    Available colors are defined as static constants in :class:`click.styling.Color`.
+    Available colors are defined as static constants in :class:`Color`.
 
     Arguments are set to ``None`` by default. Passing ``False`` to boolean args
     or ``Color.reset`` as color causes a reset code to be inserted.
 
-    This class is conceptually to a partial application of :func:`click.style`
-    (see :func:`functools.partial` if you don't know what "partial" means).
-    This class has one argument less (``reset``, which is always ``True``)
-    and an argument more (``text_transform``).
+    With respect to :func:`click.style`, this class:
 
-    See func:`click.style` for more info.
+    - has an argument less, ``reset``, which is always ``True``
+    - add the ``text_transform``.
 
     .. warning::
         The arguments ``overline``, ``italic`` and ``strikethrough`` are only
         supported in Click 8 and will be ignored if you are using Click 7.
+
+    :param fg: foreground color
+    :param bg: background color
+    :param bold:
+    :param dim:
+    :param underline:
+    :param overline:
+    :param italic:
+    :param blink:
+    :param reverse:
+    :param strikethrough:
+    :param text_transform:
+        a generic string transformation; useful to apply functions like ``str.upper``
 
     .. versionadded:: 0.8.0
     """
@@ -115,8 +147,8 @@ class Style:
     blink: Optional[bool] = None
     reverse: Optional[bool] = None
     strikethrough: Optional[bool] = None
-    #: A generic text transformation; use it to pass function like ``str.upper``.
     text_transform: Optional[IStyle] = None
+
     _style_kwargs: Optional[dict] = dc.field(init=False, default=None)
 
     def __call__(self, text: str) -> str:
@@ -135,6 +167,7 @@ class Style:
 
 
 class Color(FrozenSpace):
+    """Colors accepted by :class:`Style` and :func:`click.style`."""
     black = "black"
     red = "red"
     green = "green"

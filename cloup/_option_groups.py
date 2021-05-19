@@ -15,11 +15,11 @@ from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
 C = TypeVar('C', bound=Callable)
 
-#: A decorator that registers an option to the wrapped function
 OptionAdder = Callable[[C], C]
+"""A decorator that registers an option to the wrapped function."""
 
-#: A decorator that registers an option group to the wrapped function
 OptionGroupAdder = Callable[[C], C]
+"""A decorator that registers an option group to the wrapped function."""
 
 
 class OptionGroup:
@@ -27,7 +27,13 @@ class OptionGroup:
                  help: Optional[str] = None,
                  constraint: Optional[Constraint] = None,
                  hidden: bool = False):
-        """
+        """Contains the information of an option group and identifies it.
+        Note that, as far as the clients of this library are concerned, an
+        ``OptionGroups`` acts as a "marker" for options, not as a container for
+        related options. When you call ``@optgroup.option(...)`` you are not
+        adding an option to a container, you are just adding an option marked
+        with this option group.
+
         .. versionadded:: 0.8.0
             The ``hidden`` parameter.
         """
@@ -247,23 +253,33 @@ def option_group(
 # noinspection PyIncorrectDocstring
 def option_group(name, *args, **kwargs):
     """
-    Attaches an option group to the command. This decorator is overloaded with
-    two signatures::
+    Returns a decorator that annotates a function with an option group.
 
-        @option_group(name: str, *options, help: Optional[str] = None, ...)
-        @option_group(name: str, help: str, *options, ...)
+    The ``help`` is an optional description and can be provided either as keyword
+    argument or as 2nd positional argument after the ``name`` of the group::
 
-    In other words, if the second position argument is a string, it is interpreted
-    as the "help" argument. Otherwise, it is interpreted as the first option;
-    in this case, you can still pass the help as keyword argument.
+        # help as keyword argument
+        @option_group(name, *options, help=None, ...)
 
-    :param name: a mandatory name/title for the group
-    :param help: an optional help string for the group
-    :param options: option decorators like `click.option`
-    :param constraint: a ``Constraint`` to validate on this option group
-    :param hidden: hide this option group
-    :return: a decorator that attaches the contained options to the decorated
-             function
+        # help as 2nd positional argument
+        @option_group(name, help, *options, ...)
+
+    :param name:
+        this is shown as heading of the help section describing the option group.
+    :param help:
+        an optional description shown below the name; can be provided as keyword
+        argument or 2nd positional argument.
+    :param options:
+        an arbitrary number of decorators like `click.option`, which annotate
+        the input function with one ``Option``.
+    :param constraint:
+        an optional instance of :class:`~cloup.constraints.Constraint`
+        (see :doc:`constraints` for more info); a description of the constraint will
+        be shown between squared brackets aside the option group title (or below it
+        if too long).
+    :param hidden:
+        if ``True``, the option group and all its options are hidden from the help page
+        (all contained options will have their ``hidden`` attribute set to ``True``).
     """
     if args and isinstance(args[0], str):
         return _option_group(name, options=args[1:], help=args[0], **kwargs)

@@ -41,16 +41,17 @@ Definition = Tuple[str, Union[str, Callable[[int], str]]]
 class HelpSection:
     """A container for a help section data."""
     heading: str
+    """Help section title."""
 
-    #: Rows with 2 columns each. The 2nd element of each row can also be a function
-    #: taking an integer (the available width for the 2nd column) and returning a string.
     definitions: Sequence[Definition]
+    """Rows with 2 columns each. The 2nd element of each row can also be a function
+    taking an integer (the available width for the 2nd column) and returning a string."""
 
-    #: (Optional) long description of the section.
     help: Optional[str] = None
+    """(Optional) long description of the section."""
 
-    #: (Optional) option group constraint description
     constraint: Optional[str] = None
+    """(Optional) option group constraint description."""
 
 
 # noinspection PyMethodMayBeStatic
@@ -59,11 +60,11 @@ class HelpFormatter(click.HelpFormatter):
     A custom help formatter. Features include:
 
     - more attributes for controlling the output of the formatter
-    - a ``col1_width`` parameter in :meth:`write_dl` that allows to align
-      multiple definition lists
-    - definition lists are formatted in tabular or "linear" form depending
-      on whether there's enough space to accomodate the 2nd column (the minimum
-      width for the 2nd columns is ``col2_min_width``)
+    - a ``col1_width`` parameter in :meth:`write_dl` that allows Cloup to align
+      multiple definition lists without resorting to hacks
+    - a "linear layout" for definition lists that kicks in when the available
+      terminal width is not enough for the standard 2-column layout
+      (see argument ``col2_min_width``)
     - the first column width, when not explicitly given in ``write_dl`` is
       computed excluding the rows that exceed ``col1_max_width``
       (called ``col_max`` in ``write_dl`` for compatibility with Click).
@@ -71,19 +72,31 @@ class HelpFormatter(click.HelpFormatter):
     .. versionadded:: 0.8.0
 
     :param indent_increment:
-        indentation width
+        width of each indentation increment.
     :param width:
-        content line width; by default it's initialized as the minimum of
-        the terminal width and the argument ``max_width``.
+        content line width; by default it's initialized to
+        ``min(terminal_width - 1, max_width)`` where ``max_width`` is another argument.
     :param max_width:
-        maximum content line width (corresponds to ``Context.max_content_width``.
-        Used to compute ``width`` if it is not provided; ignored otherwise.
+        maximum content line width (equivalent to ``Context.max_content_width``).
+        Used to compute ``width`` when it is not provided, ignored otherwise.
     :param col1_max_width:
-        the maximum width of the first column of a definition list.
+        the maximum width of the first column of a definition list; as in Click,
+        if the text of a row exceeds this threshold, the 2nd column is printed
+        on a new line.
+    :param col2_min_width:
+        the minimum width for the second column of a definition list; if the
+        available space is less than this value, the formatter switches from the
+        standard 2-column layout to the "linear layout" (that this decision
+        is taken for each definition list). If you want to always use the linear
+        layout, you can set this argument to a very high number (or ``math.inf``).
+        If you never want it (not recommended), you can set this argument to zero.
     :param col_spacing:
-        the (minimum) number of spaces between the columns of a definition list.
+        the number of spaces between the column boundaries of a definition list.
     :param row_sep:
         a string printed after each row of a definition list (including the last).
+    :param theme:
+        an :class:`~cloup.HelpTheme` instance specifying how to style the various
+        elements of the help page.
     """
 
     def __init__(
@@ -131,7 +144,11 @@ class HelpFormatter(click.HelpFormatter):
         """A utility method for creating a ``formatter_settings`` dictionary to
         pass as context settings or command attribute. This method exists for
         one only reason: it enables auto-complete for formatter options, thus
-        improving the developer experience."""
+        improving the developer experience.
+
+        Parameters are pretty self-explanatory. Refer to :class:`HelpFormatter`
+        in case of doubts.
+        """
         return {key: val for key, val in locals().items() if val is not None}
 
     @property

@@ -2,6 +2,10 @@
 
 REMOVE = python scripts/remove.py
 BROWSER = python scripts/browser.py
+COPYTREE = python scripts/copytree.py
+
+DOCS_HTML_DIR = docs/_build/html
+DOCS_HTML_STATIC = $(DOCS_HTML_DIR)/_static
 
 .PHONY: help
 help:
@@ -42,17 +46,17 @@ clean-docs: ## clean the documentation
 docs: ## generate Sphinx HTML documentation
 	$(MAKE) -C docs html
 
-.PHONY: re-docs
-re-docs: clean-docs docs ## (re)generate Sphinx HTML documentation from scratch
-
 .PHONY: view-docs
 view-docs: docs ## open the built docs in the default browser
-	$(BROWSER) docs/_build/html/index.html
+	$(BROWSER) $(DOCS_HTML_DIR)/index.html
 
-LIVE_DOCS = sphinx-autobuild docs docs/_build/html \
-	--watch *.rst \
-	--watch cloup/**/*.py \
-	--ignore docs/autoapi \
+.PHONY: re-docs
+re-docs: clean-docs view-docs ## (re)generate Sphinx HTML documentation from scratch
+
+LIVE_DOCS = sphinx-autobuild docs $(DOCS_HTML_DIR) \
+	--watch ./*.rst \
+	--watch ./cloup/**/*.py \
+	--ignore ./docs/autoapi/**/*.rst \
 	--open-browser
 
 .PHONY: live-docs
@@ -62,6 +66,14 @@ live-docs:   ## watch docs files and rebuild the docs when they change
 .PHONY: live-docs-all
 live-docs-all:   ## write all files (useful when working on html/css)
 	$(LIVE_DOCS) -a
+
+.PHONY: update-docs-static  ## copy docs static files into the build folder
+update-docs-static:
+	$(COPYTREE) docs/_static $(DOCS_HTML_STATIC)
+
+.PHONY: update-docs-css  ## copy docs css files into the build folder
+update-docs-css:
+	$(COPYTREE) docs/_static/styles $(DOCS_HTML_STATIC)/styles
 
 .PHONY: clean
 clean: clean-build clean-pyc clean-test ## remove all build, test, coverage and Python artifacts

@@ -170,8 +170,8 @@ class Constraint(abc.ABC):
 class Operator(Constraint, abc.ABC):
     """Base class for all n-ary operators defined on constraints. """
 
-    #: Used as separator of all constraints' help strings
     HELP_SEP: str
+    """Used as separator of all constraints' help strings."""
 
     def __init__(self, *constraints: Constraint):
         """N-ary operator for constraints.
@@ -442,24 +442,24 @@ class AcceptBetween(WrapperConstraint):
         return f'at least {self._min} required, at most {self._max} accepted'
 
 
-#: Satisfied if all parameters are set.
 require_all = _RequireAll()
+"""Satisfied if all parameters are set."""
 
-#: Satisfied if none of the parameters is set. Useful only in conditional constraints.
 accept_none = AcceptAtMost(0).rephrased(
     help='all forbidden',
     error='the following parameters should not be provided:\n{param_list}'
 )
+"""Satisfied if none of the parameters is set. Useful only in conditional constraints."""
 
-#: Satisfied if either all or none of the parameters are set.
 all_or_none = (require_all | accept_none).rephrased(
     help='provide all or none',
     error='the following parameters should be provided together (or none of '
           'them should be provided):\n{param_list}',
 )
+"""Satisfied if either all or none of the parameters are set."""
 
-#: Satisfied if at most one of the parameters is set.
 mutually_exclusive = AcceptAtMost(1).rephrased(
     help='mutually exclusive',
     error='the following parameters are mutually exclusive:\n{param_list}'
 )
+"""Satisfied if at most one of the parameters is set."""

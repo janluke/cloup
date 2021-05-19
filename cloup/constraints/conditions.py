@@ -1,6 +1,6 @@
 """
-This modules contains described predicates that you can use as conditions of
-conditional constraints (see :class:`cloup.constraints.If`).
+This modules contains predicates with an associated description that you can use
+as conditions of conditional constraints (see :class:`cloup.constraints.If`).
 
 Predicates should be treated as immutable objects, even though immutability
 is not (at the moment) enforced.
@@ -76,6 +76,7 @@ class Predicate(abc.ABC):
 
 
 class Not(Predicate, Generic[P]):
+    """Logical NOT of a predicate."""
     def __init__(self, predicate: P):
         self.predicate = predicate
 
@@ -96,9 +97,12 @@ class Not(Predicate, Generic[P]):
 
 
 class _Operator(Predicate, metaclass=abc.ABCMeta):
+    """Operator between two or more predicates."""
     DESC_SEP: str
 
     def __init__(self, *predicates: Predicate):
+        if len(predicates) < 2:
+            raise ValueError('provide at least 2 predicates')
         self.predicates = predicates
 
     def description(self, ctx: Context) -> str:
@@ -113,6 +117,7 @@ class _Operator(Predicate, metaclass=abc.ABCMeta):
 
 
 class _And(_Operator):
+    """Logical AND of two or more predicates."""
     DESC_SEP = ' and '
 
     def negated_description(self, ctx: Context) -> str:
@@ -131,6 +136,7 @@ class _And(_Operator):
 
 
 class _Or(_Operator):
+    """Logical OR of two or more predicates."""
     DESC_SEP = ' or '
 
     def negated_description(self, ctx: Context) -> str:
@@ -149,8 +155,8 @@ class _Or(_Operator):
 
 
 class IsSet(Predicate):
+    """True if the parameter is set."""
     def __init__(self, param_name: str):
-        """True if the parameter is set."""
         self.param_name = param_name
 
     def description(self, ctx: Context) -> str:

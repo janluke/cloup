@@ -123,7 +123,8 @@ class Context(click.Context):
         show_constraints: Optional[bool] = None,
         formatter_settings: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        """
+        """Utility method for creating a ``context_settings`` dictionary.
+
         :param auto_envvar_prefix:
             the prefix to use for automatic environment variables. If this is
             `None` then reading from environment variables is disabled. This

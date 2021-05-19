@@ -1,6 +1,6 @@
 sphinx
 sphinx-autoapi
-sphinx-book-theme
+furo
 sphinx-panels
 sphinx_copybutton
 sphinx-version-warning

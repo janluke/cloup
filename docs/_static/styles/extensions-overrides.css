@@ -1,0 +1,62 @@
+/*
+    copybutton
+*/
+a.copybtn {
+    cursor: pointer;
+    top: .4em;
+    right: .25em;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.o-tooltip--left::after {
+    padding: 5px 8px;
+    font-size: inherit;
+    border-radius: 4px;
+}
+
+/*
+    sphinx-panels tabs
+*/
+.tabbed-content {
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    box-shadow:0 -2px var(--tabs-color-overline),0 1px var(--tabs-color-underline);
+}
+
+.tabbed-set > label {
+    margin-bottom: 0 !important;
+    padding: .4em 1.25em !important;
+}
+
+.tabbed-label:hover {
+    background-color: rgba(200, 200, 200, 0.1);
+    border-bottom: 2px solid var(--tabs-color-overline);
+}
+
+
+/*
+    version-warning-banner
+*/
+#version-warning-banner {
+    position: fixed;
+    bottom: 10px;
+    left: 50%;
+    max-width: 100%;
+    transform: translateX(-50%);
+    z-index: 10;
+    padding: 0.5em 1em;
+    margin: 0;
+    border-radius: 10px;
+    background: #d40 repeating-linear-gradient(
+        135deg, transparent, transparent 56px, rgba(255, 255, 255, 0.2) 56px,
+        rgba(255, 255, 255, 0.2) 112px );
+    color: white;
+    text-align: center;
+}
+
+#version-warning-banner a {
+    color: white !important;
+    font-weight: bold;
+    text-decoration: underline;
+}

@@ -2,28 +2,15 @@
 Option groups
 =============
 
-.. highlight:: none
+.. highlight:: python
 
-Usage
------
+The @option_group decorator
+---------------------------
 The recommended way of defining option groups is through the decorator
-:func:`cloup.option_group`. This decorator is overloaded with two signatures;
-the only difference between the two is how you provide the ``help`` argument:
+:func:`~cloup.option_group`.
 
-.. code-block:: python
-
-    # help as keyword argument
-    @option_group(name, *options, [help], [constraint])
-
-    # help as 2nd positional argument
-    @option_group(name, help, *options, [constraint])
-
-- ``name`` is used as title of the option group help section,
-- ``help`` is an optional extended description of the option group, shown below
-  the name,
-- ``constraint`` is an optional instance of :class:`~cloup.constraints.Constraint`
-  (see :doc:`constraints` for more info); a description of the constraint is shown
-  between squared brackets in the option group title.
+.. autofunction:: cloup.option_group
+    :noindex:
 
 .. tabbed:: Code
     :new-group:
@@ -76,7 +63,7 @@ the only difference between the two is how you provide the ``help`` argument:
           --two TEXT            2nd input option
           --three TEXT          3rd input option
 
-        Output options [at least 1 required]:
+        Output options: [at least 1 required]
           --four / --no-four    1st output option
           --five TEXT           2nd output option
           --six TEXT            3rd output option
@@ -94,30 +81,109 @@ the only difference between the two is how you provide the ``help`` argument:
     case ``cloup.Command`` behaves like a normal ``click.Command``, naming it
     just "Options".
 
-In the example above, I used the :func:`cloup.option` decorator to define
-options but this is **entirely optional** as you can use :func:`click.option` as
-well. The only difference is that :func:`cloup.option` uses
-:class:`~cloup.GroupedOption` as default option class, which is just a
-:class:`click.Option` with an additional attribute called ``group``.
-Nonetheless, **you don't need** to use ``GroupedOption``, because the attribute
-``group`` will be added to any type of ``Option`` via monkey-patching anyway.
+In the example above, I used the :func:`cloup.option` decorator to define options
+but you can use :func:`click.option` as well. There's no practical difference
+between the two when using ``@option_group``.
 
-By default, the help columns of all option groups are aligned; this is consistent
-with how ``argparse`` format option groups and I think it's visually pleasing.
-Nonetheless, you can also format each option group independently passing
-``align_option_groups=False`` to ``@command()``.
+.. _aligned-vs-nonaligned-group:
+
+Aligned vs non-aligned groups
+-----------------------------
+By default, all option group help sections are **aligned**, meaning that they
+share the same column widths. Many people find this visually pleasing and this
+is also the default behavior of ``argparse``.
+
+Nonetheless, if some of your option groups have shorter options, alignment may
+result in a lot of wasted space and definitions quite far from option names,
+which is bad for readability. See this biased example to compare the two modes:
+
+.. tabbed:: Aligned
+
+    .. code-block:: none
+
+        Usage: clouptest [OPTIONS]
+
+          A CLI that does nothing.
+
+        Input options:
+          --one TEXT                   This description is more likely to be wrapped
+                                       when aligning
+          --two TEXT                   This description is more likely to be wrapped
+                                       when aligning
+          --three TEXT                 This description is more likely to be wrapped
+                                       when aligning
+
+        Output options:
+          --four                       This description is more likely to be wrapped
+                                       when aligning
+          --five TEXT                  This description is more likely to be wrapped
+                                       when aligning
+          --six TEXT                   This description is more likely to be wrapped
+                                       when aligning
+
+        Other options:
+          --seven [a|b|c|d|e|f|g|h|i]  First uncategorized option
+          --height TEXT                Second uncategorized option
+          --help                       Show this message and exit.
+
+.. tabbed:: Non-aligned
+
+    .. code-block:: none
+
+        Usage: clouptest [OPTIONS]
+
+          A CLI that does nothing.
+
+        Input options:
+          --one TEXT    This description is more likely to be wrapped when aligning.
+          --two TEXT    This description is more likely to be wrapped when aligning.
+          --three TEXT  This description is more likely to be wrapped when aligning.
+
+        Output options:
+          --four       This description is more likely to be wrapped when aligning.
+          --five TEXT  This description is more likely to be wrapped when aligning.
+          --six TEXT   This description is more likely to be wrapped when aligning.
+
+        Other options:
+          --seven [a|b|c|d|e|f|g|h|i]  First uncategorized option.
+          --height TEXT                Second uncategorized option.
+          --help                       Show this message and exit.
+
+In Cloup, you can format each option group independently from each other
+setting the ``@command`` parameter ``align_option_groups=False``.
+Since v0.8.0, this parameter is also available as a ``Context`` setting::
+
+    from cloup import Context, group
+
+    CONTEXT_SETTINGS = Context.settings(
+        align_option_groups=False,
+        ...
+    )
+
+    @group(context_settings=CONTEXT_SETTINGS)
+    def main():
+        pass
+
+.. note::
+    The problem of aligned groups can sometimes be solved decreasing the
+    :class:`HelpFormatter` parameter ``max_col1_width``, which defaults to 30.
 
 
-Alternative usage (flat style)
-------------------------------
-In "flat style", you first define your option groups. Then, you use the
-:meth:`~cloup.OptionGroup.option` decorator of :class:`~cloup.OptionGroup`:
+Alternative APIs
+----------------
+
+Option groups without nesting
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+While I largely prefer ``@option_group``, you may not like the additional level
+of indentation it requires. In that case, you may prefer the following way
+of defining option groups:
 
 .. code-block:: python
 
     from cloup import OptionGroup
     from cloup.constraints import SetAtLeast
 
+    # OptionGroup takes all arguments of @option_group but *options
     input_grp = OptionGroup(
         'Input options', help='This is a very useful description of the group')
     output_grp = OptionGroup(
@@ -138,38 +204,99 @@ Equivalently, you could pass the option group as an argument to ``cloup.option``
 
 .. code-block:: python
 
-    @option('-o', '--one', help='1st input option', group=input_grp)
+    @cloup.option('-o', '--one', help='1st input option', group=input_grp)
 
-Note that this works only with ``cloup.option``, not ``click.option``.
+Note that, in both cases, :class:`OptionGroup` instances work as "markers" for
+options, not as containers of options: when you add an option nothing happens
+to the corresponding option group.
+
+Option groups without decorators
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+For some reason, you may need to work at a lower level, by passing parameters
+to a ``Command`` constructor. In that case you can use :class:`GroupedOption`::
+
+    from cloup import Command, GroupedOption, OptionGroup
+
+    output_opts = OptionGroup("Output options")
+
+    params = [
+        GroupedOption('--verbose', is_flag=True, group=output_opts),
+        ...
+    ]
+
+    cmd = Command(..., params=params, ...)
+
+
+Reusing/modularizing option groups
+----------------------------------
+Some people have asked how to reuse option groups in multiple commands and how
+to put particularly long option groups in their own files. This is easy if you
+know how Python decorator works. First, you store the decorator returned by
+``option_group`` (called without a ``@``) in a variable::
+
+    from cloup import option_group
+
+    output_options = option_group(
+        "Output options",
+        option(...),
+        option(...),
+        ...
+    )
+
+Then you can use the decorator as many times as you want::
+
+    @command()
+    # other decorators...
+    @output_options
+    # other decorators ...
+    def foo()
+        ...
+
+Of course, if ``output_options`` is defined in a different file, don't forget to
+import it!
+
+.. admonition:: Terminology-nazi note
+
+    It's worth noting that ``output_options`` in the example above is **not**
+    an option group, it's just a function that recreate the same ``OptionGroup``
+    object and all its options every time it is called. So, technically, you're
+    not "reusing an option group".
+
 
 How it works
 ------------
-This feature is implemented simply by adding an attribute ``group`` to options,
-monkey-patching them if they are not of type ``GroupedOption``. This attribute
-is of type ``OptionGroup`` or ``None``.
+This feature is implemented simply by annotating each option with an additional
+attribute ``group`` of type ``Optional[OptionGroup]``. Unless the option is of
+class ``GroupedOption``, this ``group`` attribute is added and set by monkey-patching.
 
-When the command is initialized, ``OptionGroupMixin`` just groups all options by
+When the command is initialized, ``OptionGroupMixin`` groups all options by
 their ``group`` attribute. Options that don't have a ``group`` attribute or have
-it set to ``None`` are put into the "default option group"
-(together with ``--help``).
+it set to ``None`` are put into the "default option group" (together with
+``--help``).
 
-In order to show option groups in the command help,
-``OptionGroupMixin`` "overrides" ``Command.format_options``.
+In order to show option groups in the command help, ``OptionGroupMixin``
+"overrides" ``Command.format_options``.
 
 
 Feature support
 ---------------
-.. note::
-    If you use command classes/decorators (re)defined by Cloup, you can skip
-    this section.
 
-This features depends on:
+This features depends on two mixins:
 
 - (*required*) :class:`~cloup.OptionGroupMixin`
 - (*optional*) :class:`~cloup.ConstraintMixin`, if you want to use constraints.
 
-Note that ``cloup.Command`` includes both while ``cloup.Group`` doesn't include
-neither of them: groups should have only a few options, so they should not need
-neither option groups nor constraints. (If you disagree, open an issue describing
-why you need it.) Anyway, you can always add this mixins to ``Group`` with two
-lines of code.
+``cloup.Command`` is the only command class that supports this feature, including
+both these mixins.
+
+.. attention::
+    ``cloup.Group`` doesn't support option groups nor constraints.
+    This is intentional: a ``Group`` should have only a few options, so they
+    should not need neither option groups nor constraints. (But I may be wrong;
+    if you disagree, open an issue describing your use case). Anyway, you can
+    easily subclass ``cloup.Group`` to include the above mixins::
+
+        from cloup import ConstraintMixin, OptionGroupMixin, Group
+
+        class MyGroup(ConstraintMixin, OptionGroupMixin, Group):
+            pass
