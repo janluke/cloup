@@ -4,7 +4,7 @@ This example shows how a real-world application could look like and serves to me
 as a test bench for trying out styling and formatting.
 """
 import cloup
-from cloup import Context, HelpFormatter, HelpTheme, Style
+from cloup import Color, Context, HelpFormatter, HelpTheme, Style
 from config import cfg
 from render import render
 
@@ -15,18 +15,22 @@ CONTEXT_SETTINGS = Context.settings(
     align_sections=True,  # subcommand help sections
     # color=False,
     formatter_settings=HelpFormatter.settings(
+        # width=None,
         # max_width=80,
-        theme=HelpTheme.dark().with_(
-            # invoked_command=None,
-            heading=Style(fg='bright_white', underline=True),
-            constraint=Style(fg='red'),
-            # section_help=None,
-            # col1=None,
-            col2=Style(dim=True),
-            epilog=Style(fg='bright_white', italic=True),
-        ),
+        # col1_max_width=30
+        # col2_min_width=35,
         # indent_increment=2,
         # row_sep='\n',
+        theme=HelpTheme.dark().with_(
+            # invoked_command=Style(...),
+            # command_help=Style(...),
+            # heading=Style(...),
+            # constraint=Style(fg='red'),
+            # section_help=Style(...),
+            # col1=Style(...),
+            col2=Style(dim=True),
+            epilog=Style(fg=Color.bright_white, italic=True),
+        ),
     ),
 )
 
