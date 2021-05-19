@@ -107,7 +107,8 @@ Basic example
         cmd(prog_name='invoked-command')
 
 
-.. image:: https://raw.githubusercontent.com/janLuke/cloup/master/docs/_static/styles/basic-example.png
+.. image:: https://www.dropbox.com/s/ev9lljp2v3ndonu/basic-example.png?raw=1
+    :alt: Basic example --help screenshot
 
 
 Supporting the project
