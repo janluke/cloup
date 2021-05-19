@@ -144,7 +144,11 @@ class HelpFormatter(click.HelpFormatter):
         """A utility method for creating a ``formatter_settings`` dictionary to
         pass as context settings or command attribute. This method exists for
         one only reason: it enables auto-complete for formatter options, thus
-        improving the developer experience."""
+        improving the developer experience.
+
+        Parameters are pretty self-explanatory. Refer to :class:`HelpFormatter`
+        in case of doubts.
+        """
         return {key: val for key, val in locals().items() if val is not None}
 
     @property
