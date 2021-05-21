@@ -17,7 +17,9 @@ def param_value_is_set(param: Parameter, value: Any) -> bool:
     """
     if value is None:
         return False
-    elif isinstance(param, Option) and param.is_bool_flag:
+    # checking for param.is_flag is redundant but necessary to work around
+    # Click 8.0.1 issue: https://github.com/pallets/click/issues/1925
+    elif isinstance(param, Option) and param.is_flag and param.is_bool_flag:
         return value
     elif param.nargs != 1 or param.multiple:
         return len(value) > 0
