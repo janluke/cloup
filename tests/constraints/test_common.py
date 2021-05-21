@@ -7,7 +7,7 @@ from tests.util import bool_opt, flag_opt, int_opt, parametrize, multi_opt, tupl
 
 
 @parametrize(
-    'param_init,    value,      expected',
+    'param_type,    value,      expected',
     (Argument,      None,       False),
     (Argument,      'bu',       True),
     (Option,        None,       False),
@@ -20,10 +20,12 @@ from tests.util import bool_opt, flag_opt, int_opt, parametrize, multi_opt, tupl
     (tuple_opt,     (1, 2),     True),
     (multi_opt,     (),         False),
     (multi_opt,     (1, 2),     True),
+    ids=lambda val: val.__name__ if callable(val) else None,
 )
-def test_param_value_is_set(param_init, value, expected):
-    param = param_init(['-o'])
-    assert param_value_is_set(param, value) == expected
+def test_param_value_is_set(param_type, value, expected):
+    param = param_type(['-o'])
+    actual = param_value_is_set(param, value)
+    assert actual == expected
 
 
 def test_get_param_label():

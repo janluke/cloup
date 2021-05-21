@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-from functools import partial
 from typing import Iterable, List
 from unittest.mock import Mock
 
@@ -13,11 +12,24 @@ def noop(*args, **kwargs):
     pass
 
 
-int_opt = partial(Option, type=int)
-bool_opt = partial(Option, type=bool)
-flag_opt = partial(Option, is_flag=True)
-multi_opt = partial(Option, multiple=True)
-tuple_opt = partial(Option, nargs=3)
+def int_opt(*args, **kwargs):
+    return Option(*args, type=int, **kwargs)
+
+
+def bool_opt(*args, **kwargs):
+    return Option(*args, type=bool, **kwargs)
+
+
+def flag_opt(*args, **kwargs):
+    return Option(*args, is_flag=True, **kwargs)
+
+
+def multi_opt(*args, **kwargs):
+    return Option(*args, multiple=True, **kwargs)
+
+
+def tuple_opt(*args, **kwargs):
+    return Option(*args, nargs=3, **kwargs)
 
 
 def parametrize(argnames, *argvalues, **kwargs):
