@@ -18,8 +18,8 @@ setup(
     },
     author='Gianluca Gippetto',
     author_email='gianluca.gippetto@gmail.com',
-    description="Option groups and subcommand help sections for pallets/click",
-    long_description=readme + '\n\n' + history,
+    description="Adds features to Click: option groups, constraints, subcommand "
+                "sections and help themes.",
     long_description_content_type='text/x-rst',
     url='https://github.com/janLuke/cloup',
     license="BSD 3-Clause",
