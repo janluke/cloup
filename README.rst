@@ -134,8 +134,13 @@ issues, proposing improvements and contributing with your code!
 .. docs-home-end
 
 
-Documentation
-=============
+Useful Links
+============
 
-* `Latest stable release <https://cloup.readthedocs.io/en/stable/>`_
-* `Development version <https://cloup.readthedocs.io/en/latest/>`_
+* Documentation (release_ | development_)
+* `Changelog <https://cloup.readthedocs.io/en/stable/pages/changelog.html>`_
+* `GitHub repository <https://github.com/janLuke/cloup/discussions>`_
+* `Q&A and discussions <https://github.com/janLuke/cloup/discussions>`_
+
+.. _release: https://cloup.readthedocs.io/en/stable/
+.. _development: https://cloup.readthedocs.io/en/latest/
