@@ -103,6 +103,10 @@ dist: clean-build ## builds source and wheel package
 release: dist ## package and upload a release
 	twine upload dist/*
 
+.PHONY: test-release
+test-release: dist ## package and upload a release
+	twine upload --repository testpypi dist/*
+
 .PHONY: pip-compile
 pip-compile: ## pin dependencies in requirements/ using the current env
 	pip-compile requirements/test.in
