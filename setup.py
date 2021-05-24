@@ -23,7 +23,8 @@ setup(
     long_description_content_type='text/x-rst',
     url='https://github.com/janLuke/cloup',
     license="BSD 3-Clause",
-    keywords='cloup click option',
+    keywords=['CLI', 'click', 'argument groups', 'option groups', 'constraints',
+              'help colors', 'help themes', 'help styles'],
     classifiers=[
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
