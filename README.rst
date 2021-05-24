@@ -36,33 +36,25 @@ Overview
 **Latest release**    |pypi-release| |python-versions| |release-docs|
 ====================  ==========================================================
 
-**Cloup** [originally from: **Cl**\ick + option gr\ **oup**\s] is a library that
-extends `Click <https://github.com/pallets/click>`_ with several features
--- most notably, option groups -- sharing the common goal of improving the
-readability and customizability of the command ``--help``.
+**Cloup** (originally from: **Cl**\ick + option gr\ **oup**\s) extends
+`Click <https://github.com/pallets/click>`_ with several features:
 
-Features
-========
+- **Option groups** with the ``@option_group`` decorator.
 
-- **Option groups:** use the ``@option_group`` decorator to define option groups..
+- **Constraints** like ``mutually_exclusive``, ``RequireAtLeast(n)`` etc., which
+  can be applied, even *conditionally*, to option groups or to any group of
+  parameters (including positional arguments).
 
-- **Group constraints:** apply constraints (even *conditionally*) to option groups
-  or to any group of parameters (including positional arguments).
-  Available constraints include: ``mutually_exclusive``, ``RequireAtLeast(n)``,
-  ``AcceptAtMost(n)`` etc.
+- Possibility to organize the subcommands of a ``Group`` in multiple help sections.
 
-- **Help sections for subcommands:** organize the subcommands of a ``Group`` in
-  multiple help sections.
+- A **themeable HelpFormatter** that:
 
-- **A themeable HelpFormatter** that:
-
-  - allows you to style several elements of the ``--help`` according to a theme
-  - has more parameters that you can change per-context and per-command
+  - allows you to style several elements of the help page according to a theme
   - switches to a different layout when the terminal width is small for the
-    standard 2-column layout, so that the ``--help`` is readable in all circumstances.
+    standard 2-column layout, so that the help page is readable in all circumstances
+  - has more parameters, which give you more control on the format of the help page.
 
-
-Moreover, Cloup is:
+Besides, Cloup is:
 
 - **type-annotated** and provides additional methods so that you can always be
   assisted by your IDE (e.g. ``Context.settings()`` for creating a
@@ -70,6 +62,7 @@ Moreover, Cloup is:
 - **extensively tested** with multiple versions of Python and Click (see
   `Tests <https://github.com/janLuke/cloup/actions>`_)
 - **well-documented**.
+
 
 Basic example
 =============
