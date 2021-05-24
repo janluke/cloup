@@ -69,16 +69,21 @@ Basic example
 
 .. code-block:: python
 
-    from cloup import Context, HelpFormatter, HelpTheme, command, option, option_group
+    from cloup import HelpFormatter, HelpTheme, Style, command, option, option_group
     from cloup.constraints import RequireAtLeast, mutually_exclusive
 
-    SETTINGS = Context.settings(
-        formatter_settings=HelpFormatter.settings(
-            theme=HelpTheme.dark()
+    # Check the docs for all available arguments of HelpFormatter and HelpTheme.
+    formatter_settings = HelpFormatter.settings(
+        theme=HelpTheme(
+            invoked_command=Style(fg='bright_yellow'),
+            heading=Style(fg='bright_white', bold=True),
+            constraint=Style(fg='magenta'),
+            col1=Style(fg='bright_yellow'),
         )
     )
 
-    @command(context_settings=SETTINGS, no_args_is_help=True)
+    # In a multi-command app, you would pass formatter_settings inside context_settings.
+    @command(formatter_settings=formatter_settings)
     @option_group(
         "Cool options",
         option('--foo', help='This text should describe the option --foo.'),
@@ -102,6 +107,17 @@ Basic example
 
 .. image:: https://www.dropbox.com/s/ev9lljp2v3ndonu/basic-example.png?raw=1
     :alt: Basic example --help screenshot
+
+If you don't provide ``--pippo`` or ``--pluto``:
+
+.. code-block:: none
+
+    Usage: invoked-command [OPTIONS]
+    Try 'invoked-command --help' for help.
+
+    Error: at least 1 of the following parameters must be set:
+      --pippo
+      --pluto
 
 
 Supporting the project
