@@ -22,9 +22,15 @@ In Cloup we can distinguish two groups of formatting settings:
    these parameters can be passed to both ``Context`` and commands using the
    parameter ``formatter_settings``, which is a dictionary.
 
-In both cases, commands settings override those context settings.
-In the case of ``formatter_settings``, dictionaries are merged together with the
-command dictionary having higher priority.
+In both cases, commands settings override context settings.
+In the case of ``formatter_settings``, the final settings used by a command are
+obtained by merging the dictionaries like following:
+``{**ctx.formatter_settings, **command.formatter_settings}``.
+
+Context settings propagate to subcommands, while command settings don't.
+
+An example
+~~~~~~~~~~
 
 .. tip::
     In Cloup, you can use the static methods :meth:`Context.settings` and
@@ -78,20 +84,29 @@ styled version of it. This means you can use your favorite styling/color library
 
 Given that Click has some built-in basic styling functionality provided by the
 function :func:`click.style`, Cloup provides the :class:`~cloup.Style` class, which
-wraps it to facilitate its use with ``HelpTheme``.
+wraps ``click.style`` to facilitate its use with ``HelpTheme``.
 
 .. tip::
     Cloup also provides an *enum-like* class :class:`Color` containing all
     colors supported by Click.
 
-The following picture shows the help elements you can style through a theme
-(only ``epilog`` is missing):
+The following picture links ``HelpTheme`` arguments to the corresponding visual
+elements of the help page (only ``epilog`` is missing):
 
 .. image:: ../_static/theme-elems.png
     :alt: Elements
 
-For an always up-to-date list of all possible arguments these classes take refer
-to the API reference:
+The above image was obtained with the following theme::
+
+    HelpTheme(
+        invoked_command=Style(fg='bright_yellow'),
+        heading=Style(fg='bright_white', bold=True),
+        constraint=Style(fg='magenta'),
+        col1=Style(fg='bright_yellow'),
+    )
+
+For an always up-to-date list of all possible arguments these classes take,
+refer to the API reference:
 
 .. autosummary::
     HelpTheme
@@ -101,16 +116,12 @@ to the API reference:
 How to set a theme
 ~~~~~~~~~~~~~~~~~~
 
-The default theme doesn't apply any style to the help page. A different theme
-can be provided inside ``formatter_settings``. As written in the previous section,
-this argument (a dictionary) can be provided:
-
-- in ``context_settings``, to make it the default for all commands (of a command tree)
-- as a command parameter, to use it only with a specific command.
+You must provide a ``theme`` as part of the ``formatter_settings`` dictionary,
+as shown in `the example above <#an-example>`_.
 
 
-Available themes
-~~~~~~~~~~~~~~~~
+Available themes (and how to override parts of them)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Cloup provides two reasonable themes:
 
