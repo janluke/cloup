@@ -1,14 +1,9 @@
 #!/usr/bin/env python
 
-"""The setup script."""
-
 from setuptools import find_packages, setup
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
-
-with open('CHANGELOG.rst') as history_file:
-    history = history_file.read()
 
 setup(
     name='cloup',
@@ -21,6 +16,7 @@ setup(
     description="Adds features to Click: option groups, constraints, subcommand "
                 "sections and help themes.",
     long_description_content_type='text/x-rst',
+    long_description=readme,
     url='https://github.com/janLuke/cloup',
     license="BSD 3-Clause",
     keywords=['CLI', 'click', 'argument groups', 'option groups', 'constraints',
