@@ -9,7 +9,8 @@
     :google-site-verification: r5SEmg2wwCURBwKSrL_zQJEJbCVsScFhryur7zdFM3s
 
 .. include:: ../README.rst
-    :end-before: docs-home-end
+    :start-after: docs-index-start
+    :end-before: docs-index-end
 
 
 User guide

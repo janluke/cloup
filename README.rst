@@ -1,3 +1,25 @@
+.. raw:: html
+
+    <p align="center">
+        <img
+            src="https://raw.githubusercontent.com/janLuke/cloup/master/docs/_static/logo-on-white.svg"
+            width="50%" />
+    </p>
+
+    <p align="center">
+        <i>More features for <a href="https://github.com/pallets/click">Click</a>:
+        option groups, constraints, subcommands sections and a custom help formatter
+        supporting themes.</i>
+    </p>
+
+    <p align="center">
+        <a href="cloup.readthedocs.io/">cloup.readthedocs.io</a>
+    </a>
+
+----------
+
+.. docs-index-start
+
 .. |pypi-release| image:: https://img.shields.io/pypi/v/cloup.svg
     :alt: Latest release on PyPI
     :target: https://pypi.org/project/cloup/
@@ -108,9 +130,7 @@ Basic example
 .. image:: https://www.dropbox.com/s/ev9lljp2v3ndonu/basic-example.png?raw=1
     :alt: Basic example --help screenshot
 
-If you don't provide ``--pippo`` or ``--pluto``:
-
-.. code-block:: none
+If you don't provide ``--pippo`` or ``--pluto``::
 
     Usage: invoked-command [OPTIONS]
     Try 'invoked-command --help' for help.
@@ -131,7 +151,7 @@ donating. Any amount is appreciated.
 Apart from that, you can help the project by starring it on GitHub, reporting
 issues, proposing improvements and contributing with your code!
 
-.. docs-home-end
+.. docs-index-end
 
 
 Useful links
