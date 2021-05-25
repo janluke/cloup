@@ -12,8 +12,11 @@ Changelog
     ------------------
 
 
-v0.8.1 (2021-05-25)
-===================
+v0.8.1-2 (2021-05-25)
+=====================
+
+(I had to release v0.8.2 just after v0.8.1 to fix a docs issue)
+
 - Work around a minor Click 8.0.1 `issue <https://github.com/pallets/click/issues/1925>`_
   with boolean options which caused some Cloup tests to fail.
 
