@@ -99,7 +99,8 @@ Basic example
         )
     )
 
-    # In a multi-command app, you would pass formatter_settings inside context_settings.
+    # In a multi-command app, you would pass formatter_settings inside context_settings
+    # so that settings are propagated to subcommands.
     @command(formatter_settings=formatter_settings)
     @option_group(
         "Cool options",
@@ -122,7 +123,7 @@ Basic example
         cmd(prog_name='invoked-command')
 
 
-.. image:: https://www.dropbox.com/s/ev9lljp2v3ndonu/basic-example.png?raw=1
+.. image:: https://raw.githubusercontent.com/janLuke/cloup/master/docs/_static/basic-example.png
     :alt: Basic example --help screenshot
 
 If you don't provide ``--pippo`` or ``--pluto``::
@@ -133,6 +134,9 @@ If you don't provide ``--pippo`` or ``--pluto``::
     Error: at least 1 of the following parameters must be set:
       --pippo
       --pluto
+
+Read more on the
+`user guide <https://cloup.readthedocs.io/en/stable/#user-guide>`_.
 
 
 Supporting the project
