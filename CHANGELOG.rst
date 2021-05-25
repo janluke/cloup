@@ -12,11 +12,14 @@ Changelog
     ------------------
 
 
-v0.8.1 (unreleased)
+v0.8.1 (2021-05-25)
 ===================
-- Cosmetic: use a nicer logo.
 - Work around a minor Click 8.0.1 `issue <https://github.com/pallets/click/issues/1925>`_
   with boolean options which caused some Cloup tests to fail.
+
+- Cosmetic: use a nicer logo and add a GitHub "header" including it.
+
+- Slightly improved readme, docs and examples.
 
 
 v0.8.0 (2021-05-19)
