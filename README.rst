@@ -51,12 +51,7 @@
 ========
 Overview
 ========
-
-====================  ==========================================================
-**Development**       |tests-status| |coverage| |dev-docs| |donate|
---------------------  ----------------------------------------------------------
-**Latest release**    |pypi-release| |python-versions| |release-docs|
-====================  ==========================================================
+|pypi-release| |python-versions| |tests-status| |coverage| |dev-docs| |donate|
 
 **Cloup** (originally from: **Cl**\ick + option gr\ **oup**\s) extends
 `Click <https://github.com/pallets/click>`_ with several features:
