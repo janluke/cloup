@@ -134,12 +134,12 @@ issues, proposing improvements and contributing with your code!
 .. docs-home-end
 
 
-Useful Links
+Useful links
 ============
 
 * Documentation (release_ | development_)
 * `Changelog <https://cloup.readthedocs.io/en/stable/pages/changelog.html>`_
-* `GitHub repository <https://github.com/janLuke/cloup/discussions>`_
+* `GitHub repository <https://github.com/janLuke/cloup>`_
 * `Q&A and discussions <https://github.com/janLuke/cloup/discussions>`_
 
 .. _release: https://cloup.readthedocs.io/en/stable/
