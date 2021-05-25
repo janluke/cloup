@@ -136,7 +136,7 @@ If you don't provide ``--pippo`` or ``--pluto``::
       --pluto
 
 Read more on the
-`user guide <https://cloup.readthedocs.io/en/stable/#user-guide>`_.
+`website <https://cloup.readthedocs.io/en/stable/#user-guide>`_.
 
 
 Supporting the project
