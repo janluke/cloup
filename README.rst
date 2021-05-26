@@ -126,7 +126,9 @@ Basic example
 .. image:: https://raw.githubusercontent.com/janLuke/cloup/master/docs/_static/basic-example.png
     :alt: Basic example --help screenshot
 
-If you don't provide ``--pippo`` or ``--pluto``::
+If you don't provide ``--pippo`` or ``--pluto``:
+
+.. code-block:: none
 
     Usage: invoked-command [OPTIONS]
     Try 'invoked-command --help' for help.
@@ -134,9 +136,6 @@ If you don't provide ``--pippo`` or ``--pluto``::
     Error: at least 1 of the following parameters must be set:
       --pippo
       --pluto
-
-Read more on the
-`website <https://cloup.readthedocs.io/en/stable/#user-guide>`_.
 
 
 Supporting the project
@@ -161,5 +160,5 @@ Useful links
 * `GitHub repository <https://github.com/janLuke/cloup>`_
 * `Q&A and discussions <https://github.com/janLuke/cloup/discussions>`_
 
-.. _release: https://cloup.readthedocs.io/en/stable/
-.. _development: https://cloup.readthedocs.io/en/latest/
+.. _release: https://cloup.readthedocs.io/en/stable/#user-guide
+.. _development: https://cloup.readthedocs.io/en/latest/#user-guide
