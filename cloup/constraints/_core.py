@@ -1,14 +1,12 @@
 import abc
-from contextlib import contextmanager
 from typing import (
-    Callable, Iterable, Optional, Sequence, TypeVar, Union, overload
+    Callable, Iterable, Optional, Sequence, TypeVar, Union, overload,
 )
 
 import click
 from click import Context, Parameter
 
 from cloup._util import check_arg, class_name, make_one_line_repr, make_repr, pluralize
-from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 from .common import (
     format_param_list,
     get_param_label,
@@ -17,6 +15,7 @@ from .common import (
     get_required_params,
     param_value_is_set,
 )
+from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 
 Op = TypeVar('Op', bound='Operator')
 HelpRephraser = Callable[[Context, 'Constraint'], str]
@@ -29,30 +28,24 @@ class Constraint(abc.ABC):
     parameters with respect to a specific :class:`click.Context` (which
     contains the values assigned to the parameters in ``ctx.params``).
     """
-    __check_consistency: bool = True
 
-    @classmethod
-    def must_check_consistency(cls) -> bool:
-        """Returns True if consistency checks are enabled."""
-        return cls.__check_consistency
+    @staticmethod
+    def must_check_consistency(ctx: click.Context) -> bool:
+        """Returns True if consistency checks are enabled.
 
-    @classmethod
-    def toggle_consistency_checks(cls, value: bool):
-        """Enables/disables consistency checks. Enabling means that:
-
-        - :meth:`check` will call :meth:`check_consistency`
-        - :class:`~cloup.ConstraintMixin` will call `check_consistency` on
-          constraints it is responsible for before parsing CLI arguments.
+        .. versionchanged:: 0.9.0
+            This method now a static method and takes a ``Context`` in input.
         """
-        cls.__check_consistency = value
+        return getattr(ctx, 'check_constraints_consistency', True)
 
-    @classmethod
-    @contextmanager
-    def consistency_checks_toggled(cls, value: bool):
-        value_to_restore = Constraint.__check_consistency
-        cls.__check_consistency = value
-        yield
-        cls.__check_consistency = value_to_restore
+    def __getattr__(self, attr):
+        removed_attrs = ('toggle_consistency_checks', 'consistency_checks_toggled')
+        if attr in removed_attrs:
+            raise Exception(
+                f'{attr} was removed in v0.9.0. You can now enable/disable consistency'
+                f'checks using the Context parameter check_constraints_consistency. '
+                f'Pass it as part of your context_settings.'
+            )
 
     @abc.abstractmethod
     def help(self, ctx: Context) -> str:
@@ -71,7 +64,8 @@ class Constraint(abc.ABC):
         depend on the values assigned to the parameters; therefore:
 
         - they can be performed before any parameter parsing
-        - they can be disabled in production (see :meth:`toggle_consistency_checks`)
+        - they can be disabled in production (setting
+          ``check_constraints_consistency=False`` in ``context_settings``)
 
         :param params: list of :class:`click.Parameter` instances
         :raises: :exc:`~cloup.constraints.errors.UnsatisfiableConstraint`
@@ -114,7 +108,8 @@ class Constraint(abc.ABC):
         .. tip::
             By default :meth:`check_consistency` is called since it shouldn't
             have any performance impact. Nonetheless, you can disable it in
-            production passing ``False`` to :meth:`toggle_consistency_checks`.
+            production passing ``check_constraints_consistency=False`` as part
+            of your ``context_settings``.
 
         :param params: an iterable of parameter names or a sequence of
                        :class:`click.Parameter`
@@ -137,7 +132,7 @@ class Constraint(abc.ABC):
         params_objects = (ctx.command.get_params_by_name(params)
                           if isinstance(params[0], str)
                           else params)
-        if self.must_check_consistency():
+        if Constraint.must_check_consistency(ctx):
             self.check_consistency(params_objects)
         return self.check_values(params_objects, ctx)
 
