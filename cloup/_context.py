@@ -29,6 +29,9 @@ class Context(click.Context):
 
     Look up :class:`click.Context` for the list of all arguments.
 
+    .. versionchanged:: 0.9.0
+        Added parameter ``check_constraints_consistency``.
+
     .. versionadded:: 0.8.0
 
     :param ctx_args:
@@ -46,6 +49,9 @@ class Context(click.Context):
     :param show_constraints:
         whether to include a "Constraint" section in the command help (if at
         least one constraint is defined).
+    :param check_constraints_consistency:
+        enable additional checks for constraints which detects mistakes of the
+        developer (see :meth:`cloup.Constraint.check_consistency`).
     :param formatter_settings:
         keyword arguments forwarded to :class:`HelpFormatter` in ``make_formatter``.
         This args are merged with those of the (eventual) parent context and then
@@ -60,6 +66,7 @@ class Context(click.Context):
         align_option_groups: Optional[bool] = None,
         align_sections: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
+        check_constraints_consistency: bool = True,
         formatter_settings: Dict[str, Any] = {},
         **ctx_kwargs,
     ):
@@ -76,6 +83,7 @@ class Context(click.Context):
             show_constraints,
             getattr(self.parent, 'show_constraints', None),
         )
+        self.check_constraints_consistency = check_constraints_consistency
 
         if cloup.warnings.formatter_settings_conflict:
             _warn_if_formatter_settings_conflict(
@@ -121,6 +129,7 @@ class Context(click.Context):
         align_option_groups: Optional[bool] = None,
         align_sections: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
+        check_constraints_consistency: Optional[bool] = None,
         formatter_settings: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
         """Utility method for creating a ``context_settings`` dictionary.
@@ -184,6 +193,9 @@ class Context(click.Context):
         :param show_constraints:
             whether to include a "Constraint" section in the command help (if at
             least one constraint is defined).
+        :param check_constraints_consistency:
+            enable additional checks for constraints which detects mistakes of the
+            developer (see :meth:`cloup.Constraint.check_consistency`).
         :param formatter_settings:
             keyword arguments forwarded to :class:`HelpFormatter` in ``make_formatter``.
             This args are merged with those of the (eventual) parent context and then

@@ -98,7 +98,7 @@ class ConstraintMixin:
     def parse_args(self, ctx, args):
         all_constraints = self._optgroup_constraints + self._extra_constraints
         # Check parameter groups' consistency *before* parsing
-        if Constraint.must_check_consistency():
+        if Constraint.must_check_consistency(ctx):
             for constr in all_constraints:
                 constr.check_consistency()
         super().parse_args(ctx, args)

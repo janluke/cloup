@@ -3,21 +3,24 @@ from typing import Sequence
 from unittest import mock
 from unittest.mock import Mock
 
+import click
 import pytest
 from click import Command, Context, Parameter
 from pytest import mark
 
 from cloup.constraints import (
+    AcceptAtMost,
+    AcceptBetween,
     Constraint,
     Rephraser,
     RequireAtLeast,
-    AcceptAtMost,
-    AcceptBetween,
     RequireExactly,
     require_all,
 )
 from cloup.constraints.exceptions import ConstraintViolated, UnsatisfiableConstraint
-from tests.util import make_context, make_fake_context, make_options, should_raise
+from tests.util import (
+    make_context, make_fake_context, make_options, parametrize, should_raise
+)
 
 
 class FakeConstraint(Constraint):
@@ -34,15 +37,19 @@ class FakeConstraint(Constraint):
         self._help = help
         self.error = error
         self.inconsistency_reason = inconsistency_reason
+        self.check_consistency_calls = []
+        self.check_values_calls = []
 
     def help(self, ctx: Context) -> str:
         return self._help
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
+        self.check_consistency_calls.append(dict(params=params))
         if not self.consistent:
             raise UnsatisfiableConstraint(self, params, self.inconsistency_reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
+        self.check_values_calls.append(dict(params=params, ctx=ctx))
         if not self.satisfied:
             raise ConstraintViolated(self.error, ctx=ctx)
 
@@ -70,15 +77,18 @@ class TestBaseConstraint:
         with should_raise(exc_class, when=not (consistent and satisfied)):
             cons(['a', 'b'], ctx)
 
-    def test_check_consistency_is_not_called_when_disabled(self):
-        ctx = make_fake_context(make_options('abc'))
-        dummy_params = ['a', 'b']
-        with Constraint.consistency_checks_toggled(False):
-            assert not Constraint.must_check_consistency()
-            constr = Mock(wraps=FakeConstraint())
-            constr(dummy_params, ctx)
-            assert constr.check_consistency.call_count == 0
-        assert Constraint.must_check_consistency()
+    @parametrize(
+        ['ctx_kwargs', 'should_check'],
+        pytest.param(dict(cls=click.Context), True, id='click.Context [no setting]'),
+        pytest.param(dict(), True, id='cloup.Context [default]'),
+        pytest.param(dict(check_constraints_consistency=False), False, id='disabled'),
+    )
+    def test_check_consistency_is_called_unless_disabled(self, ctx_kwargs, should_check):
+        ctx = make_fake_context(make_options('abc'), **ctx_kwargs)
+        constr = FakeConstraint()
+        constr.check(['a', 'b'], ctx)
+        assert Constraint.must_check_consistency(ctx) == should_check
+        assert len(constr.check_consistency_calls) == int(should_check)
 
 
 class TestAnd:

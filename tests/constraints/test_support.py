@@ -7,7 +7,7 @@ from click import Argument, Option
 from pytest import mark
 
 import cloup
-from cloup import ConstraintMixin
+from cloup import ConstraintMixin, Context
 from cloup.constraints import Constraint
 from tests.constraints.test_constraints import FakeConstraint
 from tests.util import noop
@@ -44,20 +44,20 @@ def test_constraints_are_checked_according_to_protocol(runner, do_check_consiste
         Mock(spec_set=Constraint, wraps=FakeConstraint()),
         Mock(spec_set=Constraint, wraps=FakeConstraint()),
     ]
+    settings = Context.settings(check_constraints_consistency=do_check_consistency)
 
-    @cloup.command()
+    @cloup.command(context_settings=settings)
     @cloup.option_group('first', cloup.option('--a'), cloup.option('--b'),
                         constraint=constraints[0])
     @cloup.option_group('second', cloup.option('--c'), cloup.option('--d'),
                         constraint=constraints[1])
     @cloup.constraint(constraints[2], ['a', 'c'])
-    def cmd(a, b, c, d):
+    @cloup.pass_context
+    def cmd(ctx, a, b, c, d):
+        assert Constraint.must_check_consistency(ctx) == do_check_consistency
         print(f'{a}, {b}, {c}, {d}')
 
-    with Constraint.consistency_checks_toggled(do_check_consistency):
-        assert Constraint.must_check_consistency() == do_check_consistency
-        result = runner.invoke(cmd, args='--a=1 --c=2'.split(),
-                               catch_exceptions=False)
+    result = runner.invoke(cmd, args='--a=1 --c=2'.split())
 
     assert result.output.strip() == '1, None, 2, None'
     for constr, opt_names in zip(constraints, [['a', 'b'], ['c', 'd'], ['a', 'c']]):
