@@ -399,21 +399,28 @@ micro-optimization likely to be completely irrelevant in practice.
 
 Current consistency checks should not have any relevant impact on performance,
 so they are enabled by default. Nonetheless, they are completely useless in
-production, so I added the possibility to turn them off (globally) using the
-class method :meth:`Constraint.toggle_consistency_checks`. Just because I could.
+production, so I added the possibility to turn them off (globally) passing
+``check_constraints_consistency=False`` as part of your ``context_settings``.
+Just because I could.
 
-To disable them only in production, you should set an environment variable in the
-system you use for development, say ``PYTHON_ENV="dev"``; then you can put the
-following code in the entry-point of your program:
+To disable them only in production, you should set an environment variable in
+your development machine, say ``PYTHON_ENV="dev"``; then you can put the
+following code at the entry-point of your program:
 
 .. code-block:: python
 
     import os
+    from cloup import Context
 
-    # Enable consistency checks only if PYTHON_ENV is defined and equal to 'dev'
-    Constraint.toggle_consistency_checks(
-        os.getenv('PYTHON_ENV') == 'dev'
+    SETTINGS = Context.setting(
+        check_constraints_consistency=(os.getenv('PYTHON_ENV') == 'dev')
+        # ... other settings ...
     )
+
+    @group(context_settings=SETTINGS)
+    # ...
+    def main(...):
+        ...
 
 Have I already mentioned that this is probably not worth the effort?
 
