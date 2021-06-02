@@ -16,14 +16,12 @@ certifi==2020.12.5
     # via requests
 chardet==4.0.0
     # via requests
-colorama==0.4.4
-    # via sphinx
 docutils==0.16
     # via
     #   sphinx
     #   sphinx-panels
 furo==2021.4.11b34
-    # via -r requirements/docs.in
+    # via -r docs.in
 idna==2.10
     # via requests
 imagesize==1.2.0
@@ -53,18 +51,18 @@ snowballstemmer==2.1.0
 soupsieve==2.2.1
     # via beautifulsoup4
 sphinx-autoapi==1.8.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-copybutton==0.3.1
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-issues==1.2.0
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-panels==0.5.2
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx-version-warning==1.1.2
-    # via -r requirements/docs.in
+    # via -r docs.in
 sphinx==3.5.4
     # via
-    #   -r requirements/docs.in
+    #   -r docs.in
     #   furo
     #   sphinx-autoapi
     #   sphinx-copybutton
@@ -85,7 +83,7 @@ sphinxcontrib-serializinghtml==1.1.4
     # via sphinx
 unidecode==1.2.0
     # via sphinx-autoapi
-urllib3==1.26.4
+urllib3==1.26.5
     # via requests
 wrapt==1.12.1
     # via astroid
