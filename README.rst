@@ -13,7 +13,7 @@
     </p>
 
     <p align="center">
-        <a href="cloup.readthedocs.io/">cloup.readthedocs.io</a>
+        <a href="https://cloup.readthedocs.io/">https://cloup.readthedocs.io/</a>
     </a>
 
 ----------
