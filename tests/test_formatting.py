@@ -105,7 +105,6 @@ def test_row_sep():
 def test_formatter_settings_creation():
     assert HelpFormatter.settings() == {}
     assert HelpFormatter.settings(
-        width=None, max_width=None,
         indent_increment=4, col_spacing=3
     ) == dict(indent_increment=4, col_spacing=3)
 

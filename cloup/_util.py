@@ -1,11 +1,28 @@
 """Generic utilities."""
-from typing import Any, Dict, Iterable, List, Optional, TypeVar
+from enum import Enum
+from typing import Any, Dict, Iterable, List, Optional, TypeVar, Union
 
 import click
 
 click_version_tuple = click.__version__.split('.')
 
 T = TypeVar('T')
+K = TypeVar('K')
+V = TypeVar('V')
+
+
+# PEP-blessed solution for defining a Singleton type:
+# https://www.python.org/dev/peps/pep-0484/#id30
+class _Null(Enum):
+    token = 0
+
+
+NULL = _Null.token
+Possibly = Union[_Null, T]
+
+
+def pick_non_null(d: Dict[K, V]) -> Dict[K, V]:
+    return {key: val for key, val in d.items() if val is not NULL}
 
 
 def class_name(obj):

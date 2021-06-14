@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Type
 import click
 
 import cloup
-from cloup._util import coalesce
+from cloup._util import Possibly, NULL, coalesce, pick_non_null
 from cloup.formatting import HelpFormatter
 
 
@@ -114,23 +114,23 @@ class Context(click.Context):
 
     @staticmethod
     def settings(
-        *, auto_envvar_prefix: Optional[bool] = None,
-        default_map: Optional[Dict[str, Any]] = None,
-        terminal_width: Optional[int] = None,
-        max_content_width: Optional[int] = None,
-        resilient_parsing: Optional[bool] = None,
-        allow_extra_args: Optional[bool] = None,
-        allow_interspersed_args: Optional[bool] = None,
-        ignore_unknown_options: Optional[bool] = None,
-        help_option_names: Optional[List[str]] = None,
-        token_normalize_func: Optional[Callable[[str], str]] = None,
-        color: Optional[bool] = None,
-        show_default: Optional[bool] = None,
-        align_option_groups: Optional[bool] = None,
-        align_sections: Optional[bool] = None,
-        show_constraints: Optional[bool] = None,
-        check_constraints_consistency: Optional[bool] = None,
-        formatter_settings: Optional[Dict[str, Any]] = None,
+        *, auto_envvar_prefix: Possibly[bool] = NULL,
+        default_map: Possibly[Dict[str, Any]] = NULL,
+        terminal_width: Possibly[int] = NULL,
+        max_content_width: Possibly[int] = NULL,
+        resilient_parsing: Possibly[bool] = NULL,
+        allow_extra_args: Possibly[bool] = NULL,
+        allow_interspersed_args: Possibly[bool] = NULL,
+        ignore_unknown_options: Possibly[bool] = NULL,
+        help_option_names: Possibly[List[str]] = NULL,
+        token_normalize_func: Possibly[Callable[[str], str]] = NULL,
+        color: Possibly[bool] = NULL,
+        show_default: Possibly[bool] = NULL,
+        align_option_groups: Possibly[bool] = NULL,
+        align_sections: Possibly[bool] = NULL,
+        show_constraints: Possibly[bool] = NULL,
+        check_constraints_consistency: Possibly[bool] = NULL,
+        formatter_settings: Possibly[Dict[str, Any]] = NULL,
     ) -> Dict[str, Any]:
         """Utility method for creating a ``context_settings`` dictionary.
 
@@ -176,7 +176,7 @@ class Context(click.Context):
             insensitive behavior.
         :param color:
             controls if the terminal supports ANSI colors or not. The default
-            is autodetection. This is only needed if ANSI codes are used in
+            is auto-detection. This is only needed if ANSI codes are used in
             texts that Click prints which is by default not the case. This for
             instance would affect help output.
         :param show_default: Show defaults for all options. If not set,
@@ -203,4 +203,4 @@ class Context(click.Context):
             **Tip**: use the static method :meth:`HelpFormatter.opts` to create this
             dictionary, so that you can be guided by your IDE.
         """
-        return {key: val for key, val in locals().items() if val is not None}
+        return pick_non_null(locals())

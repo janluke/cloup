@@ -9,7 +9,9 @@ from typing import (
 import click
 from click.formatting import wrap_text
 
-from cloup._util import check_positive_int, identity, indent_lines, make_repr
+from cloup._util import (
+    Possibly, NULL, check_positive_int, identity, indent_lines, make_repr, pick_non_null
+)
 from cloup.styling import HelpTheme, IStyle
 
 
@@ -132,14 +134,14 @@ class HelpFormatter(click.HelpFormatter):
 
     @staticmethod
     def settings(
-        *, width: Optional[int] = None,
-        max_width: Optional[int] = None,
-        indent_increment: Optional[int] = None,
-        col1_max_width: Optional[int] = None,
-        col2_min_width: Optional[int] = None,
-        col_spacing: Optional[int] = None,
-        row_sep: Optional[str] = None,
-        theme: Optional[HelpTheme] = None,
+        *, width: Possibly[Optional[int]] = NULL,
+        max_width: Possibly[Optional[int]] = NULL,
+        indent_increment: Possibly[int] = NULL,
+        col1_max_width: Possibly[int] = NULL,
+        col2_min_width: Possibly[int] = NULL,
+        col_spacing: Possibly[int] = NULL,
+        row_sep: Possibly[str] = NULL,
+        theme: Possibly[HelpTheme] = NULL,
     ) -> Dict[str, Any]:
         """A utility method for creating a ``formatter_settings`` dictionary to
         pass as context settings or command attribute. This method exists for
@@ -147,9 +149,9 @@ class HelpFormatter(click.HelpFormatter):
         improving the developer experience.
 
         Parameters are pretty self-explanatory. Refer to :class:`HelpFormatter`
-        in case of doubts.
+        in case of doubt.
         """
-        return {key: val for key, val in locals().items() if val is not None}
+        return pick_non_null(locals())
 
     @property
     def available_width(self) -> int:
