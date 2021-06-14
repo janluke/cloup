@@ -274,9 +274,9 @@ def option_group(name, *args, **kwargs):
         the input function with one ``Option``.
     :param constraint:
         an optional instance of :class:`~cloup.constraints.Constraint`
-        (see :doc:`constraints` for more info); a description of the constraint will
-        be shown between squared brackets aside the option group title (or below it
-        if too long).
+        (see :doc:`Constraints </pages/constraints>` for more info);
+        a description of the constraint will be shown between squared brackets
+        aside the option group title (or below it if too long).
     :param hidden:
         if ``True``, the option group and all its options are hidden from the help page
         (all contained options will have their ``hidden`` attribute set to ``True``).
