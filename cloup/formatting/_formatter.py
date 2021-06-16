@@ -55,7 +55,7 @@ class HelpFormatter(click.HelpFormatter):
       (called ``col_max`` in ``write_dl`` for compatibility with Click).
 
     .. versionchanged:: 0.9.0
-        ``row_sep`` is now ``None`` by default and doesn't have to include a ``\n``
+        ``row_sep`` is now ``None`` by default and doesn't have to include a ``\\n``
         at the end (``row_sep=""`` corresponds to an empty line between rows).
         Furthermore, ``row_sep`` now accepts instances of
         :class:`~cloup.formatting.sep.SepGenerator` and
