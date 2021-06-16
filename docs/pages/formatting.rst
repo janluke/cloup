@@ -294,49 +294,51 @@ a large number, possibly ``math.inf``.
 Row separators
 --------------
 You can specify how to separate the rows/entries of a definition list using the
-``row_sep`` argument of ``HelpFormatter``. Most people would use this to insert
-an empty line between definitions in order to improve readability.
+``row_sep`` argument of ``HelpFormatter``. You may want to use this argument to
+separate definitions with an empty line in order to improve readability.
 
 .. note::
-    - The separator is inserted *in addition* to the usual ``\n`` that separates the
-      rows by default; so, if you want an empty line between definition, you must
-      pass ``row_sep='\n'``.
-    - ``row_sep`` affects only the "tabular layout" (not the linear layout).
+    ``row_sep`` only affects the "tabular layout", not the linear layout.
 
 A constant separator
 ~~~~~~~~~~~~~~~~~~~~
-To use a separator consistently for all definition lists, you can either pass a
-string:
+To use a separator consistently for all definition lists, you can either pass
+either:
+
+- a string
+- or a function ``(width: int) -> str`` that generates such a string based
+  on the width of the definition list; this allows you to pass an instance of
+  :class:`~cloup.formatting.sep.Hline` if you want to use horizontal lines.
+  Note that ``Hline`` is an utility that you can use in other parts of your
+  program as well.
+
+When specifying a separator, you can assume that all rows terminates with a
+newline character. Furthermore, the separator doesn't need to end with a newline
+character because the formatter will write one just after the separator.
 
 .. code-block:: python
 
-    row_sep='\n'   # separates all definitions with an empty line
+    # No row separator (default)
+    row_sep=None
 
-or a ``SepGenerator``, i.e. a function ``(width: int) -> str`` that generates a
-separator based on the width of the definition list. Cloup provides the class
-:class:`~cloup.formatting.sep.Hline`, which has static instances for different
-line styles:
+    # Separate rows with an empty line
+    row_sep=''
 
-.. code-block:: python
-
-    # Built-in lines
+    # Horizontal lines (various styles)
     row_sep=Hline.solid
     row_sep=Hline.dashed
     row_sep=Hline.densely_dashed
     row_sep=Hline.dotted
 
-    # Hline takes a string that is repeated to generate a line
-    row_sep=Hline('-.')   # -.-.-.-.-.
-
 
 Using a separator conditionally
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 A fixed separator gives a consistent look to your help page but has the
-drawback of adding the separator even when unneeded, wasting vertical space,
-e.g. in the "Commands" section.
+drawback of adding the separator even when unneeded (e.g. in the "Commands"
+section), wasting vertical space.
 
 To overcome this problem, Cloup allows you to specify a "policy" that decides
-for each individual definition list whether to use a row separator (and which
+**for each individual definition list** whether to use a row separator (and which
 one). Such policy must implement the :class:`~cloup.formatting.sep.RowSepPolicy`
 interface.
 
@@ -344,12 +346,14 @@ In practice, you will use :class:`~cloup.formatting.sep.RowSepIf`, which takes
 the following parameters:
 
 **condition**
-   a :class:`~cloup.formatting.sep.RowSepCondition` which determines when the
-   separator should be inserted based on the properties of a definition list
+   a :class:`~cloup.formatting.sep.RowSepCondition`, i.e. a function that decides,
+   based on the available horizontal space, if a definition list should use a
+   row separator or not
 
 **sep**
-   a string or a ``SepGenerator``. The default separator is ``sep=""``, which
-   corresponds to an empty line between rows.
+   the separator to use in definition lists that satisfy the ``condition``.
+   This may be a string or a ``SepGenerator``. The default separator is
+   ``sep=""``, which corresponds to an empty line between rows.
 
 Cloup provides the function :func:`~cloup.formatting.sep.multiline_rows_are_at_least`
 to create conditions that enable the use of a separator only if the number of rows
@@ -359,12 +363,10 @@ in the definition list:
 
 .. code-block:: python
 
-    # Insert an empty line between rows only if the definition list has
-    # at least 1 multi-line
+    # Insert an empty line only if the definition list has at least 1 multi-line row
     row_sep=RowSepIf(multiline_rows_are_at_least(1))
 
-    # Insert a dotted line between rows only if at least 25% of all rows
-    # take multiple lines
+    # Insert a dotted line only if at least 25% of all rows take multiple lines
     row_sep=RowSepIf(multiline_rows_are_at_least(.25), sep=Hline.dotted)
 
 
