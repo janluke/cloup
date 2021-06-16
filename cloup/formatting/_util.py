@@ -3,7 +3,7 @@ from typing import TYPE_CHECKING
 import click
 
 if TYPE_CHECKING:
-    from ._formatter import HelpFormatter
+    from ._formatter import HelpFormatter   # pragma: no cover
 
 FORMATTER_TYPE_ERROR = """
 since cloup v0.8.0, this class relies on cloup.HelpFormatter to align help
