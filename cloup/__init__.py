@@ -24,7 +24,10 @@ from .styling import (
     Style,
     Color,
 )
-from .formatting import HelpFormatter
+from .formatting import (
+    HelpFormatter,
+    HelpSection,
+)
 from ._context import Context
 from ._option_groups import (
     GroupedOption,

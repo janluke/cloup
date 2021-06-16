@@ -3,8 +3,13 @@ import shutil
 import textwrap
 from itertools import chain
 from typing import (
-    Any, Callable, Dict, Iterable, Iterator, Optional, Sequence, Tuple, Union, cast,
+    Any, Callable, Dict, Iterable, Iterator, Optional, Sequence, TYPE_CHECKING,
+    Tuple, Union, cast,
 )
+
+from cloup.formatting._util import unstyled_len
+if TYPE_CHECKING:
+    from .sep import RowSepPolicy, SepGenerator
 
 import click
 from click.formatting import wrap_text
@@ -13,28 +18,6 @@ from cloup._util import (
     Possibly, NULL, check_positive_int, identity, indent_lines, make_repr, pick_non_null
 )
 from cloup.styling import HelpTheme, IStyle
-
-
-FORMATTER_TYPE_ERROR = """
-since cloup v0.8.0, this class relies on cloup.HelpFormatter to align help
-sections. So, you need to make sure your command class uses cloup.HelpFormatter
-as formatter class.
-
-If you have your own custom HelpFormatter, know that cloup.HelpFormatter is
-more easily customizable then Click's one, so consider extending it instead
-of extending click.HelpFormatter.
-"""
-
-
-def ensure_is_cloup_formatter(formatter: click.HelpFormatter) -> 'HelpFormatter':
-    if isinstance(formatter, HelpFormatter):
-        return formatter
-    raise TypeError(FORMATTER_TYPE_ERROR)
-
-
-def unstyled_len(string: str) -> int:
-    return len(click.unstyle(string))
-
 
 Definition = Tuple[str, Union[str, Callable[[int], str]]]
 
@@ -71,13 +54,21 @@ class HelpFormatter(click.HelpFormatter):
       computed excluding the rows that exceed ``col1_max_width``
       (called ``col_max`` in ``write_dl`` for compatibility with Click).
 
+    .. versionchanged:: 0.9.0
+        ``row_sep`` is now ``None`` by default and doesn't have to include a ``\n``
+        at the end (``row_sep=""`` corresponds to an empty line between rows).
+        Furthermore, ``row_sep`` now accepts instances of
+        :class:`~cloup.formatting.sep.SepGenerator` and
+        :class:`~cloup.formatting.sep.RowSepPolicy`.
+
     .. versionadded:: 0.8.0
 
     :param indent_increment:
         width of each indentation increment.
     :param width:
-        content line width; by default it's initialized to
-        ``min(terminal_width - 1, max_width)`` where ``max_width`` is another argument.
+        content line width, excluding the newline character; by default it's
+        initialized to ``min(terminal_width - 1, max_width)`` where
+        ``max_width`` is another argument.
     :param max_width:
         maximum content line width (equivalent to ``Context.max_content_width``).
         Used to compute ``width`` when it is not provided, ignored otherwise.
@@ -95,7 +86,10 @@ class HelpFormatter(click.HelpFormatter):
     :param col_spacing:
         the number of spaces between the column boundaries of a definition list.
     :param row_sep:
-        a string printed after each row of a definition list (including the last).
+        an "extra" separator to insert between the rows of a definition list (in
+        addition to the normal newline between definitions). If you want an empty
+        line between rows, pass ``row_sep=""``.
+        Read :ref:`Row separators <row-separators>` for more.
     :param theme:
         an :class:`~cloup.HelpTheme` instance specifying how to style the various
         elements of the help page.
@@ -108,16 +102,11 @@ class HelpFormatter(click.HelpFormatter):
         col1_max_width: int = 30,
         col2_min_width: int = 35,
         col_spacing: int = 2,
-        row_sep: str = '',
+        row_sep: Union[None, str, 'SepGenerator', 'RowSepPolicy'] = None,
         theme: HelpTheme = HelpTheme(),
     ):
         check_positive_int(col1_max_width, 'col1_max_width')
         check_positive_int(col_spacing, 'col_spacing')
-        self.col1_max_width = col1_max_width
-        self.col2_min_width = col2_min_width
-        self.col_spacing = col_spacing
-        self.row_sep = row_sep
-        self.theme = theme
         max_width = max_width or 80
         # We subtract 1 to the terminal width to leave space for the new line character.
         # Otherwise, when we write a line that is long exactly terminal_size (without \n)
@@ -131,6 +120,11 @@ class HelpFormatter(click.HelpFormatter):
             width=width, max_width=max_width, indent_increment=indent_increment
         )
         self.width: int = width
+        self.col1_max_width = col1_max_width
+        self.col2_min_width = col2_min_width
+        self.col_spacing = col_spacing
+        self.theme = theme
+        self.row_sep = row_sep
 
     @staticmethod
     def settings(
@@ -140,7 +134,7 @@ class HelpFormatter(click.HelpFormatter):
         col1_max_width: Possibly[int] = NULL,
         col2_min_width: Possibly[int] = NULL,
         col_spacing: Possibly[int] = NULL,
-        row_sep: Possibly[str] = NULL,
+        row_sep: Possibly[Union[None, str, 'SepGenerator', 'RowSepPolicy']] = NULL,
         theme: Possibly[HelpTheme] = NULL,
     ) -> Dict[str, Any]:
         """A utility method for creating a ``formatter_settings`` dictionary to
@@ -148,8 +142,7 @@ class HelpFormatter(click.HelpFormatter):
         one only reason: it enables auto-complete for formatter options, thus
         improving the developer experience.
 
-        Parameters are pretty self-explanatory. Refer to :class:`HelpFormatter`
-        in case of doubt.
+        Parameters are described in :class:`HelpFormatter`.
         """
         return pick_non_null(locals())
 
@@ -217,8 +210,6 @@ class HelpFormatter(click.HelpFormatter):
         with self.indentation():
             if s.help:
                 self.write_text(s.help, theme.section_help)
-            if self.row_sep and (s.constraint or s.help):
-                self.write(self.row_sep)
             self.write_dl(s.definitions, col1_width=col1_width)
 
     def write_text(self, text: str, style: IStyle = identity) -> None:
@@ -290,6 +281,22 @@ class HelpFormatter(click.HelpFormatter):
         else:
             self.write_tabular_dl(rows, col1_width, col_spacing, col2_width)
 
+    def _get_row_sep_for(
+        self, text_rows: Sequence[Sequence[str]],
+        col_widths: Sequence[int],
+        col_spacing: int,
+    ) -> Optional[str]:
+        if self.row_sep is None or isinstance(self.row_sep, str):
+            return self.row_sep
+
+        from .sep import RowSepPolicy
+        if isinstance(self.row_sep, RowSepPolicy):
+            return self.row_sep(text_rows, col_widths, col_spacing)
+        elif callable(self.row_sep):  # RowSepPolicy is callable; keep this for last
+            return self.row_sep(self.available_width)
+        else:
+            raise TypeError('row_sep')
+
     def write_tabular_dl(
         self, rows: Sequence[Definition],
         col1_width: int, col_spacing: int, col2_width: int,
@@ -298,17 +305,21 @@ class HelpFormatter(click.HelpFormatter):
         column of a row exceeds ``col1_width``, the 2nd column is written on
         the subsequent line. This is the standard way of formatting definition
         lists and it's the default if there's enough space."""
+
         col1_plus_spacing = col1_width + col_spacing
         col2_indentation = " " * (
             self.current_indent + max(self.indent_increment, col1_plus_spacing)
         )
-        current_indentation = " " * self.current_indent
+        indentation = " " * self.current_indent
 
-        col1_styler = self.theme.col1
-        col2_styler = self.theme.col2
+        # Note: iter_defs() resolves eventual callables in row[1]
+        text_rows = list(iter_defs(rows, col2_width))
+        row_sep = self._get_row_sep_for(text_rows, (col1_width, col2_width), col_spacing)
+        col1_styler, col2_styler = self.theme.col1, self.theme.col2
 
-        for first, second in iter_defs(rows, col2_width):
-            self.write(current_indentation, col1_styler(first))
+        def write_row(row):
+            first, second = row
+            self.write(indentation, col1_styler(first))
             if not second:
                 self.write("\n")
             else:
@@ -319,14 +330,20 @@ class HelpFormatter(click.HelpFormatter):
                 else:
                     self.write("\n", col2_indentation)
 
-                wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
-                lines = [col2_styler(line) for line in wrapped_text.splitlines()]
-                self.write(lines[0], "\n")
-                for line in lines[1:]:
-                    self.write(col2_indentation, line, "\n")
+                if len(second) <= col2_width:
+                    self.write(col2_styler(second), "\n")
+                else:
+                    wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)
+                    lines = [col2_styler(line) for line in wrapped_text.splitlines()]
+                    self.write(lines[0], "\n")
+                    for line in lines[1:]:
+                        self.write(col2_indentation, line, "\n")
 
-            if self.row_sep:
-                self.write(current_indentation, self.row_sep)
+        write_row(text_rows[0])
+        for row in text_rows[1:]:
+            if row_sep is not None:
+                self.write(indentation, row_sep, "\n")
+            write_row(row)
 
     def write_linear_dl(self, dl: Sequence[Definition]) -> None:
         """Formats a definition list as a "linear list". This is the default when

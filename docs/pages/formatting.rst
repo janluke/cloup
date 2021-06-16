@@ -289,6 +289,84 @@ You can disable the linear layout settings ``min_col2_width=0``.
 You make the linear layout your default layout by settings ``min_col2_width`` to
 a large number, possibly ``math.inf``.
 
+.. _row-separators:
+
+Row separators
+--------------
+You can specify how to separate the rows/entries of a definition list using the
+``row_sep`` argument of ``HelpFormatter``. Most people would use this to insert
+an empty line between definitions in order to improve readability.
+
+.. note::
+    - The separator is inserted *in addition* to the usual ``\n`` that separates the
+      rows by default; so, if you want an empty line between definition, you must
+      pass ``row_sep='\n'``.
+    - ``row_sep`` affects only the "tabular layout" (not the linear layout).
+
+A constant separator
+~~~~~~~~~~~~~~~~~~~~
+To use a separator consistently for all definition lists, you can either pass a
+string:
+
+.. code-block:: python
+
+    row_sep='\n'   # separates all definitions with an empty line
+
+or a ``SepGenerator``, i.e. a function ``(width: int) -> str`` that generates a
+separator based on the width of the definition list. Cloup provides the class
+:class:`~cloup.formatting.sep.Hline`, which has static instances for different
+line styles:
+
+.. code-block:: python
+
+    # Built-in lines
+    row_sep=Hline.solid
+    row_sep=Hline.dashed
+    row_sep=Hline.densely_dashed
+    row_sep=Hline.dotted
+
+    # Hline takes a string that is repeated to generate a line
+    row_sep=Hline('-.')   # -.-.-.-.-.
+
+
+Using a separator conditionally
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A fixed separator gives a consistent look to your help page but has the
+drawback of adding the separator even when unneeded, wasting vertical space,
+e.g. in the "Commands" section.
+
+To overcome this problem, Cloup allows you to specify a "policy" that decides
+for each individual definition list whether to use a row separator (and which
+one). Such policy must implement the :class:`~cloup.formatting.sep.RowSepPolicy`
+interface.
+
+In practice, you will use :class:`~cloup.formatting.sep.RowSepIf`, which takes
+the following parameters:
+
+**condition**
+   a :class:`~cloup.formatting.sep.RowSepCondition` which determines when the
+   separator should be inserted based on the properties of a definition list
+
+**sep**
+   a string or a ``SepGenerator``. The default separator is ``sep=""``, which
+   corresponds to an empty line between rows.
+
+Cloup provides the function :func:`~cloup.formatting.sep.multiline_rows_are_at_least`
+to create conditions that enable the use of a separator only if the number of rows
+taking multiple lines is above a certain threshold. The threshold can be specified
+either as an absolute number or as a percentage relative the total number of rows
+in the definition list:
+
+.. code-block:: python
+
+    # Insert an empty line between rows only if the definition list has
+    # at least 1 multi-line
+    row_sep=RowSepIf(multiline_rows_are_at_least(1))
+
+    # Insert a dotted line between rows only if at least 25% of all rows
+    # take multiple lines
+    row_sep=RowSepIf(multiline_rows_are_at_least(.25), sep=Hline.dotted)
+
 
 Minor differences with Click
 ----------------------------
