@@ -216,7 +216,7 @@ def option(
     group: Optional[OptionGroup] = None,
     cls: Type[click.Option] = GroupedOption,
     **attrs
-) -> OptionGroupAdder:
+) -> OptionAdder:
     def decorator(f):
         func = click.option(*param_decls, cls=cls, **attrs)(f)
         new_option = func.__click_params__[-1]
