@@ -4,7 +4,14 @@ This example shows how a real-world application could look like and serves to me
 as a test bench for trying out styling and formatting.
 """
 import cloup
-from cloup import Color, Context, HelpFormatter, HelpTheme, Style
+from cloup import (
+    Color,
+    Context,
+    HelpFormatter,
+    HelpTheme,
+    Style,
+)
+from cloup.formatting.sep import RowSepIf, multiline_rows_are_at_least
 from config import cfg
 from render import render
 
@@ -20,7 +27,10 @@ CONTEXT_SETTINGS = Context.settings(
         # col1_max_width=30
         # col2_min_width=35,
         # indent_increment=2,
-        # row_sep='\n',
+        row_sep=RowSepIf(
+            multiline_rows_are_at_least(0.35),
+            # sep=Hline.densely_dashed
+        ),
         theme=HelpTheme.dark().with_(
             # invoked_command=Style(...),
             # command_help=Style(...),

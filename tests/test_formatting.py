@@ -1,13 +1,21 @@
 """
 Tip: in your editor, set a ruler at 80 characters.
 """
+import inspect
 from textwrap import dedent
+from typing import Optional
 
 import click
+import pytest
 
 from cloup import HelpFormatter
+from cloup._util import Possibly
 from cloup.formatting import HelpSection, unstyled_len
+from cloup.formatting.sep import (
+    Hline, RowSepIf, RowSepPolicy, multiline_rows_are_at_least
+)
 from cloup.styling import HelpTheme, Style
+from tests.util import parametrize
 
 LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
 ROWS = [
@@ -84,8 +92,13 @@ def test_col2_min_width():
     assert formatter.getvalue() == expected
 
 
-def test_row_sep():
-    formatter = HelpFormatter(row_sep='-' * 76 + '\n')
+@parametrize(
+    'row_sep',
+    pytest.param('-' * (80 - 4), id='string'),
+    pytest.param(Hline.dashed, id='SepGenerator'),
+)
+def test_fixed_row_sep(row_sep):
+    formatter = HelpFormatter(row_sep=row_sep, width=80)
     formatter.current_indent = 4
     expected = """
     -l, --long-option-name TEXT  Lorem ipsum dolor sit amet, consectetur
@@ -96,10 +109,56 @@ def test_row_sep():
     ----------------------------------------------------------------------------
     --short                      Lorem ipsum dolor sit amet, consectetur
                                  adipiscing elit, sed do eiusmod tempor.
-    ----------------------------------------------------------------------------
     """[1:-4]
     formatter.write_dl(ROWS)
-    assert formatter.getvalue() == expected
+    actual = formatter.getvalue()
+    assert actual == expected
+
+
+@parametrize(
+    ['policy', 'expected_sep'],  # unless None, expected_sep should end with \n
+    # Three of the test rows are "multi-line"
+    pytest.param(
+        RowSepIf(multiline_rows_are_at_least(3)),
+        '',
+        id='empty_line'),
+    pytest.param(
+        RowSepIf(multiline_rows_are_at_least(3), sep=Hline.dashed),
+        Hline.dashed(80),
+        id='dashed_line'),
+    pytest.param(
+        RowSepIf(multiline_rows_are_at_least(4)),
+        None,
+        id='no_sep'),
+)
+def test_conditional_row_sep(policy: RowSepPolicy, expected_sep: Optional[str]):
+    formatter = HelpFormatter(
+        width=80, col1_max_width=30, col2_min_width=0, col_spacing=3,
+        row_sep=policy,
+    )
+    rows = [
+        ('Longest than 30 characters for sure', 'Short help'),
+        ('Longest than 30 characters for sure', 'Another short help'),
+        ('Below 30 characters', LOREM),
+        ('Short help', 'Short help'),
+    ]
+    actual_expected_sep = '' if expected_sep is None else (expected_sep + '\n')
+    expected = """
+Longest than 30 characters for sure
+                      Short help
+---
+Longest than 30 characters for sure
+                      Another short help
+---
+Below 30 characters   Lorem ipsum dolor sit amet, consectetur adipiscing elit,
+                      sed do eiusmod tempor.
+---
+Short help            Short help
+    """[1:-4].replace('---\n', actual_expected_sep)
+
+    formatter.write_dl(rows)
+    actual = formatter.getvalue()
+    assert actual == expected
 
 
 def test_formatter_settings_creation():
@@ -107,6 +166,15 @@ def test_formatter_settings_creation():
     assert HelpFormatter.settings(
         indent_increment=4, col_spacing=3
     ) == dict(indent_increment=4, col_spacing=3)
+
+
+def test_settings_signature_matches_HelpFormatter():
+    cls_params = dict(inspect.signature(HelpFormatter).parameters)
+    settings = dict(inspect.signature(HelpFormatter.settings).parameters)
+    assert set(cls_params) == set(settings)
+    # Check type annotations
+    for name, param in cls_params.items():
+        assert settings[name].annotation == Possibly[cls_params[name].annotation], name
 
 
 def test_write_heading():
