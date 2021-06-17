@@ -1,13 +1,15 @@
 """Generic utilities."""
 from enum import Enum
-from typing import Any, Dict, Iterable, List, Optional, TypeVar, Union
+from typing import (
+    Any, Callable, Dict, Hashable, Iterable, List, Optional, Sequence, TypeVar, Union
+)
 
 import click
 
 click_version_tuple = click.__version__.split('.')
 
 T = TypeVar('T')
-K = TypeVar('K')
+K = TypeVar('K', bound=Hashable)
 V = TypeVar('V')
 
 
@@ -21,7 +23,7 @@ NULL = _Null.token
 Possibly = Union[_Null, T]
 
 
-def pick_non_null(d: Dict[K, V]) -> Dict[K, V]:
+def pick_non_null(d: Dict[K, Possibly[V]]) -> Dict[K, V]:
     return {key: val for key, val in d.items() if val is not NULL}
 
 
