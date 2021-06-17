@@ -8,6 +8,9 @@ import click
 
 click_version_tuple = click.__version__.split('.')
 
+# Click-related type vars
+C = TypeVar('C', bound=Callable)
+
 T = TypeVar('T')
 K = TypeVar('K', bound=Hashable)
 V = TypeVar('V')
@@ -141,7 +144,6 @@ class FrozenSpace(metaclass=FrozenSpaceMeta):
             "this class is just a namespace for constants, it's not instantiable.")
 
 
-def pop_many(d: dict, *keys: str) -> dict:
+def delete_keys(d: dict, keys: Sequence[str]) -> None:
     for key in keys:
-        d.pop(key)
-    return d
+        del d[key]

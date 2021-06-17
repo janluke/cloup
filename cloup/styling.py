@@ -7,7 +7,7 @@ from typing import Callable, NamedTuple, Optional
 
 import click
 
-from cloup._util import FrozenSpace, click_version_tuple, identity, pop_many
+from cloup._util import FrozenSpace, click_version_tuple, delete_keys, identity
 
 IStyle = Callable[[str], str]
 """A callable that takes a string and returns a styled version of it."""
@@ -153,10 +153,11 @@ class Style:
 
     def __call__(self, text: str) -> str:
         if self._style_kwargs is None:
-            kwargs = pop_many(dc.asdict(self), 'text_transform', '_style_kwargs')
+            kwargs = dc.asdict(self)
+            delete_keys(kwargs, ['text_transform', '_style_kwargs'])
             if int(click_version_tuple[0]) < 8:
                 # These arguments are not supported in Click < 8. Ignore them.
-                pop_many(kwargs, 'overline', 'italic', 'strikethrough')
+                delete_keys(kwargs, ['overline', 'italic', 'strikethrough'])
             object.__setattr__(self, '_style_kwargs', kwargs)
         else:
             kwargs = self._style_kwargs
