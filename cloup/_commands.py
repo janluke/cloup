@@ -123,7 +123,8 @@ class Group(SectionMixin, BaseCommand, click.Group):
         section: Optional[Section] = None,
         **kwargs,
     ) -> Callable[[Callable], click.Command]:
-        """Creates a new command and adds it to this group."""
+        """Decorator for creating a new subcommand of this ``Group``.
+        It takes the same arguments of :func:`command` plus ``section``."""
         if cls is None:
             cls = Command
 
@@ -145,45 +146,106 @@ class Group(SectionMixin, BaseCommand, click.Group):
         section: Optional[Section] = None,
         **kwargs,
     ):
+        """Decorator for creating a new subgroup of this command.
+        It takes the same argument of :func:`group` plus ``section``."""
         if cls is None:
             cls = Group
         return self.command(name=name, section=section, cls=cls, **kwargs)
 
 
+# noinspection PyIncorrectDocstring
 def group(
-    name: Optional[str] = None, cls: Type[Group] = Group, **attrs
+    name: Optional[str] = None,
+    cls: Type[Group] = Group,
+    invoke_without_command: bool = False,
+    no_args_is_help: bool = False,
+    context_settings: Optional[Dict[str, Any]] = None,
+    help: Optional[str] = None,
+    epilog: Optional[str] = None,
+    short_help: Optional[str] = None,
+    options_metavar: Optional[str] = "[OPTIONS]",
+    subcommand_metavar: Optional[str] = None,
+    add_help_option: bool = True,
+    chain: bool = False,
+    hidden: bool = False,
+    deprecated: bool = False,
+    **kwargs
 ) -> Callable[[Callable], Group]:
     """Decorator for creating a new :class:`Group`.
+    This function takes the same arguments of :func:`command` plus the following:
 
-    .. note::
-        If you use static type checking, note that the ``cls`` optional argument
-        of this function must be of type ``cloup.Group``, not ``click.Group``.
-
-    :param name: name of the command
-    :param cls: type of ``cloup.Group``
-    :param attrs: any argument you can pass to :func:`click.group`
+    :param invoke_without_command:
+        this controls how the multi command itself is invoked. By default it's
+        only invoked if a subcommand is provided.
+    :param no_args_is_help:
+        this controls what happens if no arguments are provided. This option is
+        enabled by default if `invoke_without_command` is disabled or disabled
+        if it's enabled. If enabled this will add ``--help`` as argument if no
+        arguments are passed.
+    :param subcommand_metavar:
+        string used in the command's usage string to indicate the subcommand place.
+    :param chain:
+        if this is set to `True` chaining of multiple subcommands is enabled.
+        This restricts the form of commands in that they cannot have optional
+        arguments but it allows multiple commands to be chained together.
     """
-    return cast(Callable[[Callable], Group],
-                click.group(name=name, cls=cls, **attrs))
+    kwargs.update(locals())
+    kwargs.pop('kwargs')
+    return cast(Callable[[Callable], Group], click.group(**kwargs))
 
 
 def command(
     name: Optional[str] = None,
     cls: Type[click.Command] = Command,
-    **attrs
+    context_settings: Optional[Dict[str, Any]] = None,
+    help: Optional[str] = None,
+    epilog: Optional[str] = None,
+    short_help: Optional[str] = None,
+    options_metavar: Optional[str] = "[OPTIONS]",
+    add_help_option: bool = True,
+    no_args_is_help: bool = False,
+    hidden: bool = False,
+    deprecated: bool = False,
+    **kwargs
 ) -> Callable[[Callable], click.Command]:
     """
-    Decorator that creates a new command using the wrapped function as callback.
+    Decorator that creates a new command using the decorated function as callback.
 
     The only differences with respect to ``click.commands`` are:
 
     - this decorator creates a ``cloup.Command`` by default;
     - this decorator supports ``@constraint``.
 
-    :param name: name of the command
-    :param cls: type of click.Command
-    :param attrs: any argument you can pass to :func:`click.command`
+    :param name:
+        the name of the command to use unless a group overrides it.
+    :param cls:
+        the command class to instantiate.
+    :param context_settings:
+        an optional dictionary with defaults that are passed to the context object.
+    :param help:
+        the help string to use for this command.
+    :param epilog:
+        like the help string but it's printed at the end of the help page after
+        everything else.
+    :param short_help:
+        the short help to use for this command.  This is shown on the command
+        listing of the parent command.
+    :param options_metavar:
+        metavar for options shown in the command's usage string.
+    :param add_help_option:
+        by default each command registers a ``--help`` option.
+        This can be disabled by this parameter.
+    :param no_args_is_help:
+        this controls what happens if no arguments are provided. This option is
+        disabled by default. If enabled this will add ``--help`` as argument if
+        no arguments are passed
+    :param hidden:
+        hide this command from help outputs.
+    :param deprecated:
+        issues a message indicating that the command is deprecated.
     """
+    kwargs.update(locals())
+    kwargs.pop('kwargs')
 
     def wrapper(f):
         if hasattr(f, '__constraints'):
@@ -193,9 +255,9 @@ def command(
                     f"constraints; {cls} doesn't")
             constraints = tuple(reversed(f.__constraints))
             del f.__constraints
-            attrs['constraints'] = constraints
+            kwargs['constraints'] = constraints
 
-        cmd = click.command(name, cls=cls, **attrs)(f)
+        cmd = click.command(**kwargs)(f)
         return cast(click.Command, cmd)
 
     return wrapper
