@@ -1,4 +1,3 @@
-from pathlib import Path
 from pprint import pprint
 
 import click
@@ -8,7 +7,7 @@ from cloup import argument, option, option_group
 
 
 @cloup.command()
-@argument("script_path", type=Path, required=True)
+@argument("script_path", type=click.Path(), required=True)
 @argument("scene_names", required=False, nargs=-1)
 @option_group(
     "Global options",
