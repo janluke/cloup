@@ -156,6 +156,7 @@ class Group(SectionMixin, BaseCommand, click.Group):
 # noinspection PyIncorrectDocstring
 def group(
     name: Optional[str] = None,
+    *,
     cls: Type[Group] = Group,
     invoke_without_command: bool = False,
     no_args_is_help: bool = False,
@@ -196,6 +197,7 @@ def group(
 
 def command(
     name: Optional[str] = None,
+    *,
     cls: Type[click.Command] = Command,
     context_settings: Optional[Dict[str, Any]] = None,
     help: Optional[str] = None,
