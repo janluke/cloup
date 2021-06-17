@@ -3,20 +3,19 @@ Implements support to option group.
 """
 from collections import defaultdict
 from typing import (
-    Callable, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, cast, overload,
+    Callable, Iterable, List, Optional, Sequence, TYPE_CHECKING, Tuple, cast, overload,
 )
 
 import click
 from click import Option, Parameter
 
-from cloup._util import coalesce, make_repr
+from cloup._params import option
+from cloup._util import C, coalesce, make_repr
 from cloup.constraints import Constraint
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
-C = TypeVar('C', bound=Callable)
-
-OptionAdder = Callable[[C], C]
-"""A decorator that registers an option to the wrapped function."""
+if TYPE_CHECKING:  # pragma: no cover
+    from cloup._params import OptionAdder
 
 OptionGroupAdder = Callable[[C], C]
 """A decorator that registers an option group to the wrapped function."""
@@ -81,14 +80,6 @@ class OptionGroup:
     def __str__(self) -> str:
         return make_repr(
             self, self.name, options=[opt.name for opt in self.options])
-
-
-class GroupedOption(click.Option):
-    """ A click.Option with an extra field ``group`` of type OptionGroup """
-
-    def __init__(self, *args, group: Optional[OptionGroup] = None, **attrs):
-        super().__init__(*args, **attrs)
-        self.group = group
 
 
 def has_option_group(param) -> bool:
@@ -211,28 +202,11 @@ class OptionGroupMixin:
         )
 
 
-def option(
-    *param_decls,
-    group: Optional[OptionGroup] = None,
-    cls: Type[click.Option] = GroupedOption,
-    **attrs
-) -> OptionAdder:
-    def decorator(f):
-        func = click.option(*param_decls, cls=cls, **attrs)(f)
-        new_option = func.__click_params__[-1]
-        new_option.group = group
-        if group and group.hidden:
-            new_option.hidden = True
-        return func
-
-    return decorator
-
-
 @overload
 def option_group(
     name: str,
     help: str,
-    *options: OptionAdder,
+    *options: 'OptionAdder',
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
 ) -> OptionGroupAdder:
@@ -242,7 +216,7 @@ def option_group(
 @overload
 def option_group(
     name: str,
-    *options: OptionAdder,
+    *options: 'OptionAdder',
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
@@ -289,7 +263,7 @@ def option_group(name, *args, **kwargs):
 
 def _option_group(
     name: str,
-    options: Sequence[OptionAdder],
+    options: Sequence['OptionAdder'],
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
