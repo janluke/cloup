@@ -9,7 +9,6 @@ __version_tuple__ = _version.version_tuple
 
 # flake8: noqa F401
 from click import (
-    argument,
     confirmation_option,
     help_option,
     pass_context,
@@ -29,11 +28,10 @@ from .formatting import (
     HelpSection,
 )
 from ._context import Context
+from ._params import GroupedOption, argument, option
 from ._option_groups import (
-    GroupedOption,
     OptionGroup,
     OptionGroupMixin,
-    option,
     option_group,
 )
 from ._sections import (
