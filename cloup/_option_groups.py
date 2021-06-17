@@ -209,7 +209,8 @@ def option_group(
     *options: 'OptionAdder',
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> OptionGroupAdder: ...
+) -> OptionGroupAdder:
+    ...
 
 
 @overload
@@ -219,7 +220,8 @@ def option_group(
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> OptionGroupAdder: ...
+) -> OptionGroupAdder:
+    ...
 
 
 # noinspection PyIncorrectDocstring
