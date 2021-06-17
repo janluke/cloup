@@ -9,7 +9,7 @@ from .common import join_param_labels
 from .._util import coalesce
 
 if TYPE_CHECKING:
-    from .._option_groups import OptionGroup   # pragma: no cover
+    from .._option_groups import OptionGroup
 
 
 class BoundConstraintSpec(NamedTuple):

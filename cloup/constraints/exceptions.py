@@ -6,7 +6,7 @@ from click import Context, Parameter
 from .common import join_param_labels
 
 if TYPE_CHECKING:
-    from ._core import Constraint    # pragma: no cover
+    from ._core import Constraint
 
 
 def default_constraint_error(params: Iterable[Parameter], desc: str) -> str:

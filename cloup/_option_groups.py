@@ -14,7 +14,7 @@ from cloup._util import C, coalesce, make_repr
 from cloup.constraints import Constraint
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
-if TYPE_CHECKING:  # pragma: no cover
+if TYPE_CHECKING:
     from cloup._params import OptionAdder
 
 OptionGroupAdder = Callable[[C], C]
@@ -209,8 +209,7 @@ def option_group(
     *options: 'OptionAdder',
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> OptionGroupAdder:
-    ...  # pragma: no cover
+) -> OptionGroupAdder: ...
 
 
 @overload
@@ -220,8 +219,7 @@ def option_group(
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> OptionGroupAdder:
-    ...  # pragma: no cover
+) -> OptionGroupAdder: ...
 
 
 # noinspection PyIncorrectDocstring

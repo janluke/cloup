@@ -12,8 +12,8 @@ from typing import Optional, Sequence, Union
 
 if sys.version_info[:2] >= (3, 8):
     from typing import Protocol
-else:
-    from typing_extensions import Protocol  # pragma: no cover
+else:  # pragma: no cover
+    from typing_extensions import Protocol
 
 
 SepType = Union[str, 'SepGenerator']
@@ -27,7 +27,7 @@ class SepGenerator(Protocol):
     Note: the length of the returned separator may differ from ``width``.
     """
     def __call__(self, width: int) -> str:
-        ...  # pragma: no cover
+        ...
 
 
 class RowSepPolicy(metaclass=abc.ABCMeta):

@@ -91,11 +91,11 @@ class Constraint(abc.ABC):
 
     @overload
     def check(self, params: Sequence[Parameter], ctx: Optional[Context] = None) -> None:
-        ...  # pragma: no cover
+        ...
 
     @overload
     def check(self, params: Iterable[str], ctx: Optional[Context] = None) -> None:
-        ...  # pragma: no cover
+        ...
 
     def check(self, params, ctx: Optional[Context] = None) -> None:
         """
