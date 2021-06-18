@@ -158,9 +158,12 @@ def group(
     name: Optional[str] = None,
     *,
     cls: Type[Group] = Group,
+    sections: Iterable[Section] = (),
+    align_sections: Optional[bool] = None,
     invoke_without_command: bool = False,
     no_args_is_help: bool = False,
     context_settings: Optional[Dict[str, Any]] = None,
+    formatter_settings: Dict[str, Any] = {},
     help: Optional[str] = None,
     epilog: Optional[str] = None,
     short_help: Optional[str] = None,
@@ -190,6 +193,13 @@ def group(
         This restricts the form of commands in that they cannot have optional
         arguments but it allows multiple commands to be chained together.
     """
+    if not issubclass(cls, Group):
+        raise TypeError(
+            'this decorator requires cls to be a cloup.Group or a subclass of it. '
+            'Use @click.group to instantiate another type of Group but remember '
+            'that some of the arguments of this decorator are only supported by '
+            'cloup.Group.')
+
     kwargs.update(locals())
     kwargs.pop('kwargs')
     return cast(Callable[[Callable], Group], click.group(**kwargs))
