@@ -4,13 +4,12 @@ from unittest.mock import Mock
 import click
 import pytest
 from click import Argument, Option
-from pytest import mark
 
 import cloup
 from cloup import ConstraintMixin, Context
 from cloup.constraints import Constraint
 from tests.constraints.test_constraints import FakeConstraint
-from tests.util import noop
+from tests.util import NOT_PROVIDED, noop, pick_first_bool, pick_provided
 
 
 class Cmd(ConstraintMixin, click.Command):
@@ -34,7 +33,7 @@ class TestConstraintMixin:
         assert cmd.get_params_by_name(['arg1', 'option2']) == (params[0], params[2])
 
 
-@mark.parametrize(
+@pytest.mark.parametrize(
     'do_check_consistency', [True, False],
     ids=['with_consistency_checks', 'without_consistency_checks']
 )
@@ -69,27 +68,28 @@ def test_constraints_are_checked_according_to_protocol(runner, do_check_consiste
         constr.check_values.assert_called_once()
 
 
-@mark.parametrize('ctx_show_constraints', [None, True, False])
-@mark.parametrize('show_constraints', [None, True, False])
+@pytest.mark.parametrize(
+    'cmd_value', [NOT_PROVIDED, None, True, False],
+    ids=lambda val: f'cmd_{val}'
+)
+@pytest.mark.parametrize(
+    'ctx_value', [NOT_PROVIDED, None, True, False],
+    ids=lambda val: f'ctx_{val}'
+)
 def test_constraints_are_shown_in_help_only_if_feature_is_enabled(
-    runner, show_constraints, ctx_show_constraints
+    runner, cmd_value, ctx_value
 ):
-    # The default is False
-    should_show_constraints = False
-    # The context parameter overrides the default (if not None)
-    if ctx_show_constraints is not None:
-        should_show_constraints = ctx_show_constraints
-    # The command parameter overrides the context value (if not None)
-    if show_constraints is not None:
-        should_show_constraints = show_constraints
-
-    @cloup.command(
-        show_constraints=show_constraints,
-        context_settings={
-            'show_constraints': ctx_show_constraints,
-            'terminal_width': 80,
-        }
+    should_show = pick_first_bool([cmd_value, ctx_value], default=False)
+    cxt_settings = pick_provided(
+        show_constraints=ctx_value,
+        terminal_width=80,
     )
+    cmd_kwargs = pick_provided(
+        show_constraints=cmd_value,
+        context_settings=cxt_settings
+    )
+
+    @cloup.command(**cmd_kwargs)
     @cloup.option('--a')
     @cloup.option('--b')
     @cloup.option('--c')
@@ -103,7 +103,7 @@ def test_constraints_are_shown_in_help_only_if_feature_is_enabled(
                            prog_name='test')
     out = result.output.strip()
 
-    if should_show_constraints:
+    if should_show:
         expected = textwrap.dedent('''
             Usage: test [OPTIONS]
 

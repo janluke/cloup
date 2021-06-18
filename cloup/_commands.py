@@ -63,7 +63,7 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
         self, *click_args,
         formatter_settings: Dict[str, Any] = {},
         constraints: Sequence[BoundConstraintSpec] = (),
-        show_constraints: bool = False,
+        show_constraints: Optional[bool] = None,
         align_option_groups: Optional[bool] = None,
         **click_kwargs,
     ):
