@@ -6,7 +6,9 @@ from click import pass_context
 
 import cloup
 from cloup import OptionGroup, option
-from tests.util import make_options, parametrize, noop
+from tests.util import (
+    NOT_PROVIDED, make_options, parametrize, noop, pick_first_bool, pick_provided
+)
 
 
 @parametrize(
@@ -55,18 +57,26 @@ def test_option_group_decorator_raises_for_no_options():
         cloup.option_group('grp')
 
 
-@pytest.mark.parametrize(['ctx_value', 'cmd_value', 'should_align'], [
-    pytest.param(True, None, True, id='ctx-yes'),
-    pytest.param(False, None, False, id='ctx-no'),
-    pytest.param(False, True, True, id='none'),
-    pytest.param(True, False, False, id='ctx-yes_cmd-no'),
-    pytest.param(False, True, True, id='ctx-no_cmd-yes'),
-])
-def test_align_option_groups_context_setting(runner, ctx_value, cmd_value, should_align):
-    @cloup.command(
-        context_settings=dict(align_option_groups=ctx_value),
-        align_option_groups=cmd_value,
+@pytest.mark.parametrize(
+    'cmd_value', [NOT_PROVIDED, None, True, False],
+    ids=lambda val: f'cmd_{val}'
+)
+@pytest.mark.parametrize(
+    'ctx_value', [NOT_PROVIDED, None, True, False],
+    ids=lambda val: f'ctx_{val}'
+)
+def test_align_option_groups_context_setting(runner, ctx_value, cmd_value):
+    should_align = pick_first_bool([cmd_value, ctx_value], default=True)
+    cxt_settings = pick_provided(
+        align_option_groups=ctx_value,
+        terminal_width=80,
     )
+    cmd_kwargs = pick_provided(
+        align_option_groups=cmd_value,
+        context_settings=cxt_settings
+    )
+
+    @cloup.command(**cmd_kwargs)
     @cloup.option_group('First group', option('--opt', help='first option'))
     @cloup.option_group('Second group', option('--much-longer-opt', help='second option'))
     @pass_context

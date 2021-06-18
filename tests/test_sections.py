@@ -7,7 +7,7 @@ from click import pass_context
 
 import cloup
 from cloup import Section
-from tests.util import noop
+from tests.util import NOT_PROVIDED, noop, pick_first_bool, pick_provided
 
 
 @pytest.mark.parametrize(
@@ -58,18 +58,26 @@ def test_Group_subcommand_decorator(subcommand_cls, assign_to_section):
         assert grp._default_section.commands[subcommand_name] is subcommand
 
 
-@pytest.mark.parametrize(['ctx_value', 'cmd_value', 'should_align'], [
-    pytest.param(True,  None,  True,  id='ctx-yes'),
-    pytest.param(False, None,  False, id='ctx-no'),
-    pytest.param(False, True,  True,  id='none'),
-    pytest.param(True,  False, False, id='ctx-yes_cmd-no'),
-    pytest.param(False, True,  True,  id='ctx-no_cmd-yes'),
-])
-def test_align_sections_context_setting(runner, ctx_value, cmd_value, should_align):
-    @cloup.group(
-        context_settings=dict(align_sections=ctx_value),
-        align_sections=cmd_value,
+@pytest.mark.parametrize(
+    'cmd_value', [NOT_PROVIDED, None, True, False],
+    ids=lambda val: f'cmd_{val}'
+)
+@pytest.mark.parametrize(
+    'ctx_value', [NOT_PROVIDED, None, True, False],
+    ids=lambda val: f'ctx_{val}'
+)
+def test_align_sections_context_setting(runner, ctx_value, cmd_value):
+    should_align = pick_first_bool([cmd_value, ctx_value], default=True)
+    cxt_settings = pick_provided(
+        align_sections=ctx_value,
+        terminal_width=80,
     )
+    cmd_kwargs = pick_provided(
+        align_sections=cmd_value,
+        context_settings=cxt_settings
+    )
+
+    @cloup.group(**cmd_kwargs)
     @pass_context
     def cmd(ctx, one, much_longer_opt):
         assert cmd.must_align_sections(ctx) == should_align
