@@ -153,7 +153,6 @@ class Group(SectionMixin, BaseCommand, click.Group):
         return self.command(name=name, section=section, cls=cls, **kwargs)
 
 
-# noinspection PyIncorrectDocstring
 def group(
     name: Optional[str] = None,
     *,
@@ -175,9 +174,43 @@ def group(
     deprecated: bool = False,
     **kwargs
 ) -> Callable[[Callable], Group]:
-    """Decorator for creating a new :class:`Group`.
-    This function takes the same arguments of :func:`command` plus the following:
+    """Decorator for creating a new :class:`cloup.Group` (or a subclass of it).
 
+    :param name:
+        the name of the command to use unless a group overrides it.
+    :param cls:
+        the ``cloup.Group`` (sub)class to instantiate.
+    :param sections:
+        a list of Section objects.
+    :param align_sections:
+        if ``True``, the help column of all columns will be aligned;
+        if ``False``, each section will be formatted independently.
+    :param context_settings:
+        an optional dictionary with defaults that are passed to the context object.
+    :param formatter_settings:
+        arguments for the formatter; you can use :meth:`HelpFormatter.settings`
+        to build this dictionary.
+    :param help:
+        the help string to use for this command.
+    :param epilog:
+        like the help string but it's printed at the end of the help page after
+        everything else.
+    :param short_help:
+        the short help to use for this command.  This is shown on the command
+        listing of the parent command.
+    :param options_metavar:
+        metavar for options shown in the command's usage string.
+    :param add_help_option:
+        by default each command registers a ``--help`` option.
+        This can be disabled by this parameter.
+    :param no_args_is_help:
+        this controls what happens if no arguments are provided. This option is
+        disabled by default. If enabled this will add ``--help`` as argument if
+        no arguments are passed
+    :param hidden:
+        hide this command from help outputs.
+    :param deprecated:
+        issues a message indicating that the command is deprecated.
     :param invoke_without_command:
         this controls how the multi command itself is invoked. By default it's
         only invoked if a subcommand is provided.
@@ -192,6 +225,8 @@ def group(
         if this is set to `True` chaining of multiple subcommands is enabled.
         This restricts the form of commands in that they cannot have optional
         arguments but it allows multiple commands to be chained together.
+    :param kwargs:
+        any other argument accepted by the instantiated command class.
     """
     if not issubclass(cls, Group):
         raise TypeError(
@@ -225,8 +260,17 @@ def command(
 
     The only differences with respect to ``click.commands`` are:
 
-    - this decorator creates a ``cloup.Command`` by default;
-    - this decorator supports ``@constraint``.
+    - the default command class is :class:`cloup.Command`
+    - supports ``@constraint`` (provided that ``cls=cloup.Command``).
+
+    Besides of all the arguments documented below, you can pass any argument
+    accepted by the instantiated command class (``cls``), which in the case of
+    the default (:class:`cloup.Command`) include:
+
+    - ``formatter_settings (dict)`` -- arguments for the formatter; you can use
+      :meth:`HelpFormatter.settings` to build this dictionary.
+    - ``align_option_groups (Optional[bool])``
+    - ``show_constraints (Optional[bool])``.
 
     :param name:
         the name of the command to use unless a group overrides it.
@@ -255,6 +299,8 @@ def command(
         hide this command from help outputs.
     :param deprecated:
         issues a message indicating that the command is deprecated.
+    :param kwargs:
+        any other argument accepted by the instantiated command class.
     """
     kwargs.update(locals())
     kwargs.pop('kwargs')
