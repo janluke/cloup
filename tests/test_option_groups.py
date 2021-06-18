@@ -6,9 +6,8 @@ from click import pass_context
 
 import cloup
 from cloup import OptionGroup, option
-from tests.util import (
-    NOT_PROVIDED, make_options, parametrize, noop, pick_first_bool, pick_provided
-)
+from cloup._util import MISSING, pick_non_missing
+from tests.util import (make_options, noop, parametrize, pick_first_bool)
 
 
 @parametrize(
@@ -58,23 +57,23 @@ def test_option_group_decorator_raises_for_no_options():
 
 
 @pytest.mark.parametrize(
-    'cmd_value', [NOT_PROVIDED, None, True, False],
+    'cmd_value', [MISSING, None, True, False],
     ids=lambda val: f'cmd_{val}'
 )
 @pytest.mark.parametrize(
-    'ctx_value', [NOT_PROVIDED, None, True, False],
+    'ctx_value', [MISSING, None, True, False],
     ids=lambda val: f'ctx_{val}'
 )
 def test_align_option_groups_context_setting(runner, ctx_value, cmd_value):
     should_align = pick_first_bool([cmd_value, ctx_value], default=True)
-    cxt_settings = pick_provided(
+    cxt_settings = pick_non_missing(dict(
         align_option_groups=ctx_value,
         terminal_width=80,
-    )
-    cmd_kwargs = pick_provided(
+    ))
+    cmd_kwargs = pick_non_missing(dict(
         align_option_groups=cmd_value,
         context_settings=cxt_settings
-    )
+    ))
 
     @cloup.command(**cmd_kwargs)
     @cloup.option_group('First group', option('--opt', help='first option'))

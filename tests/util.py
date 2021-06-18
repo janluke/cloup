@@ -1,5 +1,4 @@
 from contextlib import contextmanager
-from enum import Enum
 from typing import Iterable, List
 from unittest.mock import Mock
 
@@ -8,17 +7,6 @@ import pytest
 
 import cloup
 from cloup import Context
-
-
-class NotProvided(Enum):
-    flag = 'NOT PROVIDED'
-
-
-NOT_PROVIDED = NotProvided.flag
-
-
-def pick_provided(**kwargs) -> dict:
-    return {k: v for k, v in kwargs.items() if v != NOT_PROVIDED}
 
 
 def pick_first_bool(args: Iterable, *, default: bool) -> bool:

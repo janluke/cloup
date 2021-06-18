@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Type
 import click
 
 import cloup
-from cloup._util import Possibly, NULL, coalesce, pick_non_null
+from cloup._util import Possibly, MISSING, coalesce, pick_non_missing
 from cloup.formatting import HelpFormatter
 
 
@@ -36,8 +36,6 @@ class Context(click.Context):
 
     :param ctx_args:
         arguments forwarded to :class:`click.Context`.
-    :param ctx_kwargs:
-        keyword arguments forwarded to :class:`click.Context`.
     :param align_option_groups:
         if True, align the definition lists of all option groups of a command.
         You can override this by setting the corresponding argument of ``Command``
@@ -56,8 +54,10 @@ class Context(click.Context):
         keyword arguments forwarded to :class:`HelpFormatter` in ``make_formatter``.
         This args are merged with those of the (eventual) parent context and then
         merged again (being overridden) by those of the command.
-        **Tip**: use the static method :meth:`HelpFormatter.opts` to create this
+        **Tip**: use the static method :meth:`HelpFormatter.settings` to create this
         dictionary, so that you can be guided by your IDE.
+    :param ctx_kwargs:
+        keyword arguments forwarded to :class:`click.Context`.
     """
     formatter_class: Type[HelpFormatter] = HelpFormatter
 
@@ -114,23 +114,23 @@ class Context(click.Context):
 
     @staticmethod
     def settings(
-        *, auto_envvar_prefix: Possibly[bool] = NULL,
-        default_map: Possibly[Dict[str, Any]] = NULL,
-        terminal_width: Possibly[int] = NULL,
-        max_content_width: Possibly[int] = NULL,
-        resilient_parsing: Possibly[bool] = NULL,
-        allow_extra_args: Possibly[bool] = NULL,
-        allow_interspersed_args: Possibly[bool] = NULL,
-        ignore_unknown_options: Possibly[bool] = NULL,
-        help_option_names: Possibly[List[str]] = NULL,
-        token_normalize_func: Possibly[Callable[[str], str]] = NULL,
-        color: Possibly[bool] = NULL,
-        show_default: Possibly[bool] = NULL,
-        align_option_groups: Possibly[bool] = NULL,
-        align_sections: Possibly[bool] = NULL,
-        show_constraints: Possibly[bool] = NULL,
-        check_constraints_consistency: Possibly[bool] = NULL,
-        formatter_settings: Possibly[Dict[str, Any]] = NULL,
+        *, auto_envvar_prefix: Possibly[bool] = MISSING,
+        default_map: Possibly[Dict[str, Any]] = MISSING,
+        terminal_width: Possibly[int] = MISSING,
+        max_content_width: Possibly[int] = MISSING,
+        resilient_parsing: Possibly[bool] = MISSING,
+        allow_extra_args: Possibly[bool] = MISSING,
+        allow_interspersed_args: Possibly[bool] = MISSING,
+        ignore_unknown_options: Possibly[bool] = MISSING,
+        help_option_names: Possibly[List[str]] = MISSING,
+        token_normalize_func: Possibly[Callable[[str], str]] = MISSING,
+        color: Possibly[bool] = MISSING,
+        show_default: Possibly[bool] = MISSING,
+        align_option_groups: Possibly[bool] = MISSING,
+        align_sections: Possibly[bool] = MISSING,
+        show_constraints: Possibly[bool] = MISSING,
+        check_constraints_consistency: Possibly[bool] = MISSING,
+        formatter_settings: Possibly[Dict[str, Any]] = MISSING,
     ) -> Dict[str, Any]:
         """Utility method for creating a ``context_settings`` dictionary.
 
@@ -200,7 +200,7 @@ class Context(click.Context):
             keyword arguments forwarded to :class:`HelpFormatter` in ``make_formatter``.
             This args are merged with those of the (eventual) parent context and then
             merged again (being overridden) by those of the command.
-            **Tip**: use the static method :meth:`HelpFormatter.opts` to create this
+            **Tip**: use the static method :meth:`HelpFormatter.settings` to create this
             dictionary, so that you can be guided by your IDE.
         """
-        return pick_non_null(locals())
+        return pick_non_missing(locals())

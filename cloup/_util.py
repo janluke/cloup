@@ -18,16 +18,16 @@ V = TypeVar('V')
 
 # PEP-blessed solution for defining a Singleton type:
 # https://www.python.org/dev/peps/pep-0484/#id30
-class _Null(Enum):
-    token = 0
+class _Missing(Enum):
+    flag = 'Missing'
 
 
-NULL = _Null.token
-Possibly = Union[_Null, T]
+MISSING = _Missing.flag
+Possibly = Union[_Missing, T]
 
 
-def pick_non_null(d: Dict[K, Possibly[V]]) -> Dict[K, V]:
-    return {key: val for key, val in d.items() if val is not NULL}
+def pick_non_missing(d: Dict[K, Possibly[V]]) -> Dict[K, V]:
+    return {key: val for key, val in d.items() if val is not MISSING}
 
 
 def class_name(obj):
