@@ -17,3 +17,22 @@ h1, h2, h3 {
 code.literal {
     font-size: var(--font-size--small);
 }
+
+.versionchanged, .versionadded {
+  margin: .5em 0;
+  padding: .5em .8em;
+  background: aliceblue;
+  border-radius: 5px;
+}
+
+.versionadded {
+    background: #e4ffdf;
+}
+
+.versionmodified {
+    font-weight: 600;
+}
+
+.field-list.simple {
+  margin-top: 1em;
+}
