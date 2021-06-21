@@ -67,12 +67,12 @@ live-docs:   ## watch docs files and rebuild the docs when they change
 live-docs-all:   ## write all files (useful when working on html/css)
 	$(LIVE_DOCS) -a
 
-.PHONY: update-docs-static  ## copy docs static files into the build folder
-update-docs-static:
+.PHONY: update-docs-static
+update-docs-static:   ## copy docs static files into the build folder
 	$(COPYTREE) docs/_static $(DOCS_HTML_STATIC)
 
-.PHONY: update-docs-css  ## copy docs css files into the build folder
-update-docs-css:
+.PHONY: update-docs-css
+update-docs-css:   ## copy docs css files into the build folder
 	$(COPYTREE) docs/_static/styles $(DOCS_HTML_STATIC)/styles
 
 .PHONY: clean
