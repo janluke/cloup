@@ -238,14 +238,19 @@ def option_group(name, *args, **kwargs):
         # help as 2nd positional argument
         @option_group(name, help, *options, ...)
 
+    .. versionchanged:: 0.9.0
+        In order to support the decorator :func:`cloup.constrained_params`,
+        ``@option_group`` now allows each input decorators to add multiple
+        options.
+
     :param name:
         this is shown as heading of the help section describing the option group.
     :param help:
         an optional description shown below the name; can be provided as keyword
         argument or 2nd positional argument.
     :param options:
-        an arbitrary number of decorators like `click.option`, which annotate
-        the input function with one ``Option``.
+        an arbitrary number of decorators like ``click.option``, which attach
+        one or multiple options to the decorated command function.
     :param constraint:
         an optional instance of :class:`~cloup.constraints.Constraint`
         (see :doc:`Constraints </pages/constraints>` for more info);
@@ -273,19 +278,23 @@ def _option_group(
 
     def decorator(f):
         opt_group = OptionGroup(name, help=help, constraint=constraint, hidden=hidden)
-        for opt_decorator in reversed(options):
-            # Note: the assignment is just a precaution, as both click.option
-            # and @cloup.option currently return the same f
-            f = opt_decorator(f)
-            new_option = f.__click_params__[-1]
-            if has_option_group(new_option):
-                raise ValueError(
-                    f'{new_option} was first assigned to {new_option.group} and then '
-                    f'passed as argument to @option_group({name!r}, ...)'
-                )
-            new_option.group = opt_group
-            if hidden:
-                new_option.hidden = True
+        if not hasattr(f, '__click_params__'):
+            f.__click_params__ = []
+        for add_option in reversed(options):
+            prev_len = len(f.__click_params__)
+            add_option(f)
+            added_options = f.__click_params__[prev_len:]
+            for new_option in added_options:
+                if not isinstance(new_option, Option):
+                    raise TypeError("only `Option`'s are allowed in option groups")
+                if has_option_group(new_option):
+                    raise ValueError(
+                        f'{new_option} was first assigned to {new_option.group} and then '
+                        f'passed as argument to @option_group({name!r}, ...)'
+                    )
+                new_option.group = opt_group
+                if hidden:
+                    new_option.hidden = True
         return f
 
     return decorator

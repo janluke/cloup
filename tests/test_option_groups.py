@@ -1,12 +1,16 @@
 """Tests for the "option groups" feature/module."""
+import textwrap
 from textwrap import dedent
+from typing import cast
 
+import click
 import pytest
 from click import pass_context
 
 import cloup
-from cloup import OptionGroup, option
+from cloup import OptionGroup, option, option_group
 from cloup._util import MISSING, pick_non_missing
+from cloup.constraints import RequireAtLeast, mutually_exclusive
 from tests.util import (make_options, noop, parametrize, pick_first_bool)
 
 
@@ -161,3 +165,84 @@ def test_option_group_options_setter_set_the_hidden_attr_of_options():
     group.hidden = True
     group.options = opts
     assert all(opt.hidden for opt in opts)
+
+
+def test_option_group_with_constrained_subgroups(runner):
+    @cloup.command()
+    @option_group(
+        "Some options",
+        RequireAtLeast(1)(
+            option('-a', is_flag=True),
+            option('-b', is_flag=True)
+        ),
+        mutually_exclusive(
+            option('-c', is_flag=True),
+            option('-d', is_flag=True),
+        ),
+        option('-e', is_flag=True),
+    )
+    def cmd(a, b, c, d, e):
+        pass
+
+    cmd = cast(cloup.Command, cmd)
+    assert len(cmd.option_groups) == 1
+    assert len(cmd.option_groups[0]) == 5
+
+    assert runner.invoke(cmd, ['-abc']).exit_code == 0
+    assert 'Error: at least 1' in runner.invoke(cmd, ['-c']).output
+    assert 'mutually exclusive' in runner.invoke(cmd, ['-acd']).output
+
+    expected_help = dedent("""
+        Usage: cmd [OPTIONS]
+
+        Some options:
+          -a
+          -b
+          -c
+          -d
+          -e
+
+        Other options:
+          --help  Show this message and exit.
+    """).lstrip()
+    actual_help = runner.invoke(cmd, ['--help']).output
+    assert actual_help == expected_help
+
+
+def test_usage_of_constraints_as_decorators_inside_option_group(runner):
+    @cloup.command()
+    @cloup.option_group(
+        "Options",
+        mutually_exclusive(
+            cloup.option('-a', is_flag=True),
+            cloup.option('-b', is_flag=True),
+            cloup.option('-c', is_flag=True),
+        ),
+        cloup.option('-d', is_flag=True),
+    )
+    def cmd(a, b, c, d):
+        pass
+
+    expected_help = textwrap.dedent("""
+        Usage: cmd [OPTIONS]
+
+        Options:
+          -a
+          -b
+          -c
+          -d
+
+        Other options:
+          --help  Show this message and exit.
+    """).lstrip()
+
+    res = runner.invoke(cmd, args=['--help'])
+    assert res.output == expected_help
+
+    assert runner.invoke(cmd, args=[]).exit_code == 0
+    assert runner.invoke(cmd, args='-d'.split()).exit_code == 0
+    assert runner.invoke(cmd, args='-ad'.split()).exit_code == 0
+
+    res = runner.invoke(cmd, args='-ab'.split())
+    assert res.exit_code == click.UsageError.exit_code
+    assert 'mutually exclusive' in res.output
