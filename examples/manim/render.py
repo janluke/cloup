@@ -4,6 +4,7 @@ import click
 
 import cloup
 from cloup import argument, option, option_group
+from cloup.constraints import mutually_exclusive
 
 
 @cloup.command()
@@ -97,10 +98,20 @@ from cloup import argument, option, option_group
         "--fps", "--frame_rate", "frame_rate", type=float,
         help="Render at this frame rate.",
     ),
-    option(
-        "--renderer",
-        type=click.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),
-        help="Select a renderer for your Scene.",
+    mutually_exclusive(
+        option(
+            "--renderer",
+            type=click.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),
+            help="Select a renderer for your Scene.",
+        ),
+        option(
+            "--use_opengl_renderer", is_flag=True, hidden=True,
+            help="(Deprecated) Use --renderer=opengl.",
+        ),
+        option(
+            "--use_cairo_renderer", is_flag=True, hidden=True,
+            help="(Deprecated) Use --renderer=cairo.",
+        ),
     ),
     option(
         "--webgl_renderer_path", type=click.Path(),
