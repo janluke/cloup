@@ -8,7 +8,7 @@ from click import Argument, Option
 import cloup
 from cloup import ConstraintMixin, Context
 from cloup._util import MISSING, pick_non_missing
-from cloup.constraints import Constraint
+from cloup.constraints import Constraint, RequireAtLeast, mutually_exclusive
 from tests.constraints.test_constraints import FakeConstraint
 from tests.util import new_dummy_func, pick_first_bool
 
@@ -40,9 +40,8 @@ class TestConstraintMixin:
 )
 def test_constraints_are_checked_according_to_protocol(runner, do_check_consistency):
     constraints = [
-        Mock(spec_set=Constraint, wraps=FakeConstraint()),
-        Mock(spec_set=Constraint, wraps=FakeConstraint()),
-        Mock(spec_set=Constraint, wraps=FakeConstraint()),
+        Mock(spec_set=Constraint, wraps=FakeConstraint())
+        for _ in range(3)
     ]
     settings = Context.settings(check_constraints_consistency=do_check_consistency)
 
@@ -130,3 +129,31 @@ def test_constraints_are_shown_in_help_only_if_feature_is_enabled(
               --help    Show this message and exit.
         ''').strip()
         assert out == expected
+
+
+def test_usage_of_constraints_as_decorators(runner):
+    require_any = RequireAtLeast(1)
+
+    @cloup.command()
+    @require_any(
+        cloup.argument('arg', required=False),
+        cloup.option('-a'),
+        cloup.option('-b'),
+    )
+    @mutually_exclusive(
+        cloup.option('-c'),
+        cloup.option('-d'),
+    )
+    def cmd(arg, a, b, c, d):
+        pass
+
+    assert runner.invoke(cmd, args='ARG -c CCC'.split()).exit_code == 0
+    assert runner.invoke(cmd, args='-a AAA -d DDD'.split()).exit_code == 0
+
+    res = runner.invoke(cmd, args=[])
+    assert res.exit_code == click.UsageError.exit_code
+    assert 'at least 1 of the following' in res.output
+
+    res = runner.invoke(cmd, args='ARG -c CCC -d DDD'.split())
+    assert res.exit_code == click.UsageError.exit_code
+    assert 'mutually exclusive' in res.output
