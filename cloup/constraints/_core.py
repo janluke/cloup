@@ -6,7 +6,7 @@ from typing import (
 import click
 from click import Context, Parameter
 
-from cloup._util import check_arg, class_name, make_one_line_repr, make_repr, pluralize
+from cloup._util import C, check_arg, class_name, make_one_line_repr, make_repr, pluralize
 from .common import (
     format_param_list,
     get_param_label,
@@ -27,6 +27,11 @@ class Constraint(abc.ABC):
     A constraint that can be checked against an arbitrary collection of CLI
     parameters with respect to a specific :class:`click.Context` (which
     contains the values assigned to the parameters in ``ctx.params``).
+
+    .. versionchanged:: 0.9.0
+        Calling a constraint, previously equivalent to :meth:`~Constraint.check`,
+        is now equivalent to calling :func:`cloup.constrained_params` with this
+        constraint as first argument.
     """
 
     @staticmethod
@@ -147,10 +152,17 @@ class Constraint(abc.ABC):
         """Hides this constraint from the command help."""
         return Rephraser(self, help='')
 
-    def __call__(
-        self, param_names: Iterable[str], ctx: Optional[Context] = None
-    ) -> None:
-        return self.check(param_names, ctx=ctx)
+    def __call__(self, *param_adders) -> Callable[[C], C]:
+        """Equivalent to calling :func:`cloup.constrained_params` with this
+        constraint as first argument.
+
+        .. versionchanged:: 0.9.0
+            This method, previously equivalent to :meth:`~Constraint.check`, is
+            now equivalent to calling :func:`cloup.constrained_params` with this
+            constraint as first argument.
+        """
+        from ._support import constrained_params
+        return constrained_params(self, *param_adders)
 
     def __or__(self, other: 'Constraint') -> 'Or':
         return Or(self, other)
