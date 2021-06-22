@@ -7,22 +7,40 @@ Constraints
 
 Overview
 --------
+A :class:`Constraint` is essentially a validator for groups of parameters that
+has a textual description (:meth:`Constraint.help`) and when unsatisfied raises
+an :exc:`~click.UsageError` with an appropriate error message, which is handled
+and displayed by Click.
 
-A :class:`Constraint` is essentially a validator for groups of parameters that:
+Constraints are well-integrated with option groups but decoupled from them.
+Indeed, you can use them to constrain groups of any kind of parameters,
+including positional arguments.
 
-- has a textual description (:meth:`Constraint.help`)
-- when unsatisfied raises an :exc:`~click.UsageError` with an appropriate error
-  message that is handled and displayed by Click.
+Constraints can also be applied conditionally (see `Conditional constraints`_).
 
-Constraints are **well-integrated with option groups but decoupled from them.**
-Indeed, you can use them to validate *any* group of parameters by providing
-their (destination) names (see `Specifying parameters to constrain by name`_).
+There are three ways to define a constraint, each covering a different scenario:
 
-Constraints can also be applied **conditionally**, e.g. based on the value of
-a parameter (see `Conditional constraints`_).
+.. list-table::
+    :widths: 10 10
+    :header-rows: 1
 
-Constraints are easily composable using logical operators and you can easily
-change its description and/or error message  (see `Combining and rephrasing constraints`_).
+    * - Scenario
+      - Method
+    * - I want to apply a constraint to *all* options of an ``@option_group``.
+      - Use the ``constraint`` parameter of ``@option_group``.
+        See `Integration with @option_group`_.
+    * - I want to constrain a group of *nearby* parameters (eventually a subgroup
+        of an option group) without assigning them their own help section.
+      - Use the constraint itself as a decorator or, equivalently, the
+        ``@constrained_params`` decorator.
+        See `Using constraints as decorators`_. (\*)
+    * - As previous scenario, but the parameters are not nearby so you can't
+        nest them inside another decorator.
+      - Use the ``@constraint`` decorator and list those parameters by name.
+        See `The @constraint decorator`_.
+
+(\*) These are just syntactic sugar on top of ``@constraint`` which save you to
+list parameters by name (thus avoiding replication).
 
 
 Implemented constraints
@@ -74,9 +92,8 @@ Cloup uses the following policy:
     - `Context.default_map <https://click.palletsprojects.com/en/5.x/commands/#overriding-defaults>`_
     - the default value of the option (if defined).
 
-
 Conditional constraints
------------------------
+~~~~~~~~~~~~~~~~~~~~~~~
 
 :class:`If` allows to define conditional constraints::
 
@@ -136,11 +153,118 @@ For example:
     # --foo is not set and --bar="value"
 
 
-Usage with @option_group
-------------------------
-As you have probably seen in the :doc:`option-groups` section, you can easily apply
-a constraint to an option group by setting the ``constraint`` (keyword-only)
-argument or ``@option_group`` (or ``OptionGroup``):
+The @constraint decorator
+------------------------------------------
+Using the :func:`cloup.constraint` decorator, you can apply a constraint to any
+group of parameters (both arguments and options) providing their
+**destination names**, i.e. the names of the function arguments they are mapped
+to (by Click). For example:
+
+=============================================== ===================
+Declaration                                     Name
+=============================================== ===================
+``@option('-o')``                               ``o``
+``@option('-o', '--out-path')``                 ``out_path``
+``@option('-o', '--out-path', 'output_path')``  ``output_path``
+=============================================== ===================
+
+Here's a meaningless example just to show how to use the API:
+
+.. code-block:: python
+
+    @command('cmd', show_constraints=True)
+    @option('--one')
+    @option('--two')
+    @option('--three')
+    @option('--four')
+    @constraint(
+        mutually_exclusive, ['one', 'two']
+    )
+    @constraint(
+        If('one', then=RequireExactly(1)), ['three', 'four']
+    )
+    def cmd(one, two, three, four):
+        print('ciao')
+
+.. _show-constraints:
+
+If you set the ``command`` parameter ``show_constraints`` to ``True``,
+the following section is shown at the bottom of the command help::
+
+    Constraints:
+      {--one, --two}     mutually exclusive
+      {--three, --four}  exactly 1 required if --one is set
+
+Even in this case, you can still hide a specific constraint by using the method
+:meth:`~Constraint.hidden`.
+
+Note that ``show_constraint`` can also be set in the ``context_settings`` of
+your root command. Of course, the context setting can be overridden by each
+individual command.
+
+
+Using constraints as decorators
+-------------------------------
+``@constraint`` is powerful but has some drawbacks:
+
+- it requires to replicate (once again) the name of the constrained parameters;
+- it doesn't visually group the involved parameters together in the same way
+  ``@option_group`` does (with nesting).
+
+Even though ``@constraint`` is unavoidable in some cases, it can be avoided when
+the parameters to constrain are "contiguous", which is often the case.
+In such case, you can use your constraint as a decorator:
+
+.. code-block:: python
+
+    @mutually_exclusive(
+        option('--one'),
+        option('--two'),
+        option('--three'),
+    )
+
+    # WARNING: this is not valid in Python < 3.9 because of the double call
+    @RequireAtLeast(1)(
+        option('--one'),
+        option('--two'),
+        option('--three'),
+    )
+
+.. attention::
+    In Python < 3.9, the expressions on the right of `@` is required to be a
+    "dotted name, optionally followed by a single call"
+    (see `PEP 614 <https://www.python.org/dev/peps/pep-0614/#motivation>`_),
+    meaning that ``@RequireAtLeast(1)(...)`` **won't work**, since it makes
+    two calls. To make it work, you first need to assign the constraint to
+    a variable.
+
+Equivalently, you can use the decorator :func:`cloup.constrained_params`:
+
+.. code-block:: python
+
+    @constrained_params(
+        RequireAtLeast(1),
+        option('--one'),
+        option('--two'),
+        option('--three'),
+    )
+
+Both forms desugar to the following:
+
+.. code-block:: python
+
+    @constraint(RequireAtLeast(1), ['one', 'two', 'three'])
+    @option('--one')
+    @option('--two')
+    @option('--three')
+
+.. _option-group-and-constraints:
+
+Integration with @option_group
+------------------------------
+As you have probably seen in the :doc:`option-groups` section, you can easily
+apply a constraint to an option group by setting the ``constraint`` argument of
+``@option_group`` (or ``OptionGroup``):
 
 .. code-block:: python
 
@@ -190,98 +314,36 @@ the method :meth:`Constraint.hidden`:
         constraint=RequireAtLeast(1).hidden(),
     )
 
-
-Specifying parameters to constrain by name
-------------------------------------------
-You can apply a constraint on any group of parameters providing their
-**destination names**, i.e. the names of the function arguments they are mapped
-to (by Click). For example:
-
-=============================================== ===================
-Declaration                                     Name
-=============================================== ===================
-``@option('-o')``                               ``o``
-``@option('-o', '--out-path')``                 ``out_path``
-``@option('-o', '--out-path', 'output_path')``  ``output_path``
-=============================================== ===================
-
-This is useful when you need to apply a constraint on a group of parameters for
-which no ``OptionGroup`` is defined.
-
-You have two (non-equivalent) options:
-
-#. using the ``@cloup.constraint`` decorator
-#. using the constraint as a function inside the command callback
-   (a ``Constraint`` is indeed *callable*).
-
-Usage with @constraint
-~~~~~~~~~~~~~~~~~~~~~~
-In essence, ``@cloup.constraint`` allows to include a constraint as part
-of the command "metadata", which opens new possibilities with respect to just
-using the constraint as a function:
-
-- it becomes possible to document the constraints in a section of the help page;
-  note that this is disabled by default and can be enabled passing
-  ``show_constraints=True`` to ``@command()`` (or ``cloup.Command``);
-
-- the sanity checks performed to detect *your* mistakes can be performed *before*
-  parsing, just after the constraints applied to option groups are checked
-  (see `Validation protocol`_); this is not of huge importance but a nice-to-have.
-
-The signature is simple:
+Constraining part of an option group
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+You can use constraints as decorators even inside ``@option_group`` to constrain
+one or multiple subgroups:
 
 .. code-block:: python
 
-    @constraint(constr: Constraint, params: Iterable[str])
+    @option_group(
+        "Number options",
+        RequireAtLeast(1)(
+            option('--one'),
+            option('--two')
+        ),
+        option('--three')
+    )
 
-where ``params`` is a list of parameter **destination names**; for example,
-an option ``--input-file`` is mapped (by Click) to the name ``input_file``  by default.
+Note that in this case, the problem described in the attention box above with
+decorators in Python < 3.9 does not exist since we are not using ``@``.
 
-Here's a meaningless example just to show how to use the API:
-
-.. code-block:: python
-
-    @command('cmd', show_constraints=True)
-    @option('--opt-1')
-    @option('--opt-2')
-    @option('--opt-3')
-    @option('--opt-4')
-    @constraint(mutually_exclusive, ['opt_1', 'opt_2'])
-    @constraint(If('opt_1', then=RequireExactly(1)), ['opt_3', 'opt_4'])
-    def cmd(opt_1, opt_2, opt_3, opt_4):
-        print('ciao')
-
-.. _show-constraints:
-
-Passing ``show_constraints=True`` as above will produce the following section at
-the bottom of the command help::
-
-    Constraints:
-      {--opt-1, --opt-2}  mutually exclusive
-      {--opt-3, --opt-4}  exactly 1 required if --opt-1 is set
-
-Even in this case, you can still hide a specific constraint by calling the method
-:meth:`~Constraint.hidden` on it.
-
-Usage as functions
-~~~~~~~~~~~~~~~~~~
-You may consider this option if you are not interested in documenting constraints
-in the help page *and* you find it more readable than ``@constraint``.
+The above code is equivalent to:
 
 .. code-block:: python
 
-    from cloup.constraint import If, RequireExactly, mutually_exclusive
-
-    # ...
-    def cmd(opt_1, opt_2, opt_3, opt_4, opt_5):
-
-        mutually_exclusive(['opt_1', 'opt_4'])
-
-        If(Equal('opt_1', 'value'), then=RequireExactly(1))([
-            'opt_2', 'opt_3', 'opt_4'
-        ])
-
-Calling a constraint is equivalent to call its :meth:`~Constraint.check` method.
+    @option_group(
+        "Number options",
+        option('--one'),
+        option('--two')
+        option('--three')
+    )
+    @constraint(RequireAtLeast(1), ['one', 'two'])
 
 
 Combining and rephrasing constraints
@@ -355,9 +417,8 @@ in your code if you prefer it.
 Finally, if all this is not convenient for your case, just extend ``Constraint``,
 it's pretty easy. Use the code of existing constraints as a guide.
 
-
-Validation protocol
--------------------
+\*Validation protocol
+---------------------
 
 A constraint performs two types of checks and there's a method for each type:
 
@@ -391,7 +452,7 @@ added through ``@constraint``.
 If you use a constraint inside a callback, of course, consistency checks can't
 be performed before parsing. All checks are performed together after parsing.
 
-\*Disabling consistency checks
+Disabling consistency checks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You can safely skip this section since disabling consistency checks is a
@@ -424,8 +485,8 @@ following code at the entry-point of your program:
 
 Have I already mentioned that this is probably not worth the effort?
 
-Feature support
----------------
+\*Feature support
+-----------------
 
 .. note::
     If you use command classes/decorators redefined by Cloup, you can skip

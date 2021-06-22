@@ -85,6 +85,13 @@ In the example above, I used the :func:`cloup.option` decorator to define option
 but you can use :func:`click.option` as well. There's no practical difference
 between the two when using ``@option_group``.
 
+
+Option groups and constraints
+-----------------------------
+You can read more about it in :ref:`this section <option-group-and-constraints>`
+of the :doc:`constraints` chapter.
+
+
 .. _aligned-vs-nonaligned-group:
 
 Aligned vs non-aligned groups

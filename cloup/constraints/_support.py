@@ -1,40 +1,96 @@
 from typing import (
-    Iterable, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple,
+    Callable, Iterable, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple, Union,
 )
 
 from click import Context, HelpFormatter, Parameter
 
 from ._core import Constraint
 from .common import join_param_labels
-from .._util import coalesce
+from .._util import C, coalesce
 
 if TYPE_CHECKING:
     from .._option_groups import OptionGroup
+
+ParamAdder = Callable[[C], C]
 
 
 class BoundConstraintSpec(NamedTuple):
     """A NamedTuple storing a ``Constraint`` and the **names of the parameters**
     if has check."""
     constraint: Constraint
-    params: Sequence[str]
+    param_names: Union[Sequence[str]]
+
+    def resolve_params(self, cmd: 'ConstraintMixin') -> 'BoundConstraint':
+        return BoundConstraint(
+            self.constraint,
+            cmd.get_params_by_name(self.param_names)
+        )
 
 
-def _constraint_memo(f, spec: BoundConstraintSpec) -> None:
-    store = getattr(f, '__constraints', None)
-    if store is None:
-        store = f.__constraints = []
-    store.append(spec)
+def _constraint_memo(
+    f, constr: Union[BoundConstraintSpec, BoundConstraintSpec]
+) -> None:
+    if not hasattr(f, '__constraints'):
+        f.__constraints = []
+    f.__constraints.append(constr)
 
 
 def constraint(constr: Constraint, params: Iterable[str]):
-    """Registers a constraint."""
+    """Registers a constraint on a list of parameters specified by (destination) name
+    (e.g. the default name of ``--input-file`` is ``input_file``)."""
     spec = BoundConstraintSpec(constr, tuple(params))
 
-    def wrapper(f):
+    def decorator(f):
         _constraint_memo(f, spec)
         return f
 
-    return wrapper
+    return decorator
+
+
+def constrained_params(constr: Constraint, *param_adders: ParamAdder) -> Callable[[C], C]:
+    """
+    Returns a decorator that adds the given parameters and applies a constraint
+    to them. Equivalent to::
+
+        @param_adders[0]
+        ...
+        @param_adders[-1]
+        @constraint(constr, <param names>)
+
+    This decorator saves you to manually (re)type the parameter names.
+    It can also be used inside ``@option_group``.
+
+    Instead of using this decorator, you can also call the constraint itself::
+
+        @constr(*param_adders)
+
+    but remember that:
+
+    - Python 3.9 is the first that allow arbitrary expressions in decorators,
+      meaning that you can't put a parametric/conditional constraint aside ``@``
+      in previous Python versions; in that case, you are better off using
+      ``@constraint_params``
+    - using a long conditional/composite constraint as decorator may be less
+      readable.
+
+    .. versionadded:: 0.9.0
+
+    :param constr: an instance of :class:`Constraint`
+    :param param_adders:
+        function decorators, each attaching a single parameter to the decorated
+        function.
+    """
+    def decorator(f):
+        reversed_params = []
+        for add_param in reversed(param_adders):
+            add_param(f)
+            param = f.__click_params__[-1]
+            reversed_params.append(param)
+        bound_constr = BoundConstraint(constr, tuple(reversed_params[::-1]))
+        _constraint_memo(f, bound_constr)
+        return f
+
+    return decorator
 
 
 class BoundConstraint(NamedTuple):
@@ -64,7 +120,7 @@ class ConstraintMixin:
 
     def __init__(
         self, *args,
-        constraints: Sequence[BoundConstraintSpec] = (),
+        constraints: Sequence[Union[BoundConstraintSpec, BoundConstraint]] = (),
         show_constraints: Optional[bool] = None,
         **kwargs
     ):
@@ -90,9 +146,12 @@ class ConstraintMixin:
             if grp.constraint is not None
         )
         # Bind constraints defined via @constraint to Parameter instances
-        self._extra_constraints = tuple(
-            BoundConstraint(constr, self.get_params_by_name(param_names))
-            for constr, param_names in constraints
+        self._extra_constraints: Sequence[BoundConstraint] = tuple(
+            (
+                constr if isinstance(constr, BoundConstraint)
+                else constr.resolve_params(self)
+            )
+            for constr in constraints
         )
 
     def parse_args(self, ctx, args):

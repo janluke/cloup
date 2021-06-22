@@ -75,7 +75,7 @@ class TestBaseConstraint:
         cons = FakeConstraint(satisfied=satisfied, consistent=consistent)
         exc_class = UnsatisfiableConstraint if not consistent else ConstraintViolated
         with should_raise(exc_class, when=not (consistent and satisfied)):
-            cons(['a', 'b'], ctx)
+            cons.check(['a', 'b'], ctx)
 
     @parametrize(
         ['ctx_kwargs', 'should_check'],
