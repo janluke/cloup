@@ -273,6 +273,12 @@ def _option_group(
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
 ) -> OptionGroupAdder:
+    if not isinstance(name, str):
+        raise TypeError(
+            'the first argument of @option_group must be its name/title, a string. '
+            'You probably forgot it!'
+        )
+
     if not options:
         raise ValueError('you must provide at least one option')
 

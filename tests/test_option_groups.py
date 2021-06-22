@@ -13,6 +13,18 @@ from cloup.constraints import RequireAtLeast, mutually_exclusive
 from tests.util import (make_options, new_dummy_func, parametrize, pick_first_bool)
 
 
+def test_error_message_if_first_arg_is_not_a_string():
+    with pytest.raises(
+        TypeError, match="the first argument of @option_group must be its name/title"
+    ):
+        @option_group(
+            option('--one'),
+            option('--two'),
+        )
+        def f(one, two):
+            pass
+
+
 @parametrize(
     ['tabular_help', 'align_option_groups'],
     pytest.param(True, True, id='tabular-aligned'),
