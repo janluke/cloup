@@ -51,7 +51,7 @@ class FakeConstraint(Constraint):
     def check_values(self, params: Sequence[Parameter], ctx: Context):
         self.check_values_calls.append(dict(params=params, ctx=ctx))
         if not self.satisfied:
-            raise ConstraintViolated(self.error, ctx=ctx)
+            raise ConstraintViolated(self.error, ctx=ctx, constraint=self, params=params)
 
 
 class TestBaseConstraint:
