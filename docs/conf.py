@@ -96,9 +96,11 @@ html_theme_options = {
     "light_css_variables": {
         "color-brand-primary": darker_primary_color,
         "color-brand-content": darker_primary_color,
-        "toc-title-font-size": font_size_small_3,
+        "toc-title-font-size": font_size_small,
         "toc-font-size": font_size_small,
+        "color-toc-item-text": "#383838",
         "toc-item-spacing-horizontal": "1.5rem",
+        "toc-item-spacing-vertical": ".75rem",
         "code-font-size": font_size_small,
         "admonition-font-size": font_size_small,
         "admonition-title-font-size": font_size_normal,

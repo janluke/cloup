@@ -36,3 +36,16 @@ code.literal {
 .field-list.simple {
   margin-top: 1em;
 }
+
+.toc-drawer {
+    padding-right: .25rem;
+}
+
+.toc-tree ul > li > ul > li > ul > li {
+    font-size: .93em;
+    padding-top: .5em;
+}
+
+table.docutils td {
+    padding: .2em .3em;
+}
