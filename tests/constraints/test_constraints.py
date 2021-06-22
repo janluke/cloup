@@ -307,11 +307,21 @@ class TestRephraser:
         params = make_options('abc')
         fake_ctx = make_fake_context(params)
         wrapped = FakeConstraint(satisfied=False)
-        get_error = Mock(return_value='rephrased error')
-        rephrased = Rephraser(wrapped, error=get_error)
+        error_rephraser_mock = Mock(return_value='rephrased error')
+        rephrased = Rephraser(wrapped, error=error_rephraser_mock)
         with pytest.raises(ConstraintViolated, match='rephrased error'):
             rephrased.check(params, ctx=fake_ctx)
-        get_error.assert_called_once_with(fake_ctx, wrapped, params)
+
+        # Check the function is called with a single argument of type ConstraintViolated
+        error_rephraser_mock.assert_called_once()
+        args = error_rephraser_mock.call_args[0]
+        assert len(args) == 1
+        error = args[0]
+        assert isinstance(error, ConstraintViolated)
+        # Check the error has all fields set
+        assert isinstance(error.ctx, Context)
+        assert isinstance(error.constraint, Constraint)
+        assert len(error.params) == 3
 
     def test_check_consistency_raises_if_wrapped_constraint_raises(self):
         constraint = FakeConstraint(consistent=True)

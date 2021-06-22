@@ -19,7 +19,7 @@ from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 
 Op = TypeVar('Op', bound='Operator')
 HelpRephraser = Callable[[Context, 'Constraint'], str]
-ErrorRephraser = Callable[[Context, 'Constraint', Sequence[Parameter]], str]
+ErrorRephraser = Callable[[ConstraintViolated], str]
 
 
 class Constraint(abc.ABC):
@@ -146,6 +146,23 @@ class Constraint(abc.ABC):
         help: Union[None, str, HelpRephraser] = None,
         error: Union[None, str, ErrorRephraser] = None,
     ) -> 'Rephraser':
+        """
+        Overrides the help string and/or the error message of this constraint
+        wrapping it with a :class:`Rephraser`.
+
+        :param help:
+            if provided, overrides the help string of this constraint. It can be
+            a string or a function ``(ctx: Context, constr: Constraint) -> str``.
+        :param error:
+            if provided, overrides the error message of this constraint.
+            It can be:
+
+            - a template string for the ``format`` built-in function
+            - or a function ``(err: ConstraintViolated) -> str``; note that
+              a :class:`ConstraintViolated` error has fields for ``ctx``,
+              ``constraint`` and ``params``, so it's a complete description
+              of what happened.
+        """
         return Rephraser(self, help=help, error=error)
 
     def hidden(self) -> 'Rephraser':
@@ -238,8 +255,8 @@ class Rephraser(Constraint):
     """A Constraint decorator that can override the help and/or the error
     message of the wrapped constraint.
 
-    This is useful also for defining new constraints.
-    See also :class:`WrapperConstraint`.
+    .. seealso::
+        :class:`WrapperConstraint`.
     """
 
     def __init__(
@@ -261,15 +278,15 @@ class Rephraser(Constraint):
         else:
             return self._help(ctx, self._constraint)
 
-    def _get_rephrased_error(
-        self, ctx: Context, params: Sequence[Parameter]
-    ) -> Optional[str]:
+    def _get_rephrased_error(self, err: ConstraintViolated) -> Optional[str]:
         if self._error is None:
             return None
         elif isinstance(self._error, str):
-            return self._error.format(param_list=format_param_list(params))
+            return self._error.format(
+                param_list=format_param_list(err.params),
+            )
         else:
-            return self._error(ctx, self._constraint, params)
+            return self._error(err)
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         try:
@@ -281,8 +298,8 @@ class Rephraser(Constraint):
     def check_values(self, params: Sequence[Parameter], ctx: Context):
         try:
             return self._constraint.check_values(params, ctx)
-        except ConstraintViolated:
-            rephrased_error = self._get_rephrased_error(ctx, params)
+        except ConstraintViolated as err:
+            rephrased_error = self._get_rephrased_error(err)
             if rephrased_error:
                 raise ConstraintViolated(
                     rephrased_error, ctx=ctx, constraint=self, params=params)
