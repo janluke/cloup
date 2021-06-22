@@ -283,6 +283,7 @@ class Rephraser(Constraint):
             return None
         elif isinstance(self._error, str):
             return self._error.format(
+                error=str(err),
                 param_list=format_param_list(err.params),
             )
         else:
