@@ -13,8 +13,8 @@ def pick_first_bool(args: Iterable, *, default: bool) -> bool:
     return next((arg for arg in args if isinstance(arg, bool)), default)
 
 
-def noop(*args, **kwargs):
-    pass
+def new_dummy_func():
+    return lambda *args, **kwargs: 1
 
 
 def int_opt(*args, **kwargs):
@@ -54,7 +54,9 @@ def make_fake_context(
 ) -> Context:
     """Creates a simple instance of Command with the specified parameters,
     then create a fake context without actually invoking the command."""
-    return cls(command_cls('fake', params=params, callback=noop), **ctx_kwargs)
+    return cls(
+        command_cls('fake', params=params, callback=new_dummy_func()), **ctx_kwargs
+    )
 
 
 def make_options(names: Iterable[str], **common_kwargs) -> List[click.Option]:

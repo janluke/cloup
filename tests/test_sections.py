@@ -8,7 +8,7 @@ from click import pass_context
 import cloup
 from cloup import Section
 from cloup._util import MISSING, pick_non_missing
-from tests.util import noop, pick_first_bool
+from tests.util import new_dummy_func, pick_first_bool
 
 
 @pytest.mark.parametrize(
@@ -47,7 +47,7 @@ def test_Group_subcommand_decorator(subcommand_cls, assign_to_section):
         section=section_arg,
         cls=subcommand_cls,
         help='Help'
-    )(noop)
+    )(new_dummy_func())
     assert subcommand.__class__ is subcommand_cls
     assert subcommand.help == 'Help'
     assert grp.commands[subcommand_name] is subcommand
@@ -85,12 +85,12 @@ def test_align_sections_context_setting(runner, ctx_value, cmd_value):
 
     cmd.section(
         "First section",
-        cloup.command('cmd', help='First command help')(noop),
+        cloup.command('cmd', help='First command help')(new_dummy_func()),
     )
 
     cmd.section(
         "Second section",
-        cloup.command('longer-cmd', help='Second command help')(noop),
+        cloup.command('longer-cmd', help='Second command help')(new_dummy_func()),
     )
 
     result = runner.invoke(cmd, args=('--help',))

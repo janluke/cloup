@@ -10,7 +10,7 @@ from cloup import ConstraintMixin, Context
 from cloup._util import MISSING, pick_non_missing
 from cloup.constraints import Constraint
 from tests.constraints.test_constraints import FakeConstraint
-from tests.util import noop, pick_first_bool
+from tests.util import new_dummy_func, pick_first_bool
 
 
 class Cmd(ConstraintMixin, click.Command):
@@ -24,7 +24,7 @@ class TestConstraintMixin:
             Option(('--str-opt',)),
             Option(('--int-opt', 'option2')),
         ]
-        cmd = Cmd(name='cmd', params=params, callback=noop)
+        cmd = Cmd(name='cmd', params=params, callback=new_dummy_func())
         for param in params:
             assert cmd.get_param_by_name(param.name) == param
 

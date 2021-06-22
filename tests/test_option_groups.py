@@ -7,7 +7,7 @@ from click import pass_context
 import cloup
 from cloup import OptionGroup, option
 from cloup._util import MISSING, pick_non_missing
-from tests.util import (make_options, noop, parametrize, pick_first_bool)
+from tests.util import (make_options, new_dummy_func, parametrize, pick_first_bool)
 
 
 @parametrize(
@@ -48,7 +48,7 @@ def test_option_group_decorator_raises_if_group_is_passed_to_contained_option():
     func = cloup.option_group(
         'a group', cloup.option('--opt', group=cloup.OptionGroup('another group')))
     with pytest.raises(ValueError):
-        func(noop)
+        func(new_dummy_func())
 
 
 def test_option_group_decorator_raises_for_no_options():
