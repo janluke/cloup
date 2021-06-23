@@ -11,6 +11,7 @@ from ._core import (
     AcceptBetween,
     And,
     Constraint,
+    ErrorFmt,
     ErrorRephraser,
     HelpRephraser,
     Operator,
@@ -24,6 +25,11 @@ from ._core import (
     mutually_exclusive,
     require_all,
 )
-from ._support import (BoundConstraintSpec, ConstraintMixin, constrained_params, constraint)
+from ._support import (
+    BoundConstraintSpec,
+    ConstraintMixin,
+    constraint,
+    constrained_params,
+)
 from .conditions import AllSet, AnySet, Equal, IsSet, Not
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint

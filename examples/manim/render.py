@@ -4,7 +4,7 @@ import click
 
 import cloup
 from cloup import argument, option, option_group
-from cloup.constraints import mutually_exclusive
+from cloup.constraints import ErrorFmt, mutually_exclusive
 
 
 @cloup.command()
@@ -98,7 +98,9 @@ from cloup.constraints import mutually_exclusive
         "--fps", "--frame_rate", "frame_rate", type=float,
         help="Render at this frame rate.",
     ),
-    mutually_exclusive(
+    mutually_exclusive.rephrased(
+        error=f"{ErrorFmt.error}.\nUse --renderer, the other two options are deprecated."
+    )(
         option(
             "--renderer",
             type=click.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),

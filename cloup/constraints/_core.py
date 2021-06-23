@@ -6,7 +6,9 @@ from typing import (
 import click
 from click import Context, Parameter
 
-from cloup._util import C, check_arg, class_name, make_one_line_repr, make_repr, pluralize
+from cloup._util import (
+    C, FrozenSpace, check_arg, class_name, make_one_line_repr, make_repr, pluralize
+)
 from .common import (
     format_param_list,
     get_param_label,
@@ -153,11 +155,14 @@ class Constraint(abc.ABC):
         :param help:
             if provided, overrides the help string of this constraint. It can be
             a string or a function ``(ctx: Context, constr: Constraint) -> str``.
+            If you want to hide this constraint from the help, pass ``help=""``.
         :param error:
             if provided, overrides the error message of this constraint.
             It can be:
 
-            - a template string for the ``format`` built-in function
+            - a string, eventually a ``format`` string supporting the replacement
+              fields described in :class:`ErrorFmt`.
+
             - or a function ``(err: ConstraintViolated) -> str``; note that
               a :class:`ConstraintViolated` error has fields for ``ctx``,
               ``constraint`` and ``params``, so it's a complete description
@@ -251,12 +256,38 @@ class Or(Operator):
         return Or(*self.constraints, other)
 
 
+class ErrorFmt(FrozenSpace):
+    """:class:`Rephraser` allows you to pass a ``format`` string as ``error``
+    argument; this class contains the "replacement fields" supported by such
+    format string. You can use them as following::
+
+        mutually_exclusive.rephrased(
+            error=f"{ErrorFmt.error}\\n"
+                  f"Some extra information here."
+        )
+    """
+
+    error = '{error}'
+    """Replaced by the original error message. Useful if all you want is to
+    append or prepend some extra info to the original error message."""
+
+    param_list = '{param_list}'
+    """Replaced by a 2-space indented list of the constrained parameters."""
+
+
 class Rephraser(Constraint):
     """A Constraint decorator that can override the help and/or the error
     message of the wrapped constraint.
 
+    You'll rarely (if ever) use this class directly. In most cases, you'll use
+    the method :meth:`Constraint.rephrased`. Refer to it for more info.
+
     .. seealso::
-        :class:`WrapperConstraint`.
+
+        - :meth:`Constraint.rephrased` -- wraps a constraint with a ``Rephraser``.
+        - :class:`WrapperConstraint` -- alternative to ``Rephraser``.
+        - :class:`ErrorFmt` -- describes the keyword you can use in an error
+          format string.
     """
 
     def __init__(
@@ -478,19 +509,22 @@ require_all = _RequireAll()
 
 accept_none = AcceptAtMost(0).rephrased(
     help='all forbidden',
-    error='the following parameters should not be provided:\n{param_list}'
+    error=f'the following parameters should not be provided:\n'
+          f'{ErrorFmt.param_list}'
 )
 """Satisfied if none of the parameters is set. Useful only in conditional constraints."""
 
 all_or_none = (require_all | accept_none).rephrased(
     help='provide all or none',
-    error='the following parameters should be provided together (or none of '
-          'them should be provided):\n{param_list}',
+    error=f'the following parameters should be provided together (or none of '
+          f'them should be provided):\n'
+          f'{ErrorFmt.param_list}',
 )
 """Satisfied if either all or none of the parameters are set."""
 
 mutually_exclusive = AcceptAtMost(1).rephrased(
     help='mutually exclusive',
-    error='the following parameters are mutually exclusive:\n{param_list}'
+    error=f'the following parameters are mutually exclusive:\n'
+          f'{ErrorFmt.param_list}'
 )
 """Satisfied if at most one of the parameters is set."""
