@@ -52,12 +52,12 @@ code.literal {
 .versionchanged, .versionadded {
   margin: .5em 0;
   padding: .5em .8em;
-  background: aliceblue;
+  background: var(--color-admonition-title-background--note);
   border-radius: 5px;
 }
 
 .versionadded {
-    background: #e4ffdf;
+  background: var(--color-admonition-title-background--tip);
 }
 
 .versionmodified {
