@@ -104,22 +104,24 @@ release: dist ## package and upload a release
 	twine upload dist/*
 
 .PHONY: test-release
-test-release: dist ## package and upload a release
+test-release: dist   ## package and upload a release
 	twine upload --repository testpypi dist/*
 
 .PHONY: pip-compile
-pip-compile: ## pin dependencies in requirements/ using the current env
+pip-compile:  ## pin dependencies in requirements/ using the current env
 	pip-compile requirements/test.in
 	pip-compile requirements/docs.in
 	pip-compile requirements/dev.in
 
 .PHONY: pip-upgrade
-pip-upgrade: ## upgrade dependencies
+pip-upgrade:   ## upgrade pip and dependencies
+	python -m pip install -U pip
 	pip-compile --upgrade requirements/test.in
 	pip-compile --upgrade requirements/docs.in
 	pip-compile --upgrade requirements/dev.in
 
 .PHONY: pip-sync
 pip-sync:  ## sync development environment with requirements/dev.txt
+	pip install -U pip-tools
 	pip-sync requirements/dev.txt
 	pip install -e .
