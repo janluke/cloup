@@ -44,7 +44,7 @@ jobs:
         run: tox -e ${{ matrix.tox }}
 
       - name: Install and run codecov (py38-click7 only)
-        if: ${{ matrix.tox == 'py38-click7' }}
+        if: ${{ matrix.tox == 'py38-click8' }}
         run: |
           pip install codecov
           codecov
