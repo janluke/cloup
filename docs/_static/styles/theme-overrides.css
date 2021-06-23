@@ -3,19 +3,24 @@ Furo theme CSS variables:
 https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_index.scss
 */
 :root {
-    --color-primary: #0094ff;
-    --color-primary--dark: #0086e8;
-    --color-primary--light: #6cc1ff;
+    --color-primary: #0094ff;            /* custom variable */
+    --color-primary--dark: #0086e8;      /* custom variable */
+    --color-primary--light: #6cc1ff;     /* custom variable */
     --color-brand-primary: var(--color-primary--dark);
     --color-brand-content: var(--color-primary--dark);
+
+    --toc-font-size: 0.82em;
+    --toc-font-size--level1: 0.92rem;  /* custom variable */
     --toc-title-font-size: var(--font-size--small--3);
-    --toc-font-size: 0.92rem;
+    --toc-item-spacing-horizontal: 1.1rem;
+    --toc-item-spacing-vertical: 0.4em;
+    --toc-item-spacing-vertical--level1: .9rem;
     --color-toc-item-text--level1: var(--color-brand-content);  /* custom variable */
     --color-toc-item-text--level2: #696969;  /* custom variable */
     --color-toc-item-text: var(--color-toc-item-text--level2);
-    --toc-item-spacing-horizontal: 1.5rem;
-    --toc-item-spacing-vertical: 1rem;
+
     --code-font-size: var(--font-size--small);
+
     --admonition-font-size: var(--font-size--small);
     --admonition-title-font-size: var(--font-size--normal);
 }
@@ -76,14 +81,14 @@ code.literal {
     line-height: 1.2;
 }
 
-.toc-tree > ul > li > ul > li > .reference {
-    /* font-weight: 600; */
-    color: var(--color-toc-item-text--level1);
+/* 1st-level toc */
+.toc-tree > ul > li > ul > li {
+    padding-top: var(--toc-item-spacing-vertical--level1);
 }
 
-.toc-tree > ul > li > ul > li > ul > li {
-    font-size: .88em;
-    padding-top: .5em;
+.toc-tree > ul > li > ul > li > .reference {
+    color: var(--color-toc-item-text--level1);
+    font-size: var(--toc-font-size--level1);
 }
 
 table.docutils td {
