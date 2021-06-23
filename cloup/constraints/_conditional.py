@@ -73,7 +73,8 @@ class If(Constraint):
         except ConstraintViolated as err:
             desc = (condition.description(ctx) if condition_is_true
                     else condition.negated_description(ctx))
-            raise ConstraintViolated(f"when {desc}, {err}", ctx=ctx)
+            raise ConstraintViolated(
+                f"when {desc}, {err}", ctx=ctx, constraint=self, params=params)
 
     def __repr__(self) -> str:
         if self._else:

@@ -1,4 +1,4 @@
-from typing import Iterable, Optional, TYPE_CHECKING
+from typing import Iterable, Sequence, TYPE_CHECKING
 
 import click
 from click import Context, Parameter
@@ -18,16 +18,28 @@ def default_constraint_error(params: Iterable[Parameter], desc: str) -> str:
 
 class ConstraintViolated(click.UsageError):
     def __init__(
-        self, message: str, ctx: Optional[Context] = None
+        self, message: str,
+        ctx: Context,
+        constraint: 'Constraint',
+        params: Sequence[click.Parameter]
     ):
         super().__init__(message, ctx=ctx)
+        self.ctx = ctx
+        self.constraint = constraint
+        self.params = params
 
     @classmethod
     def default(
-        cls, params: Iterable[Parameter], desc: str, ctx: Optional[Context] = None
+        cls,
+        desc: str,
+        ctx: Context,
+        constraint: 'Constraint',
+        params: Sequence[Parameter],
     ) -> 'ConstraintViolated':
         return ConstraintViolated(
-            default_constraint_error(params, desc), ctx=ctx)
+            default_constraint_error(params, desc),
+            ctx=ctx, constraint=constraint, params=params,
+        )
 
 
 class UnsatisfiableConstraint(Exception):
