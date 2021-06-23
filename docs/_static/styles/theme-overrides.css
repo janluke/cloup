@@ -1,3 +1,29 @@
+/*
+Furo theme CSS variables:
+https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_index.scss
+*/
+:root {
+    --color-brand-primary: #0094ff;
+    --color-brand-content: #007bd3;
+    --toc-title-font-size: var(--font-size--small--3);
+    --toc-font-size: 0.92rem;
+    --color-toc-item-text--level1: var(--color-brand-content);  /* custom variable */
+    --color-toc-item-text--level2: #696969;  /* custom variable */
+    --color-toc-item-text: var(--color-toc-item-text--level2);
+    --toc-item-spacing-horizontal: 1.5rem;
+    --toc-item-spacing-vertical: 1rem;
+    --code-font-size: var(--font-size--small);
+    --admonition-font-size: var(--font-size--small);
+    --admonition-title-font-size: var(--font-size--normal);
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-toc-item-text--level1: white;  /* custom variable */
+        --color-toc-item-text--level2: #c0c0c0;
+    }
+}
+
 body {
     font-size: 1em;
 }
@@ -41,8 +67,17 @@ code.literal {
     padding-right: .25rem;
 }
 
-.toc-tree ul > li > ul > li > ul > li {
-    font-size: .93em;
+.toc-tree {
+    line-height: 1.2;
+}
+
+.toc-tree > ul > li > ul > li > .reference {
+    /* font-weight: 600; */
+    color: var(--color-toc-item-text--level1);
+}
+
+.toc-tree > ul > li > ul > li > ul > li {
+    font-size: .88em;
     padding-top: .5em;
 }
 

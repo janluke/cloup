@@ -79,37 +79,15 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
 # -- Options for HTML output ---------------------------------------------------
 html_title = f"cloup v{version}"
 html_theme = "furo"
-
-primary_color = "#0094ff"
-darker_primary_color = "#007bd3"
-def primary_color_alpha(alpha): return "#2a5adf" + "{:02x}".format(int(alpha * 255))
-
-font_size_normal = "var(--font-size--normal)"
-font_size_small = "var(--font-size--small)"
-font_size_small_3 = "var(--font-size--small--3)"
-
 html_theme_options = {
     "light_logo": "logo.svg",
     "dark_logo": "logo-dark-mode.svg",
     "sidebar_hide_name": True,
-    # Furo theme CSS variables: https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_index.scss
-    "light_css_variables": {
-        "color-brand-primary": darker_primary_color,
-        "color-brand-content": darker_primary_color,
-        "toc-title-font-size": font_size_small,
-        "toc-font-size": font_size_small,
-        "color-toc-item-text": "#383838",
-        "toc-item-spacing-horizontal": "1.5rem",
-        "toc-item-spacing-vertical": ".75rem",
-        "code-font-size": font_size_small,
-        "admonition-font-size": font_size_small,
-        "admonition-title-font-size": font_size_normal,
-    },
-    "dark_css_variables": {
-        "color-brand-primary": primary_color,
-        "color-brand-content": primary_color,
-    },
 }
+html_css_files = [
+    'styles/extensions-overrides.css',
+    'styles/theme-overrides.css',
+]
 pygments_style = 'default'  # name of the Pygments (syntax highlighting) style
 
 # Add any paths that contain custom static files (such as style sheets) here,
@@ -117,18 +95,19 @@ pygments_style = 'default'  # name of the Pygments (syntax highlighting) style
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+primary_color = "#0094ff"
+darker_primary_color = "#007bd3"
+def primary_color_alpha(alpha):
+    return "#2a5adf" + "{:02x}".format(int(alpha * 255))
+
 panels_css_variables = {
     "tabs-color-label-active": darker_primary_color,
     "tabs-color-label-inactive": "var(--color-foreground-muted)",
     "tabs-color-overline": "var(--tabs--border)",
     "tabs-color-underline": "var(--tabs--border)",
-    # "tabs-size-label": "1rem",
 }
 panels_add_bootstrap_css = False
-html_css_files = [
-    'styles/extensions-overrides.css',
-    'styles/theme-overrides.css',
-]
+
 
 # -- Version warning -----------------------------------------------------------
 versionwarning_messages = {
