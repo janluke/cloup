@@ -12,13 +12,17 @@ has a textual description (:meth:`Constraint.help`) and when unsatisfied raises
 an :exc:`~click.UsageError` with an appropriate error message, which is handled
 and displayed by Click.
 
-Constraints are well-integrated with option groups but decoupled from them.
-Indeed, you can use them to constrain groups of any kind of parameters,
-including positional arguments.
+Here's an overview of the features:
 
-Constraints can also be applied conditionally (see `Conditional constraints`_).
+- constraints are well-integrated with option groups but decoupled from them:
+  you can use them to constrain groups of any kind of parameters, including
+  positional arguments
+- a constraint's help description and error message can be easily overridden
+  (see `Rephrasing constraints`_)
+- constraints can be applied conditionally (see `Conditional constraints`_)
+  and can be combined with logical operators (see `Defining new constraints`_).
 
-There are three ways to define a constraint, each covering a different scenario:
+There are three ways to apply a constraint, each covering a different scenario:
 
 .. list-table::
     :widths: 10 10
@@ -26,11 +30,11 @@ There are three ways to define a constraint, each covering a different scenario:
 
     * - Scenario
       - Method
-    * - I want to apply a constraint to *all* options of an ``@option_group``.
+    * - I want to apply a constraint to **all** options of an ``@option_group``.
       - Use the ``constraint`` parameter of ``@option_group``.
         See `Integration with @option_group`_.
-    * - I want to constrain a group of *nearby* parameters (eventually a subgroup
-        of an option group) without assigning them their own help section.
+    * - I want to constrain a group of **contiguous** parameters (eventually a
+        subgroup of an option group) without assigning them their own help section.
       - Use the constraint itself as a decorator or, equivalently, the
         ``@constrained_params`` decorator.
         See `Using constraints as decorators`_. (\*)
@@ -39,17 +43,21 @@ There are three ways to define a constraint, each covering a different scenario:
       - Use the ``@constraint`` decorator and list those parameters by name.
         See `The @constraint decorator`_.
 
-(\*) These are just syntactic sugar on top of ``@constraint`` which save you to
-list parameters by name (thus avoiding replication).
+(\*) These are just syntactic sugar on top of ``@constraint``. They allow you to
+apply a constraint saving you to list parameters by name (thus avoiding names'
+replication).
 
 
 Implemented constraints
 -----------------------
-``cloup`` uses the following convention:
 
-- **parametric** constraints are *subclasses* of ``Constraint`` and so they are camel-cased;
-- **non-parametric** constraints are *instances* of ``Constraint`` and so they are
-  snake-cased.
+Naming convention
+~~~~~~~~~~~~~~~~~
+
+- **Parametric** constraints are *subclasses* of ``Constraint`` and so they are
+  camel-cased (``LikeThis``);
+- **Non-parametric** constraints are *instances* of ``Constraint`` and so they
+  are snake-cased (``like_this``).
 
 Parametric constraints
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -223,7 +231,8 @@ In such case, you can use your constraint as a decorator:
         option('--three'),
     )
 
-    # WARNING: this is not valid in Python < 3.9 because of the double call
+    # WARNING: this is not valid syntax in Python < 3.9 because of the double call
+    # on the right of @. Read the "Attention" box below.
     @RequireAtLeast(1)(
         option('--one'),
         option('--two'),
@@ -238,7 +247,20 @@ In such case, you can use your constraint as a decorator:
     two calls. To make it work, you first need to assign the constraint to
     a variable.
 
-Equivalently, you can use the decorator :func:`cloup.constrained_params`:
+To work around the syntax limitation in Python < 3.9, you can either assign
+your "compound" constraint to a variable and then use it as decorator:
+
+.. code-block:: python
+
+    require_any = RequireAtLeast(1)   # somewhere in the code
+
+    @require_any(
+        option('--one'),
+        option('--two'),
+        option('--three'),
+    )
+
+or, equivalently, you can use the :func:`cloup.constrained_params` decorator:
 
 .. code-block:: python
 
@@ -249,7 +271,7 @@ Equivalently, you can use the decorator :func:`cloup.constrained_params`:
         option('--three'),
     )
 
-Both forms desugar to the following:
+Constraints as decorator and ``@constrained_params`` both desugar to:
 
 .. code-block:: python
 
@@ -301,8 +323,7 @@ If the constraint is violated, the following error is shown::
       --three
 
 You can customize both the help description and the error message of a constraint
-using the method :meth:`Constraint.rephrased` (see `Combining and rephrasing constraints`_
-for more).
+using the method :meth:`Constraint.rephrased` (see `Rephrasing constraints`_).
 
 If you simply want to hide the constraint description in the help, you can use
 the method :meth:`Constraint.hidden`:
@@ -346,35 +367,92 @@ The above code is equivalent to:
     @constraint(RequireAtLeast(1), ['one', 'two'])
 
 
-Combining and rephrasing constraints
-------------------------------------
-The available constraints should cover 99% of use cases but if you want to
-combine them or even just change their description and/or the error message,
-you can do that with very little code:
+Rephrasing constraints
+----------------------
+You can override the help description and/or the error message of a constraint
+using the :meth:`~Constraint.rephrased` method. It takes two arguments:
 
-- **to combine constraints** you can use the logical operators ``&`` and ``|``;
-  both their validation logic and their description will be combined
-- **to edit the description and/or the error message** of a constraint,
-  you can use the method :meth:`~Constraint.rephrased`, which wraps the original
-  constraint with a :class:`Rephraser`
-- **to define a new constraint type wrapping another** constraint with
-  minimal boilerplate, you can extend :class:`~WrapperConstraint`.
+**help**
+    if provided, overrides the help description. It can be:
 
-Let's see some examples from Cloup itself.
+    - a string
+    - or a function ``(ctx: Context, constr: Constraint) -> str``
+
+    If you want to hide this constraint from the help, pass ``help=""`` or use
+    the method :meth:`~Constraint.hidden`.
+
+**error**
+    if provided, overrides the error message. It can be:
+
+    - a string, eventually a ``format`` string where you can use the fields
+      described in :class:`ErrorFmt`.
+    - or a function ``(err: ConstraintViolated) -> str``
+      where :exc:`ConstraintViolated` is an exception object that fully describes
+      the violation of a constraint, including fields like ``ctx``, ``constraint``
+      and ``params``.
+
+An example from Cloup
+~~~~~~~~~~~~~~~~~~~~~
+Cloup itself makes use of rephrasing a lot for defining non-parametric constraints,
+for example:
+
+.. code-block:: python
+
+    mutually_exclusive = AcceptAtMost(1).rephrased(
+        help='mutually exclusive',
+        error=f'the following parameters are mutually exclusive:\n'
+              f'{ErrorFmt.param_list}'
+    )
+
+Example: adding extra info to the original error
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Sometimes you just want to add extra info before or after the original error
+message. In that case, you can either pass a function or using ``ErrorFmt.error``:
+
+.. code-block:: python
+
+    # Using function (err: ConstraintViolated) -> str
+    mutually_exclusive.rephrased(
+        error=lambda err: f'{err}\nUse --renderer, the other options are deprecated.
+    )
+
+    # Using ErrorFmt.error
+    from cloup.constraint import ErrorFmt
+
+    mutually_exclusive.rephrased(
+        error=f'{ErrorFmt.error}\nUse --renderer, the other options are deprecated.
+    )
+
+
+Defining new constraints
+------------------------
+The available constraints should cover 99% of use cases but if you need it, it's
+very easy to define new ones. Here are your options:
+
+- you can use the **logical operators** ``&`` and ``|`` to combine existing
+  constraints and then eventually:
+
+  - use the ``rephrased`` method described in the previous section
+
+  - or subclass :class:`~WrapperConstraint` if you want to define a new
+    parametric ``Constraint`` class wrapping the result
+
+- just subclass ``Constraint``; look at existing implementations for guidance.
+
+Example 1: logical operator + rephrasing
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+This is how Cloup defines ``all_or_none`` (this example may be out-of-date):
 
 .. code-block:: python
 
     all_or_none = (require_all | accept_none).rephrased(
         help='provide all or none',
-        error='either all or none of the following parameters must be set:\n{param_list}',
+        error=f'the following parameters must be provided all together (or none should be provided):\n'
+              f'{ErrorFmt.param_list}',
     )
 
-``rephrased()`` requires at least one argument between ``help`` and ``error``.
-When rephrasing an error, you can pass a format string containing
-``'{param_list}'``, which will be replaced by a nicely formatted 2-space indented
-list of parameter names (one line per parameter).
-
-Let's see how you can define a new parametric constraint now:
+Example 2: defining a new parametric constraint
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 .. code-block:: python
 
@@ -414,8 +492,6 @@ producing constraints having a prettier ``__repr__`` (shown in consistency error
 These differences are unimportant in most cases, so feel free to use functions
 in your code if you prefer it.
 
-Finally, if all this is not convenient for your case, just extend ``Constraint``,
-it's pretty easy. Use the code of existing constraints as a guide.
 
 \*Validation protocol
 ---------------------

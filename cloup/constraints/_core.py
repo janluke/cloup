@@ -155,6 +155,7 @@ class Constraint(abc.ABC):
         :param help:
             if provided, overrides the help string of this constraint. It can be
             a string or a function ``(ctx: Context, constr: Constraint) -> str``.
+            If you want to hide this constraint from the help, pass ``help=""``.
         :param error:
             if provided, overrides the error message of this constraint.
             It can be:
