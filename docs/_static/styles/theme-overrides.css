@@ -3,8 +3,11 @@ Furo theme CSS variables:
 https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_index.scss
 */
 :root {
-    --color-brand-primary: #0094ff;
-    --color-brand-content: #007bd3;
+    --color-primary: #0094ff;
+    --color-primary--dark: #0086e8;
+    --color-primary--light: #6cc1ff;
+    --color-brand-primary: var(--color-primary--dark);
+    --color-brand-content: var(--color-primary--dark);
     --toc-title-font-size: var(--font-size--small--3);
     --toc-font-size: 0.92rem;
     --color-toc-item-text--level1: var(--color-brand-content);  /* custom variable */
@@ -19,6 +22,8 @@ https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_in
 
 @media (prefers-color-scheme: dark) {
     :root {
+        --color-brand-primary: var(--color-primary--light);
+        --color-brand-content: var(--color-primary--light);
         --color-toc-item-text--level1: white;  /* custom variable */
         --color-toc-item-text--level2: #c0c0c0;
     }
