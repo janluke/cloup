@@ -4,17 +4,17 @@ https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_in
 */
 :root {
     --color-primary: #0094ff;            /* custom variable */
-    --color-primary--dark: #0086e8;      /* custom variable */
+    --color-primary--dark: #0080dd;      /* custom variable */
     --color-primary--light: #6cc1ff;     /* custom variable */
     --color-brand-primary: var(--color-primary--dark);
     --color-brand-content: var(--color-primary--dark);
 
     --toc-font-size: 0.82em;
-    --toc-font-size--level1: 0.92rem;  /* custom variable */
-    --toc-title-font-size: var(--font-size--small--3);
+    --toc-font-size--level1: 0.89rem;  /* custom variable */
+    --toc-title-font-size: var(--font-size--small--4);
     --toc-item-spacing-horizontal: 1.1rem;
     --toc-item-spacing-vertical: 0.4em;
-    --toc-item-spacing-vertical--level1: .9rem;
+    --toc-item-spacing-vertical--level1: .75rem;
     --color-toc-item-text--level1: var(--color-brand-content);  /* custom variable */
     --color-toc-item-text--level2: #696969;  /* custom variable */
     --color-toc-item-text: var(--color-toc-item-text--level2);
@@ -29,7 +29,7 @@ https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_in
     :root {
         --color-brand-primary: var(--color-primary--light);
         --color-brand-content: var(--color-primary--light);
-        --color-toc-item-text--level1: white;  /* custom variable */
+        --color-toc-item-text--level1: #efefef;  /* custom variable */
         --color-toc-item-text--level2: #c0c0c0;
     }
 }
@@ -74,23 +74,51 @@ code.literal {
 }
 
 .toc-drawer {
-    padding-right: .25rem;
+    padding-right: 0.2rem;
 }
 
 .toc-tree {
     line-height: 1.2;
 }
 
-/* 1st-level toc */
+/* 1st-level ToC items */
 .toc-tree > ul > li > ul > li {
     padding-top: var(--toc-item-spacing-vertical--level1);
+    color: var(--color-toc-item-text--level1);
 }
 
+/* Other ToC levels */
 .toc-tree > ul > li > ul > li > .reference {
     color: var(--color-toc-item-text--level1);
     font-size: var(--toc-font-size--level1);
 }
 
+/* Current ToC item anchor */
+.toc-tree > ul > li > ul > li.scroll-current > .reference {
+    font-weight: 700;
+}
+
+.toc-tree .reference:hover {;
+    color: var(--color-brand-primary);
+}
+
+.toc-tree .scroll-current .reference:hover {
+    text-decoration: none;
+}
+
 table.docutils td {
     padding: .2em .3em;
+}
+
+.toc-title {
+    display: none;
+}
+
+.toc-title-container::before {
+    content: "\fOn this page";
+    font-weight: bold;
+    font-size: var(--toc-title-font-size);
+    padding-left: var(--toc-spacing-horizontal);
+    text-transform: uppercase;
+    color: var(--color-toc-title-text);
 }
