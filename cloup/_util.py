@@ -1,15 +1,13 @@
 """Generic utilities."""
 from enum import Enum
 from typing import (
-    Any, Callable, Dict, Hashable, Iterable, List, Optional, Sequence, TypeVar, Union
+    Any, Dict, Hashable, Iterable, List, Optional, Sequence, TypeVar, Union,
 )
 
 import click
 
 click_version_tuple = click.__version__.split('.')
 
-# Click-related type vars
-C = TypeVar('C', bound=Callable)
 
 T = TypeVar('T')
 K = TypeVar('K', bound=Hashable)
@@ -127,7 +125,7 @@ class FrozenSpaceMeta(type):
         raise Exception("you can't set attributes on this class")
 
     def asdict(cls) -> Dict[str, Any]:
-        return cls._dict   # type: ignore
+        return cls._dict  # type: ignore
 
     def __contains__(cls, item: str) -> bool:
         return item in cls.asdict()

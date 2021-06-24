@@ -7,7 +7,7 @@ import click
 from click import Context, Parameter
 
 from cloup._util import (
-    C, FrozenSpace, check_arg, class_name, make_one_line_repr, make_repr, pluralize
+    FrozenSpace, check_arg, class_name, make_one_line_repr, make_repr, pluralize
 )
 from .common import (
     format_param_list,
@@ -19,6 +19,7 @@ from .common import (
 )
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 
+C = TypeVar('C', bound=Callable)
 Op = TypeVar('Op', bound='Operator')
 HelpRephraser = Callable[[Context, 'Constraint'], str]
 ErrorRephraser = Callable[[ConstraintViolated], str]

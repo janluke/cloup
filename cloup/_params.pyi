@@ -5,15 +5,9 @@ from typing import Any, Callable, Optional, Sequence, Type, TypeVar, Union
 
 import click
 
-from cloup._util import C
 from cloup import OptionGroup
 
-ArgumentAdder = Callable[[C], C]
-"""A decorator that attaches an Argument to a function."""
-
-OptionAdder = Callable[[C], C]
-"""A decorator that attaches an Option to a function."""
-
+F = TypeVar('F', bound=Callable)
 P = TypeVar('P', bound=click.Parameter)
 
 ParamTypeLike = Union[
@@ -54,7 +48,7 @@ def argument(
     # The following will be added when Cloup drops support for Click 7:
     #     shell_complete: Optional[ShellComplete] = None,
     **kwargs
-) -> ArgumentAdder: ...
+) -> Callable[[F], F]: ...
 
 
 def option(
@@ -96,4 +90,4 @@ def option(
     # The following will be added when Cloup drops support for Click 7:
     #     shell_complete: Optional[ShellComplete] = None,
     **kwargs
-) -> OptionAdder: ...
+) -> Callable[[F], F]: ...

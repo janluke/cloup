@@ -1,17 +1,19 @@
 from typing import (
-    Callable, Iterable, NamedTuple, Optional, Sequence, TYPE_CHECKING, Tuple, Union,
+    Callable, Iterable, NamedTuple, Optional, Sequence,
+    TYPE_CHECKING, Tuple, TypeVar, Union,
 )
 
 from click import Context, HelpFormatter, Parameter
 
 from ._core import Constraint
 from .common import join_param_labels
-from .._util import C, coalesce
+from .._util import coalesce
 
 if TYPE_CHECKING:
     from .._option_groups import OptionGroup
 
-ParamAdder = Callable[[C], C]
+F = TypeVar('F', bound=Callable)
+G = TypeVar('G', bound=Callable)
 
 
 class BoundConstraintSpec(NamedTuple):
@@ -47,7 +49,10 @@ def constraint(constr: Constraint, params: Iterable[str]):
     return decorator
 
 
-def constrained_params(constr: Constraint, *param_adders: ParamAdder) -> Callable[[C], C]:
+def constrained_params(
+    constr: Constraint,
+    *param_adders: Callable[[F], F],
+) -> Callable[[G], G]:
     """
     Returns a decorator that adds the given parameters and applies a constraint
     to them. Equivalent to::
@@ -80,6 +85,7 @@ def constrained_params(constr: Constraint, *param_adders: ParamAdder) -> Callabl
         function decorators, each attaching a single parameter to the decorated
         function.
     """
+
     def decorator(f):
         reversed_params = []
         for add_param in reversed(param_adders):

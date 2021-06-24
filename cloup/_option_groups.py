@@ -3,22 +3,22 @@ Implements support to option group.
 """
 from collections import defaultdict
 from typing import (
-    Callable, Iterable, List, Optional, Sequence, TYPE_CHECKING, Tuple, cast, overload,
+    Callable, Iterable, List, Optional, Sequence, Tuple, TypeVar, cast, overload,
 )
 
 import click
 from click import Option, Parameter
 
 from cloup._params import option
-from cloup._util import C, coalesce, make_repr
+from cloup._util import coalesce, make_repr
 from cloup.constraints import Constraint
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
-if TYPE_CHECKING:
-    from cloup._params import OptionAdder
 
-OptionGroupAdder = Callable[[C], C]
-"""A decorator that registers an option group to the wrapped function."""
+# Need two different TypeVar to avoid MyPy error:
+# https://github.com/python/mypy/issues/8449#issuecomment-870955551
+F = TypeVar('F', bound=Callable)  # use this for argument types
+G = TypeVar('G', bound=Callable)  # use this for return types
 
 
 class OptionGroup:
@@ -62,7 +62,7 @@ class OptionGroup:
             return []
         return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
 
-    def option(self, *param_decls, **attrs):
+    def option(self, *param_decls, **attrs) -> Callable[[G], G]:
         return option(*param_decls, group=self, **attrs)
 
     def __iter__(self):
@@ -206,21 +206,21 @@ class OptionGroupMixin:
 def option_group(
     name: str,
     help: str,
-    *options: 'OptionAdder',
+    *options: Callable[[F], F],
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> OptionGroupAdder:
+) -> Callable[[G], G]:
     ...
 
 
 @overload
 def option_group(
     name: str,
-    *options: 'OptionAdder',
+    *options: Callable[[F], F],
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> OptionGroupAdder:
+) -> Callable[[G], G]:
     ...
 
 
@@ -267,12 +267,8 @@ def option_group(name, *args, **kwargs):
 
 
 def _option_group(
-    name: str,
-    options: Sequence['OptionAdder'],
-    help: Optional[str] = None,
-    constraint: Optional[Constraint] = None,
-    hidden: bool = False,
-) -> OptionGroupAdder:
+    name, options, help=None, constraint=None, hidden: bool = False,
+):
     if not isinstance(name, str):
         raise TypeError(
             'the first argument of @option_group must be its name/title, a string. '
