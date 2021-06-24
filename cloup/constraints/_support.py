@@ -71,12 +71,11 @@ def constrained_params(
 
     but remember that:
 
-    - Python 3.9 is the first that allow arbitrary expressions in decorators,
-      meaning that you can't put a parametric/conditional constraint aside ``@``
-      in previous Python versions; in that case, you are better off using
-      ``@constraint_params``
+    - Python 3.9 is the first that allows arbitrary expressions on the right of ``@``;
     - using a long conditional/composite constraint as decorator may be less
       readable.
+
+    In these cases, you may consider use ``@constraint_params``.
 
     .. versionadded:: 0.9.0
 

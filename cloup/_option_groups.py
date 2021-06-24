@@ -1,5 +1,5 @@
 """
-Implements support to option group.
+Implements the "option groups" feature.
 """
 from collections import defaultdict
 from typing import (
