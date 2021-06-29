@@ -18,7 +18,7 @@ G = TypeVar('G', bound=Callable)
 
 class BoundConstraintSpec(NamedTuple):
     """A NamedTuple storing a ``Constraint`` and the **names of the parameters**
-    if has check."""
+    it has to check."""
     constraint: Constraint
     param_names: Union[Sequence[str]]
 

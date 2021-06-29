@@ -280,9 +280,8 @@ The following tabs compare the ``--help`` of the manim example ("aligned" and
         [...]
 
 
-The linear layout is controlled by the ``min_col2_width`` argument of ``HelpFormatter``.
 The linear layout is used when the available width for the 2nd column is below
-``min_col2_width``, which defaults to 35.
+``min_col2_width``, one of the ``formatter_settings``.
 
 You can disable the linear layout settings ``min_col2_width=0``.
 
