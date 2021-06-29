@@ -188,8 +188,9 @@ class Hline(SepGenerator):
         like ``Hline.solid``, ``Hline.dashed``, ``Hline.densely_dashed``
         and  ``Hline.dotted``.
 
-        :param pattern: a string (usually a single character) that is repeated to
-        generate the line.
+        :param pattern:
+            a string (usually a single character) that is repeated to generate
+            the line.
         """
         self.pattern = pattern
 
