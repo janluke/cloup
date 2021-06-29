@@ -529,3 +529,9 @@ mutually_exclusive = AcceptAtMost(1).rephrased(
           f'{ErrorFmt.param_list}'
 )
 """Satisfied if at most one of the parameters is set."""
+
+require_any = RequireAtLeast(1)
+"""Alias for ``RequireAtLeast(1)``."""
+
+require_one = RequireExactly(1)
+"""Alias for ``RequireExactly(1)``."""
