@@ -81,13 +81,11 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
     option(
         "-q", "--quality", default="h",
         type=click.Choice(["l", "m", "h", "p", "k"], case_sensitive=False),
-        help="""
-            Render quality at the follow resolution framerates, respectively:
-            854x480 30FPS,
-            1280x720 30FPS,
-            1920x1080 60FPS,
-            2560x1440 60FPS,
-            3840x2160 60FPS
+        help="""\b
+            Resolution and framerate of the render:
+            l = 854x480  30FPS,   m = 1280x720 30FPS,
+            h = 1920x1080 60FPS,  p = 2560x1440 60FPS,
+            k = 3840x2160 60FPS
             """,
     ),
     option(
