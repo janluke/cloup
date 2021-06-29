@@ -112,18 +112,13 @@ panels_add_bootstrap_css = False
 # -- Version warning -----------------------------------------------------------
 versionwarning_messages = {
     "latest": (
-        "this document is for the development version. "
-        'For the stable version documentation, see <a href="/en/stable/">here</a>.'
+        'This is the documentation for the main development branch of Cloup. '
+        'The documentation for the latest stable release is '
+        '<a href="/en/stable/">here</a>.'
     ),
 }
 # versionwarning_project_version = "latest"    # For debugging locally
-versionwarning_body_selector = "body"
-versionwarning_banner_title = ""
-versionwarning_banner_html = """
-<div id="{id_div}">
-    <strong>Warning:</strong> {message}
-</div>
-"""
+versionwarning_body_selector = 'article[role="main"]'
 
 # Whether to render to-do notes.
 todo_include_todos = False
