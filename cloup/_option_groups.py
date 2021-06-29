@@ -230,8 +230,9 @@ def option_group(name, *args, **kwargs):
     """
     Returns a decorator that annotates a function with an option group.
 
-    The ``help`` is an optional description and can be provided either as keyword
-    argument or as 2nd positional argument after the ``name`` of the group::
+    The ``help`` argument is an optional description and can be provided either
+    as keyword argument or as 2nd positional argument after the ``name`` of
+    the group::
 
         # help as keyword argument
         @option_group(name, *options, help=None, ...)

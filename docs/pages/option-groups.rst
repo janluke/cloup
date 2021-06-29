@@ -6,11 +6,38 @@ Option groups
 
 The @option_group decorator
 ---------------------------
-The recommended way of defining option groups is through the decorator
-:func:`~cloup.option_group`.
+The recommended way of defining option groups is through the
+:func:`~cloup.option_group` decorator. This decorators is overloaded with two
+signatures that only differ by how you provide the optional ``help`` argument::
 
-.. autofunction:: cloup.option_group
-    :noindex:
+    # help as keyword argument
+    @option_group(name, *options, help=None, ...)
+
+    # help as 2nd positional argument
+    @option_group(name, help, *options, ...)
+
+Here's the full list of parameters:
+
+- **name** --
+  this is shown as heading of the help section describing the option group.
+
+- **\*options** --
+  an arbitrary number of decorators like those returned by ``cloup.option`` and
+  ``click.option``. Since v0.9, each decorator can add even multiple options in
+  a row. This was introduced to support constraints as decorators.
+
+- **help** --
+  an optional description shown below the name; can be provided as keyword
+  argument or 2nd positional argument.
+
+- **constraint** --
+  an optional instance of Constraint (see Constraints for more info);
+  a description of the constraint will be shown between squared brackets
+  aside the option group title (or below it if too long).
+
+- **hidden** --
+  if True, the option group and all its options are hidden from the help page
+  (all contained options will have their hidden attribute set to True).
 
 .. tabbed:: Code
     :new-group:
@@ -21,28 +48,24 @@ The recommended way of defining option groups is through the decorator
         from cloup import option_group, option
         from cloup.constraints import SetAtLeast
 
-        @cloup.command('clouptest')
+        @cloup.command("clouptest")
         @option_group(
             "Input options",
-            "This is a very long description of the option group. I don't think this is "
-            "needed very often; still, if you want to provide it, you can pass it as 2nd "
-            "positional argument or as keyword argument 'help' after all options.",
-            option('-o', '--one', help='1st input option'),
-            option('--two', help='2nd input option'),
-            option('--three', help='3rd input option'),
+            option("--one", help="1st input option"),
+            option("--two", help="2nd input option"),
+            option("--three", help="3rd input option"),
         )
         @option_group(
-            'Output options',
-            option('--four / --no-four', help='1st output option'),
-            option('--five', help='2nd output option'),
-            option('--six', help='3rd output option'),
+            "Output options",
+            "This is a an optional description of the option group.",
+            option("--four / --no-four", help="1st output option"),
+            option("--five", help="2nd output option"),
+            option("--six", help="3rd output option"),
             constraint=RequireAtLeast(1),
         )
-        # Options that don't belong to any option group (including --help)
-        # are shown under "Other options"
-        @option('--seven', help='first uncategorized option',
-                type=click.Choice(['yes', 'no', 'ask']))
-        @option('--height', help='second uncategorized option')
+        # The following will be shown (with --help) under "Other options"
+        @option("--seven", help="1st uncategorized option")
+        @option("--height", help="2nd uncategorized option")
         def cli(**kwargs):
             """ A CLI that does nothing. """
             print(kwargs)
@@ -56,41 +79,42 @@ The recommended way of defining option groups is through the decorator
           A CLI that does nothing.
 
         Input options:
-          This is a very long description of the option group. I don't think this is
-          needed very often; still, if you want to provide it, you can pass it as
-          2nd positional argument or as keyword argument 'help' after all options.
-          -o, --one TEXT        1st input option
-          --two TEXT            2nd input option
-          --three TEXT          3rd input option
+          This is a an optional description of the option group.
+           --one TEXT         1st input option
+          --two TEXT          2nd input option
+          --three TEXT        3rd input option
 
         Output options: [at least 1 required]
-          --four / --no-four    1st output option
-          --five TEXT           2nd output option
-          --six TEXT            3rd output option
+          This is a an optional description of the option group.
+          --four / --no-four  1st output option
+          --five TEXT         2nd output option
+          --six TEXT          3rd output option
 
         Other options:
-          --seven [yes|no|ask]  first uncategorized option
-          --height TEXT         second uncategorized option
-          --help                Show this message and exit.
+          --seven TEXT        1st uncategorized option
+          --height TEXT       2nd uncategorized option
+          --help              Show this message and exit.
 
-.. admonition:: The default option group
-
-    Options that are not assigned to any user-defined option group are listed
-    under a section which is shows at the bottom. This section is titled
-    "Other options", unless the default group is the only one defined, in which
-    case ``cloup.Command`` behaves like a normal ``click.Command``, naming it
-    just "Options".
+Options that are not assigned to an option group are included is the so called
+**default option group**, which is shown for last in the ``--help``.
+This group is titled "Other options" unless it is the only option group, in
+which case ``cloup.Command`` behaves like a normal ``click.Command``,
+naming it just "Options".
 
 In the example above, I used the :func:`cloup.option` decorator to define options
-but you can use :func:`click.option` as well. There's no practical difference
-between the two when using ``@option_group``.
+but that's not required: you can use :func:`click.option` or any other decorator
+that acts like it. Nonetheless:
 
+.. admonition:: Tip: prefer Cloup decorators over Click ones
+    :class: tip
 
-Option groups and constraints
------------------------------
-You can read more about it in :ref:`this section <option-group-and-constraints>`
-of the :doc:`constraints` chapter.
+    Cloup provides detailed type hints for (almost) all arguments you can pass
+    to ``cloup.argument``, ``cloup.option``, ``cloup.command`` and
+    ``cloup.group`` (*). This translates to a better **IDE support**, i.e.
+    better auto-completion and error detection.
 
+    (*) Unfortunately, the same doesn't apply to the ``command`` and ``group``
+    methods of ``cloup.Group``.
 
 .. _aligned-vs-nonaligned-group:
 
@@ -114,23 +138,23 @@ which is bad for readability. See this biased example to compare the two modes:
 
         Input options:
           --one TEXT                   This description is more likely to be wrapped
-                                       when aligning
+                                       when aligning.
           --two TEXT                   This description is more likely to be wrapped
-                                       when aligning
+                                       when aligning.
           --three TEXT                 This description is more likely to be wrapped
-                                       when aligning
+                                       when aligning.
 
         Output options:
           --four                       This description is more likely to be wrapped
-                                       when aligning
+                                       when aligning.
           --five TEXT                  This description is more likely to be wrapped
-                                       when aligning
+                                       when aligning.
           --six TEXT                   This description is more likely to be wrapped
-                                       when aligning
+                                       when aligning.
 
         Other options:
-          --seven [a|b|c|d|e|f|g|h|i]  First uncategorized option
-          --height TEXT                Second uncategorized option
+          --seven [a|b|c|d|e|f|g|h|i]  First uncategorized option.
+          --height TEXT                Second uncategorized option.
           --help                       Show this message and exit.
 
 .. tabbed:: Non-aligned
@@ -192,30 +216,27 @@ of defining option groups:
 
     # OptionGroup takes all arguments of @option_group but *options
     input_grp = OptionGroup(
-        'Input options', help='This is a very useful description of the group')
-    output_grp = OptionGroup(
-        'Output options', constraint=SetAtLeast(1))
+        'Input options', help='This is a very useful description of the group'
+    )
+    output_grp = OptionGroup('Output options',  constraint=SetAtLeast(1))
 
-    @cloup.command('clouptest')
-    # Input options
-    @input_grp.option('-o', '--one', help='1st input option')
-    @input_grp.option('--two', help='2nd input option')
-    # Output options
-    @output_grp.option('--four / --no-four', help='1st output option')
-    @output_grp.option('--five', help='2nd output option')
-    def cli_flat(**kwargs):
+    @cloup.command()
+    @input_grp.option('--one')
+    @input_grp.option('--two')
+    @output_grp.option('--three')
+    @output_grp.option('--four')
+    def cli_flat(one, two, three, four):
         """ A CLI that does nothing. """
         print(kwargs)
 
-Equivalently, you could pass the option group as an argument to ``cloup.option``:
+The above notation is just syntax sugar on top of ``@cloup.option``:
 
 .. code-block:: python
 
-    @cloup.option('-o', '--one', help='1st input option', group=input_grp)
+    @input_grp.option('--one')
+    # is equivalent to:
+    @cloup.option('--one', group=input_grp)
 
-Note that, in both cases, :class:`OptionGroup` instances work as "markers" for
-options, not as containers of options: when you add an option nothing happens
-to the corresponding option group.
 
 Option groups without decorators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -276,10 +297,9 @@ This feature is implemented simply by annotating each option with an additional
 attribute ``group`` of type ``Optional[OptionGroup]``. Unless the option is of
 class ``GroupedOption``, this ``group`` attribute is added and set by monkey-patching.
 
-When the command is initialized, ``OptionGroupMixin`` groups all options by
-their ``group`` attribute. Options that don't have a ``group`` attribute or have
-it set to ``None`` are put into the "default option group" (together with
-``--help``).
+When the ``Command`` is instantiated, it groups all options by their ``group``
+attribute. Options that don't have a ``group`` attribute (or have it set to
+``None``) are stored in the "default option group" (together with ``--help``).
 
 In order to show option groups in the command help, ``OptionGroupMixin``
 "overrides" ``Command.format_options``.
