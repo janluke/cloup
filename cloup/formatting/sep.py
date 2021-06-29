@@ -95,6 +95,10 @@ class RowSepIf(RowSepPolicy):
             i.e. a function ``(width: int) -> str`` (e.g. :class:`Hline`).
             The empty string corresponds to an empty line separator.
         """
+        if isinstance(sep, str) and sep.endswith('\n'):
+            raise ValueError(
+                "sep must not end with '\n'. Since v0.9, the formatter writes "
+                "a '\n' after it.")
         self.condition = condition
         self.sep = sep
 

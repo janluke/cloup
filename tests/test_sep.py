@@ -2,7 +2,9 @@ from functools import partial
 
 import pytest
 
-from cloup.formatting.sep import Hline, count_multiline_rows, multiline_rows_are_at_least
+from cloup.formatting.sep import (
+    Hline, RowSepIf, count_multiline_rows, multiline_rows_are_at_least
+)
 
 # Use the same widths for both columns
 cols_width = 30
@@ -16,14 +18,6 @@ aa = (above_limit, above_limit)
 ab = (above_limit, below_limit)
 ba = (below_limit, above_limit)
 bb = (below_limit, below_limit)
-
-
-def test_Hline():
-    assert Hline.solid(5) == "─────"
-    assert Hline.dashed(5) == "-----"
-    assert Hline.densely_dashed(5) == "╌╌╌╌╌"
-    assert Hline.dotted(5) == "┄┄┄┄┄"
-    assert Hline('-.')(5) == '-.-.-'
 
 
 def test_count_multiline_rows():
@@ -66,3 +60,16 @@ class TestMultilineRowsAreAtLeast:
             aa, ab, ba,
         ])
         assert not at_least_half_multiline_rows([bb] * 5)
+
+
+def test_value_error_if_sep_string_ends_with_newline():
+    with pytest.raises(ValueError, match="sep must not end with '\n'"):
+        RowSepIf(multiline_rows_are_at_least(1), sep='\n')
+
+
+def test_Hline():
+    assert Hline.solid(5) == "─────"
+    assert Hline.dashed(5) == "-----"
+    assert Hline.densely_dashed(5) == "╌╌╌╌╌"
+    assert Hline.dotted(5) == "┄┄┄┄┄"
+    assert Hline('-.')(5) == '-.-.-'

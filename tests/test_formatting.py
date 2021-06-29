@@ -92,6 +92,11 @@ def test_col2_min_width():
     assert formatter.getvalue() == expected
 
 
+def test_value_error_if_row_sep_string_ends_with_newline():
+    with pytest.raises(ValueError, match="row_sep must not end with '\n'"):
+        HelpFormatter(row_sep='\n')
+
+
 @parametrize(
     'row_sep',
     pytest.param('-' * (80 - 4), id='string'),

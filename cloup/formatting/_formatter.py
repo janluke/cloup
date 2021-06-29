@@ -108,6 +108,11 @@ class HelpFormatter(click.HelpFormatter):
     ):
         check_positive_int(col1_max_width, 'col1_max_width')
         check_positive_int(col_spacing, 'col_spacing')
+        if isinstance(row_sep, str) and row_sep.endswith('\n'):
+            raise ValueError(
+                "row_sep must not end with '\n'. Since v0.9, the formatter writes "
+                "a '\n' after it. To disable row_sep, you can leave it set to None.")
+
         max_width = max_width or 80
         # We subtract 1 to the terminal width to leave space for the new line character.
         # Otherwise, when we write a line that is long exactly terminal_size (without \n)
