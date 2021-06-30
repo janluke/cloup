@@ -139,3 +139,11 @@ def test_override_format_subcommand_name(runner):
           ordinary   An ordinary command.
     """)[1:]
     assert res.output == expected_help
+
+
+def test_section_error_if_first_arg_is_not_a_string():
+    with pytest.raises(TypeError, match="the first argument must be a string"):
+        Section([cloup.Command('cmd')])
+    grp = cloup.Group()
+    with pytest.raises(TypeError, match="the first argument must be a string"):
+        grp.section([cloup.Command('cmd')])

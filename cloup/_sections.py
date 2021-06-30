@@ -34,6 +34,9 @@ class Section:
         :param sorted:
             if True, ``list_commands()`` returns the commands in lexicographic order
         """
+        if not isinstance(title, str):
+            raise TypeError(
+                'the first argument must be a string, the title. You probably forgot it.')
         self.title = title
         self.sorted = sorted  # type: ignore
         self.commands: OrderedDict[str, click.Command] = OrderedDict()
