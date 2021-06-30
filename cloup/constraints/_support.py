@@ -142,14 +142,14 @@ class ConstraintMixin:
 
         # Collect constraints applied to option groups and bind them to the
         # corresponding Option instances
-        option_groups: Sequence[OptionGroup] = getattr(self, 'option_groups', [])
+        option_groups: Tuple[OptionGroup, ...] = getattr(self, 'option_groups', [])
         self._optgroup_constraints = tuple(
             BoundConstraint(grp.constraint, grp.options)
             for grp in option_groups
             if grp.constraint is not None
         )
         # Bind constraints defined via @constraint to Parameter instances
-        self._extra_constraints: Sequence[BoundConstraint] = tuple(
+        self._extra_constraints: Tuple[BoundConstraint, ...] = tuple(
             (
                 constr if isinstance(constr, BoundConstraint)
                 else constr.resolve_params(self)
@@ -157,16 +157,19 @@ class ConstraintMixin:
             for constr in constraints
         )
 
-    def parse_args(self, ctx, args):
+    def parse_args(self, ctx: Context, args: List[str]) -> List[str]:
         all_constraints = self._optgroup_constraints + self._extra_constraints
         # Check parameter groups' consistency *before* parsing
         if Constraint.must_check_consistency(ctx):
             for constr in all_constraints:
                 constr.check_consistency()
-        super().parse_args(ctx, args)
+
+        args = super().parse_args(ctx, args)  # type: ignore
+
         # Validate constraints against parameter values
         for constr in all_constraints:
             constr.check_values(ctx)
+        return args
 
     def get_param_by_name(self, name: str) -> Parameter:
         try:
