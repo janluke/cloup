@@ -13,7 +13,7 @@ Changelog
     Deprecated
     ----------
 
-v0.9.0 (unreleased)
+v0.9.0 (2021-06-30)
 ===================
 
 Fixed bugs
@@ -50,6 +50,8 @@ New features and enhancements
 
 - ``@option_group`` and ``Section`` now show a better error message when one forgets
   to provide the name/title as first argument.
+
+- Fixed/improved some type hints and added others.
 
 Breaking changes
 ----------------
