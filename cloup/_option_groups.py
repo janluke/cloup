@@ -3,7 +3,7 @@ Implements the "option groups" feature.
 """
 from collections import defaultdict
 from typing import (
-    Callable, Iterable, List, Optional, Sequence, Tuple, overload,
+    Callable, Iterable, Iterator, List, Optional, Sequence, Tuple, overload,
 )
 
 import click
@@ -13,12 +13,7 @@ from cloup._params import option
 from cloup._util import first_bool, make_repr
 from cloup.constraints import Constraint
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
-
-
-# Need two different TypeVar to avoid MyPy error:
-# https://github.com/python/mypy/issues/8449#issuecomment-870955551
-F = TypeVar('F', bound=Callable)  # use this for argument types
-G = TypeVar('G', bound=Callable)  # use this for return types
+from cloup.typing import Decorator, F
 
 
 class OptionGroup:
@@ -62,7 +57,8 @@ class OptionGroup:
             return []
         return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
 
-    def option(self, *param_decls, **attrs) -> Callable[[G], G]:
+    def option(self, *param_decls, **attrs) -> Callable[[F], F]:
+        """Refer to :func:`cloup.option`."""
         return option(*param_decls, group=self, **attrs)
 
     def __iter__(self):
@@ -206,21 +202,21 @@ class OptionGroupMixin:
 def option_group(
     name: str,
     help: str,
-    *options: Callable[[F], F],
+    *options: Decorator,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> Callable[[G], G]:
+) -> Callable[[F], F]:
     ...
 
 
 @overload
 def option_group(
     name: str,
-    *options: Callable[[F], F],
+    *options: Decorator,
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> Callable[[G], G]:
+) -> Callable[[F], F]:
     ...
 
 

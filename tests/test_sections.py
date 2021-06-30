@@ -7,7 +7,8 @@ from click import pass_context
 
 import cloup
 from cloup import Section
-from cloup._util import MISSING, pick_non_missing
+from cloup._util import pick_non_missing
+from cloup.typing import MISSING
 from tests.util import new_dummy_func, pick_first_bool
 
 

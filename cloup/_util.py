@@ -1,27 +1,17 @@
 """Generic utilities."""
-from enum import Enum
 from typing import (
-    Any, Dict, Hashable, Iterable, List, Optional, Sequence, TypeVar, Union,
+    Any, Dict, Hashable, Iterable, List, Optional, Sequence, TypeVar,
 )
 
 import click
 
-click_version_tuple = click.__version__.split('.')
+from cloup.typing import MISSING, Possibly
 
+click_version_tuple = click.__version__.split('.')
 
 T = TypeVar('T')
 K = TypeVar('K', bound=Hashable)
 V = TypeVar('V')
-
-
-# PEP-blessed solution for defining a Singleton type:
-# https://www.python.org/dev/peps/pep-0484/#id30
-class _Missing(Enum):
-    flag = 'Missing'
-
-
-MISSING = _Missing.flag
-Possibly = Union[_Missing, T]
 
 
 def pick_non_missing(d: Dict[K, Possibly[V]]) -> Dict[K, V]:

@@ -15,9 +15,10 @@ import click
 from click.formatting import wrap_text
 
 from cloup._util import (
-    Possibly, MISSING, check_positive_int, identity, indent_lines, make_repr,
+    check_positive_int, identity, indent_lines, make_repr,
     pick_non_missing
 )
+from ..typing import MISSING, Possibly
 from cloup.styling import HelpTheme, IStyle
 
 Definition = Tuple[str, Union[str, Callable[[int], str]]]

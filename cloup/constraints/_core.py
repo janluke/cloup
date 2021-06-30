@@ -7,7 +7,8 @@ import click
 from click import Context, Parameter
 
 from cloup._util import (
-    FrozenSpace, check_arg, class_name, make_one_line_repr, make_repr, pluralize
+    FrozenSpace, check_arg, class_name,
+    make_one_line_repr, make_repr, pluralize
 )
 from .common import (
     format_param_list,
@@ -18,8 +19,8 @@ from .common import (
     param_value_is_set,
 )
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
+from ..typing import Decorator, F
 
-C = TypeVar('C', bound=Callable)
 Op = TypeVar('Op', bound='Operator')
 HelpRephraser = Callable[[Context, 'Constraint'], str]
 ErrorRephraser = Callable[[ConstraintViolated], str]
@@ -175,7 +176,7 @@ class Constraint(abc.ABC):
         """Hides this constraint from the command help."""
         return Rephraser(self, help='')
 
-    def __call__(self, *param_adders) -> Callable[[C], C]:
+    def __call__(self, *param_adders: Decorator) -> Callable[[F], F]:
         """Equivalent to calling :func:`cloup.constrained_params` with this
         constraint as first argument.
 

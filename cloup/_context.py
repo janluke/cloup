@@ -4,7 +4,8 @@ from typing import Any, Callable, Dict, List, Optional, Type
 import click
 
 import cloup
-from cloup._util import MISSING, Possibly, first_not_none, pick_non_missing
+from cloup._util import first_not_none, pick_non_missing
+from cloup.typing import MISSING, Possibly
 from cloup.formatting import HelpFormatter
 
 

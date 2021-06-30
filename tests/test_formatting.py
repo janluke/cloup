@@ -9,7 +9,7 @@ import click
 import pytest
 
 from cloup import HelpFormatter
-from cloup._util import Possibly
+from cloup.typing import Possibly
 from cloup.formatting import HelpSection, unstyled_len
 from cloup.formatting.sep import (
     Hline, RowSepIf, RowSepPolicy, multiline_rows_are_at_least

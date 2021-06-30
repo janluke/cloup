@@ -8,7 +8,8 @@ from click import pass_context
 
 import cloup
 from cloup import OptionGroup, option, option_group
-from cloup._util import MISSING, pick_non_missing
+from cloup._util import pick_non_missing
+from cloup.typing import MISSING
 from cloup.constraints import RequireAtLeast, mutually_exclusive
 from tests.util import (make_options, new_dummy_func, parametrize, pick_first_bool)
 

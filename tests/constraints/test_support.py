@@ -7,7 +7,8 @@ from click import Argument, Option
 
 import cloup
 from cloup import ConstraintMixin, Context
-from cloup._util import MISSING, pick_non_missing
+from cloup._util import pick_non_missing
+from cloup.typing import MISSING
 from cloup.constraints import Constraint, RequireAtLeast, mutually_exclusive
 from tests.constraints.test_constraints import FakeConstraint
 from tests.util import new_dummy_func, pick_first_bool

@@ -1,19 +1,17 @@
 from typing import (
-    Callable, Iterable, NamedTuple, Optional, Sequence,
-    TYPE_CHECKING, Tuple, TypeVar, Union,
+    Callable, Iterable, List, NamedTuple, Optional, Sequence,
+    TYPE_CHECKING, Tuple, Union,
 )
 
 from click import Context, HelpFormatter, Parameter
 
 from ._core import Constraint
 from .common import join_param_labels
-from .._util import coalesce
+from .._util import first_bool
+from ..typing import Decorator, F
 
 if TYPE_CHECKING:
     from .._option_groups import OptionGroup
-
-F = TypeVar('F', bound=Callable)
-G = TypeVar('G', bound=Callable)
 
 
 class BoundConstraintSpec(NamedTuple):
@@ -37,7 +35,7 @@ def _constraint_memo(
     f.__constraints.append(constr)
 
 
-def constraint(constr: Constraint, params: Iterable[str]):
+def constraint(constr: Constraint, params: Iterable[str]) -> Callable[[F], F]:
     """Registers a constraint on a list of parameters specified by (destination) name
     (e.g. the default name of ``--input-file`` is ``input_file``)."""
     spec = BoundConstraintSpec(constr, tuple(params))
@@ -51,8 +49,8 @@ def constraint(constr: Constraint, params: Iterable[str]):
 
 def constrained_params(
     constr: Constraint,
-    *param_adders: Callable[[F], F],
-) -> Callable[[G], G]:
+    *param_adders: Decorator,
+) -> Callable[[F], F]:
     """
     Returns a decorator that adds the given parameters and applies a constraint
     to them. Equivalent to::
