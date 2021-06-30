@@ -185,6 +185,21 @@ class Constraint(abc.ABC):
             constraint as first argument.
         """
         from ._support import constrained_params
+        # TODO: remove this check in the future
+        if not callable(param_adders[0]):
+            from cloup import __version__
+            raise TypeError(f"""
+                all arguments of this method must be decorators like those returned
+                by cloup.argument() and cloup.option().
+
+                If you are trying to call a constraint to check it imperatively,
+                know that, since Cloup v0.9, calling a constraint has a completely
+                different semantics, see:
+
+                https://cloup.readthedocs.io/en/v{__version__}/pages/constraints.html#constraints-as-decorators
+
+                You can use the check() method to check a constraint imperatively.
+            """)
         return constrained_params(self, *param_adders)
 
     def __or__(self, other: 'Constraint') -> 'Or':

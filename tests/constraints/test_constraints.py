@@ -91,6 +91,11 @@ class TestBaseConstraint:
         assert Constraint.must_check_consistency(ctx) == should_check
         assert len(constr.check_consistency_calls) == int(should_check)
 
+    def test_error_is_raised_when_using_call_the_old_way(self):
+        constr = FakeConstraint()
+        with pytest.raises(TypeError, match='since Cloup v0.9, calling a constraint'):
+            constr(['a', 'b'])
+
 
 class TestAnd:
 
