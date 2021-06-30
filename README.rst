@@ -130,7 +130,7 @@ A simple example
 
 If you don't provide ``--pippo`` or ``--pluto``:
 
-.. code-block:: none
+.. code-block:: text
 
     Usage: invoked-command [OPTIONS]
     Try 'invoked-command --help' for help.
