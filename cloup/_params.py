@@ -14,7 +14,7 @@ argument = click.argument
 
 def option(
     *param_decls,
-    cls=GroupedOption,
+    cls=None,
     group=None,
     **kwargs
 ):
@@ -22,6 +22,8 @@ def option(
     Refer to :class:`click.Option` and :class:`click.Parameter` for more info
     about the accepted parameters.
     """
+    if cls is None:
+        cls = GroupedOption
 
     def decorator(f):
         func = click.option(*param_decls, cls=cls, **kwargs)(f)
