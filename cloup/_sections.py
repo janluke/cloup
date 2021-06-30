@@ -19,10 +19,10 @@ class Section:
     from :class:`SectionMixin`.
 
     .. versionchanged:: 0.6.0
-        Removed the deprecated old name ``GroupSection``.
+        removed the deprecated old name ``GroupSection``.
 
     .. versionchanged:: 0.5.0
-        Introduced the new name ``Section`` and deprecated the old ``GroupSection``.
+        introduced the new name ``Section`` and deprecated the old ``GroupSection``.
     """
 
     def __init__(self, title: str,
@@ -94,11 +94,11 @@ class SectionMixin:
     shown section in the help and its commands are listed in lexicographic order.
 
     .. versionchanged:: 0.8.0
-        This mixin now relies on ``cloup.HelpFormatter`` to align help sections.
+        this mixin now relies on ``cloup.HelpFormatter`` to align help sections.
         If a ``click.HelpFormatter`` is used with a ``TypeError`` is raised.
 
     .. versionchanged:: 0.8.0
-        Removed ``format_section``. Added ``make_commands_help_section``.
+        removed ``format_section``. Added ``make_commands_help_section``.
 
     .. versionadded:: 0.5.0
     """

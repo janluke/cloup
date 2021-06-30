@@ -32,7 +32,7 @@ class Constraint(abc.ABC):
     contains the values assigned to the parameters in ``ctx.params``).
 
     .. versionchanged:: 0.9.0
-        Calling a constraint, previously equivalent to :meth:`~Constraint.check`,
+        calling a constraint, previously equivalent to :meth:`~Constraint.check`,
         is now equivalent to calling :func:`cloup.constrained_params` with this
         constraint as first argument.
     """
@@ -42,7 +42,7 @@ class Constraint(abc.ABC):
         """Returns True if consistency checks are enabled.
 
         .. versionchanged:: 0.9.0
-            This method now a static method and takes a ``Context`` in input.
+            this method now a static method and takes a ``Context`` in input.
         """
         return getattr(ctx, 'check_constraints_consistency', True)
 
@@ -180,7 +180,7 @@ class Constraint(abc.ABC):
         constraint as first argument.
 
         .. versionchanged:: 0.9.0
-            This method, previously equivalent to :meth:`~Constraint.check`, is
+            this method, previously equivalent to :meth:`~Constraint.check`, is
             now equivalent to calling :func:`cloup.constrained_params` with this
             constraint as first argument.
         """
