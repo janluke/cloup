@@ -63,7 +63,7 @@ class TestMultilineRowsAreAtLeast:
 
 
 def test_value_error_if_sep_string_ends_with_newline():
-    with pytest.raises(ValueError, match="sep must not end with '\n'"):
+    with pytest.raises(ValueError, match=r"sep must not end with '\\n'"):
         RowSepIf(multiline_rows_are_at_least(1), sep='\n')
 
 

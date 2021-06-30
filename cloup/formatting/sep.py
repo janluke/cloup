@@ -97,8 +97,8 @@ class RowSepIf(RowSepPolicy):
         """
         if isinstance(sep, str) and sep.endswith('\n'):
             raise ValueError(
-                "sep must not end with '\n'. Since v0.9, the formatter writes "
-                "a '\n' after it.")
+                "sep must not end with '\\n'. The formatter writes  a '\\n' after it; "
+                "no other newline is allowed.")
         self.condition = condition
         self.sep = sep
 

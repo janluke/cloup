@@ -114,8 +114,9 @@ class HelpFormatter(click.HelpFormatter):
         check_positive_int(col_spacing, 'col_spacing')
         if isinstance(row_sep, str) and row_sep.endswith('\n'):
             raise ValueError(
-                "row_sep must not end with '\n'. Since v0.9, the formatter writes "
-                "a '\n' after it. To disable row_sep, you can leave it set to None.")
+                "since v0.9, row_sep must not end with '\\n'. The formatter writes "
+                "a '\\n' after it; no other newline is allowed.\n"
+                "If you want an empty line between rows, set row_sep=''.")
 
         max_width = max_width or 80
         # We subtract 1 to the terminal width to leave space for the new line character.
