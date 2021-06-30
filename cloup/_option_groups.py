@@ -113,8 +113,9 @@ class OptionGroupMixin:
         self, *args, align_option_groups: Optional[bool] = None, **kwargs
     ):
         self.align_option_groups = align_option_groups
+        params = kwargs.get('params') or []
         self.option_groups, self.ungrouped_options = \
-            self._option_groups_from_params(kwargs['params'])
+            self._option_groups_from_params(params)
         super().__init__(*args, **kwargs)  # type: ignore
 
     @staticmethod
