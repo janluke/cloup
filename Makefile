@@ -54,9 +54,9 @@ view-docs: docs ## open the built docs in the default browser
 re-docs: clean-docs view-docs ## (re)generate Sphinx HTML documentation from scratch
 
 LIVE_DOCS = sphinx-autobuild docs $(DOCS_HTML_DIR) \
-	--watch ./*.rst \
-	--watch ./cloup/**/*.py \
-	--ignore ./docs/autoapi/**/*.rst \
+	--watch ./**.rst \
+	--watch ./cloup/**.py \
+	--ignore ./docs/autoapi/**.rst \
 	--open-browser
 
 .PHONY: live-docs

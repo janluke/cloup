@@ -7,60 +7,26 @@ Constraints
 
 Overview
 --------
-A :class:`Constraint` is essentially a validator for groups of parameters that
-has a textual description (:meth:`Constraint.help`) and when unsatisfied raises
-an :exc:`~click.UsageError` with an appropriate error message, which is handled
-and displayed by Click.
+A :class:`Constraint` is essentially a validator for groups of parameters.
+When unsatisfied, a constraint raises a :exc:`click.UsageError` with an
+appropriate error message, which is handled and displayed by Click.
 
-Here's an overview of the features:
+Each constraint also has an associated description (:meth:`Constraint.help`)
+that can optionally be shown in the ``--help`` of a command.
+You can easily override both the help description and the error message if you
+want (see `Rephrasing constraints`_).
 
-- constraints are well-integrated with option groups but decoupled from them:
-  you can use them to constrain groups of any kind of parameters, including
-  positional arguments
-- a constraint's help description and error message can be easily overridden
-  (see `Rephrasing constraints`_)
-- constraints can be applied conditionally (see `Conditional constraints`_)
-  and can be combined with logical operators (see `Defining new constraints`_).
-
-There are three ways to apply a constraint, each covering a different scenario:
-
-.. list-table::
-    :widths: 10 10
-    :header-rows: 1
-
-    * - Scenario
-      - Method
-    * - I want to apply a constraint to **all** options of an ``@option_group``.
-      - Use the ``constraint`` parameter of ``@option_group``.
-        See `Integration with @option_group`_.
-    * - I want to constrain a group of **contiguous** parameters (eventually a
-        subgroup of an option group) without assigning them their own help section.
-      - Use the constraint itself as a decorator or, equivalently, the
-        ``@constrained_params`` decorator.
-        See `Using constraints as decorators`_. (\*)
-    * - As previous scenario, but the parameters are not nearby so you can't
-        nest them inside another decorator.
-      - Use the ``@constraint`` decorator and list those parameters by name.
-        See `The @constraint decorator`_.
-
-(\*) These are just syntactic sugar on top of ``@constraint``. They allow you to
-apply a constraint saving you to list parameters by name (thus avoiding names'
-replication).
+Constraints can be combined with logical operators (see `Defining new constraints`_)
+and can also be applied conditionally (see `Conditional constraints`_).
 
 
 Implemented constraints
 -----------------------
 
-Naming convention
-~~~~~~~~~~~~~~~~~
-
-- **Parametric** constraints are *subclasses* of ``Constraint`` and so they are
-  camel-cased (``LikeThis``);
-- **Non-parametric** constraints are *instances* of ``Constraint`` and so they
-  are snake-cased (``like_this``).
-
 Parametric constraints
 ~~~~~~~~~~~~~~~~~~~~~~
+Parametric constraints are *subclasses* of ``Constraint`` and so they are
+camel-cased;
 
 .. autosummary::
     RequireExactly
@@ -70,6 +36,9 @@ Parametric constraints
 
 Non-parametric constraints
 ~~~~~~~~~~~~~~~~~~~~~~~~~~
+Non-parametric constraints are *instances* of ``Constraint`` and so they are
+snake-cased (``like_this``). Most of these are instances of parametric constraints
+or (rephrased) combinations of them.
 
 =========================== ============================================================
 :data:`accept_none`          Requires all parameters to be unset.
@@ -85,40 +54,60 @@ Non-parametric constraints
 :data:`require_one`          Alias for ``RequireExactly(1)``.
 =========================== ============================================================
 
-When is a parameter considered to be "set"?
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Cloup uses the following policy:
+When is a parameter considered "set"?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Basically, Cloup considers a parameter to be "set" when its value differs from
+the one assigned by Click when the parameter is not provided neither by the
+CLI user nor by the developer.
 
-- if the value is ``None``, the parameter is unset;
-- a parameter that takes multiple values is set if at least one value is provided;
-- a boolean **flag** is set only if ``True`` (since the default value is ``False``);
-- a boolean **non-flag** option is set if not ``None``, even if it's ``False``.
+.. list-table::
+    :header-rows: 1
+    :widths: 10 7 10 10
+    :align: center
 
-.. admonition:: Possible sources of a value
+    * - Param type
+      - Click default
+      - It's set if
+      - Note
+    * - string
+      - ``None``
+      - ``value is not None``
+      - even if empty
+    * - number
+      - ``None``
+      - ``value is not None``
+      - even if zero
+    * - boolean non-flag
+      - ``None``
+      - ``value is not None``
+      - even if ``False``
+    * - boolean flag
+      - ``False``
+      - ``value is True``
+      -
+    * - tuple
+      - ``()``
+      - ``len(value) > 0``
+      -
 
-    Cloup validates the values available in ``Context.params`` dictionary after
-    parsing. The source of an option value can be (from higher to lowest priority):
-
-    - the command-line user input
-    - an environment variable (if you enabled it)
-    - `Context.default_map <https://click.palletsprojects.com/en/5.x/commands/#overriding-defaults>`_
-    - the default value of the option (if defined).
+In the future, this policy may become configurable at the context and parameter
+level.
 
 Conditional constraints
 ~~~~~~~~~~~~~~~~~~~~~~~
 
-:class:`If` allows to define conditional constraints::
+:class:`If` allows you to define conditional constraints::
 
     If(condition, then, [else_])
 
-- ``condition`` can be;
+- **condition** -- can be:
 
   - a concrete instance of :class:`~conditions.Predicate`
   - a parameter name; this is a shortcut for ``IsSet(param_name)``
   - a list/tuple of parameter names; this is a shortcut for ``AllSet(*param_names)``.
 
-- ``then`` is the constraint checked when the condition is true.
-- ``else_`` is an optional constraint checked when the condition is false.
+- **then** -- the constraint checked when the condition is true.
+- **else_** -- an optional constraint checked when the condition is false.
 
 Available predicates can be imported from ``cloup.constraints`` and are:
 
@@ -150,14 +139,8 @@ For example:
     # Another example... of course the else branch is optional
     If(Equal('param', 'value'), then=RequireAtLeast(1))
 
-Predicates have an associated ``description`` and can be composed
-with the logical operators
-
-- ``~`` (not),
-- ``&`` (and),
-- ``|`` (or).
-
-For example:
+Predicates have an associated ``description`` and can be composed with the
+logical operators ``&`` (and), ``|`` (or) and ``~`` (not). For example:
 
 .. code-block:: python
 
@@ -165,134 +148,33 @@ For example:
     # --foo is not set and --bar="value"
 
 
-The @constraint decorator
-------------------------------------------
-Using the :func:`cloup.constraint` decorator, you can apply a constraint to any
-group of parameters (both arguments and options) providing their
-**destination names**, i.e. the names of the function arguments they are mapped
-to (by Click). For example:
+Applying constraints
+--------------------
 
-=============================================== ===================
-Declaration                                     Name
-=============================================== ===================
-``@option('-o')``                               ``o``
-``@option('-o', '--out-path')``                 ``out_path``
-``@option('-o', '--out-path', 'output_path')``  ``output_path``
-=============================================== ===================
+Constraints are well-integrated with option groups but decoupled from them:
+you can apply them to any group of parameters, eventually including positional
+arguments.
 
-Here's a meaningless example just to show how to use the API:
+There are three ways to apply a constraint:
 
-.. code-block:: python
+1. setting the parameter ``constraint`` of ``@option_group`` (or ``OptionGroup``)
+2. using the ``@constraint`` decorator and specifying parameters by name
+3. using the constraint as a decorator that takes parameter decorators as
+   arguments (similarly to ``@option_groups``, but supporting ``argument`` too);
+   this is just convenient *syntax sugar* on top of ``@constraint`` that can be
+   used in some circumstances.
 
-    @command('cmd', show_constraints=True)
-    @option('--one')
-    @option('--two')
-    @option('--three')
-    @option('--four')
-    @constraint(
-        mutually_exclusive, ['one', 'two']
-    )
-    @constraint(
-        If('one', then=RequireExactly(1)), ['three', 'four']
-    )
-    def cmd(one, two, three, four):
-        print('ciao')
+As you'll see, Cloup handles slightly differently the constraints applied to
+option groups, but only in relation to the ``--help`` output.
 
-.. _show-constraints:
-
-If you set the ``command`` parameter ``show_constraints`` to ``True``,
-the following section is shown at the bottom of the command help::
-
-    Constraints:
-      {--one, --two}     mutually exclusive
-      {--three, --four}  exactly 1 required if --one is set
-
-Even in this case, you can still hide a specific constraint by using the method
-:meth:`~Constraint.hidden`.
-
-Note that ``show_constraint`` can also be set in the ``context_settings`` of
-your root command. Of course, the context setting can be overridden by each
-individual command.
-
-
-Using constraints as decorators
--------------------------------
-``@constraint`` is powerful but has some drawbacks:
-
-- it requires to replicate (once again) the name of the constrained parameters;
-- it doesn't visually group the involved parameters together in the same way
-  ``@option_group`` does (with nesting).
-
-Even though ``@constraint`` is unavoidable in some cases, it can be avoided when
-the parameters to constrain are "contiguous", which is often the case.
-In such case, you can use your constraint as a decorator:
-
-.. code-block:: python
-
-    @mutually_exclusive(
-        option('--one'),
-        option('--two'),
-        option('--three'),
-    )
-
-    # WARNING: this is not valid syntax in Python < 3.9 because of the double call
-    # on the right of @. Read the "Attention" box below.
-    @RequireAtLeast(1)(
-        option('--one'),
-        option('--two'),
-        option('--three'),
-    )
-
-.. attention::
-    In Python < 3.9, the expressions on the right of `@` is required to be a
-    "dotted name, optionally followed by a single call"
-    (see `PEP 614 <https://www.python.org/dev/peps/pep-0614/#motivation>`_),
-    meaning that ``@RequireAtLeast(1)(...)`` **won't work**, since it makes
-    two calls. To make it work, you first need to assign the constraint to
-    a variable.
-
-To work around the syntax limitation in Python < 3.9, you can either assign
-your "compound" constraint to a variable and then use it as decorator:
-
-.. code-block:: python
-
-    require_any = RequireAtLeast(1)   # somewhere in the code
-
-    @require_any(
-        option('--one'),
-        option('--two'),
-        option('--three'),
-    )
-
-or, equivalently, you can use the :func:`cloup.constrained_params` decorator:
-
-.. code-block:: python
-
-    @constrained_params(
-        RequireAtLeast(1),
-        option('--one'),
-        option('--two'),
-        option('--three'),
-    )
-
-Constraints as decorator and ``@constrained_params`` both desugar to:
-
-.. code-block:: python
-
-    @constraint(RequireAtLeast(1), ['one', 'two', 'three'])
-    @option('--one')
-    @option('--two')
-    @option('--three')
-
-.. _option-group-and-constraints:
-
-Integration with @option_group
-------------------------------
-As you have probably seen in the :doc:`option-groups` section, you can easily
+Usage with @option_group
+~~~~~~~~~~~~~~~~~~~~~~~~
+As you have probably seen in the :doc:`option-groups` chapter, you can easily
 apply a constraint to an option group by setting the ``constraint`` argument of
 ``@option_group`` (or ``OptionGroup``):
 
 .. code-block:: python
+    :emphasize-lines: 6
 
     @option_group(
         'Option group title',
@@ -314,7 +196,7 @@ If the constraint description doesn't fit into the section heading line, it is
 printed on the next line::
 
     Option group title:
-      [this is a very long constraint description that doesn't fit into the heading line]
+      [this is a long description that doesn't fit into the title line]
       -o, --one TEXT  an option
       -t, --two TEXT  a second option
       --three TEXT    a third option
@@ -339,12 +221,148 @@ the method :meth:`Constraint.hidden`:
         constraint=RequireAtLeast(1).hidden(),
     )
 
-Constraining part of an option group
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The @constraint decorator
+~~~~~~~~~~~~~~~~~~~~~~~~~
+Using the :func:`cloup.constraint` decorator, you can apply a constraint to any
+group of parameters (arguments and options) providing their **destination names**,
+i.e. the names of the function arguments they are mapped to (by Click).
+For example:
+
+=============================================== ===================
+Declaration                                     Name
+=============================================== ===================
+``@option('-o')``                               ``o``
+``@option('-o', '--out-path')``                 ``out_path``
+``@option('-o', '--out-path', 'output_path')``  ``output_path``
+=============================================== ===================
+
+Here's a meaningless example just to show how to use the API:
+
+.. code-block:: python
+
+    from cloup import argument, command, constraint, option
+    from cloup.constraints import If, RequireExactly, mutually_exclusive
+
+    @command('cmd', show_constraints=True)
+    @argument('arg', required=False)
+    @option('--one')
+    @option('--two')
+    @option('--three')
+    @option('--four')
+    @constraint(
+        mutually_exclusive, ['arg', 'one', 'two']
+    )
+    @constraint(
+        If('one', then=RequireExactly(1)), ['three', 'four']
+    )
+    def cmd(arg, one, two, three, four):
+        print('ciao')
+
+.. _show-constraints:
+
+If you set the ``command`` parameter ``show_constraints`` to ``True``,
+the following section is shown at the bottom of the command help::
+
+    Constraints:
+      {ARG, --one, --two}  mutually exclusive
+      {--three, --four}    exactly 1 required if --one is set
+
+Even in this case, you can still hide a specific constraint by using the method
+:meth:`~Constraint.hidden`.
+
+Note that ``show_constraint`` can also be set in the ``context_settings`` of
+your root command. Of course, the context setting can be overridden by each
+individual command.
+
+.. _constraints-as-decorators:
+
+Constraints as decorators
+~~~~~~~~~~~~~~~~~~~~~~~~~
+``@constraint`` is powerful but has some drawbacks:
+
+- it requires to replicate (once again) the name of the constrained parameters;
+- it doesn't visually group the involved parameters with nesting
+  (as ``@option_group`` does with options).
+
+As an answer to these issues, Cloup introduced the possibility to use
+constraints themselves as decorators, with an usage similar to that of
+``@option_group``.
+However, note that there are cases when ``@constraint`` is your only option.
+
+This feature is just a layer of syntax sugar on top of ``@constraint``. The
+following:
+
+.. code-block:: python
+
+    @mutually_exclusive(
+        option('--one'),
+        option('--two'),
+        option('--three'),
+    )
+
+is equivalent to:
+
+.. code-block:: python
+
+    @option('--one')
+    @option('--two')
+    @option('--three')
+    @constraint(mutually_exclusive, ['one', 'two', 'three'])
+
+.. admonition:: Syntax limitation in Python < 3.9
+    :name: attention-python-decorators
+    :class: attention
+
+    In Python < 3.9, the expression on the right of the operator ``@``
+    is required to be a "dotted name, optionally followed by a single call"
+    (see `PEP 614 <https://www.python.org/dev/peps/pep-0614/#motivation>`_).
+    This means that you can't instantiate a parametric constraint on the right
+    of ``@``, because the resultant expressions would make two calls, e.g.:
+
+    .. code-block:: python
+
+        # This is a syntax error in Python < 3.9
+        @RequireExactly(2)(  # 1st call to instantiate the constraint
+            ...              # 2nd call to apply the constraint
+        )
+
+    To work around this syntax limitation you can assign your constraint to a
+    variable before using it as a decorator:
+
+    .. code-block:: python
+
+        require_two = RequireExactly(2)   # somewhere in the code
+
+        @require_two(
+            option('--one'),
+            option('--two'),
+            option('--three'),
+        )
+
+    or, in alternative, you can use the ``@constrained_params`` decorator
+    described below.
+
+The ``@constrained_params`` decorator may turn useful to work around the just
+described syntax limitation in Python < 3.9 or simply when your constraint is
+long/complex enough that it'd be weird to use it as a decorator:
+
+.. code-block:: python
+
+    @constrained_params(
+        RequireAtLeast(1),
+        option('--one'),
+        option('--two'),
+        option('--three'),
+    )
+
+.. _constraint-inside-option-group:
+
 You can use constraints as decorators even inside ``@option_group`` to constrain
 one or multiple subgroups:
 
 .. code-block:: python
+    :emphasize-lines: 3-6
 
     @option_group(
         "Number options",
@@ -355,12 +373,7 @@ one or multiple subgroups:
         option('--three')
     )
 
-Note that in this case, the problem described in the attention box above with
-decorators in Python < 3.9 does not exist since we are not using ``@``.
-
-The above code is equivalent to:
-
-.. code-block:: python
+    # equivalent to:
 
     @option_group(
         "Number options",
@@ -370,30 +383,34 @@ The above code is equivalent to:
     )
     @constraint(RequireAtLeast(1), ['one', 'two'])
 
+Note that the syntax limitation affecting Python < 3.9 described in the
+:ref:`attention box <attention-python-decorators>` above does not apply in this case
+since we are not using ``@`` here.
+
+.. _rephrasing-constraints:
 
 Rephrasing constraints
 ----------------------
 You can override the help description and/or the error message of a constraint
 using the :meth:`~Constraint.rephrased` method. It takes two arguments:
 
-**help**
-    if provided, overrides the help description. It can be:
+- **help** -- if provided, overrides the help description. It can be:
 
-    - a string
-    - or a function ``(ctx: Context, constr: Constraint) -> str``
+  - a string
+  - a function ``(ctx: Context, constr: Constraint) -> str``
 
-    If you want to hide this constraint from the help, pass ``help=""`` or use
-    the method :meth:`~Constraint.hidden`.
+  If you want to hide this constraint from the help, pass ``help=""`` or use
+  the method :meth:`~Constraint.hidden`.
 
-**error**
-    if provided, overrides the error message. It can be:
+- **error** -- if provided, overrides the error message. It can be:
 
-    - a string, eventually a ``format`` string where you can use the fields
-      described in :class:`ErrorFmt`.
-    - or a function ``(err: ConstraintViolated) -> str``
-      where :exc:`ConstraintViolated` is an exception object that fully describes
-      the violation of a constraint, including fields like ``ctx``, ``constraint``
-      and ``params``.
+  - a string, eventually a ``format`` string whose fields are stored and
+    documented as attributes in :class:`ErrorFmt`.
+
+  - a function ``(err: ConstraintViolated) -> str``
+    where :exc:`ConstraintViolated` is an exception object that fully describes
+    the violation of a constraint, including fields like ``ctx``, ``constraint``
+    and ``params``.
 
 An example from Cloup
 ~~~~~~~~~~~~~~~~~~~~~
@@ -417,14 +434,16 @@ message. In that case, you can either pass a function or using ``ErrorFmt.error`
 
     # Using function (err: ConstraintViolated) -> str
     mutually_exclusive.rephrased(
-        error=lambda err: f'{err}\nUse --renderer, the other options are deprecated.
+        error=lambda err: f'{err}\n'
+                          f'Use --renderer, the other options are deprecated.
     )
 
     # Using ErrorFmt.error
     from cloup.constraint import ErrorFmt
 
     mutually_exclusive.rephrased(
-        error=f'{ErrorFmt.error}\nUse --renderer, the other options are deprecated.
+        error=f'{ErrorFmt.error}\n'
+              f'Use --renderer, the other options are deprecated.
     )
 
 
@@ -451,50 +470,50 @@ This is how Cloup defines ``all_or_none`` (this example may be out-of-date):
 
     all_or_none = (require_all | accept_none).rephrased(
         help='provide all or none',
-        error=f'the following parameters must be provided all together (or none should be provided):\n'
+        error=f'the following parameters must be provided all together '
+              f'(or none should be provided):\n'
               f'{ErrorFmt.param_list}',
     )
 
 Example 2: defining a new parametric constraint
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+*Option 1 -- Just use a function.*
+
 .. code-block:: python
 
-    # Option 1: use WrapperConstraint.
-    # WrapperConstraint is useful for defining a new constraint type
-    # It delegates all methods to the wrapped constraint so you can
-    # override only the methods you need to override.
-    class AcceptBetween(WrapperConstraint):
-        def __init__(self, min: int, max: int):
-            # [...]
-            self._min = min
-            self._max = max
-            # the min and max kwargs will be used for the __repr__
-            super().__init__(RequireAtLeast(min) & AcceptAtMost(max), min=min, max=max)
-
-        def help(self, ctx: Context) -> str:
-            return f'at least {self._min} required, at most {self._max} accepted'
-
-    # Option 2: use a function.
     def accept_between(min, max):
        return (RequireAtLeast(min) & AcceptAtMost(max)).rephrased(
            help=f'at least {min} required, at most {max} accepted'
        )
 
-Cloup uses ``WrapperConstraint`` internally to stick to the convention described
-in `Implemented constraints`_ and because it has some minor advantages like
-producing constraints having a prettier ``__repr__`` (shown in consistency errors):
-
-.. code-block:: python
-
-    >>> AcceptBetween(1, 3)
-    AcceptBetween(1, 3)
-
     >>> accept_between(1, 3)
     Rephraser(help='at least 1 required, at most 3 accepted')
 
-These differences are unimportant in most cases, so feel free to use functions
-in your code if you prefer it.
+*Option 2 -- WrapperConstraint.* This is useful when you want to define a new
+constraint type. ``WrapperConstraint`` delegates all methods to the wrapped
+constraint so you can override only the methods you need to override.
+
+.. code-block:: python
+
+    class AcceptBetween(WrapperConstraint):
+        def __init__(self, min: int, max: int):
+            # [...]
+            self._min = min
+            self._max = max
+            # whatever you pass as **kwargs is used in the __repr__
+            super().__init__(
+                RequireAtLeast(min) & AcceptAtMost(max),
+                min=min, max=max,  # <= included in the __repr__
+            )
+
+        def help(self, ctx: Context) -> str:
+            return f'at least {self._min} required, ' \
+                   f'at most {self._max} accepted'
+
+
+    >>> AcceptBetween(1, 3)
+    AcceptBetween(1, 3)
 
 
 \*Validation protocol

@@ -56,11 +56,14 @@ class HelpFormatter(click.HelpFormatter):
       (called ``col_max`` in ``write_dl`` for compatibility with Click).
 
     .. versionchanged:: 0.9.0
-        ``row_sep`` is now ``None`` by default and doesn't have to include a ``\\n``
-        at the end (``row_sep=""`` corresponds to an empty line between rows).
-        Furthermore, ``row_sep`` now accepts instances of
-        :class:`~cloup.formatting.sep.SepGenerator` and
-        :class:`~cloup.formatting.sep.RowSepPolicy`.
+        the ``row_sep`` parameter now:
+
+        - is set to ``None`` by default and ``row_sep=""`` corresponds to an
+          empty line between rows
+        - must not ends with ``\\n``; the formatter writes a newline just after
+          it (when it's not ``None``), so a newline at the end is always enforced
+        - accepts instances of :class:`~cloup.formatting.sep.SepGenerator` and
+          :class:`~cloup.formatting.sep.RowSepPolicy`.
 
     .. versionadded:: 0.8.0
 

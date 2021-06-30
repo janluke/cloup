@@ -9,20 +9,29 @@ https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_in
     --color-brand-primary: var(--color-primary--dark);
     --color-brand-content: var(--color-primary--dark);
 
-    --toc-font-size: 0.82em;
-    --toc-font-size--level1: 0.89rem;  /* custom variable */
-    --toc-title-font-size: var(--font-size--small--4);
-    --toc-item-spacing-horizontal: 1.1rem;
-    --toc-item-spacing-vertical: 0.4em;
-    --toc-item-spacing-vertical--level1: .75rem;
+    --admonition-font-size: var(--font-size--normal);
+
+    --sidebar-item-font-size: 95%;
+
+    --toc-font-size: .87rem;
+    --toc-font-size--level1: .95rem;  /* custom variable */
+
+    --toc-title-font-size: var(--sidebar-caption-font-size);
+    --color-toc-item-text: var(--color-sidebar-caption-text);
+
+    --toc-item-spacing-horizontal: 1em;
+    --toc-item-spacing-vertical: 0.3em;
+    --toc-item-spacing-vertical--level1: 0.7em;
+    --color-toc-item-text: #696969;
     --color-toc-item-text--level1: var(--color-brand-content);  /* custom variable */
-    --color-toc-item-text--level2: #696969;  /* custom variable */
-    --color-toc-item-text: var(--color-toc-item-text--level2);
 
-    --code-font-size: var(--font-size--small);
+    --code-font-size: 90%;
+    --inline-code-font-size: 93%;
+    --color-inline-code-foreground: #005fa1;
+    --color-inline-code-background: #f8f8f8;
 
-    --admonition-font-size: var(--font-size--small);
-    --admonition-title-font-size: var(--font-size--normal);
+    --admonition-font-size: 95%;
+    --admonition-title-font-size: 100%;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -34,29 +43,116 @@ https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_in
     }
 }
 
-body {
-    font-size: 1em;
+/*
+    Layout
+    - give more space to right ToC drawer
+    - increase .content padding to keep the right drawer on the right side
+*/
+.content {
+    padding: 0 4rem;
+    width: 46rem;
 }
+
+@media only screen and (max-width: 700px) {
+    .content {
+        padding: 0 1rem;
+    }
+}
+
+.toc-drawer {
+    flex: 1;
+    max-width: 40ch;
+}
+
+.toc-sticky {
+    padding-right: 1em;
+}
+
+/*
+    Typography
+    - increase font size and limits line width
+    - increase paragraph and list items spacing
+    - use a dark blue for code.literal
+*/
 
 h1, h2, h3 {
     color: var(--color-brand-primary);
 }
 
-#user-guide .caption {
-    display: none;
+h2, h3 {
+    margin: 1.25em 0 .5em;
 }
 
-.sidebar-logo {
-    margin: .5em auto 0;
+h1 + .section h2:first-of-type,
+h2 + .section h3:first-of-type {
+    margin-top: .5em;
+}
+
+.content {
+    /* blindly taken from Google web.dev website. May be non-sense. */
+    font-size: clamp(1em, 1.7578125vw, 1.125em);
+    line-height: 1.6;
+}
+
+article {
+    max-width: 72ch;
+    line-height: 1.6;
+}
+
+.section > p {
+    margin: 1.2em 0;
 }
 
 code.literal {
-    font-size: var(--font-size--small);
+  font-size: var(--inline-code-font-size);
+  padding: 0.15em 0.25em;
+  color: var(--color-inline-code-foreground);
+  background: var(--color-inline-code-background);
 }
+
+a code.literal {
+  color: var(--color-brand-content);
+}
+
+.section > p + ul, .section > p + ol {
+    margin-top: -0.25em;
+}
+
+ul > li, ol > li {
+    margin: 0.75em 0;
+}
+
+ul > li li, ol > li li {
+    margin: 0.25em 0;
+}
+
+.table-wrapper {
+    padding: .2rem .2rem 0;
+}
+
+
+
+
+/*
+    Admonitions
+    - use a bigger font-size, not much different from main content
+    - fix icon vertical alignment
+*/
+
+.admonition {
+ margin: 1.5em auto;
+}
+
+.admonition p.admonition-title::before {  /* adjust icon vertical centering */
+    top: 0.65em;
+}
+
+/* Version changed/added */
 
 .versionchanged, .versionadded {
   margin: .5em 0;
   padding: .5em .8em;
+  font-size: 90%;
   background: var(--color-admonition-title-background--note);
   border-radius: 5px;
 }
@@ -69,9 +165,12 @@ code.literal {
     font-weight: 600;
 }
 
-.field-list.simple {
-  margin-top: 1em;
-}
+/*
+    Right table of contents
+    - replace title "Contents" with "On this page" and use the same style as
+      sidebar labels
+    - increase font-size and spacing, emphasize 1st level items
+*/
 
 .toc-drawer {
     padding-right: 0.2rem;
@@ -81,25 +180,30 @@ code.literal {
     line-height: 1.2;
 }
 
-/* 1st-level ToC items */
-.toc-tree > ul > li > ul > li {
-    padding-top: var(--toc-item-spacing-vertical--level1);
-    color: var(--color-toc-item-text--level1);
+.toc-tree > ul > li:first-child {
+    margin-top: 0;
 }
 
-/* Other ToC levels */
-.toc-tree > ul > li > ul > li > .reference {
-    color: var(--color-toc-item-text--level1);
+.toc-tree > ul > li > ul > li {  /* 1st-level ToC items */
+    padding-top: var(--toc-item-spacing-vertical--level1);
     font-size: var(--toc-font-size--level1);
 }
 
-/* Current ToC item anchor */
-.toc-tree > ul > li > ul > li.scroll-current > .reference {
-    font-weight: 700;
+.toc-tree > ul > li > ul > li .reference {  /* 1st-level anchors */
+    color: var(--color-toc-item-text--level1);
 }
 
-.toc-tree .reference:hover {;
-    color: var(--color-brand-primary);
+.toc-tree > ul > li > ul > li > ul li {  /* Other levels ToC items */
+    padding-top: var(--toc-item-spacing-vertical);
+    font-size: var(--toc-font-size);
+}
+
+.toc-tree > ul > li > ul > li > ul li .reference {  /* Other levels ToC items */
+    color: var(--color-toc-item-text);
+}
+
+.toc-tree .reference:hover {
+    text-decoration: underline;
 }
 
 .toc-tree .scroll-current .reference:hover {
@@ -115,10 +219,38 @@ table.docutils td {
 }
 
 .toc-title-container::before {
-    content: "\fOn this page";
+    content: "On this page";
     font-weight: bold;
     font-size: var(--toc-title-font-size);
     padding-left: var(--toc-spacing-horizontal);
     text-transform: uppercase;
     color: var(--color-toc-title-text);
+}
+
+/* Miscellaneous */
+
+#user-guide .caption {
+    display: none;
+}
+
+.sidebar-logo {
+    margin: .5em auto 0;
+}
+
+.field-list.simple {
+  margin-top: 1em;
+}
+
+#user-guide.section li.toctree-l1 {
+    margin-top: .25em;
+}
+
+#user-guide.section li.toctree-l2 {
+    font-size: 95%;
+    margin-top: 0;
+}
+
+.highlight .hll {
+	display: block;
+	background-color: hsla(60, 100%, 50%, .3);
 }

@@ -95,11 +95,11 @@ class OptionGroupMixin:
     """Implements support to option groups.
 
     .. versionchanged:: 0.8.0
-        This mixin now relies on ``cloup.HelpFormatter`` to align help sections.
+        this mixin now relies on ``cloup.HelpFormatter`` to align help sections.
         If a ``click.HelpFormatter`` is used with a ``TypeError`` is raised.
 
     .. versionchanged:: 0.8.0
-        Removed ``format_option_group``. Added ``get_default_option_group`` and
+        removed ``format_option_group``. Added ``get_default_option_group`` and
         ``make_option_group_help_section``.
 
     .. versionadded:: 0.5.0
@@ -230,8 +230,9 @@ def option_group(name, *args, **kwargs):
     """
     Returns a decorator that annotates a function with an option group.
 
-    The ``help`` is an optional description and can be provided either as keyword
-    argument or as 2nd positional argument after the ``name`` of the group::
+    The ``help`` argument is an optional description and can be provided either
+    as keyword argument or as 2nd positional argument after the ``name`` of
+    the group::
 
         # help as keyword argument
         @option_group(name, *options, help=None, ...)
@@ -240,7 +241,7 @@ def option_group(name, *args, **kwargs):
         @option_group(name, help, *options, ...)
 
     .. versionchanged:: 0.9.0
-        In order to support the decorator :func:`cloup.constrained_params`,
+        in order to support the decorator :func:`cloup.constrained_params`,
         ``@option_group`` now allows each input decorators to add multiple
         options.
 

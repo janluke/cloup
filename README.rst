@@ -7,9 +7,10 @@
     </p>
 
     <p align="center">
-        <i>More features for <a href="https://github.com/pallets/click">Click</a>:
-        option groups, constraints, subcommands sections and a custom help formatter
-        supporting themes.</i>
+        <i>
+            <a href="https://github.com/pallets/click">Click</a>
+            + option groups + constraints + themes + ...
+        </i>
     </p>
 
     <p align="center">
@@ -53,40 +54,41 @@ Overview
 ========
 |pypi-release| |python-versions| |tests-status| |coverage| |dev-docs| |donate|
 
-**Cloup** (originally from: **Cl**\ick + option gr\ **oup**\s) extends
-`Click <https://github.com/pallets/click>`_ with several features:
+**Cloup** -- originally from "**Cl**\ick + option gr\ **oup**\s" -- enriches
+`Click <https://github.com/pallets/click>`_ with several features that make it
+more expressive and configurable:
 
-- **Option groups** with the ``@option_group`` decorator.
+- **option groups**
 
-- **Constraints** like ``mutually_exclusive``, ``RequireAtLeast(n)`` etc., which
-  can be applied, even *conditionally*, to option groups or to any group of
-  parameters (including positional arguments).
+- **constraints**, like ``mutually_exclusive``, that can be applied to any group
+  of parameters, even *conditionally*
 
-- Possibility to organize the subcommands of a ``Group`` in multiple help sections.
+- **sections for subcommands**, i.e. the possibility to organize the subcommands of a
+  ``Group`` in multiple help sections
 
-- A **themeable HelpFormatter** that:
+- a **themeable HelpFormatter**  that:
 
-  - allows you to style several elements of the help page according to a theme
-  - switches to a different layout when the terminal width is small for the
-    standard 2-column layout, so that the help page is readable in all circumstances
-  - has more parameters, which give you more control on the format of the help page.
+  - has more parameters for adjusting widths and spacing, which can be provided
+    at the context and command level
+  - use a different layout when the terminal width is small, to improve readability.
 
-Besides, Cloup is:
+Moreover, Cloup improves on **IDE support** providing *detailed* type hints for
+Click decorators and adding the static methods ``Context.settings()`` and
+``HelpFormatter.settings()`` for creating settings dictionaries.
 
-- **type-annotated** and provides additional methods so that you can always be
-  assisted by your IDE (e.g. ``Context.settings()`` for creating a
-  ``context_settings`` dict leveraging auto-completion)
-- **extensively tested** with multiple versions of Python and Click (see
-  `Tests <https://github.com/janLuke/cloup/actions>`_)
-- **well-documented**.
+Cloup is extensively **tested and documented.** Tests are run against multiple
+versions of Python (>=3.6) and Click (>=7.2).
 
 
-Basic example
-=============
+A simple example
+================
 
 .. code-block:: python
 
-    from cloup import HelpFormatter, HelpTheme, Style, command, option, option_group
+    from cloup import (
+        HelpFormatter, HelpTheme, Style,
+        command, option, option_group
+    )
     from cloup.constraints import RequireAtLeast, mutually_exclusive
 
     # Check the docs for all available arguments of HelpFormatter and HelpTheme.
@@ -99,8 +101,8 @@ Basic example
         )
     )
 
-    # In a multi-command app, you would pass formatter_settings inside context_settings
-    # so that settings are propagated to subcommands.
+    # In a multi-command app, you can pass formatter_settings as part
+    # of your context_settings so that they are propagated to subcommands.
     @command(formatter_settings=formatter_settings)
     @option_group(
         "Cool options",
@@ -152,8 +154,8 @@ issues, proposing improvements and contributing with your code!
 .. docs-index-end
 
 
-Useful links
-============
+Links
+=====
 
 * Documentation (release_ | development_)
 * `Changelog <https://cloup.readthedocs.io/en/stable/pages/changelog.html>`_

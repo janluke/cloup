@@ -5,29 +5,28 @@ Help formatting and theming
 
 Formatting settings
 -------------------
+The following formatting settings can be provided both at the context and at the
+command level:
 
-In Cloup we can distinguish two groups of formatting settings:
+- **align_option_groups** -- whether to align option group sections
+  (see :ref:`here <aligned-vs-nonaligned-group>`)
 
-1. parameters of commands/mixins classes
+- **align_sections** -- whether to align sections of subcommands;
+  this is the analogous of ``align_option_groups`` for subcommand sections
 
-   - ``align_option_groups`` -- see :ref:`here <aligned-vs-nonaligned-group>`;
-   - ``align_sections`` -- similar to ``align_option_groups`` but for subcommand sections;
-   - ``show_constraints`` -- whether to include the "Constraints" section
-     (see :ref:`here <show-constraints>`);
+- **show_constraints** -- whether to include the "Constraints" section
+  (see :ref:`here <show-constraints>`)
 
-   since v0.8, these parameters are also available as ``Context`` parameters.
+- **formatter_settings** -- a dictionary of parameters to forward to
+  :class:`HelpFormatter` (click on it for the full list). The following
+  of this chapter is all about these.
 
-2. parameters of the :class:`HelpFormatter`, including ``theme``
-   (click on :class:`HelpFormatter` to see the full list);
-   these parameters can be passed to both ``Context`` and commands using the
-   parameter ``formatter_settings``, which is a dictionary.
+Context-level settings propagate to subcommands, while command-level settings
+don't (even if the command is a ``Group``).
 
-In both cases, commands settings override context settings.
-In the case of ``formatter_settings``, the final settings used by a command are
-obtained by merging the dictionaries like following:
-``{**ctx.formatter_settings, **command.formatter_settings}``.
-
-Context settings propagate to subcommands, while command settings don't.
+Of course, command-level settings override context-level settings.
+In particular, the context-level and command-level ``formatter_settings`` are
+merged together, with command-level settings having higher priority.
 
 An example
 ~~~~~~~~~~
@@ -42,9 +41,11 @@ An example
     from cloup import Context, command, group, HelpFormatter, HelpTheme
 
     CONTEXT_SETTINGS = Context.settings(
+        # parameters of Command:
         align_option_groups=False,
         align_sections=True,
         show_constraints=True,
+        # parameters of HelpFormatter:
         formatter_settings=HelpFormatter.settings(
             max_width=100,
             max_col1_width=25,
@@ -63,11 +64,10 @@ An example
         ...
 
 
-    # This command overrides some of CONTEXT_SETTINGS values
     @main.command(
-        align_option_groups=True,
+        align_option_groups=True,  # overrides the context setting
         formatter_settings=HelpFormatter.settings(
-            max_col1_width=30,
+            max_col1_width=30,  # overrides this specific formatter parameter
         )
     )
     # ...
@@ -77,6 +77,11 @@ An example
 
 Theming
 -------
+:class:`cloup.HelpFormatter` supports themes, so ``theme`` is one of the many
+arguments you can provide in ``formatter_settings``. Probably you want to set a
+theme at the context level, so you need to pass a ``theme`` as part of your
+``formatter_settings` in your ``context_settings``.
+
 A :class:`HelpTheme` is a collection of styles for several elements of the help page.
 A "style" is just a function (or a callable) that takes a string and returns a
 styled version of it. This means you can use your favorite styling/color library
@@ -113,25 +118,17 @@ refer to the API reference:
     Style
 
 
-How to set a theme
-~~~~~~~~~~~~~~~~~~
+Available themes
+~~~~~~~~~~~~~~~~
 
-You must provide a ``theme`` as part of the ``formatter_settings`` dictionary,
-as shown in `the example above <#an-example>`_.
-
-
-Available themes (and how to override parts of them)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Cloup provides two reasonable themes:
+Cloup provides two decent themes:
 
 .. autosummary::
     HelpTheme.dark
     HelpTheme.light
 
-You probably want to select a theme based on the terminal background color in use.
-Nonetheless, Cloup doesn't currently provide a way to get it (any suggestions are
-welcome).
+Ideally, you should select a theme based on the terminal background color or let
+the user decide which to use (if any) at the application level.
 
 If you want, you can use the default themes as a base and change only some of
 the styles using :meth:`HelpTheme.with_`, e.g.:
@@ -142,6 +139,87 @@ the styles using :meth:`HelpTheme.with_`, e.g.:
         col1=Style(fg=Color.bright_green),
         epilog=Style(fg=Color.bright_white, italic=True)
     )
+
+
+.. _row-separators:
+
+Row separators
+--------------
+You can specify how to separate the rows/entries of a definition list using the
+``row_sep`` argument of ``HelpFormatter``. You may want to use this argument to
+separate definitions with an empty line in order to improve readability.
+
+.. note::
+    ``row_sep`` only affects the "tabular layout", not the linear layout.
+
+A constant separator
+~~~~~~~~~~~~~~~~~~~~
+To use a separator consistently for all definition lists, you can either pass
+either:
+
+- a string
+- or a function ``(width: int) -> str`` that generates such a string based
+  on the width of the definition list; this allows you to pass an instance of
+  :class:`~cloup.formatting.sep.Hline` if you want to use horizontal lines.
+  Note that ``Hline`` is an utility that you can use in other parts of your
+  program as well.
+
+When specifying a separator, you can assume that all rows terminates with a
+newline character. Furthermore, the separator doesn't need to end with a newline
+character because the formatter will write one just after the separator.
+
+.. code-block:: python
+
+    # No row separator (default)
+    row_sep=None
+
+    # Separate rows with an empty line
+    row_sep=''
+
+    # Horizontal lines (various styles)
+    row_sep=Hline.solid
+    row_sep=Hline.dashed
+    row_sep=Hline.densely_dashed
+    row_sep=Hline.dotted
+
+
+Using a separator conditionally
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+A fixed separator gives a consistent look to your help page but has the
+drawback of adding the separator even when unneeded (e.g. in the "Commands"
+section), wasting vertical space.
+
+To overcome this problem, Cloup allows you to specify a "policy" that decides
+**for each individual definition list** whether to use a row separator (and which
+one). Such policy must implement the :class:`~cloup.formatting.sep.RowSepPolicy`
+interface.
+
+In practice, you will use :class:`~cloup.formatting.sep.RowSepIf`, which takes
+the following parameters:
+
+- **condition** --
+  a :class:`~cloup.formatting.sep.RowSepCondition`, i.e. a function that decides,
+  based on the available horizontal space, if a definition list should use a
+  row separator or not
+
+- **sep** --
+  the separator to use in definition lists that satisfy the ``condition``.
+  This may be a string or a ``SepGenerator``. The default separator is
+  ``sep=""``, which corresponds to an empty line between rows.
+
+Cloup provides the function :func:`~cloup.formatting.sep.multiline_rows_are_at_least`
+to create conditions that enable the use of a separator only if the number of rows
+taking multiple lines is above a certain threshold. The threshold can be specified
+either as an absolute number or as a percentage relative the total number of rows
+in the definition list:
+
+.. code-block:: python
+
+    # Insert an empty line only if the definition list has at least 1 multi-line row
+    row_sep=RowSepIf(multiline_rows_are_at_least(1))
+
+    # Insert a dotted line only if at least 25% of all rows take multiple lines
+    row_sep=RowSepIf(multiline_rows_are_at_least(.25), sep=Hline.dotted)
 
 
 The linear layout for definition lists
@@ -280,94 +358,13 @@ The following tabs compare the ``--help`` of the manim example ("aligned" and
         [...]
 
 
-The linear layout is controlled by the ``min_col2_width`` argument of ``HelpFormatter``.
 The linear layout is used when the available width for the 2nd column is below
-``min_col2_width``, which defaults to 35.
+``min_col2_width``, one of the ``formatter_settings``.
 
 You can disable the linear layout settings ``min_col2_width=0``.
 
 You make the linear layout your default layout by settings ``min_col2_width`` to
 a large number, possibly ``math.inf``.
-
-.. _row-separators:
-
-Row separators
---------------
-You can specify how to separate the rows/entries of a definition list using the
-``row_sep`` argument of ``HelpFormatter``. You may want to use this argument to
-separate definitions with an empty line in order to improve readability.
-
-.. note::
-    ``row_sep`` only affects the "tabular layout", not the linear layout.
-
-A constant separator
-~~~~~~~~~~~~~~~~~~~~
-To use a separator consistently for all definition lists, you can either pass
-either:
-
-- a string
-- or a function ``(width: int) -> str`` that generates such a string based
-  on the width of the definition list; this allows you to pass an instance of
-  :class:`~cloup.formatting.sep.Hline` if you want to use horizontal lines.
-  Note that ``Hline`` is an utility that you can use in other parts of your
-  program as well.
-
-When specifying a separator, you can assume that all rows terminates with a
-newline character. Furthermore, the separator doesn't need to end with a newline
-character because the formatter will write one just after the separator.
-
-.. code-block:: python
-
-    # No row separator (default)
-    row_sep=None
-
-    # Separate rows with an empty line
-    row_sep=''
-
-    # Horizontal lines (various styles)
-    row_sep=Hline.solid
-    row_sep=Hline.dashed
-    row_sep=Hline.densely_dashed
-    row_sep=Hline.dotted
-
-
-Using a separator conditionally
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-A fixed separator gives a consistent look to your help page but has the
-drawback of adding the separator even when unneeded (e.g. in the "Commands"
-section), wasting vertical space.
-
-To overcome this problem, Cloup allows you to specify a "policy" that decides
-**for each individual definition list** whether to use a row separator (and which
-one). Such policy must implement the :class:`~cloup.formatting.sep.RowSepPolicy`
-interface.
-
-In practice, you will use :class:`~cloup.formatting.sep.RowSepIf`, which takes
-the following parameters:
-
-**condition**
-   a :class:`~cloup.formatting.sep.RowSepCondition`, i.e. a function that decides,
-   based on the available horizontal space, if a definition list should use a
-   row separator or not
-
-**sep**
-   the separator to use in definition lists that satisfy the ``condition``.
-   This may be a string or a ``SepGenerator``. The default separator is
-   ``sep=""``, which corresponds to an empty line between rows.
-
-Cloup provides the function :func:`~cloup.formatting.sep.multiline_rows_are_at_least`
-to create conditions that enable the use of a separator only if the number of rows
-taking multiple lines is above a certain threshold. The threshold can be specified
-either as an absolute number or as a percentage relative the total number of rows
-in the definition list:
-
-.. code-block:: python
-
-    # Insert an empty line only if the definition list has at least 1 multi-line row
-    row_sep=RowSepIf(multiline_rows_are_at_least(1))
-
-    # Insert a dotted line only if at least 25% of all rows take multiple lines
-    row_sep=RowSepIf(multiline_rows_are_at_least(.25), sep=Hline.dotted)
 
 
 Minor differences with Click

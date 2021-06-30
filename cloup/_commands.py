@@ -56,7 +56,7 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
     A ``click.Command`` supporting option groups and constraints.
 
     .. versionchanged:: 0.8.0
-        This class now inherits from :class:`cloup.BaseCommand`.
+        this class now inherits from :class:`cloup.BaseCommand`.
     """
 
     def __init__(
@@ -89,7 +89,7 @@ class Group(SectionMixin, BaseCommand, click.Group):
     See the docstring of the two superclasses for more details.
 
     .. versionchanged:: 0.8.0
-        This class now inherits from :class:`cloup.BaseCommand`.
+        this class now inherits from :class:`cloup.BaseCommand`.
     """
 
     def __init__(self, name: Optional[str] = None,

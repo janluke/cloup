@@ -29,8 +29,8 @@ class Context(click.Context):
 
     Look up :class:`click.Context` for the list of all arguments.
 
-    .. versionchanged:: 0.9.0
-        Added parameter ``check_constraints_consistency``.
+    .. versionadded:: 0.9.0
+        added the ``check_constraints_consistency`` parameter.
 
     .. versionadded:: 0.8.0
 
