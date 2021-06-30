@@ -275,6 +275,7 @@ Note that ``show_constraint`` can also be set in the ``context_settings`` of
 your root command. Of course, the context setting can be overridden by each
 individual command.
 
+.. _constraints-as-decorators:
 
 Constraints as decorators
 ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -385,6 +386,8 @@ one or multiple subgroups:
 Note that the syntax limitation affecting Python < 3.9 described in the
 :ref:`attention box <attention-python-decorators>` above does not apply in this case
 since we are not using ``@`` here.
+
+.. _rephrasing-constraints:
 
 Rephrasing constraints
 ----------------------

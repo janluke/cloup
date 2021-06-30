@@ -4,13 +4,82 @@ Changelog
 
 ..  v0.X.X (in development)
     =======================
-    Incompatible changes
-    --------------------
+    New features and enhancements
+    -----------------------------
+    Bug fixes
+    -----------------------------
+    Breaking changes
+    ----------------
     Deprecated
     ----------
-    Compatible changes
-    ------------------
 
+v0.9.0 (unreleased)
+===================
+
+Fixed bugs
+----------
+- ``Context.show_constraints`` not having effect because of wrong default for
+  ``Command.show_constraint``. :issue:`49`
+
+- ``Command`` (``OptionGroupMixin``) raising error if ``params`` is not provided.
+  :issue:`58`
+
+New features and enhancements
+-----------------------------
+- Add detailed type hints for ``@argument``, ``@option``, ``@command`` and ``@group``.
+  This should greatly improve IDE code completion. :pr:`47`, :pr:`50`
+
+- You can now use **constraints as decorators** (or ``@constrained_params``) to
+  constrain a group of "contiguous" parameters without repeating their names
+  (see :ref:`Constraints as decorators <constraints-as-decorators>`). This is
+  a breaking change (see section below). :issue:`8`
+
+- Added the ``require_any`` and ``require_one`` constraints (as aliases). :issue:`57`
+
+- Simplify and improve the ``error`` argument of ``Rephraser``
+  (see :ref:`Rephrasing constraints <rephrasing-constraints>`). :pr:`54`
+
+- The formatter setting ``row_sep`` can now take a ``RowSepPolicy`` that decides
+  whether and which row separator to use for each definition list independently,
+  e.g. based on the number of definitions taking multiple lines
+  (see: :ref:`Row separators <row-separators>`). :issue:`37`
+
+- Added method ``format_subcommand_name(name, cmd)`` to ``SectionMixin`` to
+  facilitate it combination with other Click extensions that override
+  ``format_commands()``. :issue:`59`
+
+- ``@option_group`` and ``Section`` now show a better error message when one forgets
+  to provide the name/title as first argument.
+
+Breaking changes
+----------------
+- Calling a constraint -- previously a shortcut to the :meth:`~Constraint.check`
+  method -- now returns a decorator. Use the method :meth:`Constraint.check`
+  to check a constraint inside a function. :issue:`8`
+
+- The semantics of ``row_sep`` changed. Now, it defaults to ``None`` and must
+  not end with ``\n``, since the formatter writes a newline automatically
+  after it. So, ``row_sep=""`` now corresponds to an empty line between rows.
+  :issue:`41`
+
+- In ``@command`` and ``@group`` make all arguments but ``name`` keyword-only.
+  :issue:`46`
+
+- In ``Context.settings`` and ``HelpFormatter.settings``, use a ``MISSING``
+  constant instead of ``None`` as a flag for "empty" arguments. :issue:`40`
+
+- ``Constraint.toggle_consistency_checks`` was replaced with a ``Context``
+  setting called ``check_constraints_consistency``. :issue:`33`
+
+- ``ConstraintViolated`` requires more parameters now. :pr:`54`
+
+Docs
+----
+- Restyling to improve readability: increased font size and vertical spacing,
+  decreased line width. Restyled the table of contents on the right side. Ecc.
+- Reorganized and rewrote several parts.
+
+--------------------------------------------------------------------------------
 
 v0.8.1-2 (2021-05-25)
 =====================
@@ -30,42 +99,12 @@ v0.8.0 (2021-05-19)
 
 Project changes
 ---------------
-
 - Cloup license changed from MIT to 3-clause BSD, the one used by Click.
 - Added a donation button.
 
-Incompatible changes
---------------------
 
-These incompatible changes don't affect the most "external" API used by most
-clients of this library.
-
-- Formatting methods of ``OptionGroupMixin`` and ``SectionMixin`` now expects
-  the ``formatter`` to be a ``cloup.HelpFormatter``.
-  If you used a custom ``click.HelpFormatter``, you'll need to change your code
-  if you want to use this release. If you used ``click-help-colors``, keep in
-  mind that the new formatter has built-in styling capabilities so you don't
-  need ``click-help-colors`` anymore.
-
-- ``OptionGroupMixin.format_option_group`` was removed.
-
-- ``SectionMixin.format_section`` was removed.
-
-- The class ``MultiCommand`` was removed, being useless.
-
-- The ``OptionGroupMixin`` attribute ``align_option_groups`` is now ``None`` by default.
-  Functionally, nothing changes: option groups are aligned by default.
-
-- The ``SectionMixin`` attribute ``align_sections`` is now ``None`` by default.
-  Functionally, nothing changes: subcommand sections are aligned by default.
-
-- The ``ConstraintMixin`` attribute ``show_constraints`` is now ``None`` by default.
-  Functionally, nothing changes: constraints are **not** shown by default.
-
-
-Compatible changes
-------------------
-
+New features and enhancements
+-----------------------------
 - Cloup now uses its own ``HelpFormatter``:
 
   * it supports alignment of multiple definition lists, so Cloup doesn't have to
@@ -124,6 +163,33 @@ Compatible changes
   ``confirmation_option``, ``help_option``, ``pass_context``, ``pass_obj``,
   ``password_option`` and ``version_option``.
 
+Breaking changes
+----------------
+These incompatible changes don't affect the most "external" API used by most
+clients of this library.
+
+- Formatting methods of ``OptionGroupMixin`` and ``SectionMixin`` now expects
+  the ``formatter`` to be a ``cloup.HelpFormatter``.
+  If you used a custom ``click.HelpFormatter``, you'll need to change your code
+  if you want to use this release. If you used ``click-help-colors``, keep in
+  mind that the new formatter has built-in styling capabilities so you don't
+  need ``click-help-colors`` anymore.
+
+- ``OptionGroupMixin.format_option_group`` was removed.
+
+- ``SectionMixin.format_section`` was removed.
+
+- The class ``MultiCommand`` was removed, being useless.
+
+- The ``OptionGroupMixin`` attribute ``align_option_groups`` is now ``None`` by default.
+  Functionally, nothing changes: option groups are aligned by default.
+
+- The ``SectionMixin`` attribute ``align_sections`` is now ``None`` by default.
+  Functionally, nothing changes: subcommand sections are aligned by default.
+
+- The ``ConstraintMixin`` attribute ``show_constraints`` is now ``None`` by default.
+  Functionally, nothing changes: constraints are **not** shown by default.
+
 Docs
 ----
 - Switch theme to ``furo``.
@@ -143,9 +209,8 @@ v0.7.1 (2021-05-02)
 
 v0.7.0 (2021-03-24)
 ===================
-Compatible changes
-------------------
-
+New features and enhancements
+-----------------------------
 - In constraint errors, the way the parameter list is formatted has changed.
   Instead of printing a comma-separated list of single labels:
 
@@ -180,9 +245,15 @@ the package.
 
 v0.6.0 (2021-02-28)
 ===================
-Incompatible changes
---------------------
 
+New features and enhancements
+-----------------------------
+- Slightly improved return type (hint) of command decorators.
+- Minor refactoring of ConstraintMixin.
+- Improved the documentation.
+
+Breaking changes
+----------------
 - Removed the deprecated ``GroupSection`` as previously announced.
   Use the new name instead: ``Section``.
 - In ``Group.group()`` and ``Group.command``, the argument ``section`` was moved
@@ -191,39 +262,28 @@ Incompatible changes
   If you (wisely) passed ``section`` and ``cls`` as keyword arguments in your
   code, you don't need to change anything.
 
-Compatible changes
-------------------
-
-- Slightly improved return type (hint) of command decorators.
-- Minor refactoring of ConstraintMixin.
-- Improved the documentation.
-
 --------------------------------------------------------------------------------
 
 v0.5.0 (2021-02-10)
 ===================
 Requirements
 ------------
-
 - Drop support to Python 3.5.
 
-Deprecated
-----------
-
-- ``GroupSection`` was renamed as ``Section``.
-
-Compatible changes
-------------------
-
+New features and enhancements
+-----------------------------
 - Added a subpackage for defining **constraints** on parameters groups
   (including ``OptionGroup``'s).
 - The code for adding support to option groups was extracted to ``OptionGroupMixin``.
 - Most of the code for adding support to subcommand sections was extracted to
   ``SectionMixin``.
 
+Deprecated
+----------
+- ``GroupSection`` was renamed as ``Section``.
+
 Project changes
 ---------------
-
 - Migrated from TravisCI to GitHub Actions.
 
 --------------------------------------------------------------------------------
@@ -233,18 +293,15 @@ v0.4.0 (2021-01-10)
 
 Requirements
 ------------
-
 - This is the last release officially supporting Python 3.5.
 
-Compatible changes
-------------------
-
+New features and enhancements
+-----------------------------
 - Changed the internal (non-public) structure of the package.
 - Minor code improvements.
 
 Project changes
 ---------------
-
 - New documentation (hosted by ReadTheDocs)
 - Tox, TravisCI, Makefile completely rewritten.
 
@@ -252,8 +309,8 @@ Project changes
 
 v0.3.0 (2020-03-26)
 ===================
-Incompatible changes
---------------------
+Breaking changes
+----------------
 - ``option_groups`` decorator now takes options as positional arguments ``*options``;
 - ``Group.section`` decorator now takes sections as positional arguments ``*sections``;
 - ``align_sections_help`` was renamed to ``align_sections``;
