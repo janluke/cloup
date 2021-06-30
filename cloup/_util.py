@@ -89,16 +89,18 @@ def pluralize(
     return many.format(count=count)
 
 
-def coalesce(*values: Optional[T], default=None) -> Optional[T]:
-    """Returns the first value that is not None (or ``default`` if no such value exists).
-    Inspired by the homonym SQL function."""
-    for val in values:
-        if val is not None:
-            return val
-    return default
+def first_not_none(*values: Optional[T]) -> Optional[T]:
+    """Returns the first value that is not None
+    (or ``default`` if no such value exists)."""
+    return next((val for val in values if val is not None), None)
 
 
-def listOfNotNone(iterable: Iterable[Optional[T]]) -> List[T]:
+def first_bool(*values: Optional[bool]) -> bool:
+    """Returns the first bool (or raises StopIteration if no bool is found)."""
+    return next(val for val in values if isinstance(val, bool))
+
+
+def pick_not_none(iterable: Iterable[Optional[T]]) -> List[T]:
     return [x for x in iterable if x is not None]
 
 

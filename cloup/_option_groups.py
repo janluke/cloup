@@ -3,14 +3,14 @@ Implements the "option groups" feature.
 """
 from collections import defaultdict
 from typing import (
-    Callable, Iterable, List, Optional, Sequence, Tuple, TypeVar, cast, overload,
+    Callable, Iterable, List, Optional, Sequence, Tuple, overload,
 )
 
 import click
 from click import Option, Parameter
 
 from cloup._params import option
-from cloup._util import coalesce, make_repr
+from cloup._util import first_bool, make_repr
 from cloup.constraints import Constraint
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
@@ -37,7 +37,7 @@ class OptionGroup:
             The ``hidden`` parameter.
         """
         if not name:
-            raise ValueError('name is a mandatory argument')   # pragma: no cover
+            raise ValueError('name is a mandatory argument')  # pragma: no cover
         self.name = name
         self.help = help
         self._options: Sequence[click.Option] = []
@@ -160,17 +160,16 @@ class OptionGroupMixin:
         )
 
     def must_align_option_groups(
-        self, ctx: Optional[click.Context], default=True
+        self, ctx: Optional[click.Context], default: bool = True
     ) -> bool:
         """
         .. versionadded:: 0.8.0
         """
-        align = coalesce(
+        return first_bool(
             self.align_option_groups,
             getattr(ctx, 'align_option_groups', None),
             default,
         )
-        return cast(bool, align)
 
     def get_default_option_group(self, ctx: click.Context) -> OptionGroup:
         """

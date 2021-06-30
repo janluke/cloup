@@ -189,10 +189,11 @@ class ConstraintMixin:
     def format_help(self, ctx, formatter: HelpFormatter) -> None:
         super().format_help(ctx, formatter)  # type: ignore
         # By default, don't show constraints
-        must_show_constraints = bool(coalesce(
+        must_show_constraints = first_bool(
             self.show_constraints,
             getattr(ctx, "show_constraints", None),
-        ))
+            False,
+        )
         if must_show_constraints:
             self.format_constraints(ctx, formatter)
 

@@ -1,11 +1,11 @@
 from collections import OrderedDict
 from typing import (
-    Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union, cast,
+    Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union,
 )
 
 import click
 
-from cloup._util import coalesce, listOfNotNone
+from cloup._util import first_bool, pick_not_none
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
 CommandType = TypeVar('CommandType', bound=Type[click.Command])
@@ -195,18 +195,17 @@ class SectionMixin:
     def must_align_sections(
         self, ctx: Optional[click.Context], default: bool = True
     ) -> bool:
-        align = coalesce(
+        return first_bool(
             self.align_sections,
             getattr(ctx, 'align_sections', None),
             default,
         )
-        return cast(bool, align)
 
     def format_commands(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
         formatter = ensure_is_cloup_formatter(formatter)
 
         subcommand_sections = self.list_sections(ctx)
-        help_sections = listOfNotNone(
+        help_sections = pick_not_none(
             self.make_commands_help_section(section)
             for section in subcommand_sections
         )

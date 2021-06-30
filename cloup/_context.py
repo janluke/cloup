@@ -4,7 +4,7 @@ from typing import Any, Callable, Dict, List, Optional, Type
 import click
 
 import cloup
-from cloup._util import Possibly, MISSING, coalesce, pick_non_missing
+from cloup._util import MISSING, Possibly, first_not_none, pick_non_missing
 from cloup.formatting import HelpFormatter
 
 
@@ -71,15 +71,15 @@ class Context(click.Context):
         **ctx_kwargs,
     ):
         super().__init__(*ctx_args, **ctx_kwargs)
-        self.align_option_groups = coalesce(
+        self.align_option_groups = first_not_none(
             align_option_groups,
             getattr(self.parent, 'align_option_groups', None),
         )
-        self.align_sections = coalesce(
+        self.align_sections = first_not_none(
             align_sections,
             getattr(self.parent, 'align_sections', None),
         )
-        self.show_constraints = coalesce(
+        self.show_constraints = first_not_none(
             show_constraints,
             getattr(self.parent, 'show_constraints', None),
         )
