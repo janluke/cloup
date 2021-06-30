@@ -8,7 +8,6 @@ import click
 from cloup._util import coalesce, listOfNotNone
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
-
 CommandType = TypeVar('CommandType', bound=Type[click.Command])
 Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
 
@@ -168,7 +167,16 @@ class SectionMixin:
             section_list.append(default_section)
         return section_list
 
-    # noinspection PyMethodMayBeStatic
+    def format_subcommand_name(self, name: str, cmd: click.Command) -> str:
+        """Used to format the name of the subcommands. This method turns useful
+        when you combine this extension to other click extensions that override
+        :meth:`format_commands`. Most of these, like click-default-group and
+        click-aliases, just add something to the name of the subcommands, which
+        is exactly what this method allows you to do without overriding bigger
+        methods.
+        """
+        return name
+
     def make_commands_help_section(self, section: Section) -> Optional[HelpSection]:
         visible_subcommands = section.list_commands()
         if not visible_subcommands:
@@ -176,7 +184,8 @@ class SectionMixin:
         return HelpSection(
             heading=section.title,
             definitions=[
-                (name, cmd.get_short_help_str) for name, cmd in visible_subcommands
+                (self.format_subcommand_name(name, cmd), cmd.get_short_help_str)
+                for name, cmd in visible_subcommands
             ]
         )
 

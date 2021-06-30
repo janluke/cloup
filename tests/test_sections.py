@@ -113,3 +113,29 @@ def test_align_sections_context_setting(runner, ctx_value, cmd_value):
     expected = dedent(expected).strip()
     end = start + len(expected)
     assert result.output[start:end] == expected
+
+
+def test_override_format_subcommand_name(runner):
+    class MyGroup(cloup.Group):
+        def format_subcommand_name(self, name: str, cmd: click.Command) -> str:
+            return '*special*' if name == 'special' else name
+
+    main = MyGroup(name='main')
+    main.section(
+        'Commands',
+        cloup.Command(name='special', help='A special command.'),
+        cloup.Command(name='ordinary', help='An ordinary command.')
+    )
+
+    res = runner.invoke(main, ['--help'])
+    expected_help = dedent("""
+        Usage: main [OPTIONS] COMMAND [ARGS]...
+
+        Options:
+          --help  Show this message and exit.
+
+        Commands:
+          *special*  A special command.
+          ordinary   An ordinary command.
+    """)[1:]
+    assert res.output == expected_help
