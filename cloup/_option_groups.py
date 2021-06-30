@@ -55,13 +55,15 @@ class OptionGroup:
     def get_help_records(self, ctx: click.Context) -> List[Tuple[str, str]]:
         if self.hidden:
             return []
-        return [opt.get_help_record(ctx) for opt in self if not opt.hidden]
+        return [
+            opt.get_help_record(ctx) for opt in self if not opt.hidden  # type: ignore
+        ]  # get_help_record() should return None only if opt.hidden
 
     def option(self, *param_decls, **attrs) -> Callable[[F], F]:
         """Refer to :func:`cloup.option`."""
         return option(*param_decls, group=self, **attrs)
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[click.Option]:
         return iter(self.options)
 
     def __getitem__(self, i: int) -> click.Option:
