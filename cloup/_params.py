@@ -12,12 +12,7 @@ class GroupedOption(click.Option):
 argument = click.argument
 
 
-def option(
-    *param_decls,
-    cls=None,
-    group=None,
-    **kwargs
-):
+def option(*param_decls, cls=None, group=None, **kwargs):
     """Attaches an ``Option`` to the command.
     Refer to :class:`click.Option` and :class:`click.Parameter` for more info
     about the accepted parameters.

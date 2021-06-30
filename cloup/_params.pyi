@@ -29,9 +29,8 @@ ParamCallback = Callable[[click.Context, P, Any], Any]
 
 
 class GroupedOption(click.Option):
-    def __init__(
-        self, *args, group: Optional[OptionGroup] = None, **kwargs
-    ): ...
+    def __init__(self, *args, group: Optional[OptionGroup] = None, **kwargs):
+        ...
 
 
 def argument(
