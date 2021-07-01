@@ -128,8 +128,8 @@ class Group(SectionMixin, BaseCommand, click.Group):
         if cls is None:
             cls = Command
 
-        def decorator(f):
-            cmd = command(name=name, cls=cls, **kwargs)(f)
+        def decorator(f: Callable) -> click.Command:
+            cmd = command(name=name, cls=cast(Type[click.Command], cls), **kwargs)(f)
             self.add_command(cmd, section=section)
             return cmd
 
@@ -175,6 +175,9 @@ def group(
     **kwargs
 ) -> Callable[[Callable], Group]:
     """Decorator for creating a new :class:`cloup.Group` (or a subclass of it).
+
+    .. versionchanged:: 0.9.0
+        all arguments but ``name`` are now keyword-only arguments.
 
     :param name:
         the name of the command to use unless a group overrides it.
@@ -272,6 +275,9 @@ def command(
     - ``align_option_groups (Optional[bool])``
     - ``show_constraints (Optional[bool])``.
 
+    .. versionchanged:: 0.9.0
+        all arguments but ``name`` are now keyword-only arguments.
+
     :param name:
         the name of the command to use unless a group overrides it.
     :param cls:
@@ -305,17 +311,18 @@ def command(
     kwargs.update(locals())
     kwargs.pop('kwargs')
 
-    def wrapper(f):
-        if hasattr(f, '__constraints'):
+    def wrapper(f: Callable) -> click.Command:
+        constraints = getattr(f, '__constraints', None)
+        if constraints:
             if not issubclass(cls, ConstraintMixin):
                 raise TypeError(
                     f"a Command must inherits from cloup.ConstraintMixin to support "
                     f"constraints; {cls} doesn't")
-            constraints = tuple(reversed(f.__constraints))
-            del f.__constraints
+            constraints = tuple(reversed(constraints))
+            delattr(f, '__constraints')
             kwargs['constraints'] = constraints
 
         cmd = click.command(**kwargs)(f)
-        return cast(click.Command, cmd)
+        return cast(click.Command, cmd)  # TODO: remove cast when dropping Click 7
 
     return wrapper
