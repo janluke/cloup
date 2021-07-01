@@ -18,6 +18,7 @@ https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_in
 
     --toc-title-font-size: var(--sidebar-caption-font-size);
     --color-toc-item-text: var(--color-sidebar-caption-text);
+    --color-toc-title-text: var(--color-sidebar-caption-text);
 
     --toc-item-spacing-horizontal: 1em;
     --toc-item-spacing-vertical: 0.3em;
@@ -28,7 +29,6 @@ https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_in
     --code-font-size: 90%;
     --inline-code-font-size: 93%;
     --color-inline-code-foreground: #005fa1;
-    --color-inline-code-background: #f8f8f8;
 
     --admonition-font-size: 95%;
     --admonition-title-font-size: 100%;
@@ -38,8 +38,14 @@ https://github.com/pradyunsg/furo/blob/main/src/furo/assets/styles/variables/_in
     :root {
         --color-brand-primary: var(--color-primary--light);
         --color-brand-content: var(--color-primary--light);
-        --color-toc-item-text--level1: #efefef;  /* custom variable */
-        --color-toc-item-text--level2: #c0c0c0;
+        --color-inline-code-foreground: #b2deff;
+
+        --color-toc-item-text--level1: rgba(255, 255, 255, 95%);  /* custom variable */
+        --color-toc-item-text: #bbb;
+
+        --color-sidebar-caption-text: var(--color-brand-content);
+        --color-sidebar-link-text--top-level: rgba(255, 255, 255, 95%);
+        --color-sidebar-link-text: #ccc;
     }
 }
 
