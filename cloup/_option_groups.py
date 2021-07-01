@@ -110,6 +110,18 @@ class OptionGroupMixin:
     def __init__(
         self, *args, align_option_groups: Optional[bool] = None, **kwargs
     ):
+        """
+        :param align_option_groups:
+            whether to align the columns of all option groups' help sections.
+            This is also available as a context setting having a lower priority
+            than this attribute. Given that this setting should be consistent
+            across all you commands, you should probably use the context
+            setting only.
+        :param args:
+            positional arguments forwarded to the next class in the MRO
+        :param kwargs:
+            keyword arguments forwarded to the next class in the MRO
+        """
         self.align_option_groups = align_option_groups
         params = kwargs.get('params') or []
         self.option_groups, self.ungrouped_options = \

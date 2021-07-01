@@ -128,11 +128,19 @@ class ConstraintMixin:
         **kwargs
     ):
         """
-        :param args: arguments forwarded to the next class in the MRO
-        :param constraints: sequence of ``BoundConstraintSpec``
+        :param constraints:
+            sequence of constraints bound to specific groups of parameters.
+            Note that constraints applied to option groups are collected from
+            the option groups themselves, so they don't need to be included in
+            this argument.
         :param show_constraints:
-            whether to include a "Constraint" section in the command help
-        :param kwargs: keyword arguments forwarded to the next class in the MRO
+            whether to include a "Constraint" section in the command help. This
+            is also available as a context setting having a lower priority than
+            this attribute.
+        :param args:
+            positional arguments forwarded to the next class in the MRO
+        :param kwargs:
+            keyword arguments forwarded to the next class in the MRO
         """
         super().__init__(*args, **kwargs)  # type: ignore
         self.show_constraints = show_constraints

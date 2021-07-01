@@ -1,11 +1,11 @@
-from typing import Any, Callable, Dict, Iterable, Optional, Sequence, Type, cast
+from typing import Any, Callable, Dict, Iterable, Optional, Type, cast
 
 import click
 
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
-from .constraints import BoundConstraintSpec, ConstraintMixin
+from .constraints import ConstraintMixin
 
 
 class BaseCommand(click.Command):
@@ -15,6 +15,8 @@ class BaseCommand(click.Command):
       class attribute, which is set to ``cloup.Context``.
 
     * It adds a ``formatter_settings`` instance attribute.
+
+    Refer to :class:`click.Command` for the documentation of all parameters.
 
     .. versionadded:: 0.8.0
     """
@@ -55,25 +57,16 @@ class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
     """
     A ``click.Command`` supporting option groups and constraints.
 
+    Refer to superclasses for the documentation of all accepted parameters:
+
+    - :class:`ConstraintMixin`
+    - :class:`OptionGroupMixin`
+    - :class:`BaseCommand` -> :class:`click.Command`
+
     .. versionchanged:: 0.8.0
         this class now inherits from :class:`cloup.BaseCommand`.
     """
-
-    def __init__(
-        self, *click_args,
-        formatter_settings: Dict[str, Any] = {},
-        constraints: Sequence[BoundConstraintSpec] = (),
-        show_constraints: Optional[bool] = None,
-        align_option_groups: Optional[bool] = None,
-        **click_kwargs,
-    ):
-        super().__init__(
-            *click_args,
-            formatter_settings=formatter_settings,
-            constraints=constraints,
-            show_constraints=show_constraints,
-            align_option_groups=align_option_groups,
-            **click_kwargs)
+    pass
 
 
 class Group(SectionMixin, BaseCommand, click.Group):
@@ -86,32 +79,15 @@ class Group(SectionMixin, BaseCommand, click.Group):
     that overrides the decorators :meth:`command` and :meth:`group` so that
     a ``section`` for the created subcommand can be specified.
 
-    See the docstring of the two superclasses for more details.
+    Refer to superclasses for the documentation of all accepted parameters:
+
+    - :class:`SectionMixin`
+    - :class:`BaseCommand` -> :class:`click.Command`
+    - :class:`click.Group`
 
     .. versionchanged:: 0.8.0
         this class now inherits from :class:`cloup.BaseCommand`.
     """
-
-    def __init__(self, name: Optional[str] = None,
-                 commands: Optional[Dict[str, click.Command]] = None,
-                 sections: Iterable[Section] = (),
-                 align_sections: Optional[bool] = None,
-                 formatter_settings: Dict[str, Any] = {},
-                 **attrs):
-        """
-        :param name: name of the command
-        :param commands:
-            dict {name: command}; this command will be added to the default section.
-        :param sections: a list of Section objects
-        :param align_sections: if True, the help column of all columns will be aligned;
-            if False, each section will be formatted independently
-        :param attrs:
-        """
-        super().__init__(
-            name=name, commands=commands,
-            sections=sections, align_sections=align_sections,
-            formatter_settings=formatter_settings,
-            **attrs)
 
     # MyPy complaints because the signature is not compatible with the parent
     # method signature, which is command(*args, **kwargs). Since the parent
@@ -186,8 +162,11 @@ def group(
     :param sections:
         a list of Section objects.
     :param align_sections:
-        if ``True``, the help column of all columns will be aligned;
-        if ``False``, each section will be formatted independently.
+        whether to align the columns of all subcommands' help sections.
+        This is also available as a context setting having a lower priority
+        than this attribute. Given that this setting should be consistent
+        across all you commands, you should probably use the context
+        setting only.
     :param context_settings:
         an optional dictionary with defaults that are passed to the context object.
     :param formatter_settings:
@@ -306,7 +285,7 @@ def command(
     :param deprecated:
         issues a message indicating that the command is deprecated.
     :param kwargs:
-        any other argument accepted by the instantiated command class.
+        any other argument accepted by the instantiated command class (``cls``).
     """
     kwargs.update(locals())
     kwargs.pop('kwargs')

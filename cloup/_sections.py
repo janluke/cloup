@@ -111,9 +111,18 @@ class SectionMixin:
         **kwargs,
     ):
         """
-        :param sections: a list of :class:`Section` objects
-        :param align_sections: if True, the help column of all columns will be aligned;
-            if False, each section will be formatted independently
+        :param sections:
+            a list of :class:`Section` objects.
+        :param align_sections:
+            whether to align the columns of all subcommands' help sections.
+            This is also available as a context setting having a lower priority
+            than this attribute. Given that this setting should be consistent
+            across all you commands, you should probably use the context
+            setting only.
+        :param args:
+            positional arguments forwarded to the next class in the MRO
+        :param kwargs:
+            keyword arguments forwarded to the next class in the MRO
         """
         self.align_sections = align_sections
         self._default_section = Section('__DEFAULT', commands=commands or [])
