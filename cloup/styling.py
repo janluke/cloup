@@ -1,6 +1,6 @@
 """
-This module defines the classes that support the styling and theming of commands
-help page.
+This module contains components that specifically address the styling and theming
+of the --help output.
 """
 import dataclasses as dc
 from typing import Callable, NamedTuple, Optional

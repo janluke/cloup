@@ -89,7 +89,7 @@ class Group(SectionMixin, BaseCommand, click.Group):
         this class now inherits from :class:`cloup.BaseCommand`.
     """
 
-    # MyPy complaints because the signature is not compatible with the parent
+    # MyPy complains because the signature is not compatible with the parent
     # method signature, which is command(*args, **kwargs). Since the parent
     # method is implemented calling click.command(name=None, cls=None, **attrs),
     # any call that works for parent should work for us.
@@ -111,7 +111,7 @@ class Group(SectionMixin, BaseCommand, click.Group):
 
         return decorator
 
-    # MyPy complaints because the signature is not compatible with the parent
+    # MyPy complains because the signature is not compatible with the parent
     # method signature, which is group(*args, **kwargs). The "real signature"
     # of the parent method is command(name=None, cls=None, **attrs), thus
     # any call that works for parent should work for us, since the order of
