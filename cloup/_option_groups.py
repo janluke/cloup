@@ -17,7 +17,7 @@ from cloup.typing import Decorator, F
 
 
 class OptionGroup:
-    def __init__(self, name: str,
+    def __init__(self, title: str,
                  help: Optional[str] = None,
                  constraint: Optional[Constraint] = None,
                  hidden: bool = False):
@@ -31,9 +31,9 @@ class OptionGroup:
         .. versionadded:: 0.8.0
             The ``hidden`` parameter.
         """
-        if not name:
+        if not title:
             raise ValueError('name is a mandatory argument')  # pragma: no cover
-        self.name = name
+        self.title = title
         self.help = help
         self._options: Sequence[click.Option] = []
         self.constraint = constraint
@@ -73,11 +73,11 @@ class OptionGroup:
         return len(self.options)
 
     def __repr__(self) -> str:
-        return make_repr(self, self.name, help=self.help, options=self.options)
+        return make_repr(self, self.title, help=self.help, options=self.options)
 
     def __str__(self) -> str:
         return make_repr(
-            self, self.name, options=[opt.name for opt in self.options])
+            self, self.title, options=[opt.name for opt in self.options])
 
 
 def has_option_group(param) -> bool:
@@ -163,7 +163,7 @@ class OptionGroupMixin:
         .. versionadded:: 0.8.0
         """
         return HelpSection(
-            heading=group.name,
+            heading=group.title,
             definitions=group.get_help_records(ctx),
             help=group.help,
             constraint=group.constraint.help(ctx) if group.constraint else None
@@ -214,7 +214,7 @@ class OptionGroupMixin:
 
 @overload
 def option_group(
-    name: str,
+    title: str,
     help: str,
     *options: Decorator,
     constraint: Optional[Constraint] = None,
@@ -225,7 +225,7 @@ def option_group(
 
 @overload
 def option_group(
-    name: str,
+    title: str,
     *options: Decorator,
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
@@ -235,7 +235,7 @@ def option_group(
 
 
 # noinspection PyIncorrectDocstring
-def option_group(name, *args, **kwargs):
+def option_group(title, *args, **kwargs):
     """
     Returns a decorator that annotates a function with an option group.
 
@@ -254,8 +254,8 @@ def option_group(name, *args, **kwargs):
         ``@option_group`` now allows each input decorators to add multiple
         options.
 
-    :param name:
-        this is shown as heading of the help section describing the option group.
+    :param title:
+        title of the help section describing the option group.
     :param help:
         an optional description shown below the name; can be provided as keyword
         argument or 2nd positional argument.
@@ -272,17 +272,17 @@ def option_group(name, *args, **kwargs):
         (all contained options will have their ``hidden`` attribute set to ``True``).
     """
     if args and isinstance(args[0], str):
-        return _option_group(name, options=args[1:], help=args[0], **kwargs)
+        return _option_group(title, options=args[1:], help=args[0], **kwargs)
     else:
-        return _option_group(name, options=args, **kwargs)
+        return _option_group(title, options=args, **kwargs)
 
 
 def _option_group(
-    name, options, help=None, constraint=None, hidden: bool = False,
+    title, options, help=None, constraint=None, hidden: bool = False,
 ):
-    if not isinstance(name, str):
+    if not isinstance(title, str):
         raise TypeError(
-            'the first argument of @option_group must be its name/title, a string. '
+            'the first argument of @option_group must be its title, a string. '
             'You probably forgot it!'
         )
 
@@ -290,7 +290,7 @@ def _option_group(
         raise ValueError('you must provide at least one option')
 
     def decorator(f):
-        opt_group = OptionGroup(name, help=help, constraint=constraint, hidden=hidden)
+        opt_group = OptionGroup(title, help=help, constraint=constraint, hidden=hidden)
         if not hasattr(f, '__click_params__'):
             f.__click_params__ = []
         for add_option in reversed(options):
@@ -304,7 +304,7 @@ def _option_group(
                 if has_option_group(new_option):
                     raise ValueError(
                         f'{new_option} was first assigned to {new_option.group} and then '
-                        f'passed as argument to @option_group({name!r}, ...)'
+                        f'passed as argument to @option_group({title!r}, ...)'
                     )
                 new_option.group = opt_group
                 if hidden:

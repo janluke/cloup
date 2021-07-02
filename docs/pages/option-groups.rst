@@ -11,29 +11,29 @@ The recommended way of defining option groups is through the
 signatures that only differ by how you provide the optional ``help`` argument::
 
     # help as keyword argument
-    @option_group(name, *options, help=None, ...)
+    @option_group(title, *options, help=None, ...)
 
     # help as 2nd positional argument
-    @option_group(name, help, *options, ...)
+    @option_group(title, help, *options, ...)
 
 Here's the full list of parameters:
 
-- **name** --
-  this is shown as heading of the help section describing the option group.
+- **title** --
+  title of the help section describing the option group
 
 - **\*options** --
   an arbitrary number of decorators like those returned by ``cloup.option`` and
   ``click.option``. Since v0.9, each decorator can add even multiple options in
-  a row. This was introduced to support constraints as decorators.
+  a row. This was introduced to support constraints as decorators
 
 - **help** --
-  an optional description shown below the name; can be provided as keyword
-  argument or 2nd positional argument.
+  an optional description shown below the title; can be provided as keyword
+  argument or 2nd positional argument
 
 - **constraint** --
   an optional instance of Constraint (see Constraints for more info);
   a description of the constraint will be shown between squared brackets
-  aside the option group title (or below it if too long).
+  aside the option group title (or below it if too long)
 
 - **hidden** --
   if True, the option group and all its options are hidden from the help page

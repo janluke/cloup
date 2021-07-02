@@ -185,7 +185,7 @@ apply a constraint to an option group by setting the ``constraint`` argument of
     )
 
 This code produces the following help section with the constraint description
-between square brackets on the right of the option group name::
+between square brackets on the right of the option group title::
 
     Option group title: [at least 1 required]
       -o, --one TEXT  an option
