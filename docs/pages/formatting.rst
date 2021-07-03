@@ -52,8 +52,8 @@ An example
             min_col2_width=30,
             indent_increment=3,
             col_spacing=3,
-            row_sep='\n',
-            theme=HelpTheme.light()
+            row_sep='',  # empty line between definitions
+            theme=HelpTheme.dark(),
         )
     )
 
@@ -157,16 +157,15 @@ A constant separator
 To use a separator consistently for all definition lists, you can either pass
 either:
 
-- a string
+- a string **not** ending with ``\n``: the formatter will consistently write a
+  newline character after the separator. You can set ``row_sep=''`` if you want
+  an empty line between rows
+
 - or a function ``(width: int) -> str`` that generates such a string based
   on the width of the definition list; this allows you to pass an instance of
   :class:`~cloup.formatting.sep.Hline` if you want to use horizontal lines.
   Note that ``Hline`` is an utility that you can use in other parts of your
   program as well.
-
-When specifying a separator, you can assume that all rows terminates with a
-newline character. Furthermore, the separator doesn't need to end with a newline
-character because the formatter will write one just after the separator.
 
 .. code-block:: python
 
