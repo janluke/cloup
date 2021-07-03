@@ -151,31 +151,36 @@ class ConstraintMixin:
         # Collect constraints applied to option groups and bind them to the
         # corresponding Option instances
         option_groups: Tuple[OptionGroup, ...] = getattr(self, 'option_groups', [])
-        self._optgroup_constraints = tuple(
+        self.optgroup_constraints = tuple(
             BoundConstraint(grp.constraint, grp.options)
             for grp in option_groups
             if grp.constraint is not None
         )
+        """Constraints applied to ``OptionGroup`` instances."""
+
         # Bind constraints defined via @constraint to Parameter instances
-        self._extra_constraints: Tuple[BoundConstraint, ...] = tuple(
+        self.param_constraints: Tuple[BoundConstraint, ...] = tuple(
             (
                 constr if isinstance(constr, BoundConstraint)
                 else constr.resolve_params(self)
             )
             for constr in constraints
         )
+        """Constraints registered using ``@constraint`` (or equivalent method)."""
+
+        self.all_constraints = self.optgroup_constraints + self.param_constraints
+        """All constraints applied to parameter/option groups of this command."""
 
     def parse_args(self, ctx: Context, args: List[str]) -> List[str]:
-        all_constraints = self._optgroup_constraints + self._extra_constraints
         # Check parameter groups' consistency *before* parsing
         if Constraint.must_check_consistency(ctx):
-            for constr in all_constraints:
+            for constr in self.all_constraints:
                 constr.check_consistency()
 
         args = super().parse_args(ctx, args)  # type: ignore
 
         # Validate constraints against parameter values
-        for constr in all_constraints:
+        for constr in self.all_constraints:
             constr.check_values(ctx)
         return args
 
@@ -189,7 +194,7 @@ class ConstraintMixin:
         return tuple(self.get_param_by_name(name) for name in names)
 
     def format_constraints(self, ctx, formatter) -> None:
-        records_gen = (constr.get_help_record(ctx) for constr in self._extra_constraints)
+        records_gen = (constr.get_help_record(ctx) for constr in self.param_constraints)
         records = [rec for rec in records_gen if rec is not None]
         if records:
             with formatter.section('Constraints'):
