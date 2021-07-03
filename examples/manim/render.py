@@ -97,7 +97,8 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
         help="Render at this frame rate.",
     ),
     mutually_exclusive.rephrased(
-        error=f"{ErrorFmt.error}.\nUse --renderer, the other two options are deprecated."
+        error=f"{ErrorFmt.error}\n"
+              f"Use --renderer, the other two options are deprecated."
     )(
         option(
             "--renderer",
