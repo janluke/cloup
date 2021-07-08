@@ -8,7 +8,7 @@ from click import Context, Parameter
 
 from cloup._util import (
     FrozenSpace, check_arg, class_name,
-    make_one_line_repr, make_repr, pluralize
+    make_one_line_repr, make_repr, pluralize, reindent,
 )
 from .common import (
     format_param_list,
@@ -189,18 +189,14 @@ class Constraint(abc.ABC):
         # TODO: remove this check in the future
         if not callable(param_adders[0]):
             from cloup import __version__
-            raise TypeError(f"""
-                all arguments of this method must be decorators like those returned
-                by cloup.argument() and cloup.option().
-
-                If you are trying to call a constraint to check it imperatively,
-                know that, since Cloup v0.9, calling a constraint has a completely
-                different semantics, see:
+            raise TypeError(reindent(f"""\n
+                since Cloup v0.9, calling a constraint has a completely different
+                semantics and takes parameter decorators as arguments, see:
 
                 https://cloup.readthedocs.io/en/v{__version__}/pages/constraints.html#constraints-as-decorators
 
-                You can use the check() method to check a constraint imperatively.
-            """)
+                To check a constraint imperatively, you can use the check() method.
+            """, 4))
         return constrained_params(self, *param_adders)
 
     def __or__(self, other: 'Constraint') -> 'Or':
