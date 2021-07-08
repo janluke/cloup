@@ -18,7 +18,7 @@ v0.10.0 (in development)
 
 New features and enhancements
 -----------------------------
-- Improvements to type hints of command decorators and other changes (:pr`67`):
+- Improvements to type hints of command decorators and other changes (:pr:`67`):
 
   - mypy can now infer the exact type of the instantiated command based on the
     ``cls`` argument. (Unfortunately, this required the use of ``@overload`` to
@@ -35,6 +35,7 @@ New features and enhancements
 
 Bug fixes
 -----------------------------
+Nothing here
 
 Breaking changes
 ----------------
@@ -43,6 +44,7 @@ Breaking changes
 
 Deprecated
 ----------
+Nothing here
 
 --------------------------------------------------------------------------------
 
