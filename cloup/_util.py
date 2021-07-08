@@ -137,3 +137,13 @@ class FrozenSpace(metaclass=FrozenSpaceMeta):
 def delete_keys(d: dict, keys: Sequence[str]) -> None:
     for key in keys:
         del d[key]
+
+
+def reindent(text: str, indent: int = 0) -> str:
+    import textwrap as tw
+    if text.startswith('\n'):
+        text = text[1:]
+    text = tw.dedent(text)
+    if indent:
+        return tw.indent(text, ' ' * indent)
+    return text

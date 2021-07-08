@@ -1,13 +1,11 @@
 """Tests for the "subcommand sections" feature/module."""
-from textwrap import dedent
-
 import click
 import pytest
 from click import pass_context
 
 import cloup
 from cloup import Section
-from cloup._util import pick_non_missing
+from cloup._util import pick_non_missing, reindent
 from cloup.typing import MISSING
 from tests.util import new_dummy_func, pick_first_bool
 
@@ -111,7 +109,7 @@ def test_align_sections_context_setting(runner, ctx_value, cmd_value):
             Second section:
               longer-cmd  Second command help"""
 
-    expected = dedent(expected).strip()
+    expected = reindent(expected)
     end = start + len(expected)
     assert result.output[start:end] == expected
 
@@ -129,7 +127,7 @@ def test_override_format_subcommand_name(runner):
     )
 
     res = runner.invoke(main, ['--help'])
-    expected_help = dedent("""
+    expected_help = reindent("""
         Usage: main [OPTIONS] COMMAND [ARGS]...
 
         Options:
@@ -138,7 +136,7 @@ def test_override_format_subcommand_name(runner):
         Commands:
           *special*  A special command.
           ordinary   An ordinary command.
-    """)[1:]
+    """)
     assert res.output == expected_help
 
 
