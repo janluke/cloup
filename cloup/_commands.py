@@ -1,17 +1,48 @@
-from typing import Any, Callable, Dict, Iterable, Optional, Type, cast
+"""
+This modules contains command classes and decorators redefined by Cloup.
+
+Note that Cloup commands *are* Click commands. Apart from supporting more features,
+Cloup commands (and decorators) have detailed type hints. In particular, decorators
+are generic and type checkers can precisely infer the type of the returned
+command based on the ``cls`` argument!
+
+Why did you overload all decorators?
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+To infer the return type based on the ``cls`` argument. Unfortunately, MyPy
+doesn't allow to set a default value on a generic argument, see:
+https://github.com/python/mypy/issues/3737.
+So I had to resort to a workaround using @overload which makes things more
+verbose:
+
+- in one signature, ``cls`` has type ``None`` and it's set to ``None``; in this
+  case I return the default ``cls``, which is ``cloup.Command`` for ``command``
+  and ``cloup.Group`` for ``group
+- in the other I use  ``cls: ClickCommand`` without a default, where ``ClickCommand``
+  is a type variable.
+
+When and if the MyPy issue is resolved, the overloads will be removed.
+"""
+from typing import (
+    Any, Callable, Dict, Iterable, NamedTuple, Optional, Sequence, Type, TypeVar,
+    overload,
+)
 
 import click
 
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
+from ._util import reindent
 from .constraints import ConstraintMixin
+
+ClickCommand = TypeVar('ClickCommand', bound=click.Command)
+ClickGroup = TypeVar('ClickGroup', bound=click.Group)
 
 
 class BaseCommand(click.Command):
     """Base class for cloup commands.
 
-    * It back-ports a feature from Click v8.0-a1, i.e. the ``context_class``
+    * It back-ports a feature from Click v8.0, i.e. the ``context_class``
       class attribute, which is set to ``cloup.Context``.
 
     * It adds a ``formatter_settings`` instance attribute.
@@ -89,68 +120,201 @@ class Group(SectionMixin, BaseCommand, click.Group):
         this class now inherits from :class:`cloup.BaseCommand`.
     """
 
-    # MyPy complains because the signature is not compatible with the parent
-    # method signature, which is command(*args, **kwargs). Since the parent
-    # method is implemented calling click.command(name=None, cls=None, **attrs),
-    # any call that works for parent should work for us.
-    def command(  # type: ignore
+    # MyPy complains because "Signature of "group" incompatible with supertype".
+    # The supertype signature is (*args, **kwargs) and it is compatible.
+    @overload  # type: ignore
+    def command(  # Why overloading? Refer to module docstring.
         self, name: Optional[str] = None,
-        cls: Optional[Type[click.Command]] = None,
+        *,
+        cls: None = None,  # Command is cloup.Command
         section: Optional[Section] = None,
-        **kwargs,
-    ) -> Callable[[Callable], click.Command]:
-        """Decorator for creating a new subcommand of this ``Group``.
-        It takes the same arguments of :func:`command` plus ``section``."""
-        if cls is None:
-            cls = Command
+        context_settings: Optional[Dict[str, Any]] = None,
+        formatter_settings: Optional[Dict[str, Any]] = None,
+        help: Optional[str] = None,
+        epilog: Optional[str] = None,
+        short_help: Optional[str] = None,
+        options_metavar: Optional[str] = "[OPTIONS]",
+        add_help_option: bool = True,
+        no_args_is_help: bool = False,
+        hidden: bool = False,
+        deprecated: bool = False,
+        align_option_groups: Optional[bool] = None,
+        show_constraints: Optional[bool] = None,
+    ) -> Callable[[Callable], Command]:
+        ...
 
-        def decorator(f: Callable) -> click.Command:
-            cmd = command(name=name, cls=cast(Type[click.Command], cls), **kwargs)(f)
+    @overload  # type: ignore
+    def command(  # Why overloading? Refer to module docstring.
+        self, name: Optional[str] = None,
+        *,
+        cls: Type[ClickCommand],
+        section: Optional[Section] = None,
+        context_settings: Optional[Dict[str, Any]] = None,
+        help: Optional[str] = None,
+        epilog: Optional[str] = None,
+        short_help: Optional[str] = None,
+        options_metavar: Optional[str] = "[OPTIONS]",
+        add_help_option: bool = True,
+        no_args_is_help: bool = False,
+        hidden: bool = False,
+        deprecated: bool = False,
+        **kwargs,
+    ) -> Callable[[Callable], ClickCommand]:
+        ...
+
+    def command(self, name=None, *, cls=None, section=None, **kwargs):
+        """Returns a decorator that creates a new subcommand of this ``Group``
+        using the decorated function as callback.
+
+        It takes the same arguments of :func:`command` plus:
+
+        ``section``: ``Optional[Section]``
+            if provided, put the subcommand in this section.
+
+        .. versionchanged:: 0.10.0
+            all arguments but ``name`` are now keyword-only.
+        """
+
+        def decorator(f):
+            cmd = command(name=name, cls=cls, **kwargs)(f)
             self.add_command(cmd, section=section)
             return cmd
 
         return decorator
 
-    # MyPy complains because the signature is not compatible with the parent
-    # method signature, which is group(*args, **kwargs). The "real signature"
-    # of the parent method is command(name=None, cls=None, **attrs), thus
-    # any call that works for parent should work for us, since the order of
-    # named arguments is the same.
-    def group(  # type: ignore
+    # MyPy complains because "Signature of "group" incompatible with supertype".
+    # The supertype signature is (*args, **kwargs) and it is compatible.
+    @overload  # type: ignore
+    def group(  # Why overloading? Refer to module docstring.
         self, name: Optional[str] = None,
-        cls: Optional[Type[click.Group]] = None,
+        *,
+        cls: None = None,  # cls not provided
         section: Optional[Section] = None,
-        **kwargs,
-    ):
-        """Decorator for creating a new subgroup of this command.
-        It takes the same argument of :func:`group` plus ``section``."""
-        if cls is None:
-            cls = Group
-        return self.command(name=name, section=section, cls=cls, **kwargs)
+        sections: Iterable[Section] = (),
+        align_sections: Optional[bool] = None,
+        invoke_without_command: bool = False,
+        no_args_is_help: bool = False,
+        context_settings: Optional[Dict[str, Any]] = None,
+        formatter_settings: Dict[str, Any] = {},
+        help: Optional[str] = None,
+        epilog: Optional[str] = None,
+        short_help: Optional[str] = None,
+        options_metavar: Optional[str] = "[OPTIONS]",
+        subcommand_metavar: Optional[str] = None,
+        add_help_option: bool = True,
+        chain: bool = False,
+        hidden: bool = False,
+        deprecated: bool = False,
+    ) -> Callable[[Callable], 'Group']:
+        ...
+
+    @overload
+    def group(  # Why overloading? Refer to module docstring.
+        self, name: Optional[str] = None, *,
+        cls: Type[ClickGroup],
+        section: Optional[Section] = None,
+        invoke_without_command: bool = False,
+        no_args_is_help: bool = False,
+        context_settings: Optional[Dict[str, Any]] = None,
+        help: Optional[str] = None,
+        epilog: Optional[str] = None,
+        short_help: Optional[str] = None,
+        options_metavar: Optional[str] = "[OPTIONS]",
+        subcommand_metavar: Optional[str] = None,
+        add_help_option: bool = True,
+        chain: bool = False,
+        hidden: bool = False,
+        deprecated: bool = False,
+        **kwargs
+    ) -> Callable[[Callable], ClickGroup]:
+        ...
+
+    def group(self, name=None, *, cls=None, section=None, **kwargs):
+        """Returns a decorator that creates a new subcommand of this ``Group``
+        using the decorated function as callback.
+
+        It takes the same argument of :func:`group` plus:
+
+        ``section``: ``Optional[Section]``
+            if provided, put the subcommand in this section.
+
+        .. versionchanged:: 0.10.0
+            all arguments but ``name`` are now keyword-only.
+        """
+
+        def decorator(f):
+            cmd = group(name=name, cls=cls, **kwargs)(f)
+            self.add_command(cmd, section=section)
+            return cmd
+
+        return decorator
 
 
-def group(
+@overload  # Why overloading? Refer to module docstring.
+def command(
     name: Optional[str] = None,
     *,
-    cls: Type[Group] = Group,
-    sections: Iterable[Section] = (),
-    align_sections: Optional[bool] = None,
-    invoke_without_command: bool = False,
-    no_args_is_help: bool = False,
+    cls: None = None,
     context_settings: Optional[Dict[str, Any]] = None,
-    formatter_settings: Dict[str, Any] = {},
+    formatter_settings: Optional[Dict[str, Any]] = None,
     help: Optional[str] = None,
-    epilog: Optional[str] = None,
     short_help: Optional[str] = None,
+    epilog: Optional[str] = None,
     options_metavar: Optional[str] = "[OPTIONS]",
-    subcommand_metavar: Optional[str] = None,
     add_help_option: bool = True,
-    chain: bool = False,
+    no_args_is_help: bool = False,
+    hidden: bool = False,
+    deprecated: bool = False,
+    align_option_groups: Optional[bool] = None,
+    show_constraints: Optional[bool] = None
+) -> Callable[[Callable], Command]:
+    ...
+
+
+@overload
+def command(
+    name: Optional[str] = None,
+    *,
+    cls: Type[ClickCommand],
+    context_settings: Optional[Dict[str, Any]] = None,
+    help: Optional[str] = None,
+    short_help: Optional[str] = None,
+    epilog: Optional[str] = None,
+    options_metavar: Optional[str] = "[OPTIONS]",
+    add_help_option: bool = True,
+    no_args_is_help: bool = False,
     hidden: bool = False,
     deprecated: bool = False,
     **kwargs
-) -> Callable[[Callable], Group]:
-    """Decorator for creating a new :class:`cloup.Group` (or a subclass of it).
+) -> Callable[[Callable], ClickCommand]:
+    ...
+
+
+# noinspection PyIncorrectDocstring
+def command(name=None, *, cls=None, **kwargs):
+    """
+    Returns a decorator that creates a new command using the decorated function
+    as callback.
+
+    The only differences with respect to ``click.command`` are:
+
+    - the default command class is :class:`cloup.Command`
+    - supports constraints, provided that ``cls`` inherits from ``ConstraintMixin``
+      like ``cloup.Command`` (the default)
+    - this function has detailed type hints and uses generics for the ``cls``
+      argument and return type.
+
+    Note that the following arguments are about Cloup-specific features and are
+    not supported by all ``click.Command``, so if you provide a custom ``cls``
+    make sure you don't ne:
+
+    - ``formatter_settings``
+    - ``align_option_groups`` (``cls`` needs to inherit from ``OptionGroupMixin)
+    - ``show_constraints`` (``cls`` needs to inherit ``ConstraintMixin).
+
+    .. versionchanged:: 0.10.0
+        this function is now generic: the return type depends on what you provide
+        as ``cls`` argument.
 
     .. versionchanged:: 0.9.0
         all arguments but ``name`` are now keyword-only arguments.
@@ -158,15 +322,7 @@ def group(
     :param name:
         the name of the command to use unless a group overrides it.
     :param cls:
-        the ``cloup.Group`` (sub)class to instantiate.
-    :param sections:
-        a list of Section objects.
-    :param align_sections:
-        whether to align the columns of all subcommands' help sections.
-        This is also available as a context setting having a lower priority
-        than this attribute. Given that this setting should be consistent
-        across all you commands, you should probably use the context
-        setting only.
+        the command class to instantiate.
     :param context_settings:
         an optional dictionary with defaults that are passed to the context object.
     :param formatter_settings:
@@ -180,6 +336,141 @@ def group(
     :param short_help:
         the short help to use for this command.  This is shown on the command
         listing of the parent command.
+    :param options_metavar:
+        metavar for options shown in the command's usage string.
+    :param add_help_option:
+        by default each command registers a ``--help`` option.
+        This can be disabled by this parameter.
+    :param no_args_is_help:
+        this controls what happens if no arguments are provided. This option is
+        disabled by default. If enabled this will add ``--help`` as argument if
+        no arguments are passed
+    :param hidden:
+        hide this command from help outputs.
+    :param deprecated:
+        issues a message indicating that the command is deprecated.
+    :param align_option_groups:
+        whether to align the columns of all option groups' help sections.
+        This is also available as a context setting having a lower priority
+        than this attribute. Given that this setting should be consistent
+        across all you commands, you should probably use the context
+        setting only.
+    :param show_constraints:
+        whether to include a "Constraint" section in the command help. This
+        is also available as a context setting having a lower priority than
+        this attribute.
+    :param kwargs:
+        any other argument accepted by the instantiated command class (``cls``).
+    """
+
+    def decorator(f):
+        if hasattr(f, '__constraints'):
+            if cls and not issubclass(cls, ConstraintMixin):
+                raise TypeError(
+                    f"a Command must inherit from cloup.ConstraintMixin to support "
+                    f"constraints; {cls} doesn't")
+            constraints = tuple(reversed(f.__constraints))
+            del f.__constraints
+            kwargs['constraints'] = constraints
+
+        cmd_cls = cls if cls is not None else Command
+        try:
+            return click.command(name, cls=cmd_cls, **kwargs)(f)
+        except TypeError as error:
+            raise _process_unexpected_kwarg_error(error, _ARGS_INFO, cls)
+
+    return decorator
+
+
+@overload  # Why overloading? Refer to module docstring.
+def group(
+    name: Optional[str] = None,
+    *,
+    cls: None = None,
+    sections: Iterable[Section] = (),
+    align_sections: Optional[bool] = None,
+    invoke_without_command: bool = False,
+    no_args_is_help: bool = False,
+    context_settings: Optional[Dict[str, Any]] = None,
+    formatter_settings: Dict[str, Any] = {},
+    help: Optional[str] = None,
+    short_help: Optional[str] = None,
+    epilog: Optional[str] = None,
+    options_metavar: Optional[str] = "[OPTIONS]",
+    subcommand_metavar: Optional[str] = None,
+    add_help_option: bool = True,
+    chain: bool = False,
+    hidden: bool = False,
+    deprecated: bool = False,
+) -> Callable[[Callable], Group]:
+    ...
+
+
+@overload
+def group(
+    name: Optional[str] = None,
+    *,
+    cls: Type[ClickGroup],
+    invoke_without_command: bool = False,
+    no_args_is_help: bool = False,
+    context_settings: Optional[Dict[str, Any]] = None,
+    help: Optional[str] = None,
+    short_help: Optional[str] = None,
+    epilog: Optional[str] = None,
+    options_metavar: Optional[str] = "[OPTIONS]",
+    subcommand_metavar: Optional[str] = None,
+    add_help_option: bool = True,
+    chain: bool = False,
+    hidden: bool = False,
+    deprecated: bool = False,
+    **kwargs
+) -> Callable[[Callable], ClickGroup]:
+    ...
+
+
+def group(name=None, *, cls=None, **kwargs):
+    """
+    Returns a decorator that instantiates a ``Group`` (or a subclass of it)
+    using the decorated function as callback.
+
+    .. versionchanged:: 0.10.0
+        the ``cls`` argument can now be any ``click.Group`` (previously had to
+        be a ``cloup.Group``) and the type of the instantiated command matches
+        it (previously, the type was ``cloup.Group`` even if ``cls`` was a subclass
+        of it).
+
+    .. versionchanged:: 0.9.0
+        all arguments but ``name`` are now keyword-only arguments.
+
+    :param name:
+        the name of the command to use unless a group overrides it.
+    :param cls:
+        the ``click.Group`` (sub)class to instantiate. This is ``cloup.Group``
+        by default. Note that some of the arguments are only supported by
+        ``cloup.Group``.
+    :param sections:
+        a list of Section objects containing the subcommands of this ``Group``.
+        This argument is only supported by commands inheriting from
+        :class:`cloup.SectionMixin`.
+    :param align_sections:
+        whether to align the columns of all subcommands' help sections.
+        This is also available as a context setting having a lower priority
+        than this attribute. Given that this setting should be consistent
+        across all you commands, you should probably use the context
+        setting only.
+    :param context_settings:
+        an optional dictionary with defaults that are passed to the context object.
+    :param formatter_settings:
+        arguments for the formatter; you can use :meth:`HelpFormatter.settings`
+        to build this dictionary.
+    :param help:
+        the help string to use for this command.
+    :param short_help:
+        the short help to use for this command.  This is shown on the command
+        listing of the parent command.
+    :param epilog:
+        like the help string but it's printed at the end of the help page after
+        everything else.
     :param options_metavar:
         metavar for options shown in the command's usage string.
     :param add_help_option:
@@ -210,98 +501,52 @@ def group(
     :param kwargs:
         any other argument accepted by the instantiated command class.
     """
-    if not issubclass(cls, Group):
+    if cls is None:
+        cls = Group
+    elif not issubclass(cls, click.Group):
         raise TypeError(
-            'this decorator requires cls to be a cloup.Group or a subclass of it. '
-            'Use @click.group to instantiate another type of Group but remember '
-            'that some of the arguments of this decorator are only supported by '
-            'cloup.Group.')
+            'this decorator requires cls to be a click.Group (or a subclass).')
 
-    kwargs.update(locals())
-    kwargs.pop('kwargs')
-    return cast(Callable[[Callable], Group], click.group(**kwargs))
+    return command(name=name, cls=cls, **kwargs)
 
 
-def command(
-    name: Optional[str] = None,
-    *,
-    cls: Type[click.Command] = Command,
-    context_settings: Optional[Dict[str, Any]] = None,
-    help: Optional[str] = None,
-    epilog: Optional[str] = None,
-    short_help: Optional[str] = None,
-    options_metavar: Optional[str] = "[OPTIONS]",
-    add_help_option: bool = True,
-    no_args_is_help: bool = False,
-    hidden: bool = False,
-    deprecated: bool = False,
-    **kwargs
-) -> Callable[[Callable], click.Command]:
-    """
-    Decorator that creates a new command using the decorated function as callback.
+# Side stuff for better error messages
 
-    The only differences with respect to ``click.commands`` are:
+class _ArgInfo(NamedTuple):
+    arg_name: str
+    requires: Type
+    supported_by: Sequence[str] = []
 
-    - the default command class is :class:`cloup.Command`
-    - supports ``@constraint`` (provided that ``cls=cloup.Command``).
 
-    Besides of all the arguments documented below, you can pass any argument
-    accepted by the instantiated command class (``cls``), which in the case of
-    the default (:class:`cloup.Command`) include:
+_ARGS_INFO = {
+    info.arg_name: info for info in [
+        _ArgInfo('formatter_settings', BaseCommand, ['cloup.Command', 'cloup.Group']),
+        _ArgInfo('align_option_groups', OptionGroupMixin, ['cloup.Command']),
+        _ArgInfo('show_constraints', ConstraintMixin, ['cloup.Command']),
+        _ArgInfo('align_sections', SectionMixin, ['cloup.Group'])
+    ]
+}
 
-    - ``formatter_settings (dict)`` -- arguments for the formatter; you can use
-      :meth:`HelpFormatter.settings` to build this dictionary.
-    - ``align_option_groups (Optional[bool])``
-    - ``show_constraints (Optional[bool])``.
 
-    .. versionchanged:: 0.9.0
-        all arguments but ``name`` are now keyword-only arguments.
+def _process_unexpected_kwarg_error(
+    error: TypeError, args_info: Dict[str, _ArgInfo], cls: Type[click.Command]
+) -> TypeError:
+    """Checks if the developer tried to pass a Cloup-specific argument to a ``cls``
+    that doesn't support it and if that's the case, augments the error message
+    to provide useful more info about the error."""
+    import re
 
-    :param name:
-        the name of the command to use unless a group overrides it.
-    :param cls:
-        the command class to instantiate.
-    :param context_settings:
-        an optional dictionary with defaults that are passed to the context object.
-    :param help:
-        the help string to use for this command.
-    :param epilog:
-        like the help string but it's printed at the end of the help page after
-        everything else.
-    :param short_help:
-        the short help to use for this command.  This is shown on the command
-        listing of the parent command.
-    :param options_metavar:
-        metavar for options shown in the command's usage string.
-    :param add_help_option:
-        by default each command registers a ``--help`` option.
-        This can be disabled by this parameter.
-    :param no_args_is_help:
-        this controls what happens if no arguments are provided. This option is
-        disabled by default. If enabled this will add ``--help`` as argument if
-        no arguments are passed
-    :param hidden:
-        hide this command from help outputs.
-    :param deprecated:
-        issues a message indicating that the command is deprecated.
-    :param kwargs:
-        any other argument accepted by the instantiated command class (``cls``).
-    """
-    kwargs.update(locals())
-    kwargs.pop('kwargs')
-
-    def wrapper(f: Callable) -> click.Command:
-        constraints = getattr(f, '__constraints', None)
-        if constraints:
-            if not issubclass(cls, ConstraintMixin):
-                raise TypeError(
-                    f"a Command must inherits from cloup.ConstraintMixin to support "
-                    f"constraints; {cls} doesn't")
-            constraints = tuple(reversed(constraints))
-            delattr(f, '__constraints')
-            kwargs['constraints'] = constraints
-
-        cmd = click.command(**kwargs)(f)
-        return cast(click.Command, cmd)  # TODO: remove cast when dropping Click 7
-
-    return wrapper
+    message = str(error)
+    match = re.search('|'.join(arg_name for arg_name in args_info), message)
+    if match is None:
+        return error
+    arg = match.group()
+    info = args_info[arg]
+    extra_info = reindent(f"""\n
+        HINT: you set cls={cls} but this class
+        doesn't support the argument "{arg}".
+        In Cloup, this argument is handled by {info.requires.__name__} and
+        it's supported by {", ".join(info.supported_by)}.
+    """, 4)
+    new_message = message + '\n' + extra_info
+    return TypeError(new_message)
