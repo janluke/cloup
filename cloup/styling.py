@@ -89,7 +89,6 @@ class HelpTheme(NamedTuple):
             heading=Style(fg='bright_white', bold=True),
             constraint=Style(fg='magenta'),
             col1=Style(fg='bright_yellow'),
-            epilog=Style(fg='bright_white'),
         )
 
     @staticmethod
@@ -100,7 +99,6 @@ class HelpTheme(NamedTuple):
             heading=Style(fg='bright_blue'),
             constraint=Style(fg='red'),
             col1=Style(fg='yellow'),
-            epilog=Style(fg='bright_black'),
         )
 
 
