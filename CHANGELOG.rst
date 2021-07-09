@@ -7,24 +7,24 @@ Changelog
     New features and enhancements
     -----------------------------
     Bug fixes
-    -----------------------------
+    ---------
     Breaking changes
     ----------------
     Deprecated
     ----------
 
 v0.10.0 (in development)
-=======================
+========================
 
 New features and enhancements
 -----------------------------
-- Improvements to type hints of command decorators and other changes (:pr:`67`):
+- Command decorators: improvements to type hints and other changes (:pr:`67`):
 
   - mypy can now infer the exact type of the instantiated command based on the
-    ``cls`` argument. (Unfortunately, this required the use of ``@overload`` to
-    work around a mypy limitation)
-  - in ``@group``, allow ``cls`` to be any ``click.Group`` (previously it had to
-    be a subclass of ``cloup.Group``)
+    ``cls`` argument. --- Unfortunately, this required the use of ``@overload`` to
+    work around a mypy limitation
+  - in ``@group``, allow ``cls`` to be any ``click.Group`` --- previously it had to
+    be a subclass of ``cloup.Group``
   - in ``Group.command`` and ``Group.group`` add type hints and make all arguments
     except ``name`` keyword-only. Technically this is a (minor) incompatibility
     with the ``click.Group`` superclass, but it's coherent with Cloup's

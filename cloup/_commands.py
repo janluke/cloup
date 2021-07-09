@@ -15,8 +15,8 @@ So I had to resort to a workaround using @overload which makes things more
 verbose:
 
 - in one signature, ``cls`` has type ``None`` and it's set to ``None``; in this
-  case I return the default ``cls``, which is ``cloup.Command`` for ``command``
-  and ``cloup.Group`` for ``group
+  case I return the default ``cls``, which is ``cloup.Command`` for ``@command``
+  and ``cloup.Group`` for ``@group``
 - in the other I use  ``cls: ClickCommand`` without a default, where ``ClickCommand``
   is a type variable.
 
