@@ -34,8 +34,10 @@ New features and enhancements
     augments the resulting ``TypeError`` with extra information.
 
 Bug fixes
------------------------------
-Nothing here
+---------
+- ``SectionMixin.add_section`` called ``super().add_command`` rather than
+  ``self.add_command``. This caused ``add_command`` in subclasses not to be
+  called. :issue:`69`
 
 Breaking changes
 ----------------

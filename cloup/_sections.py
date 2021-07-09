@@ -111,8 +111,6 @@ class SectionMixin:
         **kwargs,
     ):
         """
-        :param sections:
-            a list of :class:`Section` objects.
         :param align_sections:
             whether to align the columns of all subcommands' help sections.
             This is also available as a context setting having a lower priority
@@ -133,7 +131,7 @@ class SectionMixin:
         super().__init__(*args, commands=commands, **kwargs)  # type: ignore
 
     def _add_command_to_section(self, cmd, name=None, section=None):
-        """ Adds a command to the section (if specified) or to the default section """
+        """Adds a command to the section (if specified) or to the default section."""
         name = name or cmd.name
         if section is None:
             section = self._default_section
@@ -142,29 +140,51 @@ class SectionMixin:
             self._user_sections.append(section)
             self._section_set.add(section)
 
-    def add_section(self, section: Section):
+    def add_section(self, section: Section) -> None:
         """ Adds a :class:`Section` to this group. You can add the same
         section object a single time. """
         if section in self._section_set:
-            raise ValueError('section {} was already added'.format(section))
+            raise ValueError(f'{section} was already added')
         self._user_sections.append(section)
         self._section_set.add(section)
         for name, cmd in section.commands.items():
-            super().add_command(cmd, name)  # type: ignore
+            # It's important to call self.add_command() and not super().add_command() here
+            # otherwise subclasses' add_command() is not called.
+            self.add_command(cmd, name, fallback_to_default_section=False)
 
     def section(self, title: str, *commands: click.Command, **attrs) -> Section:
-        """ Creates a new :class:`Section`, adds it to this group and returns it. """
+        """ Creates a new :class:`Section`, adds it to this group and returns it."""
         section = Section(title, commands, **attrs)
         self.add_section(section)
         return section
 
-    def add_command(self, cmd: click.Command,
-                    name: Optional[str] = None,
-                    section: Optional[Section] = None):
-        """Adds a new command. If ``section`` is None, the command is added to
-        the default section."""
+    def add_command(
+        self, cmd: click.Command,
+        name: Optional[str] = None,
+        section: Optional[Section] = None,
+        fallback_to_default_section: bool = True,
+    ) -> None:
+        """
+        Adds a subcommand to this ``Group``.
+
+        **Implementation note:** ``fallback_to_default_section`` looks not very
+        clean but, even if it's not immediate to see (it wasn't for me), I chose
+        it over apparently cleaner options.
+
+        :param cmd:
+        :param name:
+        :param section:
+            a ``Section`` instance. The command must not be in the section already.
+        :param fallback_to_default_section:
+            if ``section`` is None and this option is enabled, the command is added
+            to the "default section". If disabled, the command is not added to
+            any section unless ``section`` is provided. This is useful for
+            internal code and subclasses. Don't disable it unless you know what
+            you are doing.
+        """
         super().add_command(cmd, name)  # type: ignore
-        self._add_command_to_section(cmd, name, section)
+        if section or fallback_to_default_section:
+            self._add_command_to_section(cmd, name, section)
 
     def list_sections(self, ctx: click.Context,
                       include_default_section: bool = True) -> List[Section]:
