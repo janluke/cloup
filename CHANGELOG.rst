@@ -41,14 +41,10 @@ Bug fixes
 
 Breaking changes
 ----------------
-- In ``Group.command`` and ``Group.group`` add type hints and make all arguments
-  except ``name`` keyword-only.
+- In ``Group.command`` and ``Group.group`` all arguments except ``name`` are now
+  keyword-only.
 
 - The ``name`` parameter/attribute of ``OptionGroup`` was renamed to ``title``.
-
-Deprecated
-----------
-Nothing here
 
 --------------------------------------------------------------------------------
 

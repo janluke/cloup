@@ -309,8 +309,8 @@ def command(name=None, *, cls=None, **kwargs):
     make sure you don't ne:
 
     - ``formatter_settings``
-    - ``align_option_groups`` (``cls`` needs to inherit from ``OptionGroupMixin)
-    - ``show_constraints`` (``cls`` needs to inherit ``ConstraintMixin).
+    - ``align_option_groups`` (``cls`` needs to inherit from ``OptionGroupMixin``)
+    - ``show_constraints`` (``cls`` needs to inherit ``ConstraintMixin``).
 
     .. versionchanged:: 0.10.0
         this function is now generic: the return type depends on what you provide
