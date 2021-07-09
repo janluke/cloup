@@ -1,38 +1,39 @@
 """
-This modules contains command classes and decorators redefined by Cloup.
+This modules contains Cloup command classes and decorators.
 
-Note that Cloup commands *are* Click commands. Apart from supporting more features,
-Cloup commands (and decorators) have detailed type hints. In particular, decorators
-are generic and type checkers can precisely infer the type of the returned
-command based on the ``cls`` argument!
+Note that Cloup commands *are* Click commands. Apart from supporting more
+features, Cloup command decorators have detailed type hints and are generics so
+that type checkers can precisely infer the type of the returned command based on
+the ``cls`` argument.
 
 Why did you overload all decorators?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-To infer the return type based on the ``cls`` argument. Unfortunately, MyPy
-doesn't allow to set a default value on a generic argument, see:
+I wanted that the return type of decorators depended from the ``cls`` argument
+but MyPy doesn't allow to set a default value on a generic argument, see:
 https://github.com/python/mypy/issues/3737.
 So I had to resort to a workaround using @overload which makes things more
-verbose:
+verbose. The ``@overload`` is on the ``cls`` argument:
 
 - in one signature, ``cls`` has type ``None`` and it's set to ``None``; in this
-  case I return the default ``cls``, which is ``cloup.Command`` for ``@command``
+  case the type of the instantiated command is ``cloup.Command`` for ``@command``
   and ``cloup.Group`` for ``@group``
-- in the other I use  ``cls: ClickCommand`` without a default, where ``ClickCommand``
-  is a type variable.
+- in the other signature, there's ``cls: ClickCommand`` without a default, where
+  ``ClickCommand`` is a type variable.
 
 When and if the MyPy issue is resolved, the overloads will be removed.
 """
 from typing import (
-    Any, Callable, Dict, Iterable, NamedTuple, Optional, Sequence, Type, TypeVar,
-    overload,
+    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Sequence, Tuple,
+    Type, TypeVar, cast, overload,
 )
 
 import click
+from click import HelpFormatter
 
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
-from ._util import reindent
+from ._util import first_bool, reindent
 from .constraints import ConstraintMixin
 
 ClickCommand = TypeVar('ClickCommand', bound=click.Command)
@@ -55,13 +56,16 @@ class BaseCommand(click.Command):
 
     def __init__(
         self, *args,
-        formatter_settings: Dict[str, Any] = {},
+        aliases: Optional[Iterable[str]] = None,
+        formatter_settings: Optional[Dict[str, Any]] = None,
         **kwargs,
     ):
         super().__init__(*args, **kwargs)
         #: HelpFormatter options that are merged with ``Context.formatter_settings``
         #: (eventually overriding some values).
-        self.formatter_settings = formatter_settings
+        self.aliases: List[str] = [] if aliases is None else list(aliases)
+        self.formatter_settings: Dict[str, Any] = (
+            {} if formatter_settings is None else formatter_settings)
 
     def make_context(self, info_name, args, parent=None, **extra) -> Context:
         for key, value in self.context_settings.items():
@@ -82,6 +86,18 @@ class BaseCommand(click.Command):
 
     def format_help_text(self, ctx, formatter):
         formatter.write_command_help_text(self)
+
+    def format_aliases(self, ctx, formatter):
+        if not self.aliases:
+            return
+        formatter.write_aliases(self.aliases)
+
+    def format_help(self, ctx: click.Context, formatter: HelpFormatter) -> None:
+        self.format_usage(ctx, formatter)
+        self.format_aliases(ctx, formatter)
+        self.format_help_text(ctx, formatter)
+        self.format_options(ctx, formatter)
+        self.format_epilog(ctx, formatter)
 
 
 class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
@@ -116,16 +132,85 @@ class Group(SectionMixin, BaseCommand, click.Group):
     - :class:`BaseCommand` -> :class:`click.Command`
     - :class:`click.Group`
 
+    This class adds a single parameter:
+
+    ``show_subcommand_aliases``: ``Optional[bool] = None``
+        whether to show subcommand aliases; aliases are shown by default and
+        can be disabled using this argument or the homonym context setting.
+
+    .. versionadded:: 0.10.0
+        the "command aliases" feature, including the ``show_subcommand_aliases``
+        parameter/attribute.
+
     .. versionchanged:: 0.8.0
         this class now inherits from :class:`cloup.BaseCommand`.
     """
+    SHOW_SUBCOMMAND_ALIASES: bool = False
+
+    def __init__(self, *args, show_subcommand_aliases: Optional[bool] = None, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.show_subcommand_aliases = show_subcommand_aliases
+        """Whether to show subcommand aliases. This """
+
+        self.alias2name: Dict[str, str] = {}
+        """Dictionary mapping each alias to a command name."""
+
+    def add_command(
+        self, cmd: click.Command,
+        name: Optional[str] = None,
+        section: Optional[Section] = None,
+        fallback_to_default_section: bool = True,
+    ) -> None:
+        super().add_command(cmd, name, section, fallback_to_default_section)
+        name = cast(str, cmd.name) if name is None else name
+        aliases = getattr(cmd, 'aliases', [])
+        for alias in aliases:
+            self.alias2name[alias] = name
+
+    def resolve_command_name(self, ctx: click.Context, name: str) -> Optional[str]:
+        """Maps a string supposed to be a command name or an alias to a normalized
+        command name. If no match is found, it returns ``None``."""
+        if ctx.token_normalize_func:
+            name = ctx.token_normalize_func(name)
+        if name in self.commands:
+            return name
+        return self.alias2name.get(name)
+
+    def resolve_command(
+        self, ctx: click.Context, args: List[str]
+    ) -> Tuple[Optional[str], Optional[click.Command], List[str]]:
+        normalized_name = self.resolve_command_name(ctx, args[0])
+        if normalized_name:
+            # Replacing this string ensures that super().resolve_command() returns a
+            # normalized command name rather than an alias. The technique described in
+            # Click's docs doesn't work if the group "rename" the subcommand.
+            args[0] = normalized_name
+        return super().resolve_command(ctx, args)
+
+    def must_show_subcommand_aliases(self, ctx: click.Context) -> bool:
+        return first_bool(
+            self.show_subcommand_aliases,
+            getattr(ctx, 'show_subcommand_aliases', None),
+            Group.SHOW_SUBCOMMAND_ALIASES,
+        )
+
+    def format_subcommand_name(
+        self, ctx: click.Context, name: str, cmd: click.Command
+    ) -> str:
+        aliases = getattr(cmd, 'aliases', None)
+        if aliases and self.must_show_subcommand_aliases(ctx):
+            alias_list = ', '.join(aliases)
+            return f"{name} ({alias_list})"
+        return name
 
     # MyPy complains because "Signature of "group" incompatible with supertype".
-    # The supertype signature is (*args, **kwargs) and it is compatible.
+    # The supertype signature is (*args, **kwargs), which is compatible with
+    # this provided that you pass all arguments (expect "name") as keyword arg.
     @overload  # type: ignore
     def command(  # Why overloading? Refer to module docstring.
         self, name: Optional[str] = None,
         *,
+        aliases: Optional[Iterable[str]] = None,
         cls: None = None,  # Command is cloup.Command
         section: Optional[Section] = None,
         context_settings: Optional[Dict[str, Any]] = None,
@@ -147,6 +232,7 @@ class Group(SectionMixin, BaseCommand, click.Group):
     def command(  # Why overloading? Refer to module docstring.
         self, name: Optional[str] = None,
         *,
+        aliases: Optional[Iterable[str]] = None,
         cls: Type[ClickCommand],
         section: Optional[Section] = None,
         context_settings: Optional[Dict[str, Any]] = None,
@@ -183,11 +269,13 @@ class Group(SectionMixin, BaseCommand, click.Group):
         return decorator
 
     # MyPy complains because "Signature of "group" incompatible with supertype".
-    # The supertype signature is (*args, **kwargs) and it is compatible.
+    # The supertype signature is (*args, **kwargs), which is compatible with
+    # this provided that you pass all arguments (expect "name") as keyword arg.
     @overload  # type: ignore
     def group(  # Why overloading? Refer to module docstring.
         self, name: Optional[str] = None,
         *,
+        aliases: Optional[Iterable[str]] = None,
         cls: None = None,  # cls not provided
         section: Optional[Section] = None,
         sections: Iterable[Section] = (),
@@ -211,6 +299,7 @@ class Group(SectionMixin, BaseCommand, click.Group):
     @overload
     def group(  # Why overloading? Refer to module docstring.
         self, name: Optional[str] = None, *,
+        aliases: Optional[Iterable[str]] = None,
         cls: Type[ClickGroup],
         section: Optional[Section] = None,
         invoke_without_command: bool = False,
@@ -250,10 +339,12 @@ class Group(SectionMixin, BaseCommand, click.Group):
         return decorator
 
 
-@overload  # Why overloading? Refer to module docstring.
+# Why overloading? Refer to module docstring.
+@overload  # In this overload: "cls: None = None"
 def command(
     name: Optional[str] = None,
     *,
+    aliases: Optional[Iterable[str]] = None,
     cls: None = None,
     context_settings: Optional[Dict[str, Any]] = None,
     formatter_settings: Optional[Dict[str, Any]] = None,
@@ -272,9 +363,10 @@ def command(
 
 
 @overload
-def command(
+def command(  # In this overload: "cls: ClickCommand"
     name: Optional[str] = None,
     *,
+    aliases: Optional[Iterable[str]] = None,
     cls: Type[ClickCommand],
     context_settings: Optional[Dict[str, Any]] = None,
     help: Optional[str] = None,
@@ -291,7 +383,7 @@ def command(
 
 
 # noinspection PyIncorrectDocstring
-def command(name=None, *, cls=None, **kwargs):
+def command(name=None, *, aliases=None, cls=None, **kwargs):
     """
     Returns a decorator that creates a new command using the decorated function
     as callback.
@@ -321,6 +413,10 @@ def command(name=None, *, cls=None, **kwargs):
 
     :param name:
         the name of the command to use unless a group overrides it.
+    :param aliases:
+        alternative names for this command. If ``cls`` is not a Cloup command class,
+        aliases will be stored in the instantiated command by monkey-patching
+        and aliases won't be documented in the help page of the command.
     :param cls:
         the command class to instantiate.
     :param context_settings:
@@ -375,7 +471,10 @@ def command(name=None, *, cls=None, **kwargs):
 
         cmd_cls = cls if cls is not None else Command
         try:
-            return click.command(name, cls=cmd_cls, **kwargs)(f)
+            cmd = click.command(name, cls=cmd_cls, **kwargs)(f)
+            if aliases:
+                cmd.aliases = list(aliases)
+            return cmd
         except TypeError as error:
             raise _process_unexpected_kwarg_error(error, _ARGS_INFO, cls)
 
@@ -386,6 +485,7 @@ def command(name=None, *, cls=None, **kwargs):
 def group(
     name: Optional[str] = None,
     *,
+    aliases: Optional[Iterable[str]] = None,
     cls: None = None,
     sections: Iterable[Section] = (),
     align_sections: Optional[bool] = None,
@@ -410,6 +510,7 @@ def group(
 def group(
     name: Optional[str] = None,
     *,
+    aliases: Optional[Iterable[str]] = None,
     cls: Type[ClickGroup],
     invoke_without_command: bool = False,
     no_args_is_help: bool = False,

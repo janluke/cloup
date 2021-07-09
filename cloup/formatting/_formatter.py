@@ -172,6 +172,11 @@ class HelpFormatter(click.HelpFormatter):
         prog = self.theme.invoked_command(prog)
         super().write_usage(prog, args, prefix)
 
+    def write_aliases(self, aliases: Sequence[str]) -> None:
+        self.write_heading("Aliases", newline=False)
+        alias_list = ", ".join(self.theme.col1(alias) for alias in aliases)
+        self.write(f" {alias_list}\n")
+
     def write_command_help_text(self, cmd: click.Command) -> None:
         help_text = cmd.help or ''
         if cmd.deprecated:

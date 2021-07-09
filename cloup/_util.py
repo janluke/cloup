@@ -79,13 +79,12 @@ def pluralize(
     return many.format(count=count)
 
 
-def first_not_none(*values: Optional[T]) -> Optional[T]:
-    """Returns the first value that is not None
-    (or ``default`` if no such value exists)."""
+def coalesce(*values: Optional[T]) -> Optional[T]:
+    """Returns the first value that is not None (or None if no such value exists)."""
     return next((val for val in values if val is not None), None)
 
 
-def first_bool(*values: Optional[bool]) -> bool:
+def first_bool(*values: Any) -> bool:
     """Returns the first bool (or raises StopIteration if no bool is found)."""
     return next(val for val in values if isinstance(val, bool))
 

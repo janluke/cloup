@@ -12,7 +12,7 @@ from cloup import (
     Style,
 )
 from cloup.formatting.sep import RowSepIf, multiline_rows_are_at_least
-from config import cfg
+from config import config
 from render import render
 
 VERSION = '0.5.0'
@@ -58,7 +58,7 @@ def main():
 
 
 main.add_command(render)
-main.add_command(cfg)
+main.add_command(config)
 
 if __name__ == "__main__":
     main(prog_name='manim')
