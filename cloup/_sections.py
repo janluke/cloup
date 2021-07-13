@@ -199,24 +199,27 @@ class SectionMixin:
             section_list.append(default_section)
         return section_list
 
-    def format_subcommand_name(self, name: str, cmd: click.Command) -> str:
-        """Used to format the name of the subcommands. This method turns useful
-        when you combine this extension to other click extensions that override
-        :meth:`format_commands`. Most of these, like click-default-group and
-        click-aliases, just add something to the name of the subcommands, which
-        is exactly what this method allows you to do without overriding bigger
-        methods.
+    def format_subcommand_name(
+        self, ctx: click.Context, name: str, cmd: click.Command
+    ) -> str:
+        """Used to format the name of the subcommands. This method is useful
+        when you combine this extension with other click extensions that override
+        :meth:`format_commands`. Most of these, like click-default-group, just
+        add something to the name of the subcommands, which is exactly what this
+        method allows you to do without overriding bigger methods.
         """
         return name
 
-    def make_commands_help_section(self, section: Section) -> Optional[HelpSection]:
+    def make_commands_help_section(
+        self, ctx: click.Context, section: Section
+    ) -> Optional[HelpSection]:
         visible_subcommands = section.list_commands()
         if not visible_subcommands:
             return None
         return HelpSection(
             heading=section.title,
             definitions=[
-                (self.format_subcommand_name(name, cmd), cmd.get_short_help_str)
+                (self.format_subcommand_name(ctx, name, cmd), cmd.get_short_help_str)
                 for name, cmd in visible_subcommands
             ]
         )
@@ -235,7 +238,7 @@ class SectionMixin:
 
         subcommand_sections = self.list_sections(ctx)
         help_sections = pick_not_none(
-            self.make_commands_help_section(section)
+            self.make_commands_help_section(ctx, section)
             for section in subcommand_sections
         )
         if not help_sections:

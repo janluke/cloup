@@ -48,6 +48,10 @@ Breaking changes
 
 - The ``name`` parameter/attribute of ``OptionGroup`` was renamed to ``title``.
 
+- In ``SectionMixin`` (thus, in ``Group``), added a ``ctx: Context`` attribute
+  to make_commands_help_section and format_subcommand_name to support the
+  ``show_subcommand_aliases`` setting.
+
 --------------------------------------------------------------------------------
 
 v0.9.1 (2021-07-03)
