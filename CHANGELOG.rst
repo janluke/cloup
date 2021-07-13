@@ -18,6 +18,8 @@ v0.10.0 (in development)
 
 New features and enhancements
 -----------------------------
+- New feature: subcommand aliases. :issue:`64` :pr:`75`
+
 - Command decorators: improvements to type hints and other changes (:pr:`67`):
 
   - mypy can now infer the exact type of the instantiated command based on the
