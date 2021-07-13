@@ -8,7 +8,7 @@ from click import Context, Parameter
 
 from cloup._util import (
     FrozenSpace, check_arg, class_name,
-    make_one_line_repr, make_repr, pluralize, reindent,
+    first_bool, make_one_line_repr, make_repr, pluralize, reindent,
 )
 from .common import (
     format_param_list,
@@ -45,7 +45,10 @@ class Constraint(abc.ABC):
         .. versionchanged:: 0.9.0
             this method now a static method and takes a ``Context`` in input.
         """
-        return getattr(ctx, 'check_constraints_consistency', True)
+        return first_bool(
+            getattr(ctx, 'check_constraints_consistency', True),
+            True,
+        )
 
     def __getattr__(self, attr):
         removed_attrs = ('toggle_consistency_checks', 'consistency_checks_toggled')

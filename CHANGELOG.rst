@@ -43,6 +43,9 @@ Bug fixes
   ``self.add_command``. This caused ``add_command`` in subclasses not to be
   called. :issue:`69`
 
+- Fix ``Context.check_constraints_consistency`` not being propagated to descendant
+  contexts. :issue:`74`
+
 Breaking changes
 ----------------
 - In ``Group.command`` and ``Group.group`` all arguments except ``name`` are now

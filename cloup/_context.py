@@ -70,7 +70,7 @@ class Context(click.Context):
         align_sections: Optional[bool] = None,
         show_subcommand_aliases: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
-        check_constraints_consistency: bool = True,  # TODO: fix this
+        check_constraints_consistency: Optional[bool] = None,
         formatter_settings: Dict[str, Any] = {},
         **ctx_kwargs,
     ):
@@ -91,7 +91,10 @@ class Context(click.Context):
             show_constraints,
             getattr(self.parent, 'show_constraints', None),
         )
-        self.check_constraints_consistency = check_constraints_consistency
+        self.check_constraints_consistency = coalesce(
+            check_constraints_consistency,
+            getattr(self.parent, 'check_constraints_consistency', None)
+        )
 
         if cloup.warnings.formatter_settings_conflict:
             _warn_if_formatter_settings_conflict(
