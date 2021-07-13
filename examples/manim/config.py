@@ -1,6 +1,5 @@
 import os
 
-import click
 import cloup
 
 
@@ -15,12 +14,12 @@ def config():
 
 
 @config.command(no_args_is_help=True)
-@click.option(
+@cloup.option(
     "-l", "--level",
-    type=click.Choice(["user", "cwd"], case_sensitive=False), default="cwd",
+    type=cloup.Choice(["user", "cwd"], case_sensitive=False), default="cwd",
     help="Specify if this config is for user or the working directory.",
 )
-@click.option("-o", "--open", "openfile", is_flag=True)
+@cloup.option("-o", "--open", "openfile", is_flag=True)
 def write(level: str, openfile: bool) -> None:
     """Writes configurations."""
     pass
@@ -33,6 +32,6 @@ def show():
 
 
 @config.command()
-@click.option("-d", "--directory", default=os.getcwd())
+@cloup.option("-d", "--directory", default=os.getcwd())
 def export(directory):
     pass

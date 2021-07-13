@@ -21,6 +21,7 @@ CONTEXT_SETTINGS = Context.settings(
     align_option_groups=False,
     align_sections=True,  # subcommand help sections
     # color=False,
+    show_subcommand_aliases=True,
     formatter_settings=HelpFormatter.settings(
         # width=None,
         # max_width=80,

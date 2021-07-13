@@ -1,14 +1,12 @@
 from pprint import pprint
 
-import click
-
 import cloup
-from cloup import argument, option, option_group
+from cloup import argument, command, option, option_group
 from cloup.constraints import ErrorFmt, mutually_exclusive
 
 
-@cloup.command(aliases=["r", "re"])
-@argument("script_path", type=click.Path(), required=True)
+@command(aliases=["r", "re"])
+@argument("script_path", type=cloup.Path(), required=True)
 @argument("scene_names", required=False, nargs=-1)
 @option_group(
     "Global options",
@@ -29,7 +27,7 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
     option("--tex_template", help="Specify a custom TeX template file."),
     option(
         "-v", "--verbosity",
-        type=click.Choice(
+        type=cloup.Choice(
             ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"],
             case_sensitive=False,
         ),
@@ -51,11 +49,11 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
         help="Write to a file.",
     ),
     option(
-        "--media_dir", type=click.Path(),
+        "--media_dir", type=cloup.Path(),
         help="Path to store rendered videos and latex.",
     ),
     option(
-        "--log_dir", type=click.Path(), help="Path to store render logs."
+        "--log_dir", type=cloup.Path(), help="Path to store render logs."
     ),
     option(
         "--log_to_file", is_flag=True,
@@ -75,12 +73,12 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
     ),
     option(
         "-f", "--format", "file_format", default="mp4",
-        type=click.Choice(["png", "gif", "mp4"], case_sensitive=False),
+        type=cloup.Choice(["png", "gif", "mp4"], case_sensitive=False),
     ),
     option("-s", "--save_last_frame", is_flag=True),
     option(
         "-q", "--quality", default="h",
-        type=click.Choice(["l", "m", "h", "p", "k"], case_sensitive=False),
+        type=cloup.Choice(["l", "m", "h", "p", "k"], case_sensitive=False),
         help="""\b
             Resolution and framerate of the render:
             l = 854x480  30FPS,   m = 1280x720 30FPS,
@@ -102,7 +100,7 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
     )(
         option(
             "--renderer",
-            type=click.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),
+            type=cloup.Choice(["cairo", "opengl", "webgl"], case_sensitive=False),
             help="Select a renderer for your Scene.",
         ),
         option(
@@ -115,7 +113,7 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
         ),
     ),
     option(
-        "--webgl_renderer_path", type=click.Path(),
+        "--webgl_renderer_path", type=cloup.Path(),
         help="The path to the WebGL frontend.",
     ),
     option(
@@ -127,7 +125,7 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
     "Ease of access options",
     option(
         "--progress_bar", default="display",
-        type=click.Choice(["display", "leave", "none"], case_sensitive=False),
+        type=cloup.Choice(["display", "leave", "none"], case_sensitive=False),
         help="Display progress bars and/or keep them displayed.",
     ),
     option(
