@@ -9,7 +9,7 @@
     <p align="center">
         <i>
             <a href="https://github.com/pallets/click">Click</a>
-            + option groups + constraints + themes + ...
+            + option groups + constraints + aliases + help themes + ...
         </i>
     </p>
 
@@ -63,14 +63,17 @@ more expressive and configurable:
 - **constraints**, like ``mutually_exclusive``, that can be applied to any group
   of parameters, even *conditionally*
 
-- **sections for subcommands**, i.e. the possibility to organize the subcommands of a
+- **subcommand aliases**
+
+- **subcommands sections**, i.e. the possibility to organize the subcommands of a
   ``Group`` in multiple help sections
 
 - a **themeable HelpFormatter**  that:
 
   - has more parameters for adjusting widths and spacing, which can be provided
     at the context and command level
-  - use a different layout when the terminal width is small, to improve readability.
+  - use a different layout when the terminal width is below a certain threshold
+    in order to improve readability.
 
 Moreover, Cloup improves on **IDE support** providing *detailed* type hints for
 Click decorators and adding the static methods ``Context.settings()`` and

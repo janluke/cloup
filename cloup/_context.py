@@ -4,9 +4,9 @@ from typing import Any, Callable, Dict, List, Optional, Type
 import click
 
 import cloup
-from cloup._util import first_not_none, pick_non_missing
-from cloup.typing import MISSING, Possibly
+from cloup._util import coalesce, pick_non_missing
 from cloup.formatting import HelpFormatter
+from cloup.typing import MISSING, Possibly
 
 
 def _warn_if_formatter_settings_conflict(
@@ -45,6 +45,8 @@ class Context(click.Context):
         if True, align the definition lists of all subcommands of a group.
         You can override this by setting the corresponding argument of ``Group``
         (but you probably shouldn't: be consistent).
+    :param show_subcommand_aliases:
+        whether to show the aliases of subcommands in the help of a ``cloup.Group``.
     :param show_constraints:
         whether to include a "Constraint" section in the command help (if at
         least one constraint is defined).
@@ -66,21 +68,26 @@ class Context(click.Context):
         self, *ctx_args,
         align_option_groups: Optional[bool] = None,
         align_sections: Optional[bool] = None,
+        show_subcommand_aliases: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
-        check_constraints_consistency: bool = True,
+        check_constraints_consistency: bool = True,  # TODO: fix this
         formatter_settings: Dict[str, Any] = {},
         **ctx_kwargs,
     ):
         super().__init__(*ctx_args, **ctx_kwargs)
-        self.align_option_groups = first_not_none(
+        self.align_option_groups = coalesce(
             align_option_groups,
             getattr(self.parent, 'align_option_groups', None),
         )
-        self.align_sections = first_not_none(
+        self.align_sections = coalesce(
             align_sections,
             getattr(self.parent, 'align_sections', None),
         )
-        self.show_constraints = first_not_none(
+        self.show_subcommand_aliases = coalesce(
+            show_subcommand_aliases,
+            getattr(self.parent, 'show_subcommand_aliases', None),
+        )
+        self.show_constraints = coalesce(
             show_constraints,
             getattr(self.parent, 'show_constraints', None),
         )
@@ -129,6 +136,7 @@ class Context(click.Context):
         show_default: Possibly[bool] = MISSING,
         align_option_groups: Possibly[bool] = MISSING,
         align_sections: Possibly[bool] = MISSING,
+        show_subcommand_aliases: Possibly[bool] = MISSING,
         show_constraints: Possibly[bool] = MISSING,
         check_constraints_consistency: Possibly[bool] = MISSING,
         formatter_settings: Possibly[Dict[str, Any]] = MISSING,
@@ -191,6 +199,8 @@ class Context(click.Context):
             if True, align the definition lists of all subcommands of a group.
             You can override this by setting the corresponding argument of ``Group``
             (but you probably shouldn't: be consistent).
+        :param show_subcommand_aliases:
+            whether to show the aliases of subcommands in the help of a ``cloup.Group``.
         :param show_constraints:
             whether to include a "Constraint" section in the command help (if at
             least one constraint is defined).

@@ -7,7 +7,7 @@ from cloup import argument, option, option_group
 from cloup.constraints import ErrorFmt, mutually_exclusive
 
 
-@cloup.command()
+@cloup.command(aliases=["r", "re"])
 @argument("script_path", type=click.Path(), required=True)
 @argument("scene_names", required=False, nargs=-1)
 @option_group(

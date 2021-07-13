@@ -28,6 +28,7 @@ Please, note that Cloup documentation doesn't replace
     pages/installation
     pages/option-groups
     pages/constraints
+    pages/aliases
     pages/sections
     pages/formatting
 

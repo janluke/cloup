@@ -116,7 +116,7 @@ def test_align_sections_context_setting(runner, ctx_value, cmd_value):
 
 def test_override_format_subcommand_name(runner):
     class MyGroup(cloup.Group):
-        def format_subcommand_name(self, name: str, cmd: click.Command) -> str:
+        def format_subcommand_name(self, ctx, name, cmd) -> str:
             return '*special*' if name == 'special' else name
 
     main = MyGroup(name='main')

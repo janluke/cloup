@@ -18,6 +18,8 @@ v0.10.0 (in development)
 
 New features and enhancements
 -----------------------------
+- New feature: subcommand aliases. :issue:`64` :pr:`75`
+
 - Command decorators: improvements to type hints and other changes (:pr:`67`):
 
   - mypy can now infer the exact type of the instantiated command based on the
@@ -47,6 +49,10 @@ Breaking changes
   keyword-only.
 
 - The ``name`` parameter/attribute of ``OptionGroup`` was renamed to ``title``.
+
+- In ``SectionMixin`` (thus, in ``Group``), added a ``ctx: Context`` attribute
+  to make_commands_help_section and format_subcommand_name to support the
+  ``show_subcommand_aliases`` setting.
 
 --------------------------------------------------------------------------------
 
