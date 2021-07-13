@@ -75,9 +75,9 @@ more expressive and configurable:
   - use a different layout when the terminal width is below a certain threshold
     in order to improve readability.
 
-Moreover, Cloup improves on **IDE support** providing *detailed* type hints for
-Click decorators and adding the static methods ``Context.settings()`` and
-``HelpFormatter.settings()`` for creating settings dictionaries.
+Moreover, Cloup improves on **IDE support** providing decorators with *detailed*
+type hints and adding the static methods ``Context.settings()`` and
+``HelpFormatter.settings()`` for creating dictionaries of settings.
 
 Cloup is extensively **tested and documented.** Tests are run against multiple
 versions of Python (>=3.6) and Click (>=7.2).

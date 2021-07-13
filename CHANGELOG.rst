@@ -13,8 +13,8 @@ Changelog
     Deprecated
     ----------
 
-v0.10.0 (in development)
-========================
+v0.10.0 (2021-07-14)
+====================
 
 New features and enhancements
 -----------------------------
