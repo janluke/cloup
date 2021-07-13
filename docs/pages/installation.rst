@@ -1,23 +1,36 @@
 
 Installation
 ============
-To install the **latest release**, run::
+To install the latest stable release, run::
 
     pip install cloup
 
 Cloup adheres to `semantic versioning <https://semver.org/>`_.
 
-.. important::
-    Since Cloup has not reached v1.0, its API is not to be considered stable.
-    This doesn't mean you can't already use it: it is already extensively tested
-    and documented. Just make sure you pin the version you are using in your
-    requirements file, e.g.
+Depending on Cloup: recommendations
+-----------------------------------
 
-    .. parsed-literal::
+1. Pin Cloup version
+~~~~~~~~~~~~~~~~~~~~
+I probably don't need to explain this, but make sure you pin the version you
+are using in your requirements file. Dependency management tools like Poetry
+will do this automatically but if you still use ``requirements.txt`` or
+``setup.py``, you can do it like following:
 
-        cloup ~= \ |release|\
+.. parsed-literal::
 
-    Patch releases are guaranteed to be backward-compatible even before v1.0.
+    cloup ~= \ |release|\
 
-    At each new release, you can check the :doc:`changelog` to see what's changed.
+Patch releases are guaranteed to be backward-compatible even before v1.0.
+At each new release, you can check the :doc:`changelog` to see what's changed.
 
+2. Add Click to your requirements too
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cloup is not a replacement for Click.
+
+- Cloup reimplements or just re-exports many Click symbols but not *all*. You
+  may still need to import click for some stuff.
+
+- Cloup doesn't force you to use a specific version of Click; it only
+  specifies a range of supported versions; that's an enough reason to add Click
+  to you dependencies: to have control on its version as well.
