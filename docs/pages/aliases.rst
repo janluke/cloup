@@ -36,6 +36,7 @@ parameter exposed by Cloup command decorators.
     example above). This is possible because aliases are stored in the subcommand,
     so a ``Group`` can get them from the added command itself.
 
+.. _show-subcommand-aliases:
 
 Help output of the group
 ------------------------

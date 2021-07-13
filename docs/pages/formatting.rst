@@ -1,7 +1,7 @@
 .. py:currentmodule:: cloup
 
-Help formatting and theming
-===========================
+Help formatting and themes
+==========================
 
 Formatting settings
 -------------------
@@ -16,6 +16,9 @@ command level:
 
 - **show_constraints** -- whether to include the "Constraints" section
   (see :ref:`here <show-constraints>`)
+
+- **show_subcommand_aliases** -- whether to show aliases of subcommands in the
+  ``--help`` output of a ``Group`` (see :ref:`here <show-subcommand-aliases>`)
 
 - **formatter_settings** -- a dictionary of parameters to forward to
   :class:`HelpFormatter` (click on it for the full list). The following
@@ -75,8 +78,8 @@ An example
         ...
 
 
-Theming
--------
+Themes
+------
 :class:`cloup.HelpFormatter` supports themes, so ``theme`` is one of the many
 arguments you can provide in ``formatter_settings``. Probably you want to set a
 theme at the context level, so you need to pass a ``theme`` as part of your
