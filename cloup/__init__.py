@@ -9,12 +9,28 @@ __version_tuple__ = _version.version_tuple
 
 # flake8: noqa F401
 from click import (
+    # decorators
     confirmation_option,
     help_option,
     pass_context,
     pass_obj,
     password_option,
     version_option,
+    # types
+    BOOL,
+    Choice,
+    DateTime,
+    File,
+    FLOAT,
+    FloatRange,
+    INT,
+    IntRange,
+    ParamType,
+    Path,
+    STRING,
+    Tuple,
+    UNPROCESSED,
+    UUID,
 )
 
 from . import warnings

@@ -35,6 +35,8 @@ New features and enhancements
     uses one of such arguments with a ``cls`` that doesn't support them, Cloup
     augments the resulting ``TypeError`` with extra information.
 
+- Export Click types from Cloup namespace for convenience. :issue:`72`
+
 - In dark and light themes, the epilog is now left unstyled by default. :issue:`62`
 
 Bug fixes
