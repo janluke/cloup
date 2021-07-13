@@ -63,8 +63,8 @@ Breaking changes
 
 v0.9.1 (2021-07-03)
 ===================
-- Fixed bug: Shell completion breaking because Cloup checks constraints despite
-  ``ctx.resilient_parsing=True``
+- Fixed bug: shell completion breaking because of Cloup checking constraints
+  despite ``ctx.resilient_parsing=True``
 - Added public attributes to ``ConstraintMixin``: ``optgroup_constraints``,
   ``param_constraints`` and ``all_constraints``.
 - Cleaned up code and added other type hints (to internal code).

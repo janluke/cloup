@@ -7,7 +7,7 @@ Option groups
 The @option_group decorator
 ---------------------------
 The recommended way of defining option groups is through the
-:func:`~cloup.option_group` decorator. This decorators is overloaded with two
+:func:`~cloup.option_group` decorator. This decorator is overloaded with two
 signatures that only differ by how you provide the optional ``help`` argument::
 
     # help as keyword argument
