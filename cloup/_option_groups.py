@@ -81,11 +81,11 @@ class OptionGroup:
 
 
 def has_option_group(param) -> bool:
-    return hasattr(param, 'group') and param.group is not None
+    return getattr(param, 'group', None) is not None
 
 
-def get_option_group_of(param, default=None):
-    return param.group if has_option_group(param) else default
+def get_option_group_of(param) -> Optional[OptionGroup]:
+    return getattr(param, 'group', None)
 
 
 # noinspection PyMethodMayBeStatic
@@ -134,12 +134,16 @@ class OptionGroupMixin:
     ) -> Tuple[List[OptionGroup], List[Option]]:
 
         options_by_group = defaultdict(list)
+        ungrouped_options = []
         for param in params:
-            if isinstance(param, click.Option):
-                grp = get_option_group_of(param)
+            if not isinstance(param, click.Option):
+                continue
+            grp = get_option_group_of(param)
+            if grp is None:
+                ungrouped_options.append(param)
+            else:
                 options_by_group[grp].append(param)
 
-        ungrouped_options = options_by_group.pop(None, [])
         option_groups = list(options_by_group.keys())
         for group, options in options_by_group.items():
             group.options = options
@@ -278,8 +282,12 @@ def option_group(title, *args, **kwargs):
 
 
 def _option_group(
-    title, options, help=None, constraint=None, hidden: bool = False,
-):
+    title: str,
+    options: Callable[[F], F],
+    help: Optional[str] = None,
+    constraint: Optional[Constraint] = None,
+    hidden: bool = False,
+) -> Callable[[F], F]:
     if not isinstance(title, str):
         raise TypeError(
             'the first argument of @option_group must be its title, a string. '
