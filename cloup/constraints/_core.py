@@ -452,19 +452,19 @@ class AcceptAtMost(Constraint):
 
     def __init__(self, n: int):
         check_arg(n >= 0)
-        self._n = n
+        self.max_num_params = n
 
     def help(self, ctx: Context) -> str:
-        return f'at most {self._n} accepted'
+        return f'at most {self.max_num_params} accepted'
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
-        num_required_opts = len(get_required_params(params))
-        if num_required_opts > self._n:
-            reason = f'{num_required_opts} of the parameters are required'
+        num_required_params = len(get_required_params(params))
+        if num_required_params > self.max_num_params:
+            reason = f'{num_required_params} of the parameters are required'
             raise UnsatisfiableConstraint(self, params, reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
-        n = self._n
+        n = self.max_num_params
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) > n:
             raise ConstraintViolated(
@@ -474,7 +474,7 @@ class AcceptAtMost(Constraint):
             )
 
     def __repr__(self):
-        return make_repr(self, self._n)
+        return make_repr(self, self.max_num_params)
 
 
 class RequireExactly(WrapperConstraint):
