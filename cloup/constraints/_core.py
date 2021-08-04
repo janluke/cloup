@@ -313,17 +313,17 @@ class Rephraser(Constraint):
     ):
         if help is None and error is None:
             raise ValueError('at least one between [help] and [error] must not be None')
-        self._constraint = constraint
+        self.constraint = constraint
         self._help = help
         self._error = error
 
     def help(self, ctx: Context) -> str:
         if self._help is None:
-            return self._constraint.help(ctx)
+            return self.constraint.help(ctx)
         elif isinstance(self._help, str):
             return self._help
         else:
-            return self._help(ctx, self._constraint)
+            return self._help(ctx, self.constraint)
 
     def _get_rephrased_error(self, err: ConstraintViolated) -> Optional[str]:
         if self._error is None:
@@ -338,14 +338,14 @@ class Rephraser(Constraint):
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         try:
-            self._constraint.check_consistency(params)
+            self.constraint.check_consistency(params)
         except UnsatisfiableConstraint as exc:
             raise UnsatisfiableConstraint(
                 self, params=params, reason=exc.reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
         try:
-            return self._constraint.check_values(params, ctx)
+            return self.constraint.check_values(params, ctx)
         except ConstraintViolated as err:
             rephrased_error = self._get_rephrased_error(err)
             if rephrased_error:
