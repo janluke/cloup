@@ -31,7 +31,7 @@ Here's the full list of parameters:
   argument or 2nd positional argument
 
 - **constraint** --
-  an optional instance of Constraint (see Constraints for more info);
+  an optional instance of Constraint (see :doc:`constraints` for more info);
   a description of the constraint will be shown between squared brackets
   aside the option group title (or below it if too long)
 
