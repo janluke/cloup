@@ -313,17 +313,17 @@ class Rephraser(Constraint):
     ):
         if help is None and error is None:
             raise ValueError('at least one between [help] and [error] must not be None')
-        self._constraint = constraint
+        self.constraint = constraint
         self._help = help
         self._error = error
 
     def help(self, ctx: Context) -> str:
         if self._help is None:
-            return self._constraint.help(ctx)
+            return self.constraint.help(ctx)
         elif isinstance(self._help, str):
             return self._help
         else:
-            return self._help(ctx, self._constraint)
+            return self._help(ctx, self.constraint)
 
     def _get_rephrased_error(self, err: ConstraintViolated) -> Optional[str]:
         if self._error is None:
@@ -338,14 +338,14 @@ class Rephraser(Constraint):
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         try:
-            self._constraint.check_consistency(params)
+            self.constraint.check_consistency(params)
         except UnsatisfiableConstraint as exc:
             raise UnsatisfiableConstraint(
                 self, params=params, reason=exc.reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
         try:
-            return self._constraint.check_values(params, ctx)
+            return self.constraint.check_values(params, ctx)
         except ConstraintViolated as err:
             rephrased_error = self._get_rephrased_error(err)
             if rephrased_error:
@@ -419,13 +419,13 @@ class RequireAtLeast(Constraint):
 
     def __init__(self, n: int):
         check_arg(n >= 0)
-        self._n = n
+        self.min_num_params = n
 
     def help(self, ctx: Context) -> str:
-        return f'at least {self._n} required'
+        return f'at least {self.min_num_params} required'
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
-        n = self._n
+        n = self.min_num_params
         if len(params) < n:
             reason = (
                 f'the constraint requires a minimum of {n} parameters but '
@@ -434,7 +434,7 @@ class RequireAtLeast(Constraint):
             raise UnsatisfiableConstraint(self, params, reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
-        n = self._n
+        n = self.min_num_params
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) < n:
             raise ConstraintViolated(
@@ -444,7 +444,7 @@ class RequireAtLeast(Constraint):
             )
 
     def __repr__(self):
-        return make_repr(self, self._n)
+        return make_repr(self, self.min_num_params)
 
 
 class AcceptAtMost(Constraint):
@@ -452,19 +452,19 @@ class AcceptAtMost(Constraint):
 
     def __init__(self, n: int):
         check_arg(n >= 0)
-        self._n = n
+        self.max_num_params = n
 
     def help(self, ctx: Context) -> str:
-        return f'at most {self._n} accepted'
+        return f'at most {self.max_num_params} accepted'
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
-        num_required_opts = len(get_required_params(params))
-        if num_required_opts > self._n:
-            reason = f'{num_required_opts} of the parameters are required'
+        num_required_params = len(get_required_params(params))
+        if num_required_params > self.max_num_params:
+            reason = f'{num_required_params} of the parameters are required'
             raise UnsatisfiableConstraint(self, params, reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
-        n = self._n
+        n = self.max_num_params
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) > n:
             raise ConstraintViolated(
@@ -474,7 +474,7 @@ class AcceptAtMost(Constraint):
             )
 
     def __repr__(self):
-        return make_repr(self, self._n)
+        return make_repr(self, self.max_num_params)
 
 
 class RequireExactly(WrapperConstraint):
@@ -482,14 +482,14 @@ class RequireExactly(WrapperConstraint):
 
     def __init__(self, n: int):
         check_arg(n > 0)
-        self._n = n
+        self.num_params = n
         super().__init__(RequireAtLeast(n) & AcceptAtMost(n), n=n)
 
     def help(self, ctx: Context) -> str:
-        return f'exactly {self._n} required'
+        return f'exactly {self.num_params} required'
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
-        n = self._n
+        n = self.num_params
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) != n:
             reason = pluralize(
@@ -512,12 +512,13 @@ class AcceptBetween(WrapperConstraint):
         check_arg(min >= 0, 'min must be non-negative')
         if max is not None:
             check_arg(min < max, 'must be: min < max.')
-        self._min = min
-        self._max = max
+        self.min_num_params = min
+        self.max_num_params = max
         super().__init__(RequireAtLeast(min) & AcceptAtMost(max), min=min, max=max)
 
     def help(self, ctx: Context) -> str:
-        return f'at least {self._min} required, at most {self._max} accepted'
+        return f'at least {self.min_num_params} required, ' \
+               f'at most {self.max_num_params} accepted'
 
 
 require_all = _RequireAll()
