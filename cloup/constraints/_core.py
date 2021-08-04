@@ -419,13 +419,13 @@ class RequireAtLeast(Constraint):
 
     def __init__(self, n: int):
         check_arg(n >= 0)
-        self._n = n
+        self.min_num_params = n
 
     def help(self, ctx: Context) -> str:
-        return f'at least {self._n} required'
+        return f'at least {self.min_num_params} required'
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
-        n = self._n
+        n = self.min_num_params
         if len(params) < n:
             reason = (
                 f'the constraint requires a minimum of {n} parameters but '
@@ -434,7 +434,7 @@ class RequireAtLeast(Constraint):
             raise UnsatisfiableConstraint(self, params, reason)
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
-        n = self._n
+        n = self.min_num_params
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) < n:
             raise ConstraintViolated(
@@ -444,7 +444,7 @@ class RequireAtLeast(Constraint):
             )
 
     def __repr__(self):
-        return make_repr(self, self._n)
+        return make_repr(self, self.min_num_params)
 
 
 class AcceptAtMost(Constraint):
