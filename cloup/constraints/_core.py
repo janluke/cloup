@@ -482,14 +482,14 @@ class RequireExactly(WrapperConstraint):
 
     def __init__(self, n: int):
         check_arg(n > 0)
-        self._n = n
+        self.num_params = n
         super().__init__(RequireAtLeast(n) & AcceptAtMost(n), n=n)
 
     def help(self, ctx: Context) -> str:
-        return f'exactly {self._n} required'
+        return f'exactly {self.num_params} required'
 
     def check_values(self, params: Sequence[Parameter], ctx: Context):
-        n = self._n
+        n = self.num_params
         given_params = get_params_whose_value_is_set(params, ctx.params)
         if len(given_params) != n:
             reason = pluralize(
