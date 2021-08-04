@@ -512,12 +512,13 @@ class AcceptBetween(WrapperConstraint):
         check_arg(min >= 0, 'min must be non-negative')
         if max is not None:
             check_arg(min < max, 'must be: min < max.')
-        self._min = min
-        self._max = max
+        self.min_num_params = min
+        self.max_num_params = max
         super().__init__(RequireAtLeast(min) & AcceptAtMost(max), min=min, max=max)
 
     def help(self, ctx: Context) -> str:
-        return f'at least {self._min} required, at most {self._max} accepted'
+        return f'at least {self.min_num_params} required, ' \
+               f'at most {self.max_num_params} accepted'
 
 
 require_all = _RequireAll()
