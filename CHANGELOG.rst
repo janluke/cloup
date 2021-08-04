@@ -18,6 +18,8 @@ v0.11.0 (in development)
 ========================
 
 - Attributes of parametric constraints are now public. :pr:`82`
+- Slightly changed the ``repr()`` of ``RequireExactly(3)``: from ``RequireExactly(n=3)``
+  to ``RequireExactly(3)``.
 
 --------------------------------------------------------------------------------
 

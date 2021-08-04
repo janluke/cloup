@@ -483,7 +483,8 @@ class RequireExactly(WrapperConstraint):
     def __init__(self, n: int):
         check_arg(n > 0)
         self.num_params = n
-        super().__init__(RequireAtLeast(n) & AcceptAtMost(n), n=n)
+        # Defined as a wrapper to reuse check_consistency() of the wrapped constraint.
+        super().__init__(RequireAtLeast(n) & AcceptAtMost(n))
 
     def help(self, ctx: Context) -> str:
         return f'exactly {self.num_params} required'
@@ -499,6 +500,9 @@ class RequireExactly(WrapperConstraint):
             ) + format_param_list(params)
             raise ConstraintViolated(
                 reason, ctx=ctx, constraint=self, params=params)
+
+    def __repr__(self):
+        return make_repr(self, self.num_params)
 
 
 class AcceptBetween(WrapperConstraint):
