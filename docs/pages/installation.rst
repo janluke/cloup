@@ -33,4 +33,4 @@ Cloup is not a replacement for Click.
 
 - Cloup doesn't force you to use a specific version of Click; it only
   specifies a range of supported versions; that's an enough reason to add Click
-  to you dependencies: to have control on its version as well.
+  to your dependencies: to have control on its version as well.
