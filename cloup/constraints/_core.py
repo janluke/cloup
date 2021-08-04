@@ -38,10 +38,6 @@ class Constraint(abc.ABC):
         constraint as first argument.
     """
 
-    @property
-    def type(self) -> str:
-        return self.__class__.__name__
-
     @staticmethod
     def must_check_consistency(ctx: click.Context) -> bool:
         """Returns True if consistency checks are enabled.
@@ -156,7 +152,6 @@ class Constraint(abc.ABC):
         self,
         help: Union[None, str, HelpRephraser] = None,
         error: Union[None, str, ErrorRephraser] = None,
-        type: Optional[str] = None,
     ) -> 'Rephraser':
         """
         Overrides the help string and/or the error message of this constraint
@@ -178,7 +173,7 @@ class Constraint(abc.ABC):
               ``constraint`` and ``params``, so it's a complete description
               of what happened.
         """
-        return Rephraser(self, help=help, error=error, type=type)
+        return Rephraser(self, help=help, error=error)
 
     def hidden(self) -> 'Rephraser':
         """Hides this constraint from the command help."""
@@ -315,18 +310,12 @@ class Rephraser(Constraint):
         self, constraint: Constraint,
         help: Union[None, str, HelpRephraser] = None,
         error: Union[None, str, ErrorRephraser] = None,
-        type: Optional[str] = None,
     ):
         if help is None and error is None:
             raise ValueError('at least one between [help] and [error] must not be None')
         self.constraint = constraint
         self._help = help
         self._error = error
-        self._type = type
-
-    @property
-    def type(self) -> str:
-        return self._type or super().type
 
     def help(self, ctx: Context) -> str:
         if self._help is None:
@@ -404,10 +393,6 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
 
 class _RequireAll(Constraint):
     """Satisfied if all parameters are set."""
-
-    @property
-    def type(self) -> str:
-        return 'require_all'
 
     def help(self, ctx: Context) -> str:
         return 'all required'
@@ -546,8 +531,7 @@ require_all = _RequireAll()
 accept_none = AcceptAtMost(0).rephrased(
     help='all forbidden',
     error=f'the following parameters should not be provided:\n'
-          f'{ErrorFmt.param_list}',
-    type='accept_none',
+          f'{ErrorFmt.param_list}'
 )
 """Satisfied if none of the parameters is set. Useful only in conditional constraints."""
 
@@ -556,15 +540,13 @@ all_or_none = (require_all | accept_none).rephrased(
     error=f'the following parameters should be provided together (or none of '
           f'them should be provided):\n'
           f'{ErrorFmt.param_list}',
-    type='all_or_none',
 )
 """Satisfied if either all or none of the parameters are set."""
 
 mutually_exclusive = AcceptAtMost(1).rephrased(
     help='mutually exclusive',
     error=f'the following parameters are mutually exclusive:\n'
-          f'{ErrorFmt.param_list}',
-    type='mutually_exclusive',
+          f'{ErrorFmt.param_list}'
 )
 """Satisfied if at most one of the parameters is set."""
 
