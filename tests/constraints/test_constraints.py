@@ -16,6 +16,8 @@ from cloup.constraints import (
     Rephraser,
     RequireAtLeast,
     RequireExactly,
+    all_or_none,
+    mutually_exclusive,
     require_all,
 )
 from cloup.constraints.exceptions import ConstraintViolated, UnsatisfiableConstraint
@@ -56,13 +58,17 @@ class FakeConstraint(Constraint):
 
 
 class TestBaseConstraint:
+    def test_type_property(self):
+        cons = FakeConstraint()
+        assert cons.type == 'FakeConstraint'
+
     def test_rephrased_calls_Rephraser_correctly(self):
         with mock.patch('cloup.constraints._core.Rephraser') as rephraser_cls:
             cons = FakeConstraint()
             cons.rephrased(help='ciao')
-            rephraser_cls.assert_called_with(cons, help='ciao', error=None)
+            rephraser_cls.assert_called_with(cons, help='ciao', error=None, type=None)
             cons.rephrased(error='ciao')
-            rephraser_cls.assert_called_with(cons, help=None, error='ciao')
+            rephraser_cls.assert_called_with(cons, help=None, error='ciao', type=None)
 
     def test_hidden_constraint_returns_empty_help(self, dummy_ctx):
         hidden = FakeConstraint(help='non-empty help').hidden()
@@ -285,6 +291,10 @@ class TestRequiredAll:
 
 
 class TestRephraser:
+    def test_type_property(self):
+        cons = Rephraser(FakeConstraint(), help='blah', type='fake')
+        assert cons.type == 'fake'
+
     def test_init_raises_if_neither_help_nor_error_is_provided(self):
         with pytest.raises(ValueError):
             Rephraser(FakeConstraint())
@@ -349,3 +359,9 @@ class TestRephraser:
         params = make_options('abc')
         with pytest.raises(UnsatisfiableConstraint):
             rephraser.check_consistency(params)
+
+
+def test_type_properties_of_rephrased_constraints():
+    assert mutually_exclusive.type == 'mutually_exclusive'
+    assert require_all.type == 'require_all'
+    assert all_or_none.type == 'all_or_none'

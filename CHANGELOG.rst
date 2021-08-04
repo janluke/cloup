@@ -20,6 +20,9 @@ v0.11.0 (in development)
 - Attributes of parametric constraints are now public. :pr:`82`
 - Slightly changed the ``repr()`` of ``RequireExactly(3)``: from ``RequireExactly(n=3)``
   to ``RequireExactly(3)``.
+- Added the ``type`` property to ``Constraint`` and the ``type`` parameter to
+  ``Rephraser`` in order to make easier to determine the type of a rephrased
+  constraint like ``mutually_exclusive``. :issue:`80`
 
 --------------------------------------------------------------------------------
 
