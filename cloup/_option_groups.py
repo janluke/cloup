@@ -124,8 +124,19 @@ class OptionGroupMixin:
         """
         self.align_option_groups = align_option_groups
         params = kwargs.get('params') or []
-        self.option_groups, self.ungrouped_options = \
-            self._option_groups_from_params(params)
+        option_groups, ungrouped_options = self._option_groups_from_params(params)
+
+        self.option_groups = option_groups
+        """List of all option groups, except the "default option group"."""
+
+        self.ungrouped_options = ungrouped_options
+        """List of options not explicitly assigned to an user-defined option group.
+        These options will be included in the "default option group".
+        **Note:** this list does not include options added automatically by Click
+        based on context settings, like the ``--help`` option; use the
+        :meth:`get_ungrouped_options` method if you need the real full list
+        (which needs a ``Context`` object)."""
+
         super().__init__(*args, **kwargs)  # type: ignore
 
     @staticmethod
