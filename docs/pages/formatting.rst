@@ -24,8 +24,7 @@ command level:
   :class:`HelpFormatter` (click on it for the full list). The following
   of this chapter is all about these.
 
-Context-level settings propagate to subcommands, while command-level settings
-don't (even if the command is a ``Group``).
+Context-level settings propagate to subcommands, while command-level settings don't.
 
 Of course, command-level settings override context-level settings.
 In particular, the context-level and command-level ``formatter_settings`` are
@@ -80,10 +79,21 @@ An example
 
 Themes
 ------
-:class:`cloup.HelpFormatter` supports themes, so ``theme`` is one of the many
-arguments you can provide in ``formatter_settings``. Probably you want to set a
-theme at the context level, so you need to pass a ``theme`` as part of your
-``formatter_settings` in your ``context_settings``.
+You can set a "help theme" using the ``theme`` key of ``formatter_settings``.
+Since your entire application should have a consistent theme, you should set a
+theme at the context level of your root command:
+
+.. code-block:: python
+
+    SETTINGS = Context.settings(
+        formatter_settings=HelpFormatter.settings(
+            theme=HelpTheme(...)
+        )
+    )
+
+    @cloup.group(context_settings=SETTINGS)
+    def root_command(...):
+        ...
 
 A :class:`HelpTheme` is a collection of styles for several elements of the help page.
 A "style" is just a function (or a callable) that takes a string and returns a
@@ -95,11 +105,11 @@ function :func:`click.style`, Cloup provides the :class:`~cloup.Style` class, wh
 wraps ``click.style`` to facilitate its use with ``HelpTheme``.
 
 .. tip::
-    Cloup also provides an *enum-like* class :class:`Color` containing all
+    Cloup also provides an *enum-like* :class:`Color` class containing all
     colors supported by Click.
 
 The following picture links ``HelpTheme`` arguments to the corresponding visual
-elements of the help page (only ``epilog`` is missing):
+elements of the help page (only ``epilog`` is missing in the image):
 
 .. image:: ../_static/theme-elems.png
     :alt: Elements
@@ -121,17 +131,17 @@ refer to the API reference:
     Style
 
 
-Available themes
-~~~~~~~~~~~~~~~~
+Predefined themes
+~~~~~~~~~~~~~~~~~
 
-Cloup provides two decent themes:
+Cloup provides two predefined themes:
 
 .. autosummary::
     HelpTheme.dark
     HelpTheme.light
 
 Ideally, you should select a theme based on the terminal background color or let
-the user decide which to use (if any) at the application level.
+the user decide which one to use (if any) at the application level.
 
 If you want, you can use the default themes as a base and change only some of
 the styles using :meth:`HelpTheme.with_`, e.g.:
