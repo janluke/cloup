@@ -46,7 +46,7 @@ Here's the full list of parameters:
 
         import cloup
         from cloup import option_group, option
-        from cloup.constraints import SetAtLeast
+        from cloup.constraints import RequireAtLeast
 
         @cloup.command("clouptest")
         @option_group(
