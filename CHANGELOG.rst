@@ -14,12 +14,16 @@ Changelog
     ----------
 
 
-v0.11.0 (in development)
-========================
+v0.11.0 (2021-08-05)
+====================
+
+No major changes in this release, just refinements.
 
 - Attributes of parametric constraints are now public. :pr:`82`
-- Slightly changed the ``repr()`` of ``RequireExactly(3)``: from ``RequireExactly(n=3)``
-  to ``RequireExactly(3)``.
+- Slightly changed the ``repr()`` of ``RequireExactly(3)``:
+  from ``RequireExactly(n=3)`` to ``RequireExactly(3)``.
+- Minor code refactoring.
+- Docs fixes and improvements.
 
 --------------------------------------------------------------------------------
 
