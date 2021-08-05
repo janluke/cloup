@@ -151,6 +151,9 @@ class OptionGroupMixin:
         return option_groups, ungrouped_options
 
     def get_ungrouped_options(self, ctx: click.Context) -> Sequence[click.Option]:
+        """Returns options not explicitly assigned to an option group
+        (eventually including the ``--help`` option), i.e. options that will be
+        part of the "default option group"."""
         help_option = ctx.command.get_help_option(ctx)
         if help_option is not None:
             return self.ungrouped_options + [help_option]
@@ -177,6 +180,9 @@ class OptionGroupMixin:
         self, ctx: Optional[click.Context], default: bool = True
     ) -> bool:
         """
+        Returns ``True`` if the help sections of all options groups should have
+        their columns aligned.
+
         .. versionadded:: 0.8.0
         """
         return first_bool(
@@ -187,6 +193,9 @@ class OptionGroupMixin:
 
     def get_default_option_group(self, ctx: click.Context) -> OptionGroup:
         """
+        Returns an ``OptionGroup`` instance for the options not explicitly
+        assigned to an option group, eventually including the ``--help`` option.
+
         .. versionadded:: 0.8.0
         """
         default_group = OptionGroup('Other options')
