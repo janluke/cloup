@@ -11,13 +11,13 @@ class _Missing(Enum):
 
 
 MISSING = _Missing.flag
-"""Singleton that works as a placeholder for a missing value. Useful when None
-can't be used to play the role because it represents a valid non-null value."""
+"""Singleton that works as a sentinel for a missing value.
+Useful when None can't be used to play the role because it represents a valid
+non-null value."""
 
 _T = TypeVar('_T')
 Possibly = Union[_Missing, _T]
-"""Possibly[T] is meant to be used in place of Optional[T] when None can't be
-used to represent a missing value."""
+"""Possibly[T] is like Optional[T] but uses MISSING for missing values."""
 
 F = TypeVar('F', bound=Callable)
 """Type variable for a Callable."""

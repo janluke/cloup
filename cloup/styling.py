@@ -1,6 +1,6 @@
 """
 This module contains components that specifically address the styling and theming
-of the --help output.
+of the ``--help`` output.
 """
 import dataclasses as dc
 from typing import Callable, NamedTuple, Optional
