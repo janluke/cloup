@@ -109,12 +109,8 @@ that acts like it. Nonetheless:
     :class: tip
 
     Cloup provides detailed type hints for (almost) all arguments you can pass
-    to ``cloup.argument``, ``cloup.option``, ``cloup.command`` and
-    ``cloup.group`` (*). This translates to a better **IDE support**, i.e.
-    better auto-completion and error detection.
-
-    (*) Unfortunately, the same doesn't apply to the ``command`` and ``group``
-    methods of ``cloup.Group``.
+    to parameter and command decorators. This translates to a better
+    **IDE support**, i.e. better auto-completion and error detection.
 
 .. _aligned-vs-nonaligned-group:
 
