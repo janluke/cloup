@@ -50,8 +50,8 @@ An example
         # parameters of HelpFormatter:
         formatter_settings=HelpFormatter.settings(
             max_width=100,
-            max_col1_width=25,
-            min_col2_width=30,
+            col1_max_width=25,
+            col2_min_width=30,
             indent_increment=3,
             col_spacing=3,
             row_sep='',  # empty line between definitions
@@ -69,7 +69,7 @@ An example
     @main.command(
         align_option_groups=True,  # overrides the context setting
         formatter_settings=HelpFormatter.settings(
-            max_col1_width=30,  # overrides this specific formatter parameter
+            col1_max_width=30,  # overrides this specific formatter parameter
         )
     )
     # ...
@@ -371,11 +371,11 @@ The following tabs compare the ``--help`` of the manim example ("aligned" and
 
 
 The linear layout is used when the available width for the 2nd column is below
-``min_col2_width``, one of the ``formatter_settings``.
+``col2_min_width``, one of the ``formatter_settings``.
 
-You can disable the linear layout settings ``min_col2_width=0``.
+You can disable the linear layout settings ``col2_min_width=0``.
 
-You make the linear layout your default layout by settings ``min_col2_width`` to
+You make the linear layout your default layout by settings ``col2_min_width`` to
 a large number, possibly ``math.inf``.
 
 

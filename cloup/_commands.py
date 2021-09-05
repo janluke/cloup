@@ -577,10 +577,6 @@ def group(name=None, *, cls=None, **kwargs):
     :param add_help_option:
         by default each command registers a ``--help`` option.
         This can be disabled by this parameter.
-    :param no_args_is_help:
-        this controls what happens if no arguments are provided. This option is
-        disabled by default. If enabled this will add ``--help`` as argument if
-        no arguments are passed
     :param hidden:
         hide this command from help outputs.
     :param deprecated:
