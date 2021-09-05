@@ -193,7 +193,7 @@ Since v0.8.0, this parameter is also available as a ``Context`` setting::
 
 .. note::
     The problem of aligned groups can sometimes be solved decreasing the
-    :class:`HelpFormatter` parameter ``max_col1_width``, which defaults to 30.
+    :class:`HelpFormatter` parameter ``col1_max_width``, which defaults to 30.
 
 
 Alternative APIs
