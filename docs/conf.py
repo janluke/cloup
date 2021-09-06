@@ -11,6 +11,7 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.autodoc.typehints',
     'autoapi.extension',
+    'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
     'sphinx_panels',
@@ -18,6 +19,10 @@ extensions = [
     'versionwarning.extension',
     'sphinx_issues',  # link to GitHub issues and PRs
 ]
+doctest_global_setup = '''
+from cloup import *
+from cloup.constraints import *
+'''
 
 # General information about the project.
 project = 'cloup'

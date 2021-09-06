@@ -86,7 +86,11 @@ versions of Python (>=3.6) and Click (>=7.2).
 A simple example
 ================
 
-.. code-block:: python
+.. testsetup::
+
+    __name__ = "__main__"
+
+.. testcode::
 
     from cloup import (
         HelpFormatter, HelpTheme, Style,
@@ -124,9 +128,28 @@ A simple example
         """This is the command description."""
         pass
 
-    if __name__ == '__main__':
-        cmd(prog_name='invoked-command')
+    if __name__ == "__main__":
+        cmd(["--help"], prog_name='invoked-command', standalone_mode=False)
 
+.. testoutput::
+    :hide:
+    :options: -ELLIPSIS, +NORMALIZE_WHITESPACE
+
+    Usage: invoked-command [OPTIONS]
+
+      This is the command description.
+
+    Cool options: [mutually exclusive]
+      --foo TEXT    This text should describe the option --foo.
+      --bar TEXT    This text should describe the option --bar.
+
+    Other cool options: [at least 1 required]
+      This is the optional description of this option group.
+      --pippo TEXT  This text should describe the option --pippo.
+      --pluto TEXT  This text should describe the option --pluto.
+
+    Other options:
+      --help        Show this message and exit.
 
 .. image:: https://raw.githubusercontent.com/janLuke/cloup/master/docs/_static/basic-example.png
     :alt: Basic example --help screenshot

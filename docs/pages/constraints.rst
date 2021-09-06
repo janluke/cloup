@@ -482,10 +482,11 @@ Example 2: defining a new parametric constraint
 
 .. code-block:: python
 
-    def accept_between(min, max):
-       return (RequireAtLeast(min) & AcceptAtMost(max)).rephrased(
-           help=f'at least {min} required, at most {max} accepted'
-       )
+    >>> import cloup
+    >>> def accept_between(min, max):
+    ...    return (cloup.constraints.RequireAtLeast(min) & cloup.constraints.AcceptAtMost(max)).rephrased(
+    ...        help=f'at least {min} required, at most {max} accepted'
+    ...    )
 
     >>> accept_between(1, 3)
     Rephraser(help='at least 1 required, at most 3 accepted')
@@ -494,26 +495,24 @@ Example 2: defining a new parametric constraint
 constraint type. ``WrapperConstraint`` delegates all methods to the wrapped
 constraint so you can override only the methods you need to override.
 
-.. code-block:: python
+.. doctest:: python
+    :pyversion: >= 3.6
 
-    class AcceptBetween(WrapperConstraint):
-        def __init__(self, min: int, max: int):
-            # [...]
-            self._min = min
-            self._max = max
-            # whatever you pass as **kwargs is used in the __repr__
-            super().__init__(
-                RequireAtLeast(min) & AcceptAtMost(max),
-                min=min, max=max,  # <= included in the __repr__
-            )
-
-        def help(self, ctx: Context) -> str:
-            return f'at least {self._min} required, ' \
-                   f'at most {self._max} accepted'
-
+    >>> class AcceptBetween(WrapperConstraint):
+    ...    def __init__(self, min: int, max: int):
+    ...        # [...]
+    ...        self._min = min
+    ...        self._max = max
+    ...        # whatever you pass as **kwargs is used in the __repr__
+    ...        super().__init__(
+    ...            RequireAtLeast(min) & AcceptAtMost(max),
+    ...            min=min, max=max,  # <= included in the __repr__
+    ...        )
+    ...    def help(self, ctx: Context) -> str:
+    ...        return f'at least {self._min} required, at most {self._max} accepted'
 
     >>> AcceptBetween(1, 3)
-    AcceptBetween(1, 3)
+    AcceptBetween(min=1, max=3)
 
 
 \*Validation protocol
