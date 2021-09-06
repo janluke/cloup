@@ -480,38 +480,46 @@ Example 2: defining a new parametric constraint
 
 *Option 1 -- Just use a function.*
 
-.. code-block:: python
+.. testcode::
+    :pyversion: >= 3.6
 
-    >>> import cloup
-    >>> def accept_between(min, max):
-    ...    return (cloup.constraints.RequireAtLeast(min) & cloup.constraints.AcceptAtMost(max)).rephrased(
-    ...        help=f'at least {min} required, at most {max} accepted'
-    ...    )
+    def accept_between(min, max):
+       return (RequireAtLeast(min) & AcceptAtMost(max)).rephrased(
+           help=f'at least {min} required, at most {max} accepted'
+       )
 
-    >>> accept_between(1, 3)
+    print(accept_between(1, 3))
+
+.. testoutput::
+
     Rephraser(help='at least 1 required, at most 3 accepted')
 
 *Option 2 -- WrapperConstraint.* This is useful when you want to define a new
 constraint type. ``WrapperConstraint`` delegates all methods to the wrapped
 constraint so you can override only the methods you need to override.
 
-.. doctest:: python
+.. testcode::
     :pyversion: >= 3.6
 
-    >>> class AcceptBetween(WrapperConstraint):
-    ...    def __init__(self, min: int, max: int):
-    ...        # [...]
-    ...        self._min = min
-    ...        self._max = max
-    ...        # whatever you pass as **kwargs is used in the __repr__
-    ...        super().__init__(
-    ...            RequireAtLeast(min) & AcceptAtMost(max),
-    ...            min=min, max=max,  # <= included in the __repr__
-    ...        )
-    ...    def help(self, ctx: Context) -> str:
-    ...        return f'at least {self._min} required, at most {self._max} accepted'
+    class AcceptBetween(WrapperConstraint):
+        def __init__(self, min: int, max: int):
+            # [...]
+            self._min = min
+            self._max = max
+            # whatever you pass as **kwargs is used in the __repr__
+            super().__init__(
+                RequireAtLeast(min) & AcceptAtMost(max),
+                min=min, max=max,  # <= included in the __repr__
+            )
 
-    >>> AcceptBetween(1, 3)
+        def help(self, ctx: Context) -> str:
+            return f'at least {self._min} required, ' \
+                   f'at most {self._max} accepted'
+
+    print(AcceptBetween(1, 3))
+
+.. testoutput::
+
     AcceptBetween(min=1, max=3)
 
 
