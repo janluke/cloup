@@ -79,8 +79,7 @@ Here's the full list of parameters:
           A CLI that does nothing.
 
         Input options:
-          This is a an optional description of the option group.
-           --one TEXT         1st input option
+          --one TEXT          1st input option
           --two TEXT          2nd input option
           --three TEXT        3rd input option
 
