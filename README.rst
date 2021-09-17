@@ -73,7 +73,9 @@ more expressive and configurable:
   - has more parameters for adjusting widths and spacing, which can be provided
     at the context and command level
   - use a different layout when the terminal width is below a certain threshold
-    in order to improve readability.
+    in order to improve readability
+
+- suggestions like "did you mean <subcommand>?" when you mistype a subcommand.
 
 Moreover, Cloup improves on **IDE support** providing decorators with *detailed*
 type hints and adding the static methods ``Context.settings()`` and

@@ -183,9 +183,42 @@ class Group(SectionMixin, BaseCommand, click.Group):
         if normalized_name:
             # Replacing this string ensures that super().resolve_command() returns a
             # normalized command name rather than an alias. The technique described in
-            # Click's docs doesn't work if the group "rename" the subcommand.
+            # Click's docs doesn't work if the subcommand is added using Group.group
+            # passing the "name" argument.
             args[0] = normalized_name
-        return super().resolve_command(ctx, args)
+        try:
+            return super().resolve_command(ctx, args)
+        except click.UsageError as error:
+            new_error = self.handle_bad_command_name(
+                bad_name=args[0],
+                valid_names=[*self.commands, *self.alias2name],
+                error=error
+            )
+            raise new_error
+
+    def handle_bad_command_name(
+        self, bad_name: str, valid_names: List[str], error: click.UsageError
+    ) -> click.UsageError:
+        """This method is called when a command name cannot be resolved.
+        Useful to implement the "Did you mean <x>?" feature.
+
+        :param bad_name: the command name that could not be resolved.
+        :param valid_names: the list of valid command names, including aliases.
+        :param error: the original error coming from Click.
+        :return: the original error or a new one.
+        """
+        import difflib
+        matches = difflib.get_close_matches(bad_name, valid_names)
+        if not matches:
+            return error
+        elif len(matches) == 1:
+            extra_msg = f"Did you mean '{matches[0]}'?"
+        else:
+            matches_list = "\n".join("   " + match for match in matches)
+            extra_msg = 'Did you mean one of these?\n' + matches_list
+
+        error_msg = str(error) + " " + extra_msg
+        return click.exceptions.UsageError(error_msg, error.ctx)
 
     def must_show_subcommand_aliases(self, ctx: click.Context) -> bool:
         return first_bool(
