@@ -13,6 +13,12 @@ Changelog
     Deprecated
     ----------
 
+v0.12.0 (in development)
+========================
+- Feature: when a subcommand is mistyped, show "did you mean <subcommand>?".
+- Doc fixes.
+
+--------------------------------------------------------------------------------
 
 v0.11.0 (2021-08-05)
 ====================

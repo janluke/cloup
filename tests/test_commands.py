@@ -52,3 +52,47 @@ def test_group_works_with_no_params_and_subcommands(runner):
         Options:
           --help  Show this message and exit.
     """)
+
+
+class TestDidYouMean:
+    @pytest.fixture(scope="class")
+    def cmd(self):
+        cmd = cloup.Group(name="cmd")
+        subcommands = [
+            ('install', ['ins']),
+            ('remove', ['rm']),
+            ('clear', [])
+        ]
+        for name, aliases in subcommands:
+            cmd.add_command(
+                cloup.Command(name=name, aliases=aliases, callback=new_dummy_func()))
+        return cmd
+
+    def test_with_no_matches(self, runner, cmd):
+        res = runner.invoke(cmd, 'asdfdsgdfgdf')
+        assert res.output == reindent("""
+            Usage: cmd [OPTIONS] COMMAND [ARGS]...
+            Try 'cmd --help' for help.
+
+            Error: No such command 'asdfdsgdfgdf'.
+        """)
+
+    def test_with_one_match(self, runner, cmd):
+        res = runner.invoke(cmd, 'clearr')
+        assert res.output == reindent("""
+            Usage: cmd [OPTIONS] COMMAND [ARGS]...
+            Try 'cmd --help' for help.
+
+            Error: No such command 'clearr'. Did you mean 'clear'?
+        """)
+
+    def test_with_multiple_matches(self, runner, cmd):
+        res = runner.invoke(cmd, 'inst')
+        assert res.output == reindent("""
+            Usage: cmd [OPTIONS] COMMAND [ARGS]...
+            Try 'cmd --help' for help.
+
+            Error: No such command 'inst'. Did you mean one of these?
+               ins
+               install
+        """)
