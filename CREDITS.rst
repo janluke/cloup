@@ -6,6 +6,10 @@ Author
 ------
 * Gianluca Gippetto <gianluca.gippetto@gmail.com>
 
+Contributors
+------------
+See https://github.com/janluke/cloup/graphs/contributors.
+
 Credits
 -------
 
