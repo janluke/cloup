@@ -20,6 +20,11 @@ setup(
     use_scm_version={
         'write_to': 'cloup/_version.py'
     },
+    entry_points={
+        'console_scripts': [
+            'cloup=cloup.cli.main:cli',
+        ],
+    },
     author='Gianluca Gippetto',
     author_email='gianluca.gippetto@gmail.com',
     description="Adds features to Click: option groups, constraints, subcommand "
