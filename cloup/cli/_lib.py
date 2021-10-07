@@ -43,10 +43,10 @@ def command_to_markdown(
         section_list.append(toc)
     for ctx in preorder_visit(command, prog_name):
         command_path = ctx.command_path
-        level = len(command_path.split())
-        header_start = '#' * (header_level + level - 1)
+        level = header_level + len(command_path.split())
+        header_start = '#' * (level - 1)
         title = f"{header_start} `{command_path}`"
-        help_text = command_formatter(ctx)
+        help_text = command_formatter(ctx, level)
         section = title + '\n' + help_text
         section_list.append(section)
     return section_sep.join(section_list)
@@ -86,7 +86,7 @@ def to_markdown_plain(ctx: click.Context) -> str:
     return f'```\n{help_text}\n```'
 
 
-def table_formatter(ctx: cloup.Context) -> str:
+def table_formatter(ctx: cloup.Context, level: int) -> str:
     """Uses markdown tables for options."""
     ctx.show_default = False
     command = ctx.command
@@ -105,6 +105,7 @@ def table_formatter(ctx: cloup.Context) -> str:
             header=("Subcommand", "Short description"),
             body=commands_to_rows(subcommands, ctx),
         )
+        out.append("#" * level + " Subcommands")
         out.append(cmd_table)
 
     # Parameters
@@ -115,6 +116,7 @@ def table_formatter(ctx: cloup.Context) -> str:
             header=('Option', 'Description', 'Default'),
             body=options_to_rows(opts, ctx),
         )
+        out.append("#" * level + " Options")
         out.append(opt_table)
 
     if command.epilog:
