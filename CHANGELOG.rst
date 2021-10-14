@@ -13,6 +13,10 @@ Changelog
     Deprecated
     ----------
 
+v0.12.1 (2021-10-14)
+====================
+- Fix: when ``OptionGroupMixin`` is mixed with ``Group``, subcommands weren't shown.
+
 v0.12.0 (2021-09-17)
 ====================
 - Feature: when a subcommand is mistyped, show "did you mean <subcommand>?".

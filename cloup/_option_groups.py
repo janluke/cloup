@@ -234,6 +234,8 @@ class OptionGroupMixin:
             visible_sections,
             aligned=self.must_align_option_groups(ctx),
         )
+        if isinstance(self, click.MultiCommand):
+            self.format_commands(ctx, formatter)
 
 
 @overload
