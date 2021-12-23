@@ -155,6 +155,7 @@ class Group(SectionMixin, BaseCommand, click.Group):
         self.alias2name: Dict[str, str] = {}
         """Dictionary mapping each alias to a command name."""
 
+    # @override
     def add_command(
         self, cmd: click.Command,
         name: Optional[str] = None,
@@ -176,6 +177,7 @@ class Group(SectionMixin, BaseCommand, click.Group):
             return name
         return self.alias2name.get(name)
 
+    # @override
     def resolve_command(
         self, ctx: click.Context, args: List[str]
     ) -> Tuple[Optional[str], Optional[click.Command], List[str]]:
