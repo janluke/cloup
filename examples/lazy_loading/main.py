@@ -39,23 +39,23 @@ class LazyLoaded:
         return getattr(self.command, item)
 
 
-class LazyGroup(LazyLoaded, cloup.Group):
+class LazyGroup(LazyLoaded, cloup.Group):  # type: ignore
     pass
 
 
-class LazyCommand(LazyLoaded, cloup.Command):
+class LazyCommand(LazyLoaded, cloup.Command):  # type: ignore
     pass
 
 
 def commands_in_folder(
     dir_path: PathType,
     get_obj_name: Callable[[str], str] = lambda name: name
-) -> Dict[str, Union[LazyCommand, LazyGroup]]:
+) -> Dict[str, cloup.BaseCommand]:
     """Loads commands from a folder. Each commands must be in its own file.
     Files containing Group's must end with "__group".
     Returns a dictionary {name: lazy_command}."""
     dir_path = Path(dir_path)
-    commands = {}
+    commands: Dict[str, cloup.BaseCommand] = {}
     for path in dir_path.glob("[!_]*.py"):
         fname = path.stem
         if fname.endswith("__group"):
@@ -70,7 +70,7 @@ lazy_commands = commands_in_folder("commands")
 # Now you can use lazy_command[name] as a normal command.
 
 
-@cloup.group(commands=lazy_commands)
+@cloup.group(commands=lazy_commands)   # type: ignore
 def main():
     print("This is main")
 
