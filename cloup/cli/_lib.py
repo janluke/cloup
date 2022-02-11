@@ -79,7 +79,7 @@ def get_command_anchor(command_path: str) -> str:
     return f'<a name={get_command_anchor_name(command_path)}></a>'
 
 
-def to_markdown_plain(ctx: click.Context) -> str:
+def to_markdown_plain(ctx: click.Context, level: int) -> str:
     """Just returns the --help output as string."""
     command = ctx.command
     help_text = command.get_help(ctx)
