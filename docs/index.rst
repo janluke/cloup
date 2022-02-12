@@ -31,6 +31,7 @@ Please, note that Cloup documentation doesn't replace
     pages/aliases
     pages/sections
     pages/formatting
+    pages/misc
 
 
 .. toctree::
