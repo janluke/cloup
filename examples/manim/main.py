@@ -11,6 +11,7 @@ from cloup import (
     HelpTheme,
     Style,
 )
+from cloup.completion import completion_command_section, install_completion_command, show_completion_command
 from cloup.formatting.sep import RowSepIf, multiline_rows_are_at_least
 from config import config
 from render import render
@@ -57,9 +58,12 @@ def main():
     """Animation engine for explanatory math videos."""
     pass
 
-
-main.add_command(render)
-main.add_command(config)
+main.section(
+    "Commands",
+    render,
+    config,
+)
+main.add_section(completion_command_section())
 
 if __name__ == "__main__":
     main(prog_name='manim')

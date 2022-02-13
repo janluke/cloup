@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 from pathlib import Path
-from textwrap import dedent
 
 from setuptools import find_packages, setup
 
@@ -46,7 +45,7 @@ setup(
     include_package_data=True,
     python_requires='>=3.6',
     install_requires=[
-        'click >=7.1, <9.0',
+        'click~=8.0',
         'dataclasses; python_version<="3.6"',
         'typing_extensions; python_version<="3.8"',
     ],
