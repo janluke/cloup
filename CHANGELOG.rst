@@ -13,6 +13,16 @@ Changelog
     Deprecated
     ----------
 
+v0.13.0 (unreleased)
+====================
+- Add shortcuts for ``click.Path`` types which uses ``pathlib.Path``
+  as ``path_type`` by default:
+  - ``cloup.path``
+  - ``cloup.dir_path`` (``file_okay=False``)
+  - ``cloup.file_path`` (``dir_okay=False``)
+
+--------------------------------------------------------------------------------
+
 v0.12.1 (2021-10-14)
 ====================
 - Fix: when ``OptionGroupMixin`` is mixed with ``Group``, subcommands weren't shown.

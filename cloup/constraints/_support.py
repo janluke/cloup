@@ -150,7 +150,7 @@ class ConstraintMixin:
 
         # Collect constraints applied to option groups and bind them to the
         # corresponding Option instances
-        option_groups: Tuple[OptionGroup, ...] = getattr(self, 'option_groups', [])
+        option_groups: Tuple[OptionGroup, ...] = getattr(self, 'option_groups', tuple())
         self.optgroup_constraints = tuple(
             BoundConstraint(grp.constraint, grp.options)
             for grp in option_groups
