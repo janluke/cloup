@@ -13,7 +13,7 @@ Changelog
     Deprecated
     ----------
 
-v0.13.0 (unreleased)
+v0.13.0 (2022-02-14)
 ====================
 - Add shortcuts for ``click.Path`` types which uses ``pathlib.Path``
   as ``path_type`` by default:
