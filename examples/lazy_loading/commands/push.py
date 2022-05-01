@@ -1,7 +1,5 @@
 import cloup
 
-print("Loading push.py")
-
 
 @cloup.command()
 def push():

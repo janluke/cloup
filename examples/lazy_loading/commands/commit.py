@@ -1,7 +1,5 @@
 import cloup
 
-print("Loading commit.py")
-
 
 @cloup.command()
 def commit():
