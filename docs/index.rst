@@ -31,6 +31,7 @@ Please, note that Cloup documentation doesn't replace
     pages/constraints
     pages/aliases
     pages/sections
+    pages/lazy-loading
     pages/formatting
     pages/misc
 

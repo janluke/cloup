@@ -75,7 +75,9 @@ more expressive and configurable:
   - use a different layout when the terminal width is below a certain threshold
     in order to improve readability
 
-- suggestions like "did you mean <subcommand>?" when you mistype a subcommand.
+- suggestions like "did you mean <subcommand>?" when you mistype a subcommand
+
+- **lazy-loaded commands**.
 
 Moreover, Cloup improves on **IDE support** providing decorators with *detailed*
 type hints and adding the static methods ``Context.settings()`` and
