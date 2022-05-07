@@ -1,6 +1,15 @@
 import click
 
 
+class Argument(click.Argument):
+    def __init__(self, *args, help=None, **attrs):
+        super().__init__(*args, **attrs)
+        self.help = help
+
+    def help_record(self, ctx):
+        return [self.make_metavar(), self.help or ""]
+
+
 class GroupedOption(click.Option):
     """A click.Option with an extra field ``group`` of type ``OptionGroup``."""
 
@@ -9,7 +18,8 @@ class GroupedOption(click.Option):
         self.group = group
 
 
-argument = click.argument
+def argument(*args, help=None, cls=Argument, **kwargs):
+    return click.argument(*args, help=help, cls=cls, **kwargs)
 
 
 def option(*param_decls, cls=None, group=None, **kwargs):

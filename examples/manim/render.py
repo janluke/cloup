@@ -6,8 +6,8 @@ from cloup.constraints import ErrorFmt, mutually_exclusive
 
 
 @command(aliases=["r", "re"])
-@argument("script_path", type=cloup.Path(), required=True)
-@argument("scene_names", required=False, nargs=-1)
+@argument("script_path", help="Script path.", type=cloup.Path(), required=True)
+@argument("scene_names", help="Name of the scenes.", required=False, nargs=-1)
 @option_group(
     "Global options",
     option(

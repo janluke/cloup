@@ -31,6 +31,7 @@ from typing import (
 import click
 from click import HelpFormatter
 
+import cloup
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin

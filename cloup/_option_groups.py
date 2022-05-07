@@ -3,12 +3,13 @@ Implements the "option groups" feature.
 """
 from collections import defaultdict
 from typing import (
-    Callable, Iterable, Iterator, List, Optional, Sequence, Tuple, overload,
+    Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple, overload,
 )
 
 import click
 from click import Option, Parameter
 
+import cloup
 from cloup._params import option
 from cloup._util import first_bool, make_repr
 from cloup.constraints import Constraint
@@ -90,7 +91,18 @@ def get_option_group_of(param) -> Optional[OptionGroup]:
 
 # noinspection PyMethodMayBeStatic
 class OptionGroupMixin:
-    """Implements support to option groups.
+    """Implements support to:
+
+     - option groups
+     - the "Positional arguments" help section; this section is shown only if
+       at least one of your arguments has non-empty ``help``.
+
+    .. important::
+        In order to check the constraints defined on the option groups,
+        a command must inherits from :class:`cloup.ConstraintMixin` too!
+
+    .. versionadded:: 0.14.0
+        added the "Positional arguments" help section.
 
     .. versionchanged:: 0.8.0
         this mixin now relies on ``cloup.HelpFormatter`` to align help sections.
@@ -101,10 +113,6 @@ class OptionGroupMixin:
         ``make_option_group_help_section``.
 
     .. versionadded:: 0.5.0
-
-    .. important::
-        In order to check the constraints defined on the option groups,
-        a command must inherits from :class:`cloup.ConstraintMixin` too!
     """
 
     def __init__(
@@ -124,7 +132,9 @@ class OptionGroupMixin:
         """
         self.align_option_groups = align_option_groups
         params = kwargs.get('params') or []
-        option_groups, ungrouped_options = self._option_groups_from_params(params)
+        arguments, option_groups, ungrouped_options = self._group_params(params)
+
+        self.arguments = arguments
 
         self.option_groups = option_groups
         """List of all option groups, except the "default option group"."""
@@ -140,26 +150,28 @@ class OptionGroupMixin:
         super().__init__(*args, **kwargs)  # type: ignore
 
     @staticmethod
-    def _option_groups_from_params(
+    def _group_params(
         params: List[Parameter]
-    ) -> Tuple[List[OptionGroup], List[Option]]:
+    ) -> Tuple[List[click.Argument], List[OptionGroup], List[Option]]:
 
-        options_by_group = defaultdict(list)
-        ungrouped_options = []
+        options_by_group: Dict[OptionGroup, List[click.Option]] = defaultdict(list)
+        arguments: List[click.Argument] = []
+        ungrouped_options: List[click.Option] = []
         for param in params:
-            if not isinstance(param, click.Option):
-                continue
-            grp = get_option_group_of(param)
-            if grp is None:
-                ungrouped_options.append(param)
-            else:
-                options_by_group[grp].append(param)
+            if isinstance(param, click.Argument):
+                arguments.append(param)
+            elif isinstance(param, click.Option):
+                grp = get_option_group_of(param)
+                if grp is None:
+                    ungrouped_options.append(param)
+                else:
+                    options_by_group[grp].append(param)
 
         option_groups = list(options_by_group.keys())
         for group, options in options_by_group.items():
             group.options = options
 
-        return option_groups, ungrouped_options
+        return arguments, option_groups, ungrouped_options
 
     def get_ungrouped_options(self, ctx: click.Context) -> Sequence[click.Option]:
         """Returns options not explicitly assigned to an option group
@@ -170,6 +182,23 @@ class OptionGroupMixin:
             return self.ungrouped_options + [help_option]
         else:
             return self.ungrouped_options
+
+    def get_argument_help_record(
+        self, arg: click.Argument, ctx: click.Context
+    ) -> Tuple[str, str]:
+        if isinstance(arg, cloup.Argument):
+            return arg.help_record(ctx)
+        return arg.make_metavar(), ""
+
+    def get_arguments_help_section(self, ctx: click.Context) -> Optional[HelpSection]:
+        if not any(getattr(arg, "help", None) for arg in self.arguments):
+            return None
+        return HelpSection(
+            heading="Positional arguments",
+            definitions=[
+                self.get_argument_help_record(arg, ctx) for arg in self.arguments
+            ]
+        )
 
     def make_option_group_help_section(
         self, group: OptionGroup, ctx: click.Context
@@ -217,7 +246,12 @@ class OptionGroupMixin:
         self, ctx: click.Context, formatter: click.HelpFormatter
     ) -> None:
         formatter = ensure_is_cloup_formatter(formatter)
-        visible_sections = [
+
+        visible_sections = []
+        positional_arguments_section = self.get_arguments_help_section(ctx)
+        if positional_arguments_section:
+            visible_sections.append(positional_arguments_section)
+        visible_sections += [
             self.make_option_group_help_section(group, ctx)
             for group in self.option_groups
             if not group.hidden
