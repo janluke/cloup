@@ -1,4 +1,3 @@
-
 Option groups
 =============
 
@@ -48,7 +47,7 @@ Here's the full list of parameters:
         from cloup import option_group, option
         from cloup.constraints import RequireAtLeast
 
-        @cloup.command("clouptest")
+        @cloup.command()
         @option_group(
             "Input options",
             option("--one", help="1st input option"),
@@ -69,6 +68,8 @@ Here's the full list of parameters:
         def cli(**kwargs):
             """ A CLI that does nothing. """
             print(kwargs)
+
+        cli()
 
 .. tabbed:: Generated help
 

@@ -58,10 +58,10 @@ Overview
 `Click <https://github.com/pallets/click>`_ with several features that make it
 more expressive and configurable:
 
-- **option groups**
+- **option groups** and an (optional) help section for positional arguments
 
-- **constraints**, like ``mutually_exclusive``, that can be applied to any group
-  of parameters, even *conditionally*
+- **constraints**, like ``mutually_exclusive``, that can be applied to option groups
+  or to any group of parameters, even *conditionally*
 
 - **subcommand aliases**
 
@@ -143,6 +143,9 @@ If you don't provide ``--pippo`` or ``--pluto``:
     Error: at least 1 of the following parameters must be set:
       --pippo
       --pluto
+
+This simple example just scratches the surface. Read more in the documentation
+(links below).
 
 
 Supporting the project
