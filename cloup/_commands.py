@@ -112,6 +112,8 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
         self.format_aliases(ctx, formatter)
         self.format_help_text(ctx, formatter)
         self.format_params(ctx, formatter)
+        if self.must_show_constraints(ctx):
+            self.format_constraints(ctx, formatter)
         if isinstance(self, click.MultiCommand):
             self.format_commands(ctx, formatter)
         self.format_epilog(ctx, formatter)

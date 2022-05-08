@@ -34,6 +34,9 @@ Breaking changes
   ``format_options`` did: that's what Click does and Cloup (reluctantly) did.
   Now, instead, ``cloup.Command`` calls ``format_params`` in ``format_help`` and
   then, for multi-commands, calls ``format_commands`` directly.
+- ``ConstraintMixin.format_help`` was removed. This means you can't just mix it
+  with a click.Command to make it print the "Constraints" help section, you need
+  to call ``format_constraints`` explicitly in your command ``format_help``.
 
 Deprecated
 ----------
