@@ -26,6 +26,7 @@ Please, note that Cloup documentation doesn't replace
     :maxdepth: 2
 
     pages/installation
+    pages/arguments
     pages/option-groups
     pages/constraints
     pages/aliases

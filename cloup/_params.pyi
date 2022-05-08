@@ -1,7 +1,7 @@
 """
 Types for parameter decorators are in this stub for convenience of implementation.
 """
-from typing import Any, Callable, Optional, Sequence, Type, TypeVar, Union
+from typing import Any, Callable, Optional, Sequence, Tuple, Type, TypeVar, Union
 
 import click
 
@@ -27,9 +27,16 @@ ParamCallback = Callable[[click.Context, P, Any], Any]
 #     Union[List['CompletionItem'], List[str]],
 # ]
 
+class Argument(click.Argument):
+    def __init__(self, *args, help: Optional[str] = None, **attrs):
+        ...
+
+    def help_record(self, ctx: click.Context) -> Tuple[str, str]:
+        ...
+
 
 class GroupedOption(click.Option):
-    def __init__(self, *args, group: Optional[OptionGroup] = None, **kwargs):
+    def __init__(self, *args, group: Optional[OptionGroup] = None, **attrs):
         ...
 
 

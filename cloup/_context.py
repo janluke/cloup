@@ -154,12 +154,12 @@ class Context(click.Context):
         :param default_map:
             a dictionary (like object) with default values for parameters.
         :param terminal_width:
-            the width of the terminal.  The default is inherit from parent
-            context.  If no context defines the terminal width then auto
-            detection will be applied.
+            the width of the terminal. The default is inherited from parent
+            context. If no context defines the terminal width then auto-detection
+            will be applied.
         :param max_content_width:
             the maximum width for content rendered by Click (this currently
-            only affects help pages).  This defaults to 80 characters if not
+            only affects help pages). This defaults to 80 characters if not
             overridden. In other words: even if the terminal is larger than
             that, Click will not format things wider than 80 characters by
             default.  In addition to that, formatters might add some safety
@@ -184,8 +184,8 @@ class Context(click.Context):
             parameter is named. The default is ``['--help']``.
         :param token_normalize_func:
             an optional function that is used to normalize tokens (options,
-            choices, etc.). This for instance can be used to implement case
-            insensitive behavior.
+            choices, etc.). This for instance can be used to implement
+            case-insensitive behavior.
         :param color:
             controls if the terminal supports ANSI colors or not. The default
             is auto-detection. This is only needed if ANSI codes are used in

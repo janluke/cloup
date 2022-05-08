@@ -1,4 +1,3 @@
-import textwrap
 from unittest.mock import Mock
 
 import click
@@ -6,16 +5,12 @@ import pytest
 from click import Argument, Option
 
 import cloup
-from cloup import ConstraintMixin, Context
-from cloup._util import pick_non_missing
-from cloup.typing import MISSING
+from cloup import Context
+from cloup._util import pick_non_missing, reindent
 from cloup.constraints import Constraint, RequireAtLeast, mutually_exclusive
+from cloup.typing import MISSING
 from tests.constraints.test_constraints import FakeConstraint
 from tests.util import new_dummy_func, pick_first_bool
-
-
-class Cmd(ConstraintMixin, click.Command):
-    pass
 
 
 class TestConstraintMixin:
@@ -25,7 +20,7 @@ class TestConstraintMixin:
             Option(('--str-opt',)),
             Option(('--int-opt', 'option2')),
         ]
-        cmd = Cmd(name='cmd', params=params, callback=new_dummy_func())
+        cmd = cloup.Command(name='cmd', params=params, callback=new_dummy_func())
         for param in params:
             assert cmd.get_param_by_name(param.name) == param
 
@@ -35,18 +30,23 @@ class TestConstraintMixin:
         assert cmd.get_params_by_name(['arg1', 'option2']) == (params[0], params[2])
 
 
-@pytest.mark.parametrize(
-    'do_check_consistency', [True, False],
-    ids=['with_consistency_checks', 'without_consistency_checks']
-)
-def test_constraints_are_checked_according_to_protocol(runner, do_check_consistency):
+@pytest.mark.parametrize('command_type', ["command", "group"])
+@pytest.mark.parametrize('do_check_consistency', [
+    pytest.param(True, id="with_consistency_checks"),
+    pytest.param(False, id="without_consistency_checks")
+])
+def test_constraints_are_checked_according_to_protocol(
+    runner, command_type, do_check_consistency
+):
     constraints = [
         Mock(spec_set=Constraint, wraps=FakeConstraint())
         for _ in range(3)
     ]
     settings = Context.settings(check_constraints_consistency=do_check_consistency)
 
-    @cloup.command(context_settings=settings)
+    command_decorator = cloup.group if command_type == "group" else cloup.command
+
+    @command_decorator(context_settings=settings)
     @cloup.option_group('first', cloup.option('--a'), cloup.option('--b'),
                         constraint=constraints[0])
     @cloup.option_group('second', cloup.option('--c'), cloup.option('--d'),
@@ -57,7 +57,12 @@ def test_constraints_are_checked_according_to_protocol(runner, do_check_consiste
         assert Constraint.must_check_consistency(ctx) == do_check_consistency
         print(f'{a}, {b}, {c}, {d}')
 
-    result = runner.invoke(cmd, args='--a=1 --c=2'.split())
+    shell = '--a=1 --c=2'
+    if isinstance(cmd, cloup.Group):
+        cmd.add_command(cloup.Command(name="dummy", callback=lambda: 0))
+        shell += ' dummy'
+
+    result = runner.invoke(cmd, args=shell.split())
 
     assert result.output.strip() == '1, None, 2, None'
     for constr, opt_names in zip(constraints, [['a', 'b'], ['c', 'd'], ['a', 'c']]):
@@ -69,6 +74,7 @@ def test_constraints_are_checked_according_to_protocol(runner, do_check_consiste
         constr.check_values.assert_called_once()
 
 
+@pytest.mark.parametrize('command_type', ["command", "group"])
 @pytest.mark.parametrize(
     'cmd_value', [MISSING, None, True, False],
     ids=lambda val: f'cmd_{val}'
@@ -78,7 +84,7 @@ def test_constraints_are_checked_according_to_protocol(runner, do_check_consiste
     ids=lambda val: f'ctx_{val}'
 )
 def test_constraints_are_shown_in_help_only_if_feature_is_enabled(
-    runner, cmd_value, ctx_value
+    runner, command_type, cmd_value, ctx_value
 ):
     should_show = pick_first_bool([cmd_value, ctx_value], default=False)
     cxt_settings = pick_non_missing(dict(
@@ -90,7 +96,9 @@ def test_constraints_are_shown_in_help_only_if_feature_is_enabled(
         context_settings=cxt_settings
     ))
 
-    @cloup.command(**cmd_kwargs)
+    command_decorator = cloup.group if command_type == "group" else cloup.command
+
+    @command_decorator(**cmd_kwargs)
     @cloup.option('--a')
     @cloup.option('--b')
     @cloup.option('--c')
@@ -99,28 +107,47 @@ def test_constraints_are_shown_in_help_only_if_feature_is_enabled(
     def cmd(a, b, c, d):
         pass
 
+    if isinstance(cmd, cloup.Group):
+        cmd.add_command(cloup.Command(name="dummy", callback=lambda: 0))
+
     result = runner.invoke(cmd, args=['--help'],
                            catch_exceptions=False,
                            prog_name='test')
-    out = result.output.strip()
+    out = result.output
 
-    if should_show:
-        expected = textwrap.dedent('''
-            Usage: test [OPTIONS]
+    if command_type == "group":
+        if should_show:
+            assert out == reindent("""
+                Usage: test [OPTIONS] COMMAND [ARGS]...
 
-            Options:
-              --a TEXT
-              --b TEXT
-              --c TEXT
-              --help    Show this message and exit.
+                Options:
+                  --a TEXT
+                  --b TEXT
+                  --c TEXT
+                  --help    Show this message and exit.
 
-            Constraints:
-              {--a, --b}  a constraint
-              {--b, --c}  another constraint
-        ''').strip()
-        assert out == expected
+                Constraints:
+                  {--a, --b}  a constraint
+                  {--b, --c}  another constraint
+
+                Commands:
+                  dummy
+            """)
+        else:
+            assert out == reindent("""
+                Usage: test [OPTIONS] COMMAND [ARGS]...
+
+                Options:
+                  --a TEXT
+                  --b TEXT
+                  --c TEXT
+                  --help    Show this message and exit.
+
+                Commands:
+                  dummy
+            """)
     else:
-        expected = textwrap.dedent('''
+        base_help = reindent("""
             Usage: test [OPTIONS]
 
             Options:
@@ -128,8 +155,18 @@ def test_constraints_are_shown_in_help_only_if_feature_is_enabled(
               --b TEXT
               --c TEXT
               --help    Show this message and exit.
-        ''').strip()
-        assert out == expected
+        """)
+
+        if should_show:
+            constraints_section = reindent("""
+                Constraints:
+                  {--a, --b}  a constraint
+                  {--b, --c}  another constraint
+            """)
+            expected = base_help + "\n" + constraints_section
+            assert out == expected
+        else:
+            assert out == base_help
 
 
 def test_usage_of_constraints_as_decorators(runner):

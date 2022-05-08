@@ -3,7 +3,7 @@ from typing import (
     TYPE_CHECKING, Tuple, Union,
 )
 
-from click import Context, HelpFormatter, Parameter
+from click import Context, Parameter
 
 from ._core import Constraint
 from .common import join_param_labels
@@ -201,16 +201,13 @@ class ConstraintMixin:
             with formatter.section('Constraints'):
                 formatter.write_dl(records)
 
-    def format_help(self, ctx, formatter: HelpFormatter) -> None:
-        super().format_help(ctx, formatter)  # type: ignore
+    def must_show_constraints(self, ctx: Context) -> bool:
         # By default, don't show constraints
-        must_show_constraints = first_bool(
+        return first_bool(
             self.show_constraints,
             getattr(ctx, "show_constraints", None),
             False,
         )
-        if must_show_constraints:
-            self.format_constraints(ctx, formatter)
 
 
 def ensure_constraints_support(command) -> ConstraintMixin:

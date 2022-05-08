@@ -18,7 +18,8 @@ from cloup.constraints import (
 
 
 @cloup.command(name='cloup', show_constraints=True)
-@cloup.argument('arg', required=False)   # alias of click.argument
+@cloup.argument('input_path')
+@cloup.argument('out_path')
 @option_group(
     'First group title',
     "This is a very long description of the option group. I don't think this is "

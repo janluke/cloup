@@ -1,4 +1,3 @@
-
 Option groups
 =============
 
@@ -48,7 +47,7 @@ Here's the full list of parameters:
         from cloup import option_group, option
         from cloup.constraints import RequireAtLeast
 
-        @cloup.command("clouptest")
+        @cloup.command()
         @option_group(
             "Input options",
             option("--one", help="1st input option"),
@@ -69,6 +68,8 @@ Here's the full list of parameters:
         def cli(**kwargs):
             """ A CLI that does nothing. """
             print(kwargs)
+
+        cli()
 
 .. tabbed:: Generated help
 
@@ -308,17 +309,7 @@ This features depends on two mixins:
 - (*required*) :class:`~cloup.OptionGroupMixin`
 - (*optional*) :class:`~cloup.ConstraintMixin`, if you want to use constraints.
 
-``cloup.Command`` is the only command class that supports this feature, including
-both these mixins.
+.. admonition:: New!
+    :class: tip
 
-.. attention::
-    ``cloup.Group`` doesn't support option groups nor constraints.
-    This is intentional: a ``Group`` should have only a few options, so they
-    should not need neither option groups nor constraints. (But I may be wrong;
-    if you disagree, open an issue describing your use case). Anyway, you can
-    easily subclass ``cloup.Group`` to include the above mixins::
-
-        from cloup import ConstraintMixin, OptionGroupMixin, Group
-
-        class MyGroup(ConstraintMixin, OptionGroupMixin, Group):
-            pass
+    Since Cloup v0.14.0, ``cloup.Group`` supports option groups and constraints only.

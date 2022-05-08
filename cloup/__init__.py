@@ -44,7 +44,7 @@ from .formatting import (
     HelpSection,
 )
 from ._context import Context
-from ._params import GroupedOption, argument, option
+from ._params import Argument, GroupedOption, argument, option
 from ._option_groups import (
     OptionGroup,
     OptionGroupMixin,
@@ -55,7 +55,6 @@ from ._sections import (
     SectionMixin,
 )
 from ._commands import (
-    BaseCommand,
     Command,
     Group,
     command,

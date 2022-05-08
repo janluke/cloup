@@ -13,6 +13,36 @@ Changelog
     Deprecated
     ----------
 
+v0.14.0 (in development)
+========================
+New features and enhancements
+-----------------------------
+- You can show a "Positional arguments" help section by passing a non-empty
+  ``help`` description for at least one of the arguments of a command/group.
+- ``cloup.Group`` now extends ``cloup.Command`` and, as a consequence, supports
+  option groups and constraints.
+
+Breaking changes
+----------------
+- ``BaseCommand`` was removed. This shouldn't cause any issue to anybody.
+- ``cloup.Group`` extends ``cloup.Command``, similarly as ``click.Group``
+  extends ``click.Command``.
+- ``OptionGroupMixin.format_options`` was renamed to ``format_params``. This
+  means you can't just mix it with ``click.Command`` to print help sections for
+  option groups, you have to override ``format_help`` and call ``format_params``.
+- The new ``format_params`` doesn't call ``super().format_commands`` as
+  ``format_options`` did: that's what Click does and Cloup (reluctantly) did.
+  Now, instead, ``cloup.Command`` calls ``format_params`` in ``format_help`` and
+  then, for multi-commands, calls ``format_commands`` directly.
+- ``ConstraintMixin.format_help`` was removed. This means you can't just mix it
+  with a click.Command to make it print the "Constraints" help section, you need
+  to call ``format_constraints`` explicitly in your command ``format_help``.
+
+Deprecated
+----------
+
+--------------------------------------------------------------------------------
+
 v0.13.1 (2022-05-08)
 ====================
 - Since version 8.1.0, Click does not normalize the command attributes ``help``,
