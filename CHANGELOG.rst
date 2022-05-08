@@ -19,8 +19,9 @@ New features and enhancements
 -----------------------------
 - You can show a "Positional arguments" help section by passing a non-empty
   ``help`` description for at least one of the arguments of a command/group.
+  :pr:`113`
 - ``cloup.Group`` now extends ``cloup.Command`` and, as a consequence, supports
-  option groups and constraints.
+  option groups and constraints. :pr:`113`
 - ``GroupedOption`` is now an alias of ``cloup.Option``.
 
 Breaking changes
@@ -38,9 +39,6 @@ Breaking changes
 - ``ConstraintMixin.format_help`` was removed. This means you can't just mix it
   with a click.Command to make it print the "Constraints" help section, you need
   to call ``format_constraints`` explicitly in your command ``format_help``.
-
-Deprecated
-----------
 
 --------------------------------------------------------------------------------
 
