@@ -674,8 +674,7 @@ def _process_unexpected_kwarg_error(
     arg = match.group()
     info = args_info[arg]
     extra_info = reindent(f"""\n
-        HINT: you set cls={cls} but this class
-        doesn't support the argument "{arg}".
+        HINT: you set cls={cls} but this class doesn't support the argument "{arg}".
         In Cloup, this argument is supported by {info.supported_by}
         via {info.requires.__name__}.
     """, 4)
