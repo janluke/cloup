@@ -73,7 +73,7 @@ Help output of the subcommand
 
 .. attention::
     Aliases are shown **only** in the ``--help`` output of subcommands that
-    extends ``cloup.BaseCommand``. So, normal ``click.Command`` won't do it.
+    extends ``cloup.Command``. So, normal ``click.Command`` won't do it.
 
 .. code-block:: text
     :emphasize-lines: 2

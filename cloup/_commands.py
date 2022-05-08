@@ -48,7 +48,7 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
 
     - :class:`ConstraintMixin`
     - :class:`OptionGroupMixin`
-    - :class:`BaseCommand` -> :class:`click.Command`
+    - :class:`click.Command`
 
     Besides other things, this class also:
 
@@ -127,7 +127,7 @@ class Group(SectionMixin, Command, click.Group):
     Refer to superclasses for the documentation of all accepted parameters:
 
     - :class:`SectionMixin`
-    - :class:`BaseCommand` -> :class:`click.Command`
+    - :class:`Command`
     - :class:`click.Group`
 
     Apart from superclasses arguments, the following is the only additional parameter:
