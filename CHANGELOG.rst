@@ -20,7 +20,6 @@ v0.13.1 (2022-05-08)
   in previous releases. This lead to Cloup printing non-normalized help and
   epilog text when using click >= 8.1.0.
 
-
 v0.13.0 (2022-02-14)
 ====================
 - Add shortcuts for ``click.Path`` types which uses ``pathlib.Path``
