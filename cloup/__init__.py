@@ -44,7 +44,7 @@ from .formatting import (
     HelpSection,
 )
 from ._context import Context
-from ._params import Argument, GroupedOption, argument, option
+from ._params import Argument, Option, argument, option
 from ._option_groups import (
     OptionGroup,
     OptionGroupMixin,

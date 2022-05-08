@@ -237,14 +237,15 @@ The above notation is just syntax sugar on top of ``@cloup.option``:
 Option groups without decorators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 For some reason, you may need to work at a lower level, by passing parameters
-to a ``Command`` constructor. In that case you can use :class:`GroupedOption`::
+to a ``Command`` constructor. In that case you can use :class:`cloup.Option`
+(or the alias ``GroupedOption``)::
 
-    from cloup import Command, GroupedOption, OptionGroup
+    from cloup import Command, Option, OptionGroup
 
     output_opts = OptionGroup("Output options")
 
     params = [
-        GroupedOption('--verbose', is_flag=True, group=output_opts),
+        Option('--verbose', is_flag=True, group=output_opts),
         ...
     ]
 
@@ -291,7 +292,7 @@ How it works
 ------------
 This feature is implemented simply by annotating each option with an additional
 attribute ``group`` of type ``Optional[OptionGroup]``. Unless the option is of
-class ``GroupedOption``, this ``group`` attribute is added and set by monkey-patching.
+class ``cloup.Option``, this ``group`` attribute is added and set by monkey-patching.
 
 When the ``Command`` is instantiated, it groups all options by their ``group``
 attribute. Options that don't have a ``group`` attribute (or have it set to

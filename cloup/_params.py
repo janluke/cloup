@@ -10,12 +10,16 @@ class Argument(click.Argument):
         return [self.make_metavar(), self.help or ""]
 
 
-class GroupedOption(click.Option):
+class Option(click.Option):
     """A click.Option with an extra field ``group`` of type ``OptionGroup``."""
 
     def __init__(self, *args, group=None, **attrs):
         super().__init__(*args, **attrs)
         self.group = group
+
+
+GroupedOption = Option
+"""Alias of ``Option``."""
 
 
 def argument(*args, help=None, cls=Argument, **kwargs):
@@ -36,7 +40,7 @@ def option(*param_decls, cls=None, group=None, **kwargs):
     These arguments have different semantics, refer to Click's docs.
     """
     if cls is None:
-        cls = GroupedOption
+        cls = Option
 
     def decorator(f):
         func = click.option(*param_decls, cls=cls, **kwargs)(f)

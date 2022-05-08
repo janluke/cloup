@@ -35,7 +35,7 @@ class Argument(click.Argument):
         ...
 
 
-class GroupedOption(click.Option):
+class Option(click.Option):
     def __init__(self, *args, group: Optional[OptionGroup] = None, **attrs):
         ...
 

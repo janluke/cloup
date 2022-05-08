@@ -21,6 +21,7 @@ New features and enhancements
   ``help`` description for at least one of the arguments of a command/group.
 - ``cloup.Group`` now extends ``cloup.Command`` and, as a consequence, supports
   option groups and constraints.
+- ``GroupedOption`` is now an alias of ``cloup.Option``.
 
 Breaking changes
 ----------------
