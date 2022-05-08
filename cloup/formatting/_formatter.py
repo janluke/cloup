@@ -1,4 +1,5 @@
 import dataclasses as dc
+import inspect
 import shutil
 import textwrap
 from itertools import chain
@@ -7,7 +8,9 @@ from typing import (
     Tuple, Union, cast,
 )
 
+from cloup._util import click_version_ge_8_1
 from cloup.formatting._util import unstyled_len
+
 if TYPE_CHECKING:
     from .sep import RowSepPolicy, SepGenerator
 
@@ -178,9 +181,11 @@ class HelpFormatter(click.HelpFormatter):
         self.write(f" {alias_list}\n")
 
     def write_command_help_text(self, cmd: click.Command) -> None:
-        help_text = cmd.help or ''
+        help_text = cmd.help or ""
+        if help_text and click_version_ge_8_1:
+            help_text = inspect.cleandoc(help_text)
         if cmd.deprecated:
-            help_text = '(DEPRECATED) ' + help_text
+            help_text = "(DEPRECATED) " + help_text
         if help_text:
             self.write_paragraph()
             with self.indentation():

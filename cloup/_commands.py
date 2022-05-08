@@ -22,6 +22,7 @@ verbose. The ``@overload`` is on the ``cls`` argument:
 
 When and if the MyPy issue is resolved, the overloads will be removed.
 """
+import inspect
 from typing import (
     Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Sequence, Tuple,
     Type, TypeVar, cast, overload,
@@ -33,7 +34,7 @@ from click import HelpFormatter
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
-from ._util import first_bool, reindent
+from ._util import first_bool, reindent, click_version_ge_8_1
 from .constraints import ConstraintMixin
 
 ClickCommand = TypeVar('ClickCommand', bound=click.Command)
@@ -78,11 +79,17 @@ class BaseCommand(click.Command):
             self.parse_args(ctx, args)
         return ctx
 
+    def get_normalized_epilog(self) -> str:
+        if self.epilog and click_version_ge_8_1:
+            return inspect.cleandoc(self.epilog)
+        return self.epilog or ""
+
     # Differently from Click, this doesn't indent the epilog.
     def format_epilog(self, ctx, formatter):
         if self.epilog:
+            epilog = self.get_normalized_epilog()
             formatter.write_paragraph()
-            formatter.write_epilog(self.epilog)
+            formatter.write_epilog(epilog)
 
     def format_help_text(self, ctx, formatter):
         formatter.write_command_help_text(self)
