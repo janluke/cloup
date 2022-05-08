@@ -1,5 +1,3 @@
-import textwrap
-from typing import Sequence
 from unittest.mock import Mock
 
 import click

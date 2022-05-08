@@ -24,7 +24,7 @@ When and if the MyPy issue is resolved, the overloads will be removed.
 """
 import inspect
 from typing import (
-    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Sequence, Tuple,
+    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Tuple,
     Type, TypeVar, cast, overload,
 )
 
@@ -647,6 +647,7 @@ class _ArgInfo(NamedTuple):
     arg_name: str
     requires: Type
     supported_by: str = ""
+
 
 _ARGS_INFO = {
     info.arg_name: info for info in [

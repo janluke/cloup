@@ -3,7 +3,7 @@ from typing import (
     TYPE_CHECKING, Tuple, Union,
 )
 
-from click import Context, HelpFormatter, Parameter
+from click import Context, Parameter
 
 from ._core import Constraint
 from .common import join_param_labels
