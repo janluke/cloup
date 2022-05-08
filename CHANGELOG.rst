@@ -24,7 +24,7 @@ New features and enhancements
 
 Breaking changes
 ----------------
-- ``BaseCommand`` was removed. This shouldn't case any issue to anybody.
+- ``BaseCommand`` was removed. This shouldn't cause any issue to anybody.
 - ``cloup.Group`` extends ``cloup.Command``, similarly as ``click.Group``
   extends ``click.Command``.
 - ``OptionGroupMixin.format_options`` was renamed to ``format_params``. This
