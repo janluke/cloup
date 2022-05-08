@@ -13,6 +13,14 @@ Changelog
     Deprecated
     ----------
 
+v0.13.1 (2022-05-08)
+====================
+- Since version 8.1.0, Click does not normalize the command attributes ``help``,
+  ``short_help`` and ``epilog`` while Cloup assumed them to be normalized as
+  in previous releases. This lead to Cloup printing non-normalized help and
+  epilog text when using click >= 8.1.0.
+
+
 v0.13.0 (2022-02-14)
 ====================
 - Add shortcuts for ``click.Path`` types which uses ``pathlib.Path``
