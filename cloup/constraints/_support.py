@@ -201,8 +201,8 @@ class ConstraintMixin:
             with formatter.section('Constraints'):
                 formatter.write_dl(records)
 
-    def format_help(self, ctx, formatter: HelpFormatter) -> None:
-        super().format_help(ctx, formatter)  # type: ignore
+    def format_options(self, ctx, formatter: HelpFormatter) -> None:
+        super().format_options(ctx, formatter)  # type: ignore
         # By default, don't show constraints
         must_show_constraints = first_bool(
             self.show_constraints,

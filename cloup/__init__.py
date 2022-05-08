@@ -55,7 +55,6 @@ from ._sections import (
     SectionMixin,
 )
 from ._commands import (
-    BaseCommand,
     Command,
     Group,
     command,

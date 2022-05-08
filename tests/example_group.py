@@ -1,6 +1,6 @@
 # flake8: noqa E128
 import cloup
-from cloup import Section
+from cloup import Section, argument, option, option_group
 
 
 def make_example_group(align_sections):
@@ -22,7 +22,16 @@ def make_example_group(align_sections):
         'mv', help='Move or rename a file, a directory, or a symlink')(f)
 
     @cloup.group(
-        'git', align_sections=align_sections, context_settings={'terminal_width': 80})
+        'git',
+        align_sections=align_sections,
+        align_option_groups=align_sections,
+        context_settings={'terminal_width': 80},
+    )
+    @option_group(
+        "Useful options",
+        option("-C", type=cloup.Path(), help="Configuration file."),
+        option("-p", "--paginate", is_flag=True, help="Paginate output."),
+    )
     def git():
         return 0
 
@@ -49,8 +58,12 @@ def make_example_group(align_sections):
 EXPECTED_ALIGNED_HELP = """
 Usage: git [OPTIONS] COMMAND [ARGS]...
 
-Options:
-  --help  Show this message and exit.
+Useful options:
+  -C PATH         Configuration file.
+  -p, --paginate  Paginate output.
+
+Other options:
+  --help          Show this message and exit.
 
 Start a working area (see also: git help tutorial):
   init             Create an empty Git repository or reinitialize an existing...
@@ -69,7 +82,11 @@ Other commands:
 EXPECTED_NON_ALIGNED_HELP = """
 Usage: git [OPTIONS] COMMAND [ARGS]...
 
-Options:
+Useful options:
+  -C PATH         Configuration file.
+  -p, --paginate  Paginate output.
+
+Other options:
   --help  Show this message and exit.
 
 Start a working area (see also: git help tutorial):

@@ -31,7 +31,6 @@ from typing import (
 import click
 from click import HelpFormatter
 
-import cloup
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
@@ -42,13 +41,21 @@ ClickCommand = TypeVar('ClickCommand', bound=click.Command)
 ClickGroup = TypeVar('ClickGroup', bound=click.Group)
 
 
-class BaseCommand(click.Command):
-    """Base class for cloup commands.
+class Command(ConstraintMixin, OptionGroupMixin, click.Command):
+    """A ``click.Command`` supporting option groups and constraints.
 
-    * It back-ports a feature from Click v8.0, i.e. the ``context_class``
+    Refer to superclasses for the documentation of all accepted parameters:
+
+    - :class:`ConstraintMixin`
+    - :class:`OptionGroupMixin`
+    - :class:`BaseCommand` -> :class:`click.Command`
+
+    Besides other things, this class also:
+
+    * back-ports a feature from Click v8.0, i.e. the ``context_class``
       class attribute, which is set to ``cloup.Context``.
 
-    * It adds a ``formatter_settings`` instance attribute.
+    * adds a ``formatter_settings`` instance attribute.
 
     Refer to :class:`click.Command` for the documentation of all parameters.
 
@@ -105,34 +112,15 @@ class BaseCommand(click.Command):
         self.format_aliases(ctx, formatter)
         self.format_help_text(ctx, formatter)
         self.format_options(ctx, formatter)
+        if isinstance(self, click.MultiCommand):
+            self.format_commands(ctx, formatter)
         self.format_epilog(ctx, formatter)
 
 
-class Command(ConstraintMixin, OptionGroupMixin, BaseCommand):
-    """
-    A ``click.Command`` supporting option groups and constraints.
-
-    Refer to superclasses for the documentation of all accepted parameters:
-
-    - :class:`ConstraintMixin`
-    - :class:`OptionGroupMixin`
-    - :class:`BaseCommand` -> :class:`click.Command`
-
-    .. versionchanged:: 0.8.0
-        this class now inherits from :class:`cloup.BaseCommand`.
-    """
-    pass
-
-
-class Group(SectionMixin, BaseCommand, click.Group):
+class Group(SectionMixin, Command, click.Group):
     """
     A ``click.Group`` that allows to organize its subcommands in multiple help
-    sections and and whose subcommands are, by default, of type
-    :class:`cloup.Command`.
-
-    This class is just a :class:`click.Group` mixed with :class:`SectionMixin`
-    that overrides the decorators :meth:`command` and :meth:`group` so that
-    a ``section`` for the created subcommand can be specified.
+    sections and whose subcommands are, by default, of type :class:`cloup.Command`.
 
     Refer to superclasses for the documentation of all accepted parameters:
 
@@ -140,11 +128,14 @@ class Group(SectionMixin, BaseCommand, click.Group):
     - :class:`BaseCommand` -> :class:`click.Command`
     - :class:`click.Group`
 
-    This class adds a single parameter:
+    Apart from superclasses arguments, the following is the only additional parameter:
 
     ``show_subcommand_aliases``: ``Optional[bool] = None``
         whether to show subcommand aliases; aliases are shown by default and
         can be disabled using this argument or the homonym context setting.
+
+    .. versionchanged:: 0.14.0
+        this class now supports option groups and constraints.
 
     .. versionadded:: 0.10.0
         the "command aliases" feature, including the ``show_subcommand_aliases``
@@ -653,15 +644,14 @@ def group(name=None, *, cls=None, **kwargs):
 class _ArgInfo(NamedTuple):
     arg_name: str
     requires: Type
-    supported_by: Sequence[str] = []
-
+    supported_by: str = ""
 
 _ARGS_INFO = {
     info.arg_name: info for info in [
-        _ArgInfo('formatter_settings', BaseCommand, ['cloup.Command', 'cloup.Group']),
-        _ArgInfo('align_option_groups', OptionGroupMixin, ['cloup.Command']),
-        _ArgInfo('show_constraints', ConstraintMixin, ['cloup.Command']),
-        _ArgInfo('align_sections', SectionMixin, ['cloup.Group'])
+        _ArgInfo('formatter_settings', Command, "both Command and Group"),
+        _ArgInfo('align_option_groups', OptionGroupMixin, "both Command and Group"),
+        _ArgInfo('show_constraints', ConstraintMixin, "both Command and Group"),
+        _ArgInfo('align_sections', SectionMixin, "Group")
     ]
 }
 
@@ -683,8 +673,8 @@ def _process_unexpected_kwarg_error(
     extra_info = reindent(f"""\n
         HINT: you set cls={cls} but this class
         doesn't support the argument "{arg}".
-        In Cloup, this argument is handled by {info.requires.__name__} and
-        it's supported by {", ".join(info.supported_by)}.
+        In Cloup, this argument is supported by {info.supported_by}
+        via {info.requires.__name__}.
     """, 4)
     new_message = message + '\n' + extra_info
     return TypeError(new_message)

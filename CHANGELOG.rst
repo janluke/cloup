@@ -13,6 +13,26 @@ Changelog
     Deprecated
     ----------
 
+v0.14.0 (in development)
+========================
+New features and enhancements
+-----------------------------
+- You can show a "Positional arguments" help section by passing a non-empty
+  ``help`` description for at least one of the arguments of a command/group.
+- ``cloup.Group`` now extends ``cloup.Command`` and, as a consequence, supports
+  option groups and constraints.
+
+Breaking changes
+----------------
+- ``BaseCommand`` was removed. This shouldn't case any issue to anybody.
+- ``cloup.Group`` extends ``cloup.Command``, similarly as ``click.Group``
+  extends ``click.Command``.
+
+Deprecated
+----------
+
+--------------------------------------------------------------------------------
+
 v0.13.1 (2022-05-08)
 ====================
 - Since version 8.1.0, Click does not normalize the command attributes ``help``,

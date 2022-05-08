@@ -231,14 +231,17 @@ class OptionGroupMixin:
             default,
         )
 
-    def get_default_option_group(self, ctx: click.Context) -> OptionGroup:
+    def get_default_option_group(
+        self, ctx: click.Context, is_the_only_option_group: bool = False
+    ) -> OptionGroup:
         """
         Returns an ``OptionGroup`` instance for the options not explicitly
         assigned to an option group, eventually including the ``--help`` option.
 
         .. versionadded:: 0.8.0
         """
-        default_group = OptionGroup('Other options')
+        default_group = OptionGroup(
+            "Options" if is_the_only_option_group else "Other options")
         default_group.options = self.get_ungrouped_options(ctx)
         return default_group
 
@@ -256,10 +259,10 @@ class OptionGroupMixin:
             for group in self.option_groups
             if not group.hidden
         ]
-        if not visible_sections:  # No visible option groups. No custom formatting needed.
-            return super().format_options(ctx, formatter)  # type: ignore
 
-        default_group = self.get_default_option_group(ctx)
+        default_group = self.get_default_option_group(
+            ctx, is_the_only_option_group=not visible_sections
+        )
         if not default_group.hidden:
             visible_sections.append(
                 self.make_option_group_help_section(default_group, ctx))
@@ -268,8 +271,6 @@ class OptionGroupMixin:
             visible_sections,
             aligned=self.must_align_option_groups(ctx),
         )
-        if isinstance(self, click.MultiCommand):
-            self.format_commands(ctx, formatter)
 
 
 @overload
