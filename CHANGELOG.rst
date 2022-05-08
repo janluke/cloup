@@ -27,6 +27,13 @@ Breaking changes
 - ``BaseCommand`` was removed. This shouldn't case any issue to anybody.
 - ``cloup.Group`` extends ``cloup.Command``, similarly as ``click.Group``
   extends ``click.Command``.
+- ``OptionGroupMixin.format_options`` was renamed to ``format_params``. This
+  means you can't just mix it with ``click.Command`` to print help sections for
+  option groups, you have to override ``format_help`` and call ``format_params``.
+- The new ``format_params`` doesn't call ``super().format_commands`` as
+  ``format_options`` did: that's what Click does and Cloup (reluctantly) did.
+  Now, instead, ``cloup.Command`` calls ``format_params`` in ``format_help`` and
+  then, for multi-commands, calls ``format_commands`` directly.
 
 Deprecated
 ----------

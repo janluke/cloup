@@ -245,7 +245,7 @@ class OptionGroupMixin:
         default_group.options = self.get_ungrouped_options(ctx)
         return default_group
 
-    def format_options(
+    def format_params(
         self, ctx: click.Context, formatter: click.HelpFormatter
     ) -> None:
         formatter = ensure_is_cloup_formatter(formatter)
