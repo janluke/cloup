@@ -80,9 +80,9 @@ class BaseCommand(click.Command):
         return ctx
 
     def get_normalized_epilog(self) -> str:
-        if click_version_ge_8_1:
+        if self.epilog and click_version_ge_8_1:
             return inspect.cleandoc(self.epilog)
-        return self.epilog
+        return self.epilog or ""
 
     # Differently from Click, this doesn't indent the epilog.
     def format_epilog(self, ctx, formatter):
