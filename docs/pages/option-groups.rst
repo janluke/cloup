@@ -313,4 +313,4 @@ This features depends on two mixins:
 .. admonition:: New!
     :class: tip
 
-    Since Cloup v0.14.0, ``cloup.Group`` supports option groups and constraints only.
+    Since Cloup v0.14.0, ``cloup.Group`` supports option groups and constraints too.
