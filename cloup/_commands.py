@@ -259,6 +259,7 @@ class Group(SectionMixin, Command, click.Group):
         deprecated: bool = False,
         align_option_groups: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
+        params: Optional[List[click.Parameter]] = None,
     ) -> Callable[[Callable], Command]:
         ...
 
@@ -278,6 +279,7 @@ class Group(SectionMixin, Command, click.Group):
         no_args_is_help: bool = False,
         hidden: bool = False,
         deprecated: bool = False,
+        params: Optional[List[click.Parameter]] = None,
         **kwargs,
     ) -> Callable[[Callable], ClickCommand]:
         ...
@@ -348,6 +350,7 @@ class Group(SectionMixin, Command, click.Group):
         chain: bool = False,
         hidden: bool = False,
         deprecated: bool = False,
+        params: Optional[List[click.Parameter]] = None,
         **kwargs
     ) -> Callable[[Callable], ClickGroup]:
         ...
@@ -391,7 +394,8 @@ def command(
     hidden: bool = False,
     deprecated: bool = False,
     align_option_groups: Optional[bool] = None,
-    show_constraints: Optional[bool] = None
+    show_constraints: Optional[bool] = None,
+    params: Optional[List[click.Parameter]] = None,
 ) -> Callable[[Callable], Command]:
     ...
 
@@ -411,6 +415,7 @@ def command(  # In this overload: "cls: ClickCommand"
     no_args_is_help: bool = False,
     hidden: bool = False,
     deprecated: bool = False,
+    params: Optional[List[click.Parameter]] = None,
     **kwargs
 ) -> Callable[[Callable], ClickCommand]:
     ...
@@ -432,7 +437,7 @@ def command(name=None, *, aliases=None, cls=None, **kwargs):
 
     Note that the following arguments are about Cloup-specific features and are
     not supported by all ``click.Command``, so if you provide a custom ``cls``
-    make sure you don't ne:
+    make sure you don't set these:
 
     - ``formatter_settings``
     - ``align_option_groups`` (``cls`` needs to inherit from ``OptionGroupMixin``)
@@ -489,6 +494,10 @@ def command(name=None, *, aliases=None, cls=None, **kwargs):
         whether to include a "Constraint" section in the command help. This
         is also available as a context setting having a lower priority than
         this attribute.
+    :param params:
+        **(click >= 8.1.0)** a list of parameters (:class:`Argument` and
+        :class:`Option` instances). Params added with ``@option`` and ``@argument``
+        are appended to the end of the list if given.
     :param kwargs:
         any other argument accepted by the instantiated command class (``cls``).
     """
@@ -536,6 +545,7 @@ def group(
     chain: bool = False,
     hidden: bool = False,
     deprecated: bool = False,
+    params: Optional[List[click.Parameter]] = None,
 ) -> Callable[[Callable], Group]:
     ...
 
@@ -558,6 +568,7 @@ def group(
     chain: bool = False,
     hidden: bool = False,
     deprecated: bool = False,
+    params: Optional[List[click.Parameter]] = None,
     **kwargs
 ) -> Callable[[Callable], ClickGroup]:
     ...
@@ -629,6 +640,10 @@ def group(name=None, *, cls=None, **kwargs):
         if this is set to `True` chaining of multiple subcommands is enabled.
         This restricts the form of commands in that they cannot have optional
         arguments but it allows multiple commands to be chained together.
+    :param params:
+        **(click >= 8.1.0)** a list of parameters (:class:`Argument` and
+        :class:`Option` instances). Params added with ``@option`` and ``@argument``
+        are appended to the end of the list if given.
     :param kwargs:
         any other argument accepted by the instantiated command class.
     """

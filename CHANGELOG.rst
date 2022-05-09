@@ -23,6 +23,9 @@ New features and enhancements
 - ``cloup.Group`` now extends ``cloup.Command`` and, as a consequence, supports
   option groups and constraints. :pr:`113`
 - ``GroupedOption`` is now an alias of ``cloup.Option``.
+- Add the new ``params`` Click argument to ``@command`` and ``@group``
+  signatures. This argument is supported only for click >= 8.1.0. See
+  https://github.com/pallets/click/pull/2203.
 
 Breaking changes
 ----------------
