@@ -13,8 +13,8 @@ Changelog
     Deprecated
     ----------
 
-v0.14.0 (in development)
-========================
+v0.14.0 (2022-05-09)
+====================
 New features and enhancements
 -----------------------------
 - You can show a "Positional arguments" help section by passing a non-empty
