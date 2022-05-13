@@ -6,8 +6,8 @@ class Argument(click.Argument):
         super().__init__(*args, **attrs)
         self.help = help
 
-    def help_record(self, ctx):
-        return [self.make_metavar(), self.help or ""]
+    def get_help_record(self, ctx):
+        return (self.make_metavar(), self.help or "")
 
 
 class Option(click.Option):
