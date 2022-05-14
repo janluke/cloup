@@ -122,13 +122,13 @@ class SectionMixin:
         :param kwargs:
             keyword arguments forwarded to the next class in the MRO
         """
+        super().__init__(*args, commands=commands, **kwargs)  # type: ignore
         self.align_sections = align_sections
         self._default_section = Section('__DEFAULT', commands=commands or [])
         self._user_sections: List[Section] = []
         self._section_set = {self._default_section}
         for section in sections:
             self.add_section(section)
-        super().__init__(*args, commands=commands, **kwargs)  # type: ignore
 
     def _add_command_to_section(self, cmd, name=None, section=None):
         """Adds a command to the section (if specified) or to the default section."""

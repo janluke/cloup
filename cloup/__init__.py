@@ -62,7 +62,7 @@ from ._commands import (
 )
 from .constraints import (
     ConstraintMixin,
-    constraint,
     constrained_params,
+    constraint,
 )
 from .types import dir_path, file_path, path

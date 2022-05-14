@@ -23,10 +23,8 @@ verbose. The ``@overload`` is on the ``cls`` argument:
 When and if the MyPy issue is resolved, the overloads will be removed.
 """
 import inspect
-from typing import (
-    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Tuple,
-    Type, TypeVar, cast, overload,
-)
+from typing import (Any, Callable, Dict, Iterable, List, NamedTuple, Optional,
+                    Tuple, Type, TypeVar, cast, overload)
 
 import click
 from click import HelpFormatter
@@ -34,7 +32,7 @@ from click import HelpFormatter
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
-from ._util import first_bool, reindent, click_version_ge_8_1
+from ._util import click_version_ge_8_1, first_bool, reindent
 from .constraints import ConstraintMixin
 
 ClickCommand = TypeVar('ClickCommand', bound=click.Command)
@@ -151,7 +149,7 @@ class Group(SectionMixin, Command, click.Group):
     def __init__(self, *args, show_subcommand_aliases: Optional[bool] = None, **kwargs):
         super().__init__(*args, **kwargs)
         self.show_subcommand_aliases = show_subcommand_aliases
-        """Whether to show subcommand aliases. This """
+        """Whether to show subcommand aliases."""
 
         self.alias2name: Dict[str, str] = {}
         """Dictionary mapping each alias to a command name."""
@@ -164,7 +162,7 @@ class Group(SectionMixin, Command, click.Group):
     ) -> None:
         super().add_command(cmd, name, section, fallback_to_default_section)
         name = cast(str, cmd.name) if name is None else name
-        aliases = getattr(cmd, 'aliases', [])
+        aliases = getattr(cmd, 'aliases', None) or ()
         for alias in aliases:
             self.alias2name[alias] = name
 
@@ -637,7 +635,7 @@ def group(name=None, *, cls=None, **kwargs):
     :param subcommand_metavar:
         string used in the command's usage string to indicate the subcommand place.
     :param chain:
-        if this is set to `True` chaining of multiple subcommands is enabled.
+        if this is set to `True`, chaining of multiple subcommands is enabled.
         This restricts the form of commands in that they cannot have optional
         arguments but it allows multiple commands to be chained together.
     :param params:
