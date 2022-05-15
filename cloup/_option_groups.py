@@ -185,25 +185,20 @@ class OptionGroupMixin:
 
     def get_argument_help_record(
         self, arg: click.Argument, ctx: click.Context
-    ) -> Optional[Tuple[str, str]]:
+    ) -> Tuple[str, str]:
         if isinstance(arg, cloup.Argument):
             return arg.get_help_record(ctx)
         return arg.make_metavar(), ""
 
     def get_arguments_help_section(self, ctx: click.Context) -> Optional[HelpSection]:
-        if not any(getattr(arg, "help", None) for arg in self.arguments):
-            return None
-        help_records = list(
-            filter(
-                None,
-                (self.get_argument_help_record(arg, ctx) for arg in self.arguments),
-            )
-        )
-        if not help_records:
+        args_with_help = (arg for arg in self.arguments if getattr(arg, "help", None))
+        if not any(args_with_help):
             return None
         return HelpSection(
             heading="Positional arguments",
-            definitions=list(filter(None, help_records)),
+            definitions=[
+                self.get_argument_help_record(arg, ctx) for arg in self.arguments
+            ]
         )
 
     def make_option_group_help_section(
