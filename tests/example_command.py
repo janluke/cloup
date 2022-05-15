@@ -23,6 +23,7 @@ def make_example_command(
     )
     @argument("arg_one", help="This is the description of argument #1.")
     @argument("arg_two", help="This is the description of argument #2.", required=False)
+    @argument("arg_three", required=False)
     @option_group(
         'Option group A',
         option('--one', help='The one thing you need to run this command.'),
@@ -62,13 +63,14 @@ def make_example_command(
 
 
 _TABULAR_ALIGNED_HELP = """
-Usage: clouptest [OPTIONS] ARG_ONE [ARG_TWO]
+Usage: clouptest [OPTIONS] ARG_ONE [ARG_TWO] [ARG_THREE]
 
   A CLI that does nothing.
 
 Positional arguments:
   ARG_ONE               This is the description of argument #1.
   [ARG_TWO]             This is the description of argument #2.
+  [ARG_THREE]
 
 Option group A: [at most 2 accepted]
   This is a very useful description of group A. This is a rarely used feature
@@ -94,13 +96,14 @@ Made with love by Gianluca.
 """.strip()
 
 _TABULAR_NON_ALIGNED_HELP = """
-Usage: clouptest [OPTIONS] ARG_ONE [ARG_TWO]
+Usage: clouptest [OPTIONS] ARG_ONE [ARG_TWO] [ARG_THREE]
 
   A CLI that does nothing.
 
 Positional arguments:
-  ARG_ONE    This is the description of argument #1.
-  [ARG_TWO]  This is the description of argument #2.
+  ARG_ONE      This is the description of argument #1.
+  [ARG_TWO]    This is the description of argument #2.
+  [ARG_THREE]
 
 Option group A: [at most 2 accepted]
   This is a very useful description of group A. This is a rarely used feature
@@ -125,7 +128,7 @@ Made with love by Gianluca.
 """.strip()
 
 _LINEAR_HELP = """
-Usage: clouptest [OPTIONS] ARG_ONE [ARG_TWO]
+Usage: clouptest [OPTIONS] ARG_ONE [ARG_TWO] [ARG_THREE]
 
   A CLI that does nothing.
 
@@ -135,6 +138,8 @@ Positional arguments:
 
   [ARG_TWO]
      This is the description of argument #2.
+
+  [ARG_THREE]
 
 Option group A: [at most 2 accepted]
   This is a very useful description of group A. This is a rarely used feature
