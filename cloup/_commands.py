@@ -23,8 +23,10 @@ verbose. The ``@overload`` is on the ``cls`` argument:
 When and if the MyPy issue is resolved, the overloads will be removed.
 """
 import inspect
-from typing import (Any, Callable, Dict, Iterable, List, NamedTuple, Optional,
-                    Tuple, Type, TypeVar, cast, overload)
+from typing import (
+    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Tuple, Type,
+    TypeVar, cast, overload,
+)
 
 import click
 from click import HelpFormatter
