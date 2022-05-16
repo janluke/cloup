@@ -13,6 +13,25 @@ Changelog
     Deprecated
     ----------
 
+v0.15.0 (in development)
+========================
+New features and enhancements
+-----------------------------
+- Renamed ``Argument.help_record`` to ``Argument.get_help_record``. :pr:`116`
+- Fixed typos around.
+
+Bug fixes
+---------
+
+Breaking changes
+----------------
+- Renamed ``Argument.help_record`` to ``Argument.get_help_record``.
+
+Deprecated
+----------
+
+--------------------------------------------------------------------------------
+
 v0.14.0 (2022-05-09)
 ====================
 New features and enhancements
