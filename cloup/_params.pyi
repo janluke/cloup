@@ -31,7 +31,7 @@ class Argument(click.Argument):
     def __init__(self, *args, help: Optional[str] = None, **attrs):
         ...
 
-    def help_record(self, ctx: click.Context) -> Tuple[str, str]:
+    def get_help_record(self, ctx: click.Context) -> Tuple[str, str]:
         ...
 
 

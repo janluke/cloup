@@ -26,7 +26,7 @@ parameter exposed by Cloup command decorators.
     # Aliases works even if cls is not a Cloup command class
     @cli.command(aliases=['uni', 'rm'], cls=click.Command)
     @cloup.argument('pkg')
-    def uninstall(pgk: str):
+    def uninstall(pkg: str):
         """Uninstall a package."""
         print('uninstall', pkg)
 

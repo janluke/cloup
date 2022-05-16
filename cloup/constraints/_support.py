@@ -28,7 +28,7 @@ class BoundConstraintSpec(NamedTuple):
 
 
 def _constraint_memo(
-    f, constr: Union[BoundConstraintSpec, BoundConstraintSpec]
+    f, constr: Union[BoundConstraintSpec, 'BoundConstraint']
 ) -> None:
     if not hasattr(f, '__constraints'):
         f.__constraints = []
@@ -73,7 +73,7 @@ def constrained_params(
     - using a long conditional/composite constraint as decorator may be less
       readable.
 
-    In these cases, you may consider use ``@constraint_params``.
+    In these cases, you may consider using ``@constrained_params``.
 
     .. versionadded:: 0.9.0
 

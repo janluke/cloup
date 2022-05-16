@@ -6,8 +6,8 @@ class Argument(click.Argument):
         super().__init__(*args, **attrs)
         self.help = help
 
-    def help_record(self, ctx):
-        return [self.make_metavar(), self.help or ""]
+    def get_help_record(self, ctx):
+        return (self.make_metavar(), self.help or "")
 
 
 class Option(click.Option):
@@ -31,7 +31,7 @@ def option(*param_decls, cls=None, group=None, **kwargs):
     Refer to :class:`click.Option` and :class:`click.Parameter` for more info
     about the accepted parameters.
 
-    In your IDE, you won't see arguments that has to do with shell completion,
+    In your IDE, you won't see arguments that have to do with shell completion,
     because they are different in Click 7 and 8 (both supported by Cloup):
 
     - in Click 7, it's ``autocompletion``
