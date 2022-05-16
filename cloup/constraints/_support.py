@@ -143,6 +143,7 @@ class ConstraintMixin:
             keyword arguments forwarded to the next class in the MRO
         """
         super().__init__(*args, **kwargs)  # type: ignore
+
         self.show_constraints = show_constraints
 
         # This allows constraints to efficiently access parameters by name

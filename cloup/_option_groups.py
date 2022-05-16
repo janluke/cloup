@@ -130,6 +130,8 @@ class OptionGroupMixin:
         :param kwargs:
             keyword arguments forwarded to the next class in the MRO
         """
+        super().__init__(*args, **kwargs)  # type: ignore
+
         self.align_option_groups = align_option_groups
         params = kwargs.get('params') or []
         arguments, option_groups, ungrouped_options = self._group_params(params)
@@ -146,8 +148,6 @@ class OptionGroupMixin:
         based on context settings, like the ``--help`` option; use the
         :meth:`get_ungrouped_options` method if you need the real full list
         (which needs a ``Context`` object)."""
-
-        super().__init__(*args, **kwargs)  # type: ignore
 
     @staticmethod
     def _group_params(
