@@ -162,7 +162,7 @@ class Group(SectionMixin, Command, click.Group):
     ) -> None:
         super().add_command(cmd, name, section, fallback_to_default_section)
         name = cast(str, cmd.name) if name is None else name
-        aliases = getattr(cmd, 'aliases', None) or ()
+        aliases = getattr(cmd, 'aliases', [])
         for alias in aliases:
             self.alias2name[alias] = name
 
