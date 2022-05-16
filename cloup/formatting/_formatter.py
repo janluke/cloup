@@ -360,12 +360,11 @@ class HelpFormatter(click.HelpFormatter):
                     for line in lines[1:]:
                         self.write(col2_indentation, line, "\n")
 
-        if text_rows:
-            write_row(text_rows[0])
-            for row in text_rows[1:]:
-                if row_sep is not None:
-                    self.write(indentation, row_sep, "\n")
-                write_row(row)
+        write_row(text_rows[0])
+        for row in text_rows[1:]:
+            if row_sep is not None:
+                self.write(indentation, row_sep, "\n")
+            write_row(row)
 
     def write_linear_dl(self, dl: Sequence[Definition]) -> None:
         """Formats a definition list as a "linear list". This is the default when
