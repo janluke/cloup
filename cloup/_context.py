@@ -75,6 +75,7 @@ class Context(click.Context):
         **ctx_kwargs,
     ):
         super().__init__(*ctx_args, **ctx_kwargs)
+
         self.align_option_groups = coalesce(
             align_option_groups,
             getattr(self.parent, 'align_option_groups', None),

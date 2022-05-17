@@ -482,9 +482,9 @@ class RequireExactly(WrapperConstraint):
 
     def __init__(self, n: int):
         check_arg(n > 0)
-        self.num_params = n
         # Defined as a wrapper to reuse check_consistency() of the wrapped constraint.
         super().__init__(RequireAtLeast(n) & AcceptAtMost(n))
+        self.num_params = n
 
     def help(self, ctx: Context) -> str:
         return f'exactly {self.num_params} required'
@@ -516,9 +516,9 @@ class AcceptBetween(WrapperConstraint):
         check_arg(min >= 0, 'min must be non-negative')
         if max is not None:
             check_arg(min < max, 'must be: min < max.')
+        super().__init__(RequireAtLeast(min) & AcceptAtMost(max), min=min, max=max)
         self.min_num_params = min
         self.max_num_params = max
-        super().__init__(RequireAtLeast(min) & AcceptAtMost(max), min=min, max=max)
 
     def help(self, ctx: Context) -> str:
         return f'at least {self.min_num_params} required, ' \
