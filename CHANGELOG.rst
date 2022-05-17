@@ -18,7 +18,8 @@ v0.15.0 (in development)
 New features and enhancements
 -----------------------------
 - Renamed ``Argument.help_record`` to ``Argument.get_help_record``. :pr:`116`
-- Fixed typos around.
+- Fixed typos and some type annotations. :pr:`116`
+- In mixins, moved call to ``super()`` at the beginning of ``__init__``. :pr:`119`.
 
 Bug fixes
 ---------
@@ -26,6 +27,7 @@ Bug fixes
 Breaking changes
 ----------------
 - Renamed ``Argument.help_record`` to ``Argument.get_help_record``.
+- In mixins, moved call to ``super()`` at the beginning of ``__init__``. :pr:`119`.
 
 Deprecated
 ----------
