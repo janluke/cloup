@@ -23,6 +23,8 @@ New features and enhancements
 
 Bug fixes
 ---------
+- The title of the default option group was "Other options" when the only other
+  parameter help section was "Positional arguments". It's now "Options". :pr:`120`
 
 Breaking changes
 ----------------
