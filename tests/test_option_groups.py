@@ -8,9 +8,9 @@ from click import pass_context
 
 import cloup
 from cloup import OptionGroup, option, option_group
-from cloup._util import pick_non_missing
-from cloup.typing import MISSING
+from cloup._util import pick_non_missing, reindent
 from cloup.constraints import RequireAtLeast, mutually_exclusive
+from cloup.typing import MISSING
 from tests.util import (make_options, new_dummy_func, parametrize, pick_first_bool)
 
 
@@ -274,3 +274,25 @@ def test_option_groups_raises_if_input_decorator_add_an_argument():
                 cloup.option('--opt')
             )
         )(new_dummy_func())
+
+
+def test_default_option_group_title_when_the_only_other_section_is_positional_arguments(
+    runner
+):
+    @cloup.command()
+    @cloup.argument("arg", help="An argument.")
+    @cloup.option("--opt", help="An option.")
+    def cmd(**kwargs):
+        pass
+
+    res = runner.invoke(cmd, ["--help"])
+    assert res.output == reindent("""
+        Usage: cmd [OPTIONS] ARG
+
+        Positional arguments:
+          ARG         An argument.
+
+        Options:
+          --opt TEXT  An option.
+          --help      Show this message and exit.
+    """)

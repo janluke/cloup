@@ -233,7 +233,7 @@ class OptionGroupMixin:
         )
 
     def get_default_option_group(
-        self, ctx: click.Context, is_the_only_option_group: bool = False
+        self, ctx: click.Context, is_the_only_visible_option_group: bool = False
     ) -> OptionGroup:
         """
         Returns an ``OptionGroup`` instance for the options not explicitly
@@ -242,7 +242,7 @@ class OptionGroupMixin:
         .. versionadded:: 0.8.0
         """
         default_group = OptionGroup(
-            "Options" if is_the_only_option_group else "Other options")
+            "Options" if is_the_only_visible_option_group else "Other options")
         default_group.options = self.get_ungrouped_options(ctx)
         return default_group
 
@@ -252,21 +252,26 @@ class OptionGroupMixin:
         formatter = ensure_is_cloup_formatter(formatter)
 
         visible_sections = []
+
+        # Positional arguments
         positional_arguments_section = self.get_arguments_help_section(ctx)
         if positional_arguments_section:
             visible_sections.append(positional_arguments_section)
-        visible_sections += [
+
+        # Option groups
+        option_group_sections = [
             self.make_option_group_help_section(group, ctx)
             for group in self.option_groups
             if not group.hidden
         ]
-
         default_group = self.get_default_option_group(
-            ctx, is_the_only_option_group=not visible_sections
+            ctx, is_the_only_visible_option_group=not option_group_sections
         )
         if not default_group.hidden:
-            visible_sections.append(
+            option_group_sections.append(
                 self.make_option_group_help_section(default_group, ctx))
+
+        visible_sections += option_group_sections
 
         formatter.write_many_sections(
             visible_sections,
