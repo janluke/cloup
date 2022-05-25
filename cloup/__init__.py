@@ -7,7 +7,6 @@ __email__ = 'gianluca.gippetto@gmail.com'
 __version__ = _version.version
 __version_tuple__ = _version.version_tuple
 
-# flake8: noqa F401
 from click import (
     # decorators
     confirmation_option,
@@ -66,3 +65,53 @@ from .constraints import (
     constraint,
 )
 from .types import dir_path, file_path, path
+
+__all__ = [
+    "Argument",
+    "BOOL",
+    "Choice",
+    "Color",
+    "Command",
+    "ConstraintMixin",
+    "Context",
+    "DateTime",
+    "FLOAT",
+    "File",
+    "FloatRange",
+    "Group",
+    "HelpFormatter",
+    "HelpSection",
+    "HelpTheme",
+    "INT",
+    "IntRange",
+    "Option",
+    "OptionGroup",
+    "OptionGroupMixin",
+    "ParamType",
+    "Path",
+    "STRING",
+    "Section",
+    "SectionMixin",
+    "Style",
+    "Tuple",
+    "UNPROCESSED",
+    "UUID",
+    "_version",
+    "argument",
+    "command",
+    "confirmation_option",
+    "constrained_params",
+    "constraint",
+    "dir_path",
+    "file_path",
+    "group",
+    "help_option",
+    "option",
+    "option_group",
+    "pass_context",
+    "pass_obj",
+    "password_option",
+    "path",
+    "version_option",
+    "warnings",
+]

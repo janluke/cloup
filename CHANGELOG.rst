@@ -20,6 +20,8 @@ New features and enhancements
 - Renamed ``Argument.help_record`` to ``Argument.get_help_record``. :pr:`116`
 - Fixed typos and some type annotations. :pr:`116`
 - In mixins, moved call to ``super()`` at the beginning of ``__init__``. :pr:`119`.
+- Made Cloup compatible with MyPy strict mode (``--no-implicit-reexport``) by
+  adding ``__all__`` to all ``__init__.py``. files. :issue:`117`
 
 Bug fixes
 ---------
