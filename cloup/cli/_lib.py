@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Iterator, Optional
+from typing import Callable, Dict, Iterable, Iterator, Optional
 
 import click
 from click._compat import strip_ansi
@@ -87,7 +87,7 @@ def to_markdown_plain(ctx: click.Context, level: int) -> str:
 
 
 def table_formatter(ctx: cloup.Context, level: int) -> str:
-    """Uses markdown tables for options."""
+    """Uses Markdown tables for options."""
     ctx.show_default = False
     command = ctx.command
     help_text = command.help.strip() if command.help else ""
@@ -110,11 +110,20 @@ def table_formatter(ctx: cloup.Context, level: int) -> str:
 
     # Parameters
     params = command.get_params(ctx)
+    args = [p for p in params if p.param_type_name == "argument"]
+    if args:
+        args_table = make_markdown_table(
+            header=('Argument', 'Description', 'Default'),
+            body=params_to_rows(args, ctx),
+        )
+        out.append("#" * level + " Positional arguments")
+        out.append(args_table)
+
     opts = [p for p in params if p.param_type_name == "option"]
     if opts:
         opt_table = make_markdown_table(
             header=('Option', 'Description', 'Default'),
-            body=options_to_rows(opts, ctx),
+            body=params_to_rows(opts, ctx),
         )
         out.append("#" * level + " Options")
         out.append(opt_table)
@@ -135,15 +144,16 @@ def make_markdown_table(header, body):
     return table
 
 
-def options_to_rows(opts, ctx):
+def params_to_rows(params: Iterable[click.Parameter], ctx):
     rows = []
-    for opt in opts:
-        opt.show_default = False
-        opt_name, opt_help = opt.get_help_record(ctx)
-        opt_default = opt.get_default(ctx)
-        opt_default = (f'"{opt_default}"' if isinstance(opt_default, str)
-                       else str(opt_default))
-        rows.append((f"`{opt_name}`", opt_help, f"`{opt_default}`"))
+    for param in params:
+        if isinstance(param, click.Option):
+            param.show_default = False
+        name, help = param.get_help_record(ctx)
+        name = name.replace("|", ", ")
+        default = param.get_default(ctx)
+        default = (f'"{default}"' if isinstance(default, str) else str(default))
+        rows.append((f"`{name}`", help, f"`{default}`"))
     return rows
 
 
