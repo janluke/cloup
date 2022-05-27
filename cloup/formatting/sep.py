@@ -122,7 +122,7 @@ def get_total_width(col_widths: Sequence[int], col_spacing: int) -> int:
     return sum(col_widths) + col_spacing * (len(col_widths) - 1)
 
 
-def count_multiline_rows(rows: Sequence[str], col_widths: Sequence[int]) -> int:
+def count_multiline_rows(rows: Sequence[Sequence[str]], col_widths: Sequence[int]) -> int:
     # Note: I'm using zip_longest on purpose so that a TypeError will be raised
     # if len(row) != len(col_widths). An explicit check is not worth it since
     # this should never happen.
