@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from typing import (
-    Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union,
+    Any, Dict, Iterable, List, Optional, Sequence, Tuple, Type, TypeVar, Union,
 )
 
 import click
@@ -54,7 +54,7 @@ class Section:
     def sorted(cls, title: str, commands: Subcommands = ()) -> 'Section':
         return cls(title, commands, sorted=True)
 
-    def add_command(self, cmd: click.Command, name: Optional[str] = None):
+    def add_command(self, cmd: click.Command, name: Optional[str] = None) -> None:
         name = name or cmd.name
         if not name:
             raise TypeError('missing command name')
@@ -104,11 +104,11 @@ class SectionMixin:
     """
 
     def __init__(
-        self, *args,
+        self, *args: Any,
         commands: Optional[Dict[str, click.Command]] = None,
         sections: Iterable[Section] = (),
         align_sections: Optional[bool] = None,
-        **kwargs,
+        **kwargs: Any,
     ):
         """
         :param align_sections:
@@ -130,7 +130,11 @@ class SectionMixin:
         for section in sections:
             self.add_section(section)
 
-    def _add_command_to_section(self, cmd, name=None, section=None):
+    def _add_command_to_section(
+        self, cmd: click.Command,
+        name: Optional[str] = None,
+        section: Optional[Section] = None
+    ) -> None:
         """Adds a command to the section (if specified) or to the default section."""
         name = name or cmd.name
         if section is None:
@@ -152,7 +156,7 @@ class SectionMixin:
             # otherwise subclasses' add_command() is not called.
             self.add_command(cmd, name, fallback_to_default_section=False)
 
-    def section(self, title: str, *commands: click.Command, **attrs) -> Section:
+    def section(self, title: str, *commands: click.Command, **attrs: Any) -> Section:
         """ Creates a new :class:`Section`, adds it to this group and returns it."""
         section = Section(title, commands, **attrs)
         self.add_section(section)
@@ -186,8 +190,9 @@ class SectionMixin:
         if section or fallback_to_default_section:
             self._add_command_to_section(cmd, name, section)
 
-    def list_sections(self, ctx: click.Context,
-                      include_default_section: bool = True) -> List[Section]:
+    def list_sections(
+        self, ctx: click.Context, include_default_section: bool = True
+    ) -> List[Section]:
         """ Returns the list of all sections in the "correct order".
          if ``include_default_section=True`` and the default section is non-empty,
          it will be included at the end of the list. """
