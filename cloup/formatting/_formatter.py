@@ -5,7 +5,7 @@ import textwrap
 from itertools import chain
 from typing import (
     Any, Callable, Dict, Iterable, Iterator, Optional, Sequence, TYPE_CHECKING,
-    Tuple, Union, cast,
+    Tuple, Union,
 )
 
 from cloup._util import click_version_ge_8_1
@@ -19,7 +19,7 @@ from click.formatting import wrap_text
 
 from cloup._util import (
     check_positive_int, identity, indent_lines, make_repr,
-    pick_non_missing
+    pick_non_missing,
 )
 from ..typing import MISSING, Possibly
 from cloup.styling import HelpTheme, IStyle

@@ -11,7 +11,7 @@ from .._util import first_bool
 from ..typing import Decorator, F
 
 if TYPE_CHECKING:
-    from cloup import Context, HelpFormatter, OptionGroup
+    from cloup import HelpFormatter, OptionGroup
 
 
 class BoundConstraintSpec(NamedTuple):

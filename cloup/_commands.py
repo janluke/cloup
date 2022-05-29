@@ -106,7 +106,9 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
             formatter.write_paragraph()
             formatter.write_epilog(epilog)
 
-    def format_help_text(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
+    def format_help_text(
+        self, ctx: click.Context, formatter: click.HelpFormatter
+    ) -> None:
         assert isinstance(formatter, cloup.HelpFormatter)
         formatter.write_command_help_text(self)
 
@@ -685,8 +687,6 @@ def group(
     else:
         raise TypeError(
             'this decorator requires cls to be a click.Group (or a subclass).')
-
-
 
 
 # Side stuff for better error messages

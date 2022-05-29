@@ -1,4 +1,4 @@
-__all__ = ['AnyCallable', 'MISSING', 'Possibly',  'Decorator', 'F',]
+__all__ = ['AnyCallable', 'MISSING', 'Possibly',  'Decorator', 'F']
 
 from enum import Enum
 from typing import Any, Callable, TypeVar, Union

@@ -1,6 +1,6 @@
 import abc
 from typing import (
-    Any, Callable, Iterable, Optional, Sequence, TypeVar, Union, cast, overload,
+    Any, Callable, Optional, Sequence, TypeVar, Union, cast, overload,
 )
 
 import click
@@ -54,8 +54,8 @@ class Constraint(abc.ABC):
         if attr in removed_attrs:
             raise Exception(
                 f'{attr} was removed in v0.9.0. You can now enable/disable consistency'
-                f'checks using the click.Context parameter check_constraints_consistency. '
-                f'Pass it as part of your context_settings.'
+                f'checks using the click.Context parameter check_constraints_consistency.'
+                f' Pass it as part of your context_settings.'
             )
 
     @abc.abstractmethod
@@ -101,7 +101,9 @@ class Constraint(abc.ABC):
         """
 
     @overload
-    def check(self, params: Sequence[click.Parameter], ctx: Optional[click.Context] = None) -> None:
+    def check(
+        self, params: Sequence[click.Parameter], ctx: Optional[click.Context] = None
+    ) -> None:
         ...
 
     @overload
