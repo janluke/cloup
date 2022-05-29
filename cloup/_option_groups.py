@@ -364,7 +364,7 @@ def _option_group(
         opt_group = OptionGroup(title, help=help, constraint=constraint, hidden=hidden)
         if not hasattr(f, '__click_params__'):
             f.__click_params__ = []  # type: ignore
-        cli_params = f.__click_params  # type: ignore
+        cli_params = f.__click_params__  # type: ignore
         for add_option in reversed(options):
             prev_len = len(cli_params)
             add_option(f)
@@ -374,7 +374,7 @@ def _option_group(
                     raise TypeError(
                         "only parameter of type `Option` can be added to option groups")
                 existing_group = get_option_group_of(new_option)
-                if existing_group:
+                if existing_group is not None:
                     raise ValueError(
                         f'{new_option} was first assigned to {existing_group} and then '
                         f'passed as argument to @option_group({title!r}, ...)'
