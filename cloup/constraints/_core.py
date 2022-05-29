@@ -265,6 +265,7 @@ class Or(Operator):
         for c in self.constraints:
             try:
                 c.check_values(params, ctx)
+                return
             except ConstraintViolated:
                 pass
         raise ConstraintViolated.default(
