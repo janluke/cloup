@@ -1,6 +1,6 @@
 """Generic utilities."""
 from typing import (
-    Any, Dict, Hashable, Iterable, List, Optional, Sequence, TypeVar,
+    Any, Dict, Hashable, Iterable, List, Optional, Sequence, Type, TypeVar,
 )
 
 import click
@@ -21,21 +21,27 @@ def pick_non_missing(d: Dict[K, Possibly[V]]) -> Dict[K, V]:
     return {key: val for key, val in d.items() if val is not MISSING}
 
 
-def class_name(obj):
+def class_name(obj: object) -> str:
     return obj.__class__.__name__
 
 
-def check_arg(condition: bool, msg: str = ''):
+def check_arg(condition: bool, msg: str = '') -> None:
     if not condition:
         raise ValueError(msg)
 
 
-def indent_lines(lines: Iterable[str], width=2) -> List[str]:
+def indent_lines(lines: Iterable[str], width: int = 2) -> List[str]:
     spaces = ' ' * width
     return [spaces + line for line in lines]
 
 
-def make_repr(obj, *args, _line_len: int = 60, _indent: int = 2, **kwargs) -> str:
+def make_repr(
+    obj: Any,
+    *args: Any,
+    _line_len: int = 60,
+    _indent: int = 2,
+    **kwargs: Any
+) -> str:
     """
     Generate repr(obj).
 
@@ -68,7 +74,7 @@ def make_repr(obj, *args, _line_len: int = 60, _indent: int = 2, **kwargs) -> st
         return f'{cls_name}({args_text})'
 
 
-def make_one_line_repr(obj, *args, **kwargs):
+def make_one_line_repr(obj: object, *args: Any, **kwargs: Any) -> str:
     return make_repr(obj, *args, _line_len=-1, **kwargs)
 
 
@@ -96,8 +102,8 @@ def pick_not_none(iterable: Iterable[Optional[T]]) -> List[T]:
     return [x for x in iterable if x is not None]
 
 
-def check_positive_int(value, arg_name):
-    error_type = None
+def check_positive_int(value: Any, arg_name: str) -> None:
+    error_type: Optional[Type[Exception]] = None
     if not isinstance(value, int):
         error_type = TypeError
     elif value <= 0:
@@ -111,11 +117,12 @@ def identity(x: T) -> T:
 
 
 class FrozenSpaceMeta(type):
-    def __init__(cls, *args):
+    def __init__(cls, *args: Any):
+        super().__init__(*args)
         d = {k: v for k, v in vars(cls).items() if not k.startswith('_')}
         type.__setattr__(cls, '_dict', d)
 
-    def __setattr__(cls, key, value):
+    def __setattr__(cls, key: str, value: Any) -> None:
         raise Exception("you can't set attributes on this class")
 
     def asdict(cls) -> Dict[str, Any]:
@@ -124,19 +131,19 @@ class FrozenSpaceMeta(type):
     def __contains__(cls, item: str) -> bool:
         return item in cls.asdict()
 
-    def __getitem__(cls, item):
-        return cls._dict[item]
+    def __getitem__(cls, item: str) -> Any:
+        return cls._dict[item]  # type: ignore
 
 
 class FrozenSpace(metaclass=FrozenSpaceMeta):
     """A class used just as frozen namespace for constants."""
 
-    def __init__(self):
+    def __init__(self) -> None:
         raise Exception(
             "this class is just a namespace for constants, it's not instantiable.")
 
 
-def delete_keys(d: dict, keys: Sequence[str]) -> None:
+def delete_keys(d: Dict[Any, Any], keys: Sequence[str]) -> None:
     for key in keys:
         del d[key]
 
