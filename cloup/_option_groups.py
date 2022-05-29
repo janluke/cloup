@@ -3,7 +3,7 @@ Implements the "option groups" feature.
 """
 from collections import defaultdict
 from typing import (
-    Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple, overload,
+    Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple, overload,
 )
 
 import click
@@ -60,7 +60,7 @@ class OptionGroup:
             opt.get_help_record(ctx) for opt in self if not opt.hidden  # type: ignore
         ]  # get_help_record() should return None only if opt.hidden
 
-    def option(self, *param_decls, **attrs) -> Callable[[F], F]:
+    def option(self, *param_decls: str, **attrs: Any) -> Callable[[F], F]:
         """Refer to :func:`cloup.option`."""
         return option(*param_decls, group=self, **attrs)
 
@@ -81,11 +81,11 @@ class OptionGroup:
             self, self.title, options=[opt.name for opt in self.options])
 
 
-def has_option_group(param) -> bool:
+def has_option_group(param: click.Parameter) -> bool:
     return getattr(param, 'group', None) is not None
 
 
-def get_option_group_of(param) -> Optional[OptionGroup]:
+def get_option_group_of(param: click.Option) -> Optional[OptionGroup]:
     return getattr(param, 'group', None)
 
 
@@ -116,8 +116,8 @@ class OptionGroupMixin:
     """
 
     def __init__(
-        self, *args, align_option_groups: Optional[bool] = None, **kwargs
-    ):
+        self, *args: Any, align_option_groups: Optional[bool] = None, **kwargs: Any
+    ) -> None:
         """
         :param align_option_groups:
             whether to align the columns of all option groups' help sections.
@@ -130,7 +130,7 @@ class OptionGroupMixin:
         :param kwargs:
             keyword arguments forwarded to the next class in the MRO
         """
-        super().__init__(*args, **kwargs)  # type: ignore
+        super().__init__(*args, **kwargs)
 
         self.align_option_groups = align_option_groups
         params = kwargs.get('params') or []
@@ -302,7 +302,7 @@ def option_group(
 
 
 # noinspection PyIncorrectDocstring
-def option_group(title, *args, **kwargs):
+def option_group(title: str, *args: Any, **kwargs: Any) -> Callable[[F], F]:
     """
     Returns a decorator that annotates a function with an option group.
 
@@ -346,7 +346,7 @@ def option_group(title, *args, **kwargs):
 
 def _option_group(
     title: str,
-    options: Callable[[F], F],
+    options: Sequence[Callable[[F], F]],
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
@@ -360,24 +360,26 @@ def _option_group(
     if not options:
         raise ValueError('you must provide at least one option')
 
-    def decorator(f):
+    def decorator(f: F) -> F:
         opt_group = OptionGroup(title, help=help, constraint=constraint, hidden=hidden)
         if not hasattr(f, '__click_params__'):
-            f.__click_params__ = []
+            f.__click_params__ = []  # type: ignore
+        cli_params = f.__click_params  # type: ignore
         for add_option in reversed(options):
-            prev_len = len(f.__click_params__)
+            prev_len = len(cli_params)
             add_option(f)
-            added_options = f.__click_params__[prev_len:]
+            added_options = cli_params[prev_len:]
             for new_option in added_options:
                 if not isinstance(new_option, Option):
                     raise TypeError(
                         "only parameter of type `Option` can be added to option groups")
-                if has_option_group(new_option):
+                existing_group = get_option_group_of(new_option)
+                if existing_group:
                     raise ValueError(
-                        f'{new_option} was first assigned to {new_option.group} and then '
+                        f'{new_option} was first assigned to {existing_group} and then '
                         f'passed as argument to @option_group({title!r}, ...)'
                     )
-                new_option.group = opt_group
+                new_option.group = opt_group  # type: ignore
                 if hidden:
                     new_option.hidden = True
         return f
