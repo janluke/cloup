@@ -21,7 +21,7 @@ Possibly = Union[_Missing, _T]
 
 AnyCallable = Callable[..., Any]
 
-F = TypeVar('F', bound=Callable)
+F = TypeVar('F', bound=AnyCallable)
 """Type variable for a Callable."""
 
 Decorator = Callable[[AnyCallable], AnyCallable]
