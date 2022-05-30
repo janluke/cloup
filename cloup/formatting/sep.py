@@ -15,7 +15,6 @@ if sys.version_info[:2] >= (3, 8):
 else:  # pragma: no cover
     from typing_extensions import Protocol
 
-
 SepType = Union[str, 'SepGenerator']
 
 
@@ -26,6 +25,7 @@ class SepGenerator(Protocol):
 
     Note: the length of the returned separator may differ from ``width``.
     """
+
     def __call__(self, width: int) -> str:
         ...
 
@@ -122,7 +122,7 @@ def get_total_width(col_widths: Sequence[int], col_spacing: int) -> int:
     return sum(col_widths) + col_spacing * (len(col_widths) - 1)
 
 
-def count_multiline_rows(rows: Sequence[str], col_widths: Sequence[int]) -> int:
+def count_multiline_rows(rows: Sequence[Sequence[str]], col_widths: Sequence[int]) -> int:
     # Note: I'm using zip_longest on purpose so that a TypeError will be raised
     # if len(row) != len(col_widths). An explicit check is not worth it since
     # this should never happen.
@@ -153,7 +153,11 @@ def multiline_rows_are_at_least(
     if isinstance(count_or_percentage, int):
         count_threshold = count_or_percentage
 
-        def condition(rows, col_widths, col_spacing):
+        def condition(
+            rows: Sequence[Sequence[str]],
+            col_widths: Sequence[int],
+            col_spacing: int,
+        ) -> bool:
             num_multiline = count_multiline_rows(rows, col_widths)
             return num_multiline >= count_threshold
 
@@ -164,7 +168,11 @@ def multiline_rows_are_at_least(
                 "count_or_percentage must be either an integer or a float in the "
                 f"interval ]0, 1[. You passed a float >= 1.0 ({percent_threshold}).")
 
-        def condition(rows, col_widths, col_spacing):
+        def condition(
+            rows: Sequence[Sequence[str]],
+            col_widths: Sequence[int],
+            col_spacing: int,
+        ) -> bool:
             num_multiline = count_multiline_rows(rows, col_widths)
             percent_multiline = num_multiline / len(rows)
             return percent_multiline >= percent_threshold

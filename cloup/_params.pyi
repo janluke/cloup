@@ -7,13 +7,13 @@ import click
 
 from cloup import OptionGroup
 
-F = TypeVar('F', bound=Callable)
+F = TypeVar('F', bound=Callable[..., Any])
 P = TypeVar('P', bound=click.Parameter)
 
 ParamTypeLike = Union[
     click.ParamType,
     Type[float], Type[int],
-    Type[str], Type[tuple],
+    Type[str], Type[Tuple[Any, ...]],
 ]
 ParamDefault = Union[Any, Callable[[], Any]]
 ParamCallback = Callable[[click.Context, P, Any], Any]
@@ -28,7 +28,7 @@ ParamCallback = Callable[[click.Context, P, Any], Any]
 # ]
 
 class Argument(click.Argument):
-    def __init__(self, *args, help: Optional[str] = None, **attrs):
+    def __init__(self, *args: Any, help: Optional[str] = None, **attrs: Any):
         ...
 
     def get_help_record(self, ctx: click.Context) -> Tuple[str, str]:
@@ -36,12 +36,12 @@ class Argument(click.Argument):
 
 
 class Option(click.Option):
-    def __init__(self, *args, group: Optional[OptionGroup] = None, **attrs):
+    def __init__(self, *args: Any, group: Optional[OptionGroup] = None, **attrs: Any):
         ...
 
 
 def argument(
-    *param_decls,
+    *param_decls: str,
     cls: Optional[Type[click.Argument]] = None,
     type: Optional[ParamTypeLike] = None,
     required: Optional[bool] = None,
@@ -53,12 +53,12 @@ def argument(
     envvar: Optional[Union[str, Sequence[str]]] = None,
     # The following will be added when Cloup drops support for Click 7:
     #     shell_complete: Optional[ShellComplete] = None,
-    **kwargs
+    **kwargs: Any,
 ) -> Callable[[F], F]: ...
 
 
 def option(
-    *param_decls,
+    *param_decls: str,
     cls: Optional[Type[click.Option]] = None,
     # Commonly used
     metavar: Optional[str] = None,
@@ -95,5 +95,5 @@ def option(
     group: Optional[OptionGroup] = None,
     # The following will be added when Cloup drops support for Click 7:
     #     shell_complete: Optional[ShellComplete] = None,
-    **kwargs
+    **kwargs: Any
 ) -> Callable[[F], F]: ...

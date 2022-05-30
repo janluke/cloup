@@ -62,7 +62,7 @@ class If(Constraint):
         if self._else:
             self._else.check_consistency(params)
 
-    def check_values(self, params: Sequence[Parameter], ctx: Context):
+    def check_values(self, params: Sequence[Parameter], ctx: Context) -> None:
         condition = self._condition
         condition_is_true = condition(ctx)
         branch = self._then if condition_is_true else self._else

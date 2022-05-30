@@ -5,7 +5,7 @@ import textwrap
 from itertools import chain
 from typing import (
     Any, Callable, Dict, Iterable, Iterator, Optional, Sequence, TYPE_CHECKING,
-    Tuple, Union, cast,
+    Tuple, Union,
 )
 
 from cloup._util import click_version_ge_8_1
@@ -19,7 +19,7 @@ from click.formatting import wrap_text
 
 from cloup._util import (
     check_positive_int, identity, indent_lines, make_repr,
-    pick_non_missing
+    pick_non_missing,
 )
 from ..typing import MISSING, Possibly
 from cloup.styling import HelpTheme, IStyle
@@ -162,7 +162,7 @@ class HelpFormatter(click.HelpFormatter):
 
     @property
     def available_width(self) -> int:
-        return cast(int, self.width) - self.current_indent
+        return self.width - self.current_indent
 
     def write(self, *strings: str) -> None:
         self.buffer += strings
@@ -249,7 +249,7 @@ class HelpFormatter(click.HelpFormatter):
         lengths_under_limit = (length for length in col1_lengths if length <= max_width)
         return max(lengths_under_limit, default=0)
 
-    def write_dl(  # type: ignore
+    def write_dl(
         self, rows: Sequence[Definition],
         col_max: Optional[int] = None,  # default changed to None wrt parent class
         col_spacing: Optional[int] = None,  # default changed to None wrt parent class
@@ -338,7 +338,7 @@ class HelpFormatter(click.HelpFormatter):
         row_sep = self._get_row_sep_for(text_rows, (col1_width, col2_width), col_spacing)
         col1_styler, col2_styler = self.theme.col1, self.theme.col2
 
-        def write_row(row):
+        def write_row(row: Tuple[str, str]) -> None:
             first, second = row
             self.write(indentation, col1_styler(first))
             if not second:
@@ -390,7 +390,7 @@ class HelpFormatter(click.HelpFormatter):
     def write_epilog(self, epilog: str) -> None:
         self.write_text(epilog, self.theme.epilog)
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return make_repr(
             self, width=self.width, indent_increment=self.indent_increment,
             col1_max_width=self.col1_max_width, col_spacing=self.col_spacing

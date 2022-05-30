@@ -3,7 +3,7 @@ This module contains components that specifically address the styling and themin
 of the ``--help`` output.
 """
 import dataclasses as dc
-from typing import Callable, NamedTuple, Optional
+from typing import Any, Callable, Dict, NamedTuple, Optional
 
 import click
 
@@ -82,7 +82,7 @@ class HelpTheme(NamedTuple):
         return self
 
     @staticmethod
-    def dark():
+    def dark() -> "HelpTheme":
         """A theme assuming a dark terminal background color."""
         return HelpTheme(
             invoked_command=Style(fg='bright_yellow'),
@@ -92,7 +92,7 @@ class HelpTheme(NamedTuple):
         )
 
     @staticmethod
-    def light():
+    def light() -> "HelpTheme":
         """A theme assuming a light terminal background color."""
         return HelpTheme(
             invoked_command=Style(fg='yellow'),
@@ -147,7 +147,7 @@ class Style:
     strikethrough: Optional[bool] = None
     text_transform: Optional[IStyle] = None
 
-    _style_kwargs: Optional[dict] = dc.field(init=False, default=None)
+    _style_kwargs: Optional[Dict[str, Any]] = dc.field(init=False, default=None)
 
     def __call__(self, text: str) -> str:
         if self._style_kwargs is None:

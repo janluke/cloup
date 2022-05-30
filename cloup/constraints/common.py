@@ -20,7 +20,7 @@ def param_value_is_set(param: Parameter, value: Any) -> bool:
     # checking for param.is_flag is redundant but necessary to work around
     # Click 8.0.1 issue: https://github.com/pallets/click/issues/1925
     elif isinstance(param, Option) and param.is_flag and param.is_bool_flag:
-        return value
+        return bool(value)
     elif param.nargs != 1 or param.multiple:
         return len(value) > 0
     return True
@@ -81,18 +81,18 @@ def format_param(param: Parameter) -> str:
     return f'{long} ({short})'
 
 
-def format_param_list(param_list: Iterable[Parameter], indent=2) -> str:
+def format_param_list(param_list: Iterable[Parameter], indent: int = 2) -> str:
     lines = map(format_param, param_list)
     indentation = ' ' * indent
     return ''.join(indentation + line + '\n'
                    for line in lines)
 
 
-def param_label_by_name(ctx, name: str) -> str:
+def param_label_by_name(ctx: Any, name: str) -> str:
     return get_param_label(ctx.command.get_param_by_name(name))
 
 
-def get_param_labels(ctx, param_names: Iterable[str]) -> List[str]:
+def get_param_labels(ctx: Any, param_names: Iterable[str]) -> List[str]:
     params = ctx.command.get_params_by_name(param_names)
     return [get_param_label(param) for param in params]
 

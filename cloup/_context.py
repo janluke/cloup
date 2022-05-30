@@ -10,7 +10,10 @@ from cloup.typing import MISSING, Possibly
 
 
 def _warn_if_formatter_settings_conflict(
-    ctx_key: str, formatter_key: str, ctx_kwargs: dict, formatter_settings: dict
+    ctx_key: str,
+    formatter_key: str,
+    ctx_kwargs: Dict[str, Any],
+    formatter_settings: Dict[str, Any],
 ) -> None:
     if ctx_kwargs.get(ctx_key) and formatter_settings.get(formatter_key):
         from textwrap import dedent
@@ -65,14 +68,14 @@ class Context(click.Context):
     formatter_class: Type[HelpFormatter] = HelpFormatter
 
     def __init__(
-        self, *ctx_args,
+        self, *ctx_args: Any,
         align_option_groups: Optional[bool] = None,
         align_sections: Optional[bool] = None,
         show_subcommand_aliases: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
         check_constraints_consistency: Optional[bool] = None,
         formatter_settings: Dict[str, Any] = {},
-        **ctx_kwargs,
+        **ctx_kwargs: Any,
     ):
         super().__init__(*ctx_args, **ctx_kwargs)
 
