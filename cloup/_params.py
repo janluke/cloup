@@ -31,7 +31,7 @@ def option(*param_decls, cls=None, group=None, **kwargs):
     Refer to :class:`click.Option` and :class:`click.Parameter` for more info
     about the accepted parameters.
 
-    In your IDE, you won't see arguments that have to do with shell completion,
+    In your IDE, you won't see arguments relating to shell completion,
     because they are different in Click 7 and 8 (both supported by Cloup):
 
     - in Click 7, it's ``autocompletion``
