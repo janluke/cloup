@@ -317,7 +317,7 @@ class Group(SectionMixin, Command, click.Group):
         """
 
         def decorator(f: AnyCallable) -> Union[Command, ClickCommand]:
-            cmd = command(name=name, cls=cls, **kwargs)(f)
+            cmd = command(name=name, cls=cls, aliases=aliases, **kwargs)(f)
             self.add_command(cmd, section=section)
             return cmd
 
@@ -395,7 +395,7 @@ class Group(SectionMixin, Command, click.Group):
         """
 
         def decorator(f: AnyCallable) -> Union["Group", ClickGroup]:
-            cmd = group(name=name, cls=cls, **kwargs)(f)
+            cmd = group(name=name, cls=cls, aliases=aliases, **kwargs)(f)
             self.add_command(cmd, section=section)
             return cmd
 
