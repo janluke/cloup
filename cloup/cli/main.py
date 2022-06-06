@@ -31,7 +31,7 @@ def cli():
 
 
 @cli.command('document', aliases=['doc'])
-@argument('CMD')
+@argument('CMD', help="Command name specified as <module_name>:<command_name>.")
 @option(
     '-o', '--out-path',
     type=cloup.Path(dir_okay=False, writable=True, path_type=Path),
