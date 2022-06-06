@@ -1,3 +1,4 @@
+from inspect import cleandoc
 from typing import Callable, Dict, Iterable, Iterator, Optional
 
 import click
@@ -90,7 +91,7 @@ def table_formatter(ctx: cloup.Context, level: int) -> str:
     """Uses Markdown tables for options."""
     ctx.show_default = False
     command = ctx.command
-    help_text = command.help.strip() if command.help else ""
+    help_text = cleandoc(command.help) if command.help else ""
     help_text = strip_ansi(help_text.replace('\b', ''))
     usage = command.get_usage(ctx)
     out = [f"```\n{usage}\n```"]
