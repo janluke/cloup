@@ -181,8 +181,8 @@ Thanks
 
     * - |JetBrainsLogo|
       - A big thank to `JetBrains <https://www.jetbrains.com/>`_ for providing me with a free license for their IDEs.
-        If you're developing a non-commercial open-source project, you may consider
-        to apply for a free license too. You find all details at `this link <https://jb.gg/OpenSourceSupport>`_.
+        If you're developing a non-commercial open-source project, you may consider applying for a free license too.
+        You find all details at `this link <https://jb.gg/OpenSourceSupport>`_.
 
 .. |JetBrainsLogo| image:: https://resources.jetbrains.com/storage/products/company/brand/logos/jb_beam.png
     :alt: JetBrains logo
