@@ -13,8 +13,8 @@ Changelog
     Deprecated
     ----------
 
-v0.15.0 (in development)
-========================
+v0.15.0 (2022-06-16)
+====================
 New features and enhancements
 -----------------------------
 - Renamed ``Argument.help_record`` to ``Argument.get_help_record``. :pr:`116`
