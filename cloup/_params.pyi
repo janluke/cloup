@@ -10,11 +10,8 @@ from cloup import OptionGroup
 F = TypeVar('F', bound=Callable[..., Any])
 P = TypeVar('P', bound=click.Parameter)
 
-ParamTypeLike = Union[
-    click.ParamType,
-    Type[float], Type[int],
-    Type[str], Type[Tuple[Any, ...]],
-]
+SimpleParamTypeLike = Union[click.ParamType, Type[float], Type[int], Type[str]]
+ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
 ParamDefault = Union[Any, Callable[[], Any]]
 ParamCallback = Callable[[click.Context, P, Any], Any]
 

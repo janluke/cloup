@@ -13,6 +13,15 @@ Changelog
     Deprecated
     ----------
 
+v0.X.X (in development)
+=======================
+
+Bug fixes
+---------
+- Fix type of ``type`` argument of ``@option`` and ``@argument``. Specifically,
+  tuple types weren't correctly described.
+
+
 v0.15.0 (2022-06-16)
 ====================
 New features and enhancements
