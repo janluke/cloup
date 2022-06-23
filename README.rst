@@ -45,6 +45,10 @@
     :alt: Documentation Status (latest release)
     :target: https://cloup.readthedocs.io/en/stable/
 
+.. |downloads| image:: https://img.shields.io/pypi/dw/cloup
+    :alt: PyPI - Downloads
+    :target: https://pypistats.org/packages/cloup
+
 .. |donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
     :alt: Donate with PayPal
     :target: https://www.paypal.com/donate?hosted_button_id=4GTN24HXPMNBJ
@@ -52,7 +56,7 @@
 ========
 Overview
 ========
-|pypi-release| |python-versions| |tests-status| |coverage| |dev-docs| |donate|
+|pypi-release| |python-versions| |downloads| |tests-status| |coverage| |dev-docs| |donate|
 
 **Cloup** — originally from "**Cl**\ick + option gr\ **oup**\s" — enriches
 `Click <https://github.com/pallets/click>`_ with several features that make it
