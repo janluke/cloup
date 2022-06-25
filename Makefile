@@ -21,7 +21,8 @@ install: clean ## install the package in dev mode
 
 .PHONY: mypy
 mypy: ## check code, tests and examples with mypy
-	mypy cloup tests examples
+	mypy cloup --strict
+	mypy tests examples
 
 .PHONY: lint
 lint: ## check code, tests and examples with flake8
