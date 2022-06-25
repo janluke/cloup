@@ -13,14 +13,18 @@ Changelog
     Deprecated
     ----------
 
-v0.X.X (in development)
-=======================
+v0.15.1 (2022-06-26)
+====================
 
 Bug fixes
 ---------
 - Fix type of ``type`` argument of ``@option`` and ``@argument``. Specifically,
   tuple types weren't correctly described.
-
+- Reimplement ``@argument`` and ``@option`` without calling the corresponding
+  Click methods (:pr:`124`):
+    - make decorators returned by ``@argument`` reusable by not relying on bugged
+      Click implementation
+    - remove unnecessary copy of ``**attrs`` in ``@option``.
 
 v0.15.0 (2022-06-16)
 ====================
