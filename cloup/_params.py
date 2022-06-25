@@ -1,4 +1,5 @@
 import click
+from click.decorators import _param_memo
 
 
 class Argument(click.Argument):
@@ -22,11 +23,17 @@ GroupedOption = Option
 """Alias of ``Option``."""
 
 
-def argument(*args, help=None, cls=Argument, **kwargs):
-    return click.argument(*args, help=help, cls=cls, **kwargs)
+def argument(*param_decls, cls=None, **attrs):
+    ArgumentClass = cls or Argument
+
+    def decorator(f):
+        _param_memo(f, ArgumentClass(param_decls, **attrs))
+        return f
+
+    return decorator
 
 
-def option(*param_decls, cls=None, group=None, **kwargs):
+def option(*param_decls, cls=None, group=None, **attrs):
     """Attaches an ``Option`` to the command.
     Refer to :class:`click.Option` and :class:`click.Parameter` for more info
     about the accepted parameters.
@@ -39,15 +46,14 @@ def option(*param_decls, cls=None, group=None, **kwargs):
 
     These arguments have different semantics, refer to Click's docs.
     """
-    if cls is None:
-        cls = Option
+    OptionClass = cls or Option
 
     def decorator(f):
-        func = click.option(*param_decls, cls=cls, **kwargs)(f)
-        new_option = func.__click_params__[-1]
+        _param_memo(f, OptionClass(param_decls, **attrs))
+        new_option = f.__click_params__[-1]
         new_option.group = group
         if group and group.hidden:
             new_option.hidden = True
-        return func
+        return f
 
     return decorator

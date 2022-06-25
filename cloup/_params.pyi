@@ -39,7 +39,8 @@ class Option(click.Option):
 
 def argument(
     *param_decls: str,
-    cls: Optional[Type[click.Argument]] = None,
+    cls: Optional[Type[Argument]] = None,
+    help: Optional[str] = None,
     type: Optional[ParamTypeLike] = None,
     required: Optional[bool] = None,
     default: Optional[ParamDefault] = None,
