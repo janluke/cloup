@@ -22,9 +22,10 @@ Bug fixes
   tuple types weren't correctly described.
 - Reimplement ``@argument`` and ``@option`` without calling the corresponding
   Click methods (:pr:`124`):
-    - make decorators returned by ``@argument`` reusable by not relying on bugged
-      Click implementation
-    - remove unnecessary copy of ``**attrs`` in ``@option``.
+
+  - make decorators returned by ``@argument`` reusable by not relying on bugged
+    Click implementation
+  - remove unnecessary copy of ``**attrs`` in ``@option``.
 
 v0.15.0 (2022-06-16)
 ====================
@@ -44,9 +45,6 @@ Breaking changes
 ----------------
 - Renamed ``Argument.help_record`` to ``Argument.get_help_record``.
 - In mixins, moved call to ``super()`` at the beginning of ``__init__``. :pr:`119`.
-
-Deprecated
-----------
 
 --------------------------------------------------------------------------------
 
