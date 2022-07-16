@@ -17,11 +17,6 @@ jobs:
           - { name: 'Lint',          tox: lint,  python: '3.8' }
           - { name: 'Type checking', tox: mypy,  python: '3.8' }
           - { name: 'Twine check',   tox: twine, python: '3.8' }
-          # Test using Click 7
-          - { name: 'Python 3.6, Click 7', tox: 'py36-click7', python: '3.6' }
-          - { name: 'Python 3.7, Click 7', tox: 'py37-click7', python: '3.7' }
-          - { name: 'Python 3.8, Click 7', tox: 'py38-click7', python: '3.8' }
-          - { name: 'Python 3.9, Click 7', tox: 'py39-click7', python: '3.9' }
           # Test using Click 8
           - { name: 'Python 3.6, Click 8', tox: 'py36-click8', python: '3.6' }
           - { name: 'Python 3.7, Click 8', tox: 'py37-click8', python: '3.7' }

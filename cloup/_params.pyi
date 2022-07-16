@@ -1,9 +1,10 @@
 """
 Types for parameter decorators are in this stub for convenience of implementation.
 """
-from typing import Any, Callable, Optional, Sequence, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, List, Optional, Sequence, Tuple, Type, TypeVar, Union
 
 import click
+from click.shell_completion import CompletionItem
 
 from cloup import OptionGroup
 
@@ -14,15 +15,11 @@ SimpleParamTypeLike = Union[click.ParamType, Type[float], Type[int], Type[str]]
 ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
 ParamDefault = Union[Any, Callable[[], Any]]
 ParamCallback = Callable[[click.Context, P, Any], Any]
+ShellCompleteArg = Callable[
+    [click.Context, P, str],
+    Union[List[CompletionItem], List[str]],
+]
 
-# Click 8 deprecates the argument `autocompletion` and replaces it with the
-# argument `shell_complete`, which has a different semantic.
-# The following will be uncommented when Cloup drop support for Click 7:
-#
-# ShellComplete = Callable[
-#     [click.Context, P, str],
-#     Union[List['CompletionItem'], List[str]],
-# ]
 
 class Argument(click.Argument):
     def __init__(self, *args: Any, help: Optional[str] = None, **attrs: Any):
@@ -49,8 +46,7 @@ def argument(
     metavar: Optional[str] = None,
     expose_value: bool = True,
     envvar: Optional[Union[str, Sequence[str]]] = None,
-    # The following will be added when Cloup drops support for Click 7:
-    #     shell_complete: Optional[ShellComplete] = None,
+    shell_complete: Optional[ShellCompleteArg[click.Argument]] = None,
     **kwargs: Any,
 ) -> Callable[[F], F]: ...
 
@@ -91,7 +87,6 @@ def option(
     expose_value: bool = True,
     # Others
     group: Optional[OptionGroup] = None,
-    # The following will be added when Cloup drops support for Click 7:
-    #     shell_complete: Optional[ShellComplete] = None,
+    shell_complete: Optional[ShellCompleteArg[click.Option]] = None,
     **kwargs: Any
 ) -> Callable[[F], F]: ...

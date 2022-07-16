@@ -53,9 +53,6 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
 
     Besides other things, this class also:
 
-    * back-ports a feature from Click v8.0, i.e. the ``context_class``
-      class attribute, which is set to ``cloup.Context``.
-
     * adds a ``formatter_settings`` instance attribute.
 
     Refer to :class:`click.Command` for the documentation of all parameters.
@@ -76,22 +73,6 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
         self.aliases: List[str] = [] if aliases is None else list(aliases)
         self.formatter_settings: Dict[str, Any] = (
             {} if formatter_settings is None else formatter_settings)
-
-    def make_context(
-        self, info_name: Optional[str],
-        args: List[str],
-        parent: Optional[click.Context] = None,
-        **extra: Any
-    ) -> Context:
-        for key, value in self.context_settings.items():
-            if key not in extra:
-                extra[key] = value
-
-        ctx = self.context_class(self, info_name=info_name, parent=parent, **extra)
-
-        with ctx.scope(cleanup=False):
-            self.parse_args(ctx, args)
-        return ctx
 
     def get_normalized_epilog(self) -> str:
         if self.epilog and click_version_ge_8_1:
