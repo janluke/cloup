@@ -51,7 +51,7 @@
 
 .. |donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
     :alt: Donate with PayPal
-    :target: https://www.paypal.com/donate?hosted_button_id=4GTN24HXPMNBJ
+    :target: https://www.paypal.com/donate/?hosted_button_id=4GTN24HXPMNBJ
 
 ========
 Overview

@@ -5,7 +5,7 @@ from typing import Any, Callable, TypeVar, Union
 
 
 # PEP-blessed solution for defining a Singleton type:
-# https://www.python.org/dev/peps/pep-0484/#id30
+# https://peps.python.org/pep-0614/#motivation
 class _Missing(Enum):
     flag = 'Missing'
 
