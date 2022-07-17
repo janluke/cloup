@@ -13,7 +13,7 @@ Changelog
     Deprecated
     ----------
 
-v1.0.0 (unreleased)
+v1.0.0 (2022-07-17)
 ===================
 - Drop support for Python 3.6. Python 3.6 ha reached end-of-life in Dec 2021 and
   it's not officially supported by Click 8. From https://pypistats.org/packages/cloup,
