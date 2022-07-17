@@ -15,6 +15,12 @@ Changelog
 
 v1.0.0 (unreleased)
 ===================
+- Drop support for Python 3.6. Python 3.6 ha reached end-of-life in Dec 2021 and
+  it's not officially supported by Click 8. From https://pypistats.org/packages/cloup,
+  I can see that about 37% of people are still using Python 3.6. If you can't
+  upgrade, you should still be able to use Cloup by installing the ``dataclasses``
+  backport package and using a compatible version of Click.
+
 - Drop support for Click 7.
 
 --------------------------------------------------------------------------------
