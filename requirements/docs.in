@@ -1,4 +1,4 @@
-sphinx >3, <4
+sphinx <5
 sphinx-autoapi
 furo
 sphinx-panels

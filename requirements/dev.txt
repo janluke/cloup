@@ -8,55 +8,57 @@ alabaster==0.7.12
     # via
     #   -r requirements\docs.txt
     #   sphinx
-appdirs==1.4.4
-    # via virtualenv
-astroid==2.6.0
+astroid==2.12.2
     # via
     #   -r requirements\docs.txt
     #   sphinx-autoapi
-atomicwrites==1.4.0
+atomicwrites==1.4.1
     # via
     #   -r requirements\test.txt
     #   pytest
-attrs==21.2.0
+attrs==21.4.0
     # via
     #   -r requirements\test.txt
     #   pytest
-babel==2.9.1
+babel==2.10.3
     # via
     #   -r requirements\docs.txt
     #   sphinx
-beautifulsoup4==4.9.3
+beautifulsoup4==4.11.1
     # via
     #   -r requirements\docs.txt
     #   furo
-bleach==3.3.0
+bleach==5.0.1
     # via readme-renderer
-certifi==2021.5.30
-    # via
-    #   -r requirements\docs.txt
-    #   requests
-chardet==4.0.0
-    # via
-    #   -r requirements\docs.txt
-    #   requests
-click==8.0.1
+build==0.8.0
     # via pip-tools
-colorama==0.4.4
+certifi==2022.6.15
+    # via
+    #   -r requirements\docs.txt
+    #   requests
+charset-normalizer==2.1.0
+    # via
+    #   -r requirements\docs.txt
+    #   requests
+click==8.1.3
+    # via pip-tools
+colorama==0.4.5
     # via
     #   -r requirements\docs.txt
     #   -r requirements\test.txt
+    #   build
     #   click
     #   pytest
     #   sphinx
     #   sphinx-autobuild
     #   tox
-    #   twine
-coverage==5.5
+commonmark==0.9.1
+    # via rich
+coverage[toml]==6.4.2
     # via
     #   -r requirements\test.txt
     #   pytest-cov
-distlib==0.3.2
+distlib==0.3.5
     # via virtualenv
 docutils==0.16
     # via
@@ -64,23 +66,23 @@ docutils==0.16
     #   readme-renderer
     #   sphinx
     #   sphinx-panels
-filelock==3.0.12
+filelock==3.7.1
     # via
     #   tox
     #   virtualenv
-flake8==3.9.2
+flake8==4.0.1
     # via -r requirements/dev.in
-furo==2021.6.18b36
+furo==2021.4.11b34
     # via -r requirements\docs.txt
-idna==2.10
+idna==3.3
     # via
     #   -r requirements\docs.txt
     #   requests
-imagesize==1.2.0
+imagesize==1.4.1
     # via
     #   -r requirements\docs.txt
     #   sphinx
-importlib-metadata==4.5.0
+importlib-metadata==4.12.0
     # via
     #   keyring
     #   twine
@@ -88,86 +90,89 @@ iniconfig==1.1.1
     # via
     #   -r requirements\test.txt
     #   pytest
-jinja2==3.0.1
+jinja2==3.0.3
     # via
     #   -r requirements\docs.txt
     #   sphinx
     #   sphinx-autoapi
-keyring==23.0.1
+keyring==23.7.0
     # via twine
-lazy-object-proxy==1.6.0
+lazy-object-proxy==1.7.1
     # via
     #   -r requirements\docs.txt
     #   astroid
 livereload==2.6.3
     # via sphinx-autobuild
-markupsafe==2.0.1
+markupsafe==2.1.1
     # via
     #   -r requirements\docs.txt
     #   jinja2
 mccabe==0.6.1
     # via flake8
-mypy==0.910
+mypy==0.961
     # via -r requirements/dev.in
 mypy-extensions==0.4.3
     # via mypy
-packaging==20.9
+packaging==21.3
     # via
     #   -r requirements\docs.txt
     #   -r requirements\test.txt
-    #   bleach
+    #   build
     #   pytest
     #   sphinx
     #   tox
-pep517==0.10.0
-    # via pip-tools
-pip-tools==6.2.0
+pep517==0.12.0
+    # via build
+pip-tools==6.8.0
     # via -r requirements/dev.in
-pkginfo==1.7.0
+pkginfo==1.8.3
     # via twine
-pluggy==0.13.1
+platformdirs==2.5.2
+    # via virtualenv
+pluggy==1.0.0
     # via
     #   -r requirements\test.txt
     #   pytest
     #   tox
-py==1.10.0
+py==1.11.0
     # via
     #   -r requirements\test.txt
     #   pytest
     #   tox
-pycodestyle==2.7.0
+pycodestyle==2.8.0
     # via flake8
-pyflakes==2.3.1
+pyflakes==2.4.0
     # via flake8
-pygments==2.9.0
+pygments==2.12.0
     # via
     #   -r requirements\docs.txt
     #   readme-renderer
+    #   rich
     #   sphinx
-pyparsing==2.4.7
+pyparsing==3.0.9
     # via
     #   -r requirements\docs.txt
     #   -r requirements\test.txt
     #   packaging
-pytest==6.2.4
+pytest==7.1.2
     # via
     #   -r requirements\test.txt
     #   pytest-cov
-pytest-cov==2.12.1
+pytest-cov==3.0.0
     # via -r requirements\test.txt
-pytz==2021.1
+pytz==2022.1
     # via
     #   -r requirements\docs.txt
     #   babel
 pywin32-ctypes==0.2.0
     # via keyring
-pyyaml==5.4.1
+pyyaml==6.0
     # via
     #   -r requirements\docs.txt
     #   sphinx-autoapi
-readme-renderer==29.0
+readme-renderer==35.0
     # via twine
-requests==2.25.1
+requests==2.28.1
     # via
     #   -r requirements\docs.txt
     #   requests-toolbelt
@@ -175,20 +180,21 @@ requests==2.25.1
     #   twine
 requests-toolbelt==0.9.1
     # via twine
-rfc3986==1.5.0
+rfc3986==2.0.0
+    # via twine
+rich==12.5.1
     # via twine
 six==1.16.0
     # via
     #   bleach
     #   livereload
-    #   readme-renderer
     #   tox
     #   virtualenv
-snowballstemmer==2.1.0
+snowballstemmer==2.2.0
     # via
     #   -r requirements\docs.txt
     #   sphinx
-soupsieve==2.2.1
+soupsieve==2.3.2.post1
     # via
     #   -r requirements\docs.txt
     #   beautifulsoup4
@@ -202,13 +208,13 @@ sphinx==3.5.4
     #   sphinx-issues
     #   sphinx-panels
     #   sphinx-version-warning
-sphinx-autoapi==1.8.1
+sphinx-autoapi==1.8.4
     # via -r requirements\docs.txt
 sphinx-autobuild==2021.3.14
     # via -r requirements/dev.in
-sphinx-copybutton==0.3.3
+sphinx-copybutton==0.5.0
     # via -r requirements\docs.txt
-sphinx-issues==1.2.0
+sphinx-issues==3.0.1
     # via -r requirements\docs.txt
 sphinx-panels==0.6.0
     # via -r requirements\docs.txt
@@ -239,42 +245,49 @@ sphinxcontrib-serializinghtml==1.1.5
     #   -r requirements\docs.txt
     #   sphinx
 toml==0.10.2
+    # via tox
+tomli==2.0.1
     # via
     #   -r requirements\test.txt
+    #   build
+    #   coverage
     #   mypy
     #   pep517
     #   pytest
-    #   pytest-cov
-    #   tox
-tornado==6.1
+tornado==6.2
     # via livereload
-tox==3.23.1
+tox==3.25.1
     # via -r requirements/dev.in
-tqdm==4.61.1
-    # via twine
-twine==3.4.1
+twine==4.0.1
     # via -r requirements/dev.in
-typing-extensions==3.10.0.0
-    # via mypy
-unidecode==1.2.0
-    # via
-    #   -r requirements\docs.txt
-    #   sphinx-autoapi
-urllib3==1.26.5
-    # via
-    #   -r requirements\docs.txt
-    #   requests
-virtualenv==20.4.7
-    # via tox
-webencodings==0.5.1
-    # via bleach
-wheel==0.36.2
-    # via pip-tools
-wrapt==1.12.1
+typing-extensions==4.3.0
     # via
     #   -r requirements\docs.txt
     #   astroid
-zipp==3.4.1
+    #   mypy
+    #   rich
+unidecode==1.3.4
+    # via
+    #   -r requirements\docs.txt
+    #   sphinx-autoapi
+urllib3==1.26.10
+    # via
+    #   -r requirements\docs.txt
+    #   requests
+    #   twine
+virtualenv==20.14.1
+    # via
+    #   -r requirements/dev.in
+    #   tox
+webencodings==0.5.1
+    # via bleach
+wheel==0.37.1
+    # via pip-tools
+wrapt==1.14.1
+    # via
+    #   -r requirements\docs.txt
+    #   astroid
+zipp==3.8.1
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
