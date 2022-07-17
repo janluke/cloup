@@ -4,7 +4,5 @@ flake8
 mypy
 pip-tools
 tox
-# Bug in virtualenv 20.15.0: https://github.com/pypa/virtualenv/issues/2367
-virtualenv ~=  20.14.0
 twine
 sphinx-autobuild

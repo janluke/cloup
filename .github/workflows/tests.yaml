@@ -18,10 +18,10 @@ jobs:
           - { name: 'Type checking', tox: mypy,  python: '3.8' }
           - { name: 'Twine check',   tox: twine, python: '3.8' }
           # Test using Click 8
-          - { name: 'Python 3.6, Click 8', tox: 'py36-click8', python: '3.6' }
           - { name: 'Python 3.7, Click 8', tox: 'py37-click8', python: '3.7' }
           - { name: 'Python 3.8, Click 8', tox: 'py38-click8', python: '3.8' }
           - { name: 'Python 3.9, Click 8', tox: 'py39-click8', python: '3.9' }
+          - { name: 'Python 3.10, Click 8', tox: 'py310-click8', python: '3.10' }
           # Docs
           - { name: 'Docs', tox: docs,  python: '3.8' }
 
