@@ -32,7 +32,7 @@ import click
 
 import cloup
 from ._context import Context
-from ._option_groups import OptionGroupMixin
+from ._option_groups import MutuallyExclusiveFlagsMixin, OptionGroupMixin
 from ._sections import Section, SectionMixin
 from ._util import click_version_ge_8_1, first_bool, reindent
 from .constraints import ConstraintMixin
@@ -42,7 +42,7 @@ ClickCommand = TypeVar('ClickCommand', bound=click.Command)
 ClickGroup = TypeVar('ClickGroup', bound=click.Group)
 
 
-class Command(ConstraintMixin, OptionGroupMixin, click.Command):
+class Command(ConstraintMixin, OptionGroupMixin, MutuallyExclusiveFlagsMixin, click.Command):
     """A ``click.Command`` supporting option groups and constraints.
 
     Refer to superclasses for the documentation of all accepted parameters:

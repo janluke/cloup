@@ -1,3 +1,5 @@
+from typing import Callable
+
 import click
 from click.decorators import _param_memo
 

@@ -1,13 +1,15 @@
 """
 Implements the "option groups" feature.
 """
+import typing as t
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import (
-    Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple, overload,
+    Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple, Union, overload,
 )
 
 import click
-from click import Option, Parameter
+from click import Context, Option, Parameter
 
 import cloup
 from cloup._params import option
@@ -385,3 +387,65 @@ def _option_group(
         return f
 
     return decorator
+
+
+@dataclass
+class Flag:
+    name: str
+    value: Optional[Any] = None
+    help: Optional[str] = None
+
+    def __post_init__(self):
+        if self.value is None:
+            self.value = self.name
+
+
+def mutually_exclusive_flags(
+    title: str,
+    name: str,
+    flags: List[Flag],
+    help: Optional[str] = None,
+):
+    from cloup.constraints import mutually_exclusive
+
+    def decorator(f):
+        f = option_group(
+            title,
+            *[
+                option(f"--{flag.name}", flag_value=flag.value, help=flag.help)
+                for flag in flags
+            ],
+            constraint=mutually_exclusive,
+            help=help,
+        )(f)
+
+        return option(
+            f"--{name}",
+            type=MutuallyExclusiveFlags(flags),
+            hidden=True,
+        )(f)
+
+    return decorator
+
+
+class MutuallyExclusiveFlags(click.ParamType):
+    name = "mutually_exclusive_flags"
+
+    def __init__(self, flags: List[Flag]):
+        self.flags = flags
+
+
+class MutuallyExclusiveFlagsMixin:
+    def __init__(self, *args, params, **kwargs):
+        super().__init__(*args, params=params, **kwargs)
+        self._mutuallly_exclusive_flags: List[MutuallyExclusiveFlags] = [
+            p for p in params if p.type.name == MutuallyExclusiveFlags.name
+        ]
+
+    def invoke(self, ctx: Context) -> t.Any:
+        for opt in self._mutuallly_exclusive_flags:
+            for flag in opt.type.flags:
+                value = ctx.params.pop(flag.name)
+                if value == flag.value:
+                    ctx.params[opt.name] = flag.value
+        return super().invoke(ctx)

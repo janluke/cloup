@@ -45,9 +45,11 @@ from .formatting import (
 from ._context import Context
 from ._params import Argument, Option, argument, option
 from ._option_groups import (
+    Flag,
     OptionGroup,
     OptionGroupMixin,
     option_group,
+    mutually_exclusive_flags,
 )
 from ._sections import (
     Section,
@@ -77,6 +79,7 @@ __all__ = [
     "DateTime",
     "FLOAT",
     "File",
+    "Flag",
     "FloatRange",
     "Group",
     "HelpFormatter",
@@ -106,6 +109,7 @@ __all__ = [
     "file_path",
     "group",
     "help_option",
+    "mutually_exclusive_flags",
     "option",
     "option_group",
     "pass_context",
