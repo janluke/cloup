@@ -438,12 +438,12 @@ class MutuallyExclusiveFlags(click.ParamType):
 class MutuallyExclusiveFlagsMixin:
     def __init__(self, *args, params, **kwargs):
         super().__init__(*args, params=params, **kwargs)
-        self._mutuallly_exclusive_flags: List[MutuallyExclusiveFlags] = [
+        self._mutually_exclusive_flags: List[MutuallyExclusiveFlags] = [
             p for p in params if p.type.name == MutuallyExclusiveFlags.name
         ]
 
     def invoke(self, ctx: Context) -> t.Any:
-        for opt in self._mutuallly_exclusive_flags:
+        for opt in self._mutually_exclusive_flags:
             for flag in opt.type.flags:
                 value = ctx.params.pop(flag.name)
                 if value == flag.value:
