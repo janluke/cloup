@@ -96,3 +96,27 @@ class TestDidYouMean:
                ins
                install
         """)
+
+
+@pytest.mark.parametrize("decorator", [cloup.command, cloup.group])
+def test_error_is_raised_when_command_decorators_are_used_without_parenthesis(decorator):
+    with pytest.raises(Exception, match="parenthesis"):
+        @decorator
+        def cmd():
+            pass
+
+
+def test_error_is_raised_when_group_subcommand_decorators_are_used_without_parenthesis():
+    @cloup.group()
+    def root():
+        pass
+
+    with pytest.raises(Exception, match="parenthesis"):
+        @root.group
+        def subgroup():
+            pass
+
+    with pytest.raises(Exception, match="parenthesis"):
+        @root.command
+        def subcommand():
+            pass
