@@ -296,9 +296,10 @@ class Group(SectionMixin, Command, click.Group):
         .. versionchanged:: 0.10.0
             all arguments but ``name`` are now keyword-only.
         """
+        make_command = command(name=name, cls=cls, aliases=aliases, **kwargs)
 
         def decorator(f: AnyCallable) -> Union[Command, ClickCommand]:
-            cmd = command(name=name, cls=cls, aliases=aliases, **kwargs)(f)
+            cmd = make_command(f)
             self.add_command(cmd, section=section)
             return cmd
 
@@ -374,9 +375,10 @@ class Group(SectionMixin, Command, click.Group):
         .. versionchanged:: 0.10.0
             all arguments but ``name`` are now keyword-only.
         """
+        make_group = group(name=name, cls=cls, aliases=aliases, **kwargs)
 
         def decorator(f: AnyCallable) -> Union["Group", ClickGroup]:
-            cmd = group(name=name, cls=cls, aliases=aliases, **kwargs)(f)
+            cmd = make_group(f)
             self.add_command(cmd, section=section)
             return cmd
 
@@ -513,6 +515,11 @@ def command(
     :param kwargs:
         any other argument accepted by the instantiated command class (``cls``).
     """
+    if callable(name):
+        raise Exception(
+            f"you forgot parenthesis in the command decorator for `{name.__name__}`. "
+            f"While parenthesis are optional in Click > 8.1, they are required in Cloup."
+        )
 
     def decorator(f: AnyCallable) -> ClickCommand:
         if hasattr(f, '__constraints'):
