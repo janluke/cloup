@@ -13,6 +13,11 @@ Changelog
     Deprecated
     ----------
 
+v1.0.1 (2022-09-22)
+=======================
+- Show a helpful error message when some tries to use command decorators without
+  parenthesis. :pr:`128`
+
 v1.0.0 (2022-07-17)
 ===================
 - Drop support for Python 3.6. Python 3.6 ha reached end-of-life in Dec 2021 and
