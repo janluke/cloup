@@ -182,10 +182,17 @@ class ConstraintMixin:
 
         args = super().parse_args(ctx, args)  # type: ignore
 
-        # Check parameters satisfy all constraints
-        if not ctx.resilient_parsing:
-            for constr in self.all_constraints:
-                constr.check_values(ctx)
+        # Skip constraints checking if the user wants to see --help for subcommand
+        # or if resilient parsing is enabled
+        should_show_subcommand_help = isinstance(ctx.command, click.Group) and any(
+            help_flag in args for help_flag in ctx.help_option_names
+        )
+        if ctx.resilient_parsing or should_show_subcommand_help:
+            return args
+
+        # Check constraints
+        for constr in self.all_constraints:
+            constr.check_values(ctx)
         return args
 
     def get_param_by_name(self, name: str) -> click.Parameter:

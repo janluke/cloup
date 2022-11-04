@@ -7,7 +7,9 @@ from click import Argument, Option
 import cloup
 from cloup import Context
 from cloup._util import pick_non_missing, reindent
-from cloup.constraints import Constraint, RequireAtLeast, mutually_exclusive
+from cloup.constraints import (
+    Constraint, RequireAtLeast, mutually_exclusive, require_all, require_one
+)
 from cloup.typing import MISSING
 from tests.constraints.test_constraints import FakeConstraint
 from tests.util import new_dummy_func, pick_first_bool
@@ -195,3 +197,28 @@ def test_usage_of_constraints_as_decorators(runner):
     res = runner.invoke(cmd, args='ARG -c CCC -d DDD'.split())
     assert res.exit_code == click.UsageError.exit_code
     assert 'mutually exclusive' in res.output
+
+
+def test_group_constraints_doesnt_prevent_displaying_help_in_subcommand(runner):
+    @cloup.group()
+    @cloup.option_group(
+        "Credentials",
+        require_all(cloup.option("--user"), cloup.option("--password"))
+    )
+    def cli(user, password):
+        """Top level group text."""
+
+    @cli.group()
+    @cloup.option_group(
+        "Required",
+        require_one(cloup.option("--foo"), cloup.option("--bar"))
+    )
+    def subgroup(foo, bar):
+        """Subgroup help text."""
+
+    @subgroup.command()
+    def subcommand():
+        """Subcommand help text."""
+
+    res = runner.invoke(cli, ["subgroup", "subcommand", "--help"])
+    assert res.exit_code == 0, res.output
