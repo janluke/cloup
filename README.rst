@@ -85,8 +85,8 @@ Moreover, Cloup improves on **IDE support** providing decorators with *detailed*
 type hints and adding the static methods ``Context.settings()`` and
 ``HelpFormatter.settings()`` for creating dictionaries of settings.
 
-Cloup is extensively **tested and documented.** Tests are run against multiple
-versions of Python (>=3.6) and Click (>=7.2).
+Cloup is **statically type-checked** with MyPy in strict mode and extensively **tested** 
+against multiple versions of Python with nearly 100% coverage. 
 
 
 A simple example
