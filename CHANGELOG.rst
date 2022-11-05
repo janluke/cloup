@@ -13,6 +13,11 @@ Changelog
     Deprecated
     ----------
 
+v1.x.x (in development)
+=======================
+- Rename ``__constraints`` attribute to ``__cloup_constraints__`` to make it
+  easier to access e.g. from class based decorators, if needed. :issue:`131`
+
 v1.0.2 (2022-11-04)
 =======================
 - Skip constraints checking when passing ``--help`` to a subcommand. :issue:`129`

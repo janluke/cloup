@@ -30,9 +30,9 @@ class BoundConstraintSpec(NamedTuple):
 def _constraint_memo(
     f: Any, constr: Union[BoundConstraintSpec, 'BoundConstraint']
 ) -> None:
-    if not hasattr(f, '__constraints'):
-        f.__constraints = []
-    f.__constraints.append(constr)
+    if not hasattr(f, '__cloup_constraints__'):
+        f.__cloup_constraints__ = []
+    f.__cloup_constraints__.append(constr)
 
 
 def constraint(constr: Constraint, params: Iterable[str]) -> Callable[[F], F]:

@@ -522,13 +522,13 @@ def command(
         )
 
     def decorator(f: AnyCallable) -> ClickCommand:
-        if hasattr(f, '__constraints'):
+        if hasattr(f, '__cloup_constraints__'):
             if cls and not issubclass(cls, ConstraintMixin):
                 raise TypeError(
                     f"a Command must inherit from cloup.ConstraintMixin to support "
                     f"constraints; {cls} doesn't")
-            constraints = tuple(reversed(f.__constraints))  # type: ignore
-            del f.__constraints  # type: ignore
+            constraints = tuple(reversed(f.__cloup_constraints__))  # type: ignore
+            del f.__cloup_constraints__  # type: ignore
             kwargs['constraints'] = constraints
 
         cmd_cls = cls if cls is not None else Command
