@@ -9,11 +9,11 @@ from tests.util import new_dummy_func
 
 
 def test_command_handling_of_unknown_argument():
-    with pytest.raises(TypeError, match='HINT: you set cls='):
+    with pytest.raises(TypeError, match='Hint: you set `cls='):
         cloup.command(cls=click.Command, align_option_groups=True)(new_dummy_func())
     with pytest.raises(TypeError, match='nonexisting') as info:
         cloup.command(nonexisting=True)(new_dummy_func())
-    assert re.search(str(info.value), 'HINT') is None
+    assert re.search(str(info.value), 'Hint') is None
 
 
 def test_group_raises_if_cls_is_not_subclass_of_click_Group():
@@ -25,11 +25,11 @@ def test_group_raises_if_cls_is_not_subclass_of_click_Group():
 
 
 def test_group_handling_of_unknown_argument():
-    with pytest.raises(TypeError, match='HINT'):
+    with pytest.raises(TypeError, match='Hint'):
         cloup.group(cls=click.Group, align_sections=True)(new_dummy_func())
     with pytest.raises(TypeError) as info:
         cloup.group(unexisting_arg=True)(new_dummy_func())
-    assert re.search(str(info.value), 'HINT') is None
+    assert re.search(str(info.value), 'Hint') is None
 
 
 def test_command_works_with_no_parameters(runner):

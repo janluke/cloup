@@ -19,7 +19,7 @@ def as_predicate(arg: Union[str, Sequence[str], Predicate]) -> Predicate:
     elif isinstance(arg, Sequence):
         return AllSet(*arg)
     else:
-        raise TypeError('arg should be a string, a list of string or a Predicate')
+        raise TypeError('`arg` should be a string, a list of strings or a `Predicate`')
 
 
 class If(Constraint):

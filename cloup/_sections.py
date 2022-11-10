@@ -30,13 +30,13 @@ class Section:
                  is_sorted: bool = False):  # noqa
         """
         :param title:
-        :param commands: sequence of commands or dictionary {name: command}
+        :param commands: sequence of commands or dict of commands keyed by name
         :param is_sorted:
             if True, ``list_commands()`` returns the commands in lexicographic order
         """
         if not isinstance(title, str):
             raise TypeError(
-                'the first argument must be a string, the title. You probably forgot it.')
+                'the first argument must be a string, the title; you probably forgot it')
         self.title = title
         self.is_sorted = is_sorted
         self.commands: OrderedDict[str, click.Command] = OrderedDict()
@@ -47,8 +47,8 @@ class Section:
         elif isinstance(commands, dict):
             self.commands = OrderedDict(commands)
         else:
-            raise TypeError('the argument "commands" must be a list of commands '
-                            'or a dict {name: command}')
+            raise TypeError('argument `commands` must be a sequence of commands '
+                            'or a dict of commands keyed by name')
 
     @classmethod
     def sorted(cls, title: str, commands: Subcommands = ()) -> 'Section':
@@ -59,7 +59,7 @@ class Section:
         if not name:
             raise TypeError('missing command name')
         if name in self.commands:
-            raise Exception('command "{}" already exists'.format(name))
+            raise Exception(f'command "{name}" already exists')
         self.commands[name] = cmd
 
     def list_commands(self) -> List[Tuple[str, click.Command]]:
@@ -148,7 +148,7 @@ class SectionMixin:
         """ Adds a :class:`Section` to this group. You can add the same
         section object a single time. """
         if section in self._section_set:
-            raise ValueError(f'{section} was already added')
+            raise ValueError(f'section "{section}" was already added')
         self._user_sections.append(section)
         self._section_set.add(section)
         for name, cmd in section.commands.items():
