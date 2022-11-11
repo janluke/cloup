@@ -43,7 +43,7 @@ def make_example_group(align_sections):
     git.add_section(Section(
         'Work on the current change (see also: git help everyday)',
         [git_rm, git_sparse_checkout, git_mv],
-        sorted=True
+        is_sorted=True
     ))
 
     git.add_command(cloup.command('fake-3', hidden=True)(f))

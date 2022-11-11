@@ -27,18 +27,18 @@ class Section:
 
     def __init__(self, title: str,
                  commands: Subcommands = (),
-                 sorted: bool = False):  # noqa
+                 is_sorted: bool = False):  # noqa
         """
         :param title:
         :param commands: sequence of commands or dictionary {name: command}
-        :param sorted:
+        :param is_sorted:
             if True, ``list_commands()`` returns the commands in lexicographic order
         """
         if not isinstance(title, str):
             raise TypeError(
                 'the first argument must be a string, the title. You probably forgot it.')
         self.title = title
-        self.sorted = sorted  # type: ignore
+        self.is_sorted = is_sorted
         self.commands: OrderedDict[str, click.Command] = OrderedDict()
         if isinstance(commands, Sequence):
             self.commands = OrderedDict()
@@ -52,7 +52,7 @@ class Section:
 
     @classmethod
     def sorted(cls, title: str, commands: Subcommands = ()) -> 'Section':
-        return cls(title, commands, sorted=True)
+        return cls(title, commands, is_sorted=True)
 
     def add_command(self, cmd: click.Command, name: Optional[str] = None) -> None:
         name = name or cmd.name
@@ -65,7 +65,7 @@ class Section:
     def list_commands(self) -> List[Tuple[str, click.Command]]:
         command_list = [(name, cmd) for name, cmd in self.commands.items()
                         if not cmd.hidden]
-        if self.sorted:
+        if self.is_sorted:
             command_list.sort()
         return command_list
 
@@ -73,7 +73,7 @@ class Section:
         return len(self.commands)
 
     def __repr__(self) -> str:
-        return 'Section({}, sorted={})'.format(self.title, self.sorted)
+        return 'Section({}, is_sorted={})'.format(self.title, self.is_sorted)
 
 
 class SectionMixin:

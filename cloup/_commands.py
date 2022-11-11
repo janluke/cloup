@@ -527,8 +527,8 @@ def command(
                 raise TypeError(
                     f"a Command must inherit from cloup.ConstraintMixin to support "
                     f"constraints; {cls} doesn't")
-            constraints = tuple(reversed(f.__cloup_constraints__))  # type: ignore
-            del f.__cloup_constraints__  # type: ignore
+            constraints = tuple(reversed(f.__cloup_constraints__))
+            del f.__cloup_constraints__
             kwargs['constraints'] = constraints
 
         cmd_cls = cls if cls is not None else Command
