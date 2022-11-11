@@ -16,7 +16,7 @@ from tests.util import (make_options, new_dummy_func, parametrize, pick_first_bo
 
 def test_error_message_if_first_arg_is_not_a_string():
     with pytest.raises(
-        TypeError, match="the first argument of @option_group must be its title"
+        TypeError, match="the first argument of `@option_group` must be its title"
     ):
         @option_group(
             option('--one'),

@@ -109,7 +109,9 @@ def check_positive_int(value: Any, arg_name: str) -> None:
     elif value <= 0:
         error_type = ValueError
     if error_type:
-        raise error_type(f'{arg_name} should be a positive integer. It is: {value}.')
+        raise error_type(
+            f'argument `{arg_name}` should be a positive integer; it is {value!r}'
+        )
 
 
 def identity(x: T) -> T:

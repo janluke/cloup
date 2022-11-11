@@ -353,8 +353,8 @@ def _option_group(
 ) -> Callable[[F], F]:
     if not isinstance(title, str):
         raise TypeError(
-            'the first argument of @option_group must be its title, a string. '
-            'You probably forgot it!'
+            'the first argument of `@option_group` must be its title, a string; '
+            'you probably forgot it'
         )
 
     if not options:
@@ -376,8 +376,9 @@ def _option_group(
                 existing_group = get_option_group_of(new_option)
                 if existing_group is not None:
                     raise ValueError(
-                        f'{new_option} was first assigned to {existing_group} and then '
-                        f'passed as argument to @option_group({title!r}, ...)'
+                        f'Option "{new_option}" was first assigned to group '
+                        f'"{existing_group}" and then passed as argument to '
+                        f'`@option_group({title!r}, ...)`'
                     )
                 new_option.group = opt_group  # type: ignore
                 if hidden:

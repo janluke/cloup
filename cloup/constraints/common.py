@@ -33,9 +33,9 @@ def get_param_name(param: Parameter) -> str:
     """
     if param.name is None:
         raise TypeError(
-            'param.name is required to be a string in this context.\n'
-            'Hint: param.name is None only when parameter.expose_value is False, '
-            'so you are probably using such option incorrectly.'
+            '`param.name` is required to be a string in this context.\n'
+            'Hint: `param.name` is None only when `parameter.expose_value` is False, '
+            'so you are probably using this option incorrectly.'
         )
     return param.name
 

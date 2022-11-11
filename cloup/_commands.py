@@ -518,15 +518,15 @@ def command(
     if callable(name):
         raise Exception(
             f"you forgot parenthesis in the command decorator for `{name.__name__}`. "
-            f"While parenthesis are optional in Click > 8.1, they are required in Cloup."
+            f"While parenthesis are optional in Click >= 8.1, they are required in Cloup."
         )
 
     def decorator(f: AnyCallable) -> ClickCommand:
         if hasattr(f, '__cloup_constraints__'):
             if cls and not issubclass(cls, ConstraintMixin):
                 raise TypeError(
-                    f"a Command must inherit from cloup.ConstraintMixin to support "
-                    f"constraints; {cls} doesn't")
+                    f"a `Command` must inherit from `cloup.ConstraintMixin` to support "
+                    f"constraints; `{cls}` doesn't")
             constraints = tuple(reversed(f.__cloup_constraints__))
             del f.__cloup_constraints__
             kwargs['constraints'] = constraints
@@ -674,7 +674,7 @@ def group(
         return command(name=name, cls=cls, **kwargs)
     else:
         raise TypeError(
-            'this decorator requires cls to be a click.Group (or a subclass).')
+            'this decorator requires `cls` to be a `click.Group` (or a subclass)')
 
 
 # Side stuff for better error messages
@@ -687,10 +687,10 @@ class _ArgInfo(NamedTuple):
 
 _ARGS_INFO = {
     info.arg_name: info for info in [
-        _ArgInfo('formatter_settings', Command, "both Command and Group"),
-        _ArgInfo('align_option_groups', OptionGroupMixin, "both Command and Group"),
-        _ArgInfo('show_constraints', ConstraintMixin, "both Command and Group"),
-        _ArgInfo('align_sections', SectionMixin, "Group")
+        _ArgInfo('formatter_settings', Command, "both `Command` and `Group`"),
+        _ArgInfo('align_option_groups', OptionGroupMixin, "both `Command` and `Group`"),
+        _ArgInfo('show_constraints', ConstraintMixin, "both `Command` and `Group`"),
+        _ArgInfo('align_sections', SectionMixin, "`Group`")
     ]
 }
 
@@ -710,9 +710,9 @@ def _process_unexpected_kwarg_error(
     arg = match.group()
     info = args_info[arg]
     extra_info = reindent(f"""\n
-        HINT: you set cls={cls} but this class doesn't support the argument "{arg}".
-        In Cloup, this argument is supported by {info.supported_by}
-        via {info.requires.__name__}.
+        Hint: you set `cls={cls}` but this class doesn't support the argument `{arg}`.
+        In Cloup, this argument is supported by `{info.supported_by}`
+        via `{info.requires.__name__}`.
     """, 4)
     new_message = message + '\n' + extra_info
     return TypeError(new_message)

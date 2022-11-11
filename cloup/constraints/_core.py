@@ -53,9 +53,10 @@ class Constraint(abc.ABC):
         removed_attrs = ('toggle_consistency_checks', 'consistency_checks_toggled')
         if attr in removed_attrs:
             raise Exception(
-                f'{attr} was removed in v0.9.0. You can now enable/disable consistency'
-                f'checks using the click.Context parameter check_constraints_consistency.'
-                f' Pass it as part of your context_settings.'
+                f'attribute `{attr}` was removed in v0.9. You can now enable/disable '
+                f'consistency checks using the `click.Context` parameter '
+                f'`check_constraints_consistency`. '
+                f'Pass it as part of your `context_settings`.'
             )
 
     @abc.abstractmethod
@@ -138,12 +139,12 @@ class Constraint(abc.ABC):
         from ._support import ConstraintMixin
 
         if not params:
-            raise ValueError("arg 'params' can't be empty")
+            raise ValueError("argument `params` can't be empty")
 
         ctx = click.get_current_context() if ctx is None else ctx
         if not isinstance(ctx.command, ConstraintMixin):  # this is needed for mypy
             raise TypeError('constraints work only if the command inherits from '
-                            'ConstraintMixin')
+                            '`ConstraintMixin`')
 
         if isinstance(params[0], str):
             param_names = cast(Sequence[str], params)
