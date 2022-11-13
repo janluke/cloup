@@ -2,7 +2,6 @@
 -r docs.txt
 flake8
 mypy
-pip-tools
 tox
 twine
 sphinx-autobuild
