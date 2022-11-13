@@ -13,10 +13,9 @@ Changelog
     Deprecated
     ----------
 
-v1.x.x (in development)
-=======================
-- Rename ``__constraints`` attribute to ``__cloup_constraints__`` to make it
-  easier to access e.g. from class based decorators, if needed. :issue:`131`
+Newer releases
+==============
+Release notes are now only on GitHub: https://github.com/janluke/cloup/releases.
 
 v1.0.2 (2022-11-04)
 =======================
