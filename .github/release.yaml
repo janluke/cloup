@@ -3,6 +3,9 @@ changelog:
     labels:
       - exclude-from-release
   categories:
+    - title: Breaking Changes
+      labels:
+        - 'breaking change'
     - title: New features and enhancements
       labels:
         - feature
@@ -10,9 +13,6 @@ changelog:
     - title: Bug fixes
       labels:
         - bug
-    - title: Breaking Changes
-      labels:
-        - 'breaking change'
     - title: Other Changes
       labels:
         - "*"
