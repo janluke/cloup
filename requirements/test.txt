@@ -4,29 +4,27 @@
 #
 #    pip-compile requirements/test.in
 #
-atomicwrites==1.4.1
+attrs==22.1.0
     # via pytest
-attrs==21.4.0
+colorama==0.4.6
     # via pytest
-colorama==0.4.5
-    # via pytest
-coverage[toml]==6.4.2
+coverage[toml]==6.5.0
     # via pytest-cov
+exceptiongroup==1.0.1
+    # via pytest
 iniconfig==1.1.1
     # via pytest
 packaging==21.3
     # via pytest
 pluggy==1.0.0
     # via pytest
-py==1.11.0
-    # via pytest
 pyparsing==3.0.9
     # via packaging
-pytest==7.1.2
+pytest==7.2.0
     # via
     #   -r requirements/test.in
     #   pytest-cov
-pytest-cov==3.0.0
+pytest-cov==4.0.0
     # via -r requirements/test.in
 tomli==2.0.1
     # via
