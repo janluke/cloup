@@ -208,7 +208,7 @@ class HelpFormatter(click.HelpFormatter):
             self.write_section(s)
 
     def write_aligned_sections(self, sections: Sequence[HelpSection]) -> None:
-        """Writes multiple aligned definition lists."""
+        """Write multiple aligned definition lists."""
         all_rows = chain.from_iterable(dl.definitions for dl in sections)
         col1_width = self.compute_col1_width(all_rows, self.col1_max_width)
         for s in sections:
@@ -255,7 +255,7 @@ class HelpFormatter(click.HelpFormatter):
         col_spacing: Optional[int] = None,  # default changed to None wrt parent class
         col1_width: Optional[int] = None,
     ) -> None:
-        """Writes a definition list into the buffer. This is how options
+        """Write a definition list into the buffer. This is how options
         and commands are usually formatted.
 
         If there's enough space, definition lists are rendered as a 2-column
@@ -322,7 +322,7 @@ class HelpFormatter(click.HelpFormatter):
         self, rows: Sequence[Definition],
         col1_width: int, col_spacing: int, col2_width: int,
     ) -> None:
-        """Formats a definition list as a 2-column "pseudo-table". If the first
+        """Format a definition list as a 2-column "pseudo-table". If the first
         column of a row exceeds ``col1_width``, the 2nd column is written on
         the subsequent line. This is the standard way of formatting definition
         lists and it's the default if there's enough space."""
@@ -367,7 +367,7 @@ class HelpFormatter(click.HelpFormatter):
             write_row(row)
 
     def write_linear_dl(self, dl: Sequence[Definition]) -> None:
-        """Formats a definition list as a "linear list". This is the default when
+        """Format a definition list as a "linear list". This is the default when
         the available width for the definitions (2nd column) is below
         ``self.col2_min_width``."""
         help_extra_indent = max(3, self.indent_increment)

@@ -19,7 +19,7 @@ SepType = Union[str, 'SepGenerator']
 
 
 class SepGenerator(Protocol):
-    """Generates a separator given a width. When used as ``row_sep``, this ``width`
+    """Generate a separator given a width. When used as ``row_sep``, this ``width``
     corresponds to ``HelpFormatter.available_width``, i.e. the line width excluding
     the current indentation width.
 
@@ -54,7 +54,7 @@ class RowSepPolicy(metaclass=abc.ABCMeta):
         col_widths: Sequence[int],
         col_spacing: int,
     ) -> Optional[str]:
-        """Decides which row separator to use (eventually none) in the given
+        """Decide which row separator to use (eventually none) in the given
         definition list."""
 
 
@@ -67,34 +67,35 @@ class RowSepCondition(Protocol):
         col_widths: Sequence[int],
         col_spacing: int,
     ) -> bool:
-        """Returns ``True`` if the input definition list should use a row
+        """Return ``True`` if the input definition list should use a row
         separator (in addition to the usual ``\\n``)."""
 
 
 class RowSepIf(RowSepPolicy):
+    """
+    Inserts a row separator between the rows of a definition list only if a
+    condition is satisfied. This class implements the ``RowSepPolicy``
+    protocol and does two things:
+
+    - enforces the use of a single row separator for all rows of a
+        definition lists and for all definition lists; note that
+        ``RowSepPolicy`` doesn't for implementation reasons but it's probably
+        what you want;
+    - allows you to implement different conditions (see type
+        :data:`RowSepCondition`) without worrying about the generation part,
+        which is always the same.
+
+    :param condition:
+        a :class:`RowSepCondition` that determines when to add the (extra)
+        row separator.
+    :param sep:
+        either a string or a ``SepGenerator``,
+        i.e. a function ``(width: int) -> str`` (e.g. :class:`Hline`).
+        The empty string corresponds to an empty line separator.
+    """
+
     def __init__(self, condition: RowSepCondition,
                  sep: Union[str, SepGenerator] = ''):
-        """
-        Inserts a row separator between the rows of a definition list only if a
-        condition is satisfied. This class implements the ``RowSepPolicy``
-        protocol and does two things:
-
-        - enforces the use of a single row separator for all rows of a
-          definition lists and for all definition lists; note that
-          ``RowSepPolicy`` doesn't for implementation reasons but it's probably
-          what you want;
-        - allows you to implement different conditions (see type
-          :data:`RowSepCondition`) without worrying about the generation part,
-          which is always the same.
-
-        :param condition:
-            a :class:`RowSepCondition` that determines when to add the (extra)
-            row separator.
-        :param sep:
-            either a string or a ``SepGenerator``,
-            i.e. a function ``(width: int) -> str`` (e.g. :class:`Hline`).
-            The empty string corresponds to an empty line separator.
-        """
         if isinstance(sep, str) and sep.endswith('\n'):
             raise ValueError(
                 "sep must not end with '\\n'. The formatter writes  a '\\n' after it; "
@@ -117,7 +118,7 @@ class RowSepIf(RowSepPolicy):
 #  Conditions & related utils
 
 def get_total_width(col_widths: Sequence[int], col_spacing: int) -> int:
-    """Returns the total width of a definition list (or, more generally, a table).
+    """Return the total width of a definition list (or, more generally, a table).
     Useful when implementing a RowSepStrategy."""
     return sum(col_widths) + col_spacing * (len(col_widths) - 1)
 
@@ -137,7 +138,7 @@ def multiline_rows_are_at_least(
     count_or_percentage: Union[int, float]
 ) -> RowSepCondition:
     """
-    Returns a ``RowSepStrategy`` that returns a row separator between all rows
+    Return a ``RowSepStrategy`` that returns a row separator between all rows
     of a definition list, only if the number of rows taking multiple lines is
     greater than or equal to a certain threshold.
 
@@ -183,6 +184,17 @@ def multiline_rows_are_at_least(
 
 
 class Hline(SepGenerator):
+    """Returns a function that generates an horizontal line of a given length.
+
+    This class has different static members for different line styles
+    like ``Hline.solid``, ``Hline.dashed``, ``Hline.densely_dashed``
+    and  ``Hline.dotted``.
+
+    :param pattern:
+        a string (usually a single character) that is repeated to generate
+        the line.
+    """
+
     # Workaround: PyCharm auto-completion doesn't work without these declarations
     solid: 'Hline'
     dashed: 'Hline'
@@ -190,16 +202,6 @@ class Hline(SepGenerator):
     dotted: 'Hline'
 
     def __init__(self, pattern: str):
-        """Returns a function that generates an horizontal line of a given length.
-
-        This class has different static members for different line styles
-        like ``Hline.solid``, ``Hline.dashed``, ``Hline.densely_dashed``
-        and  ``Hline.dotted``.
-
-        :param pattern:
-            a string (usually a single character) that is repeated to generate
-            the line.
-        """
         self.pattern = pattern
 
     def __call__(self, width: int) -> str:
@@ -211,13 +213,13 @@ class Hline(SepGenerator):
 
 
 Hline.solid = Hline("─")
-"""Returns a line like ``────────``."""
+"""Return a line like ``────────``."""
 
 Hline.dashed = Hline('-')
-"""Returns a line like ``--------``."""
+"""Return a line like ``--------``."""
 
 Hline.densely_dashed = Hline('╌')
-"""Returns a line like ``╌╌╌╌╌╌╌╌``."""
+"""Return a line like ``╌╌╌╌╌╌╌╌``."""
 
 Hline.dotted = Hline("┄")
-"""Returns a line like ``┄┄┄┄┄┄┄┄``."""
+"""Return a line like ``┄┄┄┄┄┄┄┄``."""

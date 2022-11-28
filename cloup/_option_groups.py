@@ -91,7 +91,7 @@ def get_option_group_of(param: click.Option) -> Optional[OptionGroup]:
 
 # noinspection PyMethodMayBeStatic
 class OptionGroupMixin:
-    """Implements support to:
+    """Implements support for:
 
      - option groups
      - the "Positional arguments" help section; this section is shown only if
@@ -174,7 +174,7 @@ class OptionGroupMixin:
         return arguments, option_groups, ungrouped_options
 
     def get_ungrouped_options(self, ctx: click.Context) -> Sequence[click.Option]:
-        """Returns options not explicitly assigned to an option group
+        """Return options not explicitly assigned to an option group
         (eventually including the ``--help`` option), i.e. options that will be
         part of the "default option group"."""
         help_option = ctx.command.get_help_option(ctx)
@@ -198,13 +198,13 @@ class OptionGroupMixin:
             heading="Positional arguments",
             definitions=[
                 self.get_argument_help_record(arg, ctx) for arg in self.arguments
-            ]
+            ],
         )
 
     def make_option_group_help_section(
         self, group: OptionGroup, ctx: click.Context
     ) -> HelpSection:
-        """Returns a HelpSection for an OptionGroup, i.e. an object containing
+        """Return a ``HelpSection`` for an ``OptionGroup``, i.e. an object containing
         the title, the optional description and the options' definitions for
         this option group.
 
@@ -221,7 +221,7 @@ class OptionGroupMixin:
         self, ctx: Optional[click.Context], default: bool = True
     ) -> bool:
         """
-        Returns ``True`` if the help sections of all options groups should have
+        Return ``True`` if the help sections of all options groups should have
         their columns aligned.
 
         .. versionadded:: 0.8.0
@@ -236,7 +236,7 @@ class OptionGroupMixin:
         self, ctx: click.Context, is_the_only_visible_option_group: bool = False
     ) -> OptionGroup:
         """
-        Returns an ``OptionGroup`` instance for the options not explicitly
+        Return an ``OptionGroup`` instance for the options not explicitly
         assigned to an option group, eventually including the ``--help`` option.
 
         .. versionadded:: 0.8.0
@@ -304,7 +304,7 @@ def option_group(
 # noinspection PyIncorrectDocstring
 def option_group(title: str, *args: Any, **kwargs: Any) -> Callable[[F], F]:
     """
-    Returns a decorator that annotates a function with an option group.
+    Return a decorator that annotates a function with an option group.
 
     The ``help`` argument is an optional description and can be provided either
     as keyword argument or as 2nd positional argument after the ``name`` of

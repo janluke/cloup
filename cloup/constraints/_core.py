@@ -39,7 +39,7 @@ class Constraint(abc.ABC):
 
     @staticmethod
     def must_check_consistency(ctx: click.Context) -> bool:
-        """Returns True if consistency checks are enabled.
+        """Return ``True`` if consistency checks are enabled.
 
         .. versionchanged:: 0.9.0
             this method now a static method and takes a ``click.Context`` in input.
@@ -65,7 +65,7 @@ class Constraint(abc.ABC):
 
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         """
-        Performs some sanity checks that detect inconsistencies between these
+        Perform some sanity checks that detect inconsistencies between these
         constraints and the properties of the input parameters (e.g. required).
 
         For example, a constraint that requires the parameters to be mutually
@@ -88,7 +88,7 @@ class Constraint(abc.ABC):
     @abc.abstractmethod
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
         """
-        Checks that the constraint is satisfied by the input parameters in the
+        Check that the constraint is satisfied by the input parameters in the
         given context, which (among other things) contains the values assigned
         to the parameters in ``ctx.params``.
 
@@ -116,7 +116,7 @@ class Constraint(abc.ABC):
         ctx: Optional[click.Context] = None
     ) -> None:
         """
-        Raises an exception if the constraint is not satisfied by the input
+        Raise an exception if the constraint is not satisfied by the input
         parameters in the given (or current) context.
 
         This method calls both :meth:`check_consistency` (if enabled) and
@@ -162,7 +162,7 @@ class Constraint(abc.ABC):
         error: Union[None, str, ErrorRephraser] = None,
     ) -> 'Rephraser':
         """
-        Overrides the help string and/or the error message of this constraint
+        Override the help string and/or the error message of this constraint
         wrapping it with a :class:`Rephraser`.
 
         :param help:
@@ -184,7 +184,7 @@ class Constraint(abc.ABC):
         return Rephraser(self, help=help, error=error)
 
     def hidden(self) -> 'Rephraser':
-        """Hides this constraint from the command help."""
+        """Hide this constraint from the command help."""
         return Rephraser(self, help='')
 
     def __call__(self, *param_adders: Decorator) -> Callable[[F], F]:
@@ -301,7 +301,7 @@ class ErrorFmt(FrozenSpace):
 
 
 class Rephraser(Constraint):
-    """A Constraint decorator that can override the help and/or the error
+    """A constraint decorator that can override the help and/or the error
     message of the wrapped constraint.
 
     You'll rarely (if ever) use this class directly. In most cases, you'll use
@@ -321,7 +321,7 @@ class Rephraser(Constraint):
         error: Union[None, str, ErrorRephraser] = None,
     ):
         if help is None and error is None:
-            raise ValueError('at least one between [help] and [error] must not be None')
+            raise ValueError('`help` and `error` cannot both be `None`')
         self.constraint = constraint
         self._help = help
         self._error = error

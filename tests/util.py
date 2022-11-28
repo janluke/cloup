@@ -52,7 +52,7 @@ def make_fake_context(
     cls=Context,
     **ctx_kwargs
 ) -> Context:
-    """Creates a simple instance of Command with the specified parameters,
+    """Create a simple instance of Command with the specified parameters,
     then create a fake context without actually invoking the command."""
     return cls(
         command_cls('fake', params=params, callback=new_dummy_func()), **ctx_kwargs

@@ -3,6 +3,8 @@ from click.decorators import _param_memo
 
 
 class Argument(click.Argument):
+    """A :class:`click.Argument` with help text."""
+
     def __init__(self, *args, help=None, **attrs):
         super().__init__(*args, **attrs)
         self.help = help
@@ -12,7 +14,7 @@ class Argument(click.Argument):
 
 
 class Option(click.Option):
-    """A click.Option with an extra field ``group`` of type ``OptionGroup``."""
+    """A :class:`click.Option` with an extra field ``group`` of type ``OptionGroup``."""
 
     def __init__(self, *args, group=None, **attrs):
         super().__init__(*args, **attrs)
@@ -34,7 +36,7 @@ def argument(*param_decls, cls=None, **attrs):
 
 
 def option(*param_decls, cls=None, group=None, **attrs):
-    """Attaches an ``Option`` to the command.
+    """Attach an ``Option`` to the command.
     Refer to :class:`click.Option` and :class:`click.Parameter` for more info
     about the accepted parameters.
 

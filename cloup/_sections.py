@@ -78,8 +78,8 @@ class Section:
 
 class SectionMixin:
     """
-    Adds to a click.MultiCommand the possibility to organize its subcommands
-    in multiple help sections.
+    Adds to a :class:`click.MultiCommand` the possibility of organizing its subcommands
+    into multiple help sections.
 
     Sections can be specified in the following ways:
 
@@ -135,7 +135,7 @@ class SectionMixin:
         name: Optional[str] = None,
         section: Optional[Section] = None
     ) -> None:
-        """Adds a command to the section (if specified) or to the default section."""
+        """Add a command to the section (if specified) or to the default section."""
         name = name or cmd.name
         if section is None:
             section = self._default_section
@@ -145,8 +145,8 @@ class SectionMixin:
             self._section_set.add(section)
 
     def add_section(self, section: Section) -> None:
-        """ Adds a :class:`Section` to this group. You can add the same
-        section object a single time. """
+        """Add a :class:`Section` to this group. You can add the same
+        section object a single time."""
         if section in self._section_set:
             raise ValueError(f'section "{section}" was already added')
         self._user_sections.append(section)
@@ -157,7 +157,7 @@ class SectionMixin:
             self.add_command(cmd, name, fallback_to_default_section=False)
 
     def section(self, title: str, *commands: click.Command, **attrs: Any) -> Section:
-        """ Creates a new :class:`Section`, adds it to this group and returns it."""
+        """Create a new :class:`Section`, adds it to this group and returns it."""
         section = Section(title, commands, **attrs)
         self.add_section(section)
         return section
@@ -169,7 +169,7 @@ class SectionMixin:
         fallback_to_default_section: bool = True,
     ) -> None:
         """
-        Adds a subcommand to this ``Group``.
+        Add a subcommand to this ``Group``.
 
         **Implementation note:** ``fallback_to_default_section`` looks not very
         clean but, even if it's not immediate to see (it wasn't for me), I chose
@@ -193,9 +193,12 @@ class SectionMixin:
     def list_sections(
         self, ctx: click.Context, include_default_section: bool = True
     ) -> List[Section]:
-        """ Returns the list of all sections in the "correct order".
-         if ``include_default_section=True`` and the default section is non-empty,
-         it will be included at the end of the list. """
+        """
+        Return the list of all sections in the "correct order".
+
+        If ``include_default_section=True`` and the default section is non-empty,
+        it will be included at the end of the list.
+        """
         section_list = list(self._user_sections)
         if include_default_section and len(self._default_section) > 0:
             default_section = Section.sorted(

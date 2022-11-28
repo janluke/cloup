@@ -222,8 +222,8 @@ the method :meth:`Constraint.hidden`:
     )
 
 
-The @constraint decorator
-~~~~~~~~~~~~~~~~~~~~~~~~~
+The ``@constraint`` decorator
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Using the :func:`cloup.constraint` decorator, you can apply a constraint to any
 group of parameters (arguments and options) providing their **destination names**,
 i.e. the names of the function arguments they are mapped to (by Click).

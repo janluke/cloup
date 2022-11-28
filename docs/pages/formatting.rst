@@ -36,7 +36,7 @@ An example
 .. tip::
     In Cloup, you can use the static methods :meth:`Context.settings` and
     :meth:`HelpFormatter.settings` to create dictionaries without leaving your
-    IDE (to check the docs).
+    IDE to check the docs.
 
 .. code-block:: python
 

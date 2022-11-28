@@ -55,7 +55,6 @@ CONTEXT_SETTINGS = Context.settings(
 @cloup.version_option(version=VERSION)
 def main():
     """Animation engine for explanatory math videos."""
-    pass
 
 
 main.add_command(render)

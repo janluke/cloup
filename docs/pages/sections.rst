@@ -3,7 +3,7 @@
 Subcommand sections
 ===================
 
-Cloup allows to organize the subcommand of a ``Group`` (or, more in general, of
+Cloup allows you to organize the subcommand of a ``Group`` (or, more in general, of
 a ``MultiCommand``) in multiple help sections. Each such help section is
 represented by a :class:`~cloup.Section` instance, which is just a titled
 container for commands.

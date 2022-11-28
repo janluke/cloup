@@ -1,4 +1,4 @@
-"""Tests for the "subcommand sections" feature/module."""
+"""Test for the "subcommand sections" feature/module."""
 import click
 import pytest
 from click import pass_context

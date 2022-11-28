@@ -66,7 +66,7 @@ Here's the full list of parameters:
         @option("--seven", help="1st uncategorized option")
         @option("--height", help="2nd uncategorized option")
         def cli(**kwargs):
-            """ A CLI that does nothing. """
+            """A CLI that does nothing."""
             print(kwargs)
 
         cli()
@@ -222,7 +222,7 @@ of defining option groups:
     @output_grp.option('--three')
     @output_grp.option('--four')
     def cli_flat(one, two, three, four):
-        """ A CLI that does nothing. """
+        """A CLI that does nothing."""
         print(kwargs)
 
 The above notation is just syntax sugar on top of ``@cloup.option``:

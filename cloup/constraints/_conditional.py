@@ -1,5 +1,5 @@
 """
-This modules contains classes to create conditional constraints.
+This modules contains classes for creating conditional constraints.
 """
 from typing import Optional, Sequence, Union
 
@@ -19,31 +19,33 @@ def as_predicate(arg: Union[str, Sequence[str], Predicate]) -> Predicate:
     elif isinstance(arg, Sequence):
         return AllSet(*arg)
     else:
-        raise TypeError('`arg` should be a string, a list of strings or a `Predicate`')
+        raise TypeError("`arg` should be a string, a list of strings or a `Predicate`")
 
 
 class If(Constraint):
+    """
+    Checks one constraint or another depending on the truth value of the condition.
+
+    .. versionadded:: 0.8.0
+        you can now pass a sequence of parameter names as condition, which
+        corresponds to the predicate ``AllSet(*param_names)``.
+
+    :param condition:
+        can be either an instance of ``Predicate`` or (more often) the name of a
+        parameter or a list/tuple of parameters that must be all set for the
+        condition to be true.
+    :param then:
+        a constraint checked if the condition is true.
+    :param else_:
+        an (optional) constraint checked if the condition is false.
+    """
+
     def __init__(
-        self, condition: Union[str, Sequence[str], Predicate],
+        self,
+        condition: Union[str, Sequence[str], Predicate],
         then: Constraint,
-        else_: Optional[Constraint] = None
+        else_: Optional[Constraint] = None,
     ):
-        """
-        Checks one constraint or another depending on the truth value of the condition.
-
-        .. versionadded:: 0.8.0
-            you can now pass a sequence of parameter names as condition, which
-            corresponds to the predicate ``AllSet(*param_names)``.
-
-        :param condition:
-            can be either an instance of ``Predicate`` or (more often) the name of a
-            parameter or a list/tuple of parameters that must be all set for the
-            condition to be true.
-        :param then:
-            a constraint checked if the condition is true.
-        :param else_:
-            an (optional) constraint checked if the condition is false.
-        """
         self._condition = as_predicate(condition)
         self._then = then
         self._else = else_
@@ -53,9 +55,9 @@ class If(Constraint):
         then_help = self._then.help(ctx)
         else_help = self._else.help(ctx) if self._else else None
         if not self._else:
-            return f'{then_help} if {condition}'
+            return f"{then_help} if {condition}"
         else:
-            return f'{then_help} if {condition}, otherwise {else_help}'
+            return f"{then_help} if {condition}, otherwise {else_help}"
 
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         self._then.check_consistency(params)
@@ -71,10 +73,14 @@ class If(Constraint):
         try:
             branch.check_values(params, ctx=ctx)
         except ConstraintViolated as err:
-            desc = (condition.description(ctx) if condition_is_true
-                    else condition.negated_description(ctx))
+            desc = (
+                condition.description(ctx)
+                if condition_is_true
+                else condition.negated_description(ctx)
+            )
             raise ConstraintViolated(
-                f"when {desc}, {err}", ctx=ctx, constraint=self, params=params)
+                f"when {desc}, {err}", ctx=ctx, constraint=self, params=params
+            )
 
     def __repr__(self) -> str:
         if self._else:
