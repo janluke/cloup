@@ -9,8 +9,7 @@ import cloup
     no_args_is_help=True,
 )
 def config():
-    """Manages Manim configuration files."""
-    pass
+    """Manage Manim configuration files."""
 
 
 @config.command(no_args_is_help=True)
@@ -21,14 +20,12 @@ def config():
 )
 @cloup.option("-o", "--open", "openfile", is_flag=True)
 def write(level: str, openfile: bool) -> None:
-    """Writes configurations."""
-    pass
+    """Write configurations."""
 
 
 @config.command()
 def show():
-    """Shows current configuration."""
-    pass
+    """Show current configuration."""
 
 
 @config.command()

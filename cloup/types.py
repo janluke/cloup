@@ -1,5 +1,5 @@
 """
-Parameter types and "shortcuts" to create commonly used types.
+Parameter types and "shortcuts" for creating commonly used types.
 """
 import pathlib
 

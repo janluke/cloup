@@ -32,7 +32,7 @@ _output = OptionGroup(
         type=click.Choice('yes no ask'.split()))
 @option('--height', help='second uncategorized option')
 def main(**kwargs):
-    """ A CLI that does nothing. """
+    """A CLI that does nothing."""
     print(kwargs)
 
 

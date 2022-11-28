@@ -25,7 +25,7 @@ from tests.util import (
 
 
 class FakeConstraint(Constraint):
-    """Sometimes it's useful to use::
+    """Sometimes it's useful to use
 
         Mock(wraps=FakeConstraint(...))
 

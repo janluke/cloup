@@ -69,7 +69,7 @@ more expressive and configurable:
 
 - **subcommand aliases**
 
-- **subcommands sections**, i.e. the possibility to organize the subcommands of a
+- **subcommands sections**, i.e. the possibility of organizing the subcommands of a
   ``Group`` in multiple help sections
 
 - a **themeable HelpFormatter**  that:
@@ -85,8 +85,8 @@ Moreover, Cloup improves on **IDE support** providing decorators with *detailed*
 type hints and adding the static methods ``Context.settings()`` and
 ``HelpFormatter.settings()`` for creating dictionaries of settings.
 
-Cloup is **statically type-checked** with MyPy in strict mode and extensively **tested** 
-against multiple versions of Python with nearly 100% coverage. 
+Cloup is **statically type-checked** with MyPy in strict mode and extensively **tested**
+against multiple versions of Python with nearly 100% coverage.
 
 
 A simple example

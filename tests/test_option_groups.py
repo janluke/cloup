@@ -1,4 +1,4 @@
-"""Tests for the "option groups" feature/module."""
+"""Test for the "option groups" feature/module."""
 from textwrap import dedent
 from typing import cast
 

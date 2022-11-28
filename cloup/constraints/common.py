@@ -7,7 +7,7 @@ from click import Argument, Context, Option, Parameter
 
 
 def param_value_is_set(param: Parameter, value: Any) -> bool:
-    """Defines what it means for a parameter of a specific kind to be "set".
+    """Define what it means for a parameter of a specific kind to be "set".
 
     All cases are obvious besides that of boolean options:
     - (common rule) if the value is ``None``, the parameter is unset;
@@ -27,7 +27,7 @@ def param_value_is_set(param: Parameter, value: Any) -> bool:
 
 
 def get_param_name(param: Parameter) -> str:
-    """Returns the name of a parameter casted to ``str``.
+    """Return the name of a parameter casted to ``str``.
     Use this function to avoid typing errors in places where you expect a parameter
     having a name.
     """
@@ -43,7 +43,7 @@ def get_param_name(param: Parameter) -> str:
 def get_params_whose_value_is_set(
     params: Iterable[Parameter], values: Dict[str, Any]
 ) -> List[Parameter]:
-    """Filters ``params`` returning only the parameters that have a value.
+    """Filter ``params``, returning only the parameters that have a value.
     Boolean flags are considered "set" if their value is ``True``."""
     return [p for p in params
             if param_value_is_set(p, values[get_param_name(p)])]

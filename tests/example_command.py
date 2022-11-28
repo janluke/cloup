@@ -49,7 +49,7 @@ def make_example_command(
     @option('--height', help='Second uncategorized option.')
     @option('--nine', help='Third uncategorized option.', hidden=True)
     def cmd(**kwargs):
-        """ A CLI that does nothing. """
+        """A CLI that does nothing."""
         print(kwargs)
 
     if tabular_help:

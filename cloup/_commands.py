@@ -163,7 +163,7 @@ class Group(SectionMixin, Command, click.Group):
             self.alias2name[alias] = name
 
     def resolve_command_name(self, ctx: click.Context, name: str) -> Optional[str]:
-        """Maps a string supposed to be a command name or an alias to a normalized
+        """Map a string supposed to be a command name or an alias to a normalized
         command name. If no match is found, it returns ``None``."""
         if ctx.token_normalize_func:
             name = ctx.token_normalize_func(name)
@@ -285,7 +285,7 @@ class Group(SectionMixin, Command, click.Group):
         section: Optional[Section] = None,
         **kwargs: Any
     ) -> Callable[[AnyCallable], Union[Command, ClickCommand]]:
-        """Returns a decorator that creates a new subcommand of this ``Group``
+        """Return a decorator that creates a new subcommand of this ``Group``
         using the decorated function as callback.
 
         It takes the same arguments of :func:`command` plus:
@@ -364,7 +364,7 @@ class Group(SectionMixin, Command, click.Group):
         section: Optional[Section] = None,
         **kwargs: Any
     ) -> Callable[[AnyCallable], Union["Group", ClickGroup]]:
-        """Returns a decorator that creates a new subcommand of this ``Group``
+        """Return a decorator that creates a new subcommand of this ``Group``
         using the decorated function as callback.
 
         It takes the same argument of :func:`group` plus:
@@ -438,7 +438,7 @@ def command(
     **kwargs: Any
 ) -> Callable[[AnyCallable], Union[Command, ClickCommand]]:
     """
-    Returns a decorator that creates a new command using the decorated function
+    Return a decorator that creates a new command using the decorated function
     as callback.
 
     The only differences with respect to ``click.command`` are:
@@ -597,7 +597,7 @@ def group(
     name: Optional[str] = None, *, cls: Optional[Type[ClickGroup]] = None, **kwargs: Any
 ) -> Callable[[AnyCallable], click.Group]:
     """
-    Returns a decorator that instantiates a ``Group`` (or a subclass of it)
+    Return a decorator that instantiates a ``Group`` (or a subclass of it)
     using the decorated function as callback.
 
     .. versionchanged:: 0.10.0
@@ -698,7 +698,7 @@ _ARGS_INFO = {
 def _process_unexpected_kwarg_error(
     error: TypeError, args_info: Dict[str, _ArgInfo], cls: Type[Command]
 ) -> TypeError:
-    """Checks if the developer tried to pass a Cloup-specific argument to a ``cls``
+    """Check if the developer tried to pass a Cloup-specific argument to a ``cls``
     that doesn't support it and if that's the case, augments the error message
     to provide useful more info about the error."""
     import re

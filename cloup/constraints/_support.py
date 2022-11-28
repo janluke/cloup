@@ -36,7 +36,7 @@ def _constraint_memo(
 
 
 def constraint(constr: Constraint, params: Iterable[str]) -> Callable[[F], F]:
-    """Registers a constraint on a list of parameters specified by (destination) name
+    """Register a constraint on a list of parameters specified by (destination) name
     (e.g. the default name of ``--input-file`` is ``input_file``)."""
     spec = BoundConstraintSpec(constr, tuple(params))
 
@@ -52,7 +52,7 @@ def constrained_params(
     *param_adders: Decorator,
 ) -> Callable[[F], F]:
     """
-    Returns a decorator that adds the given parameters and applies a constraint
+    Return a decorator that adds the given parameters and applies a constraint
     to them. Equivalent to::
 
         @param_adders[0]
@@ -119,7 +119,7 @@ class BoundConstraint(NamedTuple):
 
 
 class ConstraintMixin:
-    """Provides support to constraints."""
+    """Provides support for constraints."""
 
     def __init__(
         self, *args: Any,

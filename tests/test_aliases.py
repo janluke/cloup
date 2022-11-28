@@ -12,7 +12,6 @@ def cli() -> cloup.Group:
     @cloup.group()
     def cli():
         """A package installer."""
-        pass
 
     @cloup.command(aliases=['i', 'add'])
     @cloup.argument('pkg')
