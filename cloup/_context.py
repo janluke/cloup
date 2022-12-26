@@ -129,7 +129,7 @@ class Context(click.Context):
 
     @staticmethod
     def settings(
-        *, auto_envvar_prefix: Possibly[bool] = MISSING,
+        *, auto_envvar_prefix: Possibly[str] = MISSING,
         default_map: Possibly[Dict[str, Any]] = MISSING,
         terminal_width: Possibly[int] = MISSING,
         max_content_width: Possibly[int] = MISSING,
