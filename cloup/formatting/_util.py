@@ -1,6 +1,7 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, cast
 
 import click
+from wcwidth import wcswidth
 
 if TYPE_CHECKING:
     import cloup
@@ -23,5 +24,9 @@ def ensure_is_cloup_formatter(formatter: click.HelpFormatter) -> 'cloup.HelpForm
     raise TypeError(FORMATTER_TYPE_ERROR)
 
 
-def unstyled_len(string: str) -> int:
-    return len(click.unstyle(string))
+def display_width(string: str) -> int:
+    return cast(int, wcswidth(string))
+
+
+def display_width_unstyled(string: str) -> int:
+    return display_width(click.unstyle(string))

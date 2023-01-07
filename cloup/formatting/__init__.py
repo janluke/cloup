@@ -4,12 +4,14 @@ from ._formatter import (
 )
 from ._util import (
     ensure_is_cloup_formatter,
-    unstyled_len,
+    display_width,
+    display_width_unstyled,
 )
 
 __all__ = [
     "HelpFormatter",
     "HelpSection",
     "ensure_is_cloup_formatter",
-    "unstyled_len",
+    "display_width",
+    "display_width_unstyled",
 ]
