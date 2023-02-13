@@ -231,3 +231,25 @@ def test_write_section_print_long_constraint_on_a_new_line():
     formatter.write_section(section)
     actual = formatter.getvalue()
     assert actual == expected
+
+
+def test_display_width():
+    rows = [
+        # `✔️` char has length of 2 but display width of 1
+        ('-l, --long-option-name TEXT✔️', LOREM),
+        ('--another-option INT', LOREM),
+        ('--short', LOREM),
+    ]
+
+    formatter = HelpFormatter(width=80)
+    formatter.current_indent = 4
+    expected = """
+    -l, --long-option-name TEXT✔️  Lorem ipsum dolor sit amet, consectetur
+                                  adipiscing elit, sed do eiusmod tempor.
+    --another-option INT          Lorem ipsum dolor sit amet, consectetur
+                                  adipiscing elit, sed do eiusmod tempor.
+    --short                       Lorem ipsum dolor sit amet, consectetur
+                                  adipiscing elit, sed do eiusmod tempor.
+    """[1:-4]
+    formatter.write_dl(rows)
+    assert formatter.getvalue() == expected
