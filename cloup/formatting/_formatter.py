@@ -220,9 +220,9 @@ class HelpFormatter(click.HelpFormatter):
         self.write("\n")
         self.write_heading(s.heading, newline=not s.constraint)
         if s.constraint:
-            constraint_text = f'[{s.constraint}]'
+            constraint_text = f"[{s.constraint}]"
             available_width = (
-                self.available_width - display_width(s.heading) - display_width(': '))
+                self.available_width - display_width(s.heading) - len(": "))
             if display_width(constraint_text) <= available_width:
                 self.write(" ", theme.constraint(constraint_text), "\n")
             else:
