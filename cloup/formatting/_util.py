@@ -1,3 +1,4 @@
+import warnings
 from typing import TYPE_CHECKING, cast
 
 import click
@@ -25,8 +26,12 @@ def ensure_is_cloup_formatter(formatter: click.HelpFormatter) -> 'cloup.HelpForm
 
 
 def display_width(string: str) -> int:
-    return cast(int, wcswidth(string))
+    return cast(int, wcswidth(click.unstyle(string)))
 
 
-def display_width_unstyled(string: str) -> int:
-    return display_width(click.unstyle(string))
+def unstyled_len(string: str) -> int:
+    warnings.warn(
+        "`unstyled_len()` is deprecated; use `display_width()` instead",
+        DeprecationWarning
+    )
+    return len(click.unstyle(string))

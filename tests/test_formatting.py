@@ -10,7 +10,7 @@ import pytest
 
 from cloup import HelpFormatter
 from cloup.typing import Possibly
-from cloup.formatting import HelpSection, display_width, display_width_unstyled
+from cloup.formatting import HelpSection, display_width
 from cloup.formatting.sep import (
     Hline, RowSepIf, RowSepPolicy, multiline_rows_are_at_least
 )
@@ -207,7 +207,7 @@ def test_write_text_with_styles():
     formatter.write_text(INPUT_TEXT, style=style)
     actual = formatter.getvalue().rstrip()
     for line in actual.splitlines():
-        assert display_width_unstyled(line) <= formatter.width
+        assert display_width(line) <= formatter.width
     assert actual == EXPECTED
 
 

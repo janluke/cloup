@@ -9,7 +9,7 @@ from typing import (
 )
 
 from cloup._util import click_version_ge_8_1
-from cloup.formatting._util import display_width, display_width_unstyled
+from cloup.formatting._util import display_width
 
 if TYPE_CHECKING:
     from .sep import RowSepPolicy, SepGenerator
@@ -247,7 +247,7 @@ class HelpFormatter(click.HelpFormatter):
         self.write(wrapped_text, "\n")
 
     def compute_col1_width(self, rows: Iterable[Definition], max_width: int) -> int:
-        col1_lengths = (display_width_unstyled(r[0]) for r in rows)
+        col1_lengths = (display_width(r[0]) for r in rows)
         lengths_under_limit = (length for length in col1_lengths if length <= max_width)
         return max(lengths_under_limit, default=0)
 
@@ -346,9 +346,9 @@ class HelpFormatter(click.HelpFormatter):
             if not second:
                 self.write("\n")
             else:
-                first_display_length = display_width_unstyled(first)
-                if first_display_length <= col1_width:
-                    spaces_to_col2 = col1_plus_spacing - first_display_length
+                first_display_width = display_width(first)
+                if first_display_width <= col1_width:
+                    spaces_to_col2 = col1_plus_spacing - first_display_width
                     self.write(" " * spaces_to_col2)
                 else:
                     self.write("\n", col2_indentation)
