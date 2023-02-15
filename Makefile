@@ -1,15 +1,15 @@
 .DEFAULT_GOAL := help
 
-REMOVE = python scripts/remove.py
-BROWSER = python scripts/browser.py
-COPYTREE = python scripts/copytree.py
+REMOVE = python3 scripts/remove.py
+BROWSER = python3 scripts/browser.py
+COPYTREE = python3 scripts/copytree.py
 
 DOCS_HTML_DIR = docs/_build/html
 DOCS_HTML_STATIC = $(DOCS_HTML_DIR)/_static
 
 .PHONY: help
 help:
-	@python scripts/make-help.py < $(MAKEFILE_LIST)
+	@python3 scripts/make-help.py < $(MAKEFILE_LIST)
 
 .PHONY: venv
 venv: ## creates a virtualenv using tox
@@ -97,7 +97,7 @@ clean-test: ## remove test and coverage artifacts
 
 .PHONY: dist
 dist: clean-build ## builds source and wheel package
-	python setup.py sdist bdist_wheel
+	python3 setup.py sdist bdist_wheel
 	twine check dist/*
 
 .PHONY: release
@@ -116,7 +116,7 @@ pip-compile:  ## pin dependencies in requirements/ using the current env
 
 .PHONY: pip-upgrade
 pip-upgrade:   ## upgrade pip and dependencies
-	python -m pip install -U pip
+	python3 -m pip install -U pip
 	pip-compile --upgrade requirements/test.in
 	pip-compile --upgrade requirements/docs.in
 	pip-compile --upgrade requirements/dev.in
