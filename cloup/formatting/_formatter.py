@@ -9,7 +9,7 @@ from typing import (
 )
 
 from cloup._util import click_version_ge_8_1
-from cloup.formatting._util import unstyled_len
+from cloup.formatting._util import display_width
 
 if TYPE_CHECKING:
     from .sep import RowSepPolicy, SepGenerator
@@ -21,8 +21,9 @@ from cloup._util import (
     check_positive_int, identity, indent_lines, make_repr,
     pick_non_missing,
 )
-from ..typing import MISSING, Possibly
 from cloup.styling import HelpTheme, IStyle
+
+from ..typing import MISSING, Possibly
 
 Definition = Tuple[str, Union[str, Callable[[int], str]]]
 
@@ -219,9 +220,10 @@ class HelpFormatter(click.HelpFormatter):
         self.write("\n")
         self.write_heading(s.heading, newline=not s.constraint)
         if s.constraint:
-            constraint_text = f'[{s.constraint}]'
-            available_width = self.available_width - len(s.heading) - len(': ')
-            if len(constraint_text) <= available_width:
+            constraint_text = f"[{s.constraint}]"
+            available_width = (
+                self.available_width - display_width(s.heading) - len(": "))
+            if display_width(constraint_text) <= available_width:
                 self.write(" ", theme.constraint(constraint_text), "\n")
             else:
                 self.write("\n")
@@ -245,7 +247,7 @@ class HelpFormatter(click.HelpFormatter):
         self.write(wrapped_text, "\n")
 
     def compute_col1_width(self, rows: Iterable[Definition], max_width: int) -> int:
-        col1_lengths = (unstyled_len(r[0]) for r in rows)
+        col1_lengths = (display_width(r[0]) for r in rows)
         lengths_under_limit = (length for length in col1_lengths if length <= max_width)
         return max(lengths_under_limit, default=0)
 
@@ -344,14 +346,14 @@ class HelpFormatter(click.HelpFormatter):
             if not second:
                 self.write("\n")
             else:
-                first_display_length = unstyled_len(first)
-                if first_display_length <= col1_width:
-                    spaces_to_col2 = col1_plus_spacing - first_display_length
+                first_display_width = display_width(first)
+                if first_display_width <= col1_width:
+                    spaces_to_col2 = col1_plus_spacing - first_display_width
                     self.write(" " * spaces_to_col2)
                 else:
                     self.write("\n", col2_indentation)
 
-                if len(second) <= col2_width:
+                if display_width(second) <= col2_width:
                     self.write(col2_styler(second), "\n")
                 else:
                     wrapped_text = wrap_text(second, col2_width, preserve_paragraphs=True)

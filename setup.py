@@ -46,7 +46,8 @@ setup(
     include_package_data=True,
     python_requires='>=3.7',
     install_requires=[
-        'click >= 8.0, < 9.0',
+        'click ~= 8.0',
+        'wcwidth ~= 0.2.5',
         'typing_extensions; python_version<="3.8"',
     ],
 )

@@ -10,6 +10,8 @@ import sys
 from itertools import zip_longest
 from typing import Optional, Sequence, Union
 
+from ._util import display_width
+
 if sys.version_info[:2] >= (3, 8):
     from typing import Protocol
 else:  # pragma: no cover
@@ -128,7 +130,7 @@ def count_multiline_rows(rows: Sequence[Sequence[str]], col_widths: Sequence[int
     # if len(row) != len(col_widths). An explicit check is not worth it since
     # this should never happen.
     return sum(
-        any(len(col_text) > col_width
+        any(display_width(col_text) > col_width
             for col_text, col_width in zip_longest(row, col_widths))
         for row in rows
     )
@@ -206,9 +208,10 @@ class Hline(SepGenerator):
 
     def __call__(self, width: int) -> str:
         pattern = self.pattern
-        if len(pattern) == 1:
+        pattern_width = display_width(pattern)
+        if pattern_width == 1:
             return pattern * width
-        reps, rest = width // len(pattern), width % len(pattern)
+        reps, rest = width // pattern_width, width % pattern_width
         return pattern * reps + pattern[:rest]
 
 
