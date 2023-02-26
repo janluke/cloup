@@ -316,7 +316,7 @@ is equivalent to:
 
     In Python < 3.9, the expression on the right of the operator ``@``
     is required to be a "dotted name, optionally followed by a single call"
-    (see `PEP 614 <https://peps.python.org/pep-0614/#motivation>`_).
+    (see `PEP 614 <https://www.python.org/dev/peps/pep-0614/#motivation>`_).
     This means that you can't instantiate a parametric constraint on the right
     of ``@``, because the resultant expressions would make two calls, e.g.:
 

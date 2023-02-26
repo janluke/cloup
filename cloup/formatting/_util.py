@@ -1,8 +1,6 @@
-import warnings
-from typing import TYPE_CHECKING, cast
+from typing import TYPE_CHECKING
 
 import click
-from wcwidth import wcswidth
 
 if TYPE_CHECKING:
     import cloup
@@ -25,13 +23,5 @@ def ensure_is_cloup_formatter(formatter: click.HelpFormatter) -> 'cloup.HelpForm
     raise TypeError(FORMATTER_TYPE_ERROR)
 
 
-def display_width(string: str) -> int:
-    return cast(int, wcswidth(click.unstyle(string)))
-
-
 def unstyled_len(string: str) -> int:
-    warnings.warn(
-        "`unstyled_len()` is deprecated; use `display_width()` instead",
-        DeprecationWarning
-    )
     return len(click.unstyle(string))

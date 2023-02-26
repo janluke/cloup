@@ -31,7 +31,7 @@
 
 .. |coverage| image:: https://codecov.io/github/janLuke/cloup/coverage.svg?branch=master
     :alt: Coverage Status
-    :target: https://app.codecov.io/github/janluke/cloup/tree/master
+    :target: https://codecov.io/github/janLuke/cloup?branch=master
 
 .. |python-versions| image:: https://img.shields.io/pypi/pyversions/cloup.svg
     :alt: Supported versions
