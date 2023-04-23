@@ -36,6 +36,7 @@ from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
 from ._util import click_version_ge_8_1, first_bool, reindent
 from .constraints import ConstraintMixin
+from .styling import DEFAULT_THEME
 from .typing import AnyCallable
 
 ClickCommand = TypeVar('ClickCommand', bound=click.Command)
@@ -227,8 +228,15 @@ class Group(SectionMixin, Command, click.Group):
     ) -> str:
         aliases = getattr(cmd, 'aliases', None)
         if aliases and self.must_show_subcommand_aliases(ctx):
-            alias_list = ', '.join(aliases)
-            return f"{name} ({alias_list})"
+            assert isinstance(ctx, cloup.Context)
+            theme = cast(
+                cloup.HelpTheme, ctx.formatter_settings.get("theme", DEFAULT_THEME)
+            )
+            alias_style, sep_style, boundary_style = theme.alias_list_styles
+            alias_list = sep_style(", ").join(alias_style(alias) for alias in aliases)
+            open_par = boundary_style("(")
+            close_par = boundary_style(")")
+            return f"{name} {open_par}{alias_list}{close_par}"
         return name
 
     # MyPy complains because "Signature of "group" incompatible with supertype".

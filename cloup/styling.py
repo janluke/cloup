@@ -3,7 +3,7 @@ This module contains components that specifically address the styling and themin
 of the ``--help`` output.
 """
 import dataclasses as dc
-from typing import Any, Callable, Dict, NamedTuple, Optional
+from typing import Any, Callable, Dict, NamedTuple, Optional, Tuple
 
 import click
 
@@ -62,8 +62,25 @@ class HelpTheme(NamedTuple):
     col2: IStyle = identity
     """Style of the second column of a definition list (help text)."""
 
+    alias: IStyle = identity
+    """Style of command aliases in a definition list."""
+
+    alias_list_sep: Optional[IStyle] = None
+    """Style of separator and eventual parenthesis/brackets in command alias lists.
+    If not provided, ``col1`` style will be used."""
+
+    alias_list_boundaries: Optional[IStyle] = None
+    """Style of the boundary characters (parenthesis by default) of a command alias list.
+    If not provided, ``alias_list_sep`` will be used."""
+
     epilog: IStyle = identity
     """Style of the epilog."""
+
+    @property
+    def alias_list_styles(self) -> Tuple[IStyle, IStyle, IStyle]:
+        sep_style = self.alias_list_sep or self.col1
+        boundary_style = self.alias_list_boundaries or sep_style
+        return self.alias, sep_style, boundary_style
 
     def with_(
         self, invoked_command: Optional[IStyle] = None,
@@ -73,6 +90,9 @@ class HelpTheme(NamedTuple):
         section_help: Optional[IStyle] = None,
         col1: Optional[IStyle] = None,
         col2: Optional[IStyle] = None,
+        alias: Optional[IStyle] = None,
+        alias_list_sep: Optional[IStyle] = None,
+        alias_list_boundaries: Optional[IStyle] = None,
         epilog: Optional[IStyle] = None,
     ) -> 'HelpTheme':
         kwargs = {key: val for key, val in locals().items() if val is not None}
@@ -184,3 +204,6 @@ class Color(FrozenSpace):
     bright_magenta = "bright_magenta"
     bright_cyan = "bright_cyan"
     bright_white = "bright_white"
+
+
+DEFAULT_THEME = HelpTheme()
