@@ -185,7 +185,9 @@ class HelpFormatter(click.HelpFormatter):
         if help_text and click_version_ge_8_1:
             help_text = inspect.cleandoc(help_text)
         if cmd.deprecated:
-            help_text = "(DEPRECATED) " + help_text
+            # Use the same label as Click:
+            # https://github.com/pallets/click/blob/b0538df/src/click/core.py#L1331
+            help_text = "(Deprecated) " + help_text
         if help_text:
             self.write_paragraph()
             with self.indentation():
