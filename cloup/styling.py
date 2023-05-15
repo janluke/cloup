@@ -103,6 +103,8 @@ class HelpTheme(NamedTuple):
             heading=Style(fg='bright_white', bold=True),
             constraint=Style(fg='magenta'),
             col1=Style(fg='bright_yellow'),
+            alias=Style(fg='yellow'),
+            alias_secondary=Style(fg='white'),
         )
 
     @staticmethod
