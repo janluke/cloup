@@ -42,6 +42,9 @@ class HelpTheme(NamedTuple):
         Style of the epilog.
     :param alias:
         Style of subcommand aliases in a definition lists.
+    :param alias_secondary:
+        Style of separator and eventual parenthesis/brackets in subcommand alias lists.
+        If not provided, the ``alias`` style will be used.
     """
 
     invoked_command: IStyle = identity
