@@ -8,6 +8,7 @@ from typing import Any, Callable, Dict, NamedTuple, Optional
 import click
 
 from cloup._util import FrozenSpace, click_version_tuple, delete_keys, identity
+from cloup.typing import MISSING, Possibly
 
 IStyle = Callable[[str], str]
 """A callable that takes a string and returns a styled version of it."""
@@ -39,6 +40,8 @@ class HelpTheme(NamedTuple):
         Style of the second column of a definition list (help text).
     :param epilog:
         Style of the epilog.
+    :param alias:
+        Style of subcommand aliases in a definition lists.
     """
 
     invoked_command: IStyle = identity
@@ -62,6 +65,13 @@ class HelpTheme(NamedTuple):
     col2: IStyle = identity
     """Style of the second column of a definition list (help text)."""
 
+    alias: IStyle = identity
+    """Style of subcommand aliases in a definition lists."""
+
+    alias_secondary: Optional[IStyle] = None
+    """Style of separator and eventual parenthesis/brackets in subcommand alias lists.
+    If not provided, the ``alias`` style will be used."""
+
     epilog: IStyle = identity
     """Style of the epilog."""
 
@@ -73,9 +83,13 @@ class HelpTheme(NamedTuple):
         section_help: Optional[IStyle] = None,
         col1: Optional[IStyle] = None,
         col2: Optional[IStyle] = None,
+        alias: Optional[IStyle] = None,
+        alias_secondary: Possibly[Optional[IStyle]] = MISSING,
         epilog: Optional[IStyle] = None,
     ) -> 'HelpTheme':
         kwargs = {key: val for key, val in locals().items() if val is not None}
+        if alias_secondary is MISSING:
+            del kwargs["alias_secondary"]
         kwargs.pop('self')
         if kwargs:
             return self._replace(**kwargs)
@@ -89,6 +103,8 @@ class HelpTheme(NamedTuple):
             heading=Style(fg='bright_white', bold=True),
             constraint=Style(fg='magenta'),
             col1=Style(fg='bright_yellow'),
+            alias=Style(fg='yellow'),
+            alias_secondary=Style(fg='white'),
         )
 
     @staticmethod
@@ -184,3 +200,6 @@ class Color(FrozenSpace):
     bright_magenta = "bright_magenta"
     bright_cyan = "bright_cyan"
     bright_white = "bright_white"
+
+
+DEFAULT_THEME = HelpTheme()

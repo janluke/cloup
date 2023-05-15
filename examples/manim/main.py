@@ -41,6 +41,8 @@ CONTEXT_SETTINGS = Context.settings(
             # col1=Style(...),
             col2=Style(dim=True),
             epilog=Style(fg=Color.bright_white, italic=True),
+            alias=Style(fg=Color.yellow),
+            alias_secondary=Style(fg=Color.white),
         ),
     ),
 )

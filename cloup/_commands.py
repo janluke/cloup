@@ -24,8 +24,8 @@ When and if the MyPy issue is resolved, the overloads will be removed.
 """
 import inspect
 from typing import (
-    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Tuple, Type,
-    TypeVar, Union, cast, overload,
+    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Sequence, Tuple,
+    Type, TypeVar, Union, cast, overload,
 )
 
 import click
@@ -36,6 +36,7 @@ from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
 from ._util import click_version_ge_8_1, first_bool, reindent
 from .constraints import ConstraintMixin
+from .styling import DEFAULT_THEME
 from .typing import AnyCallable
 
 ClickCommand = TypeVar('ClickCommand', bound=click.Command)
@@ -227,9 +228,25 @@ class Group(SectionMixin, Command, click.Group):
     ) -> str:
         aliases = getattr(cmd, 'aliases', None)
         if aliases and self.must_show_subcommand_aliases(ctx):
-            alias_list = ', '.join(aliases)
-            return f"{name} ({alias_list})"
+            assert isinstance(ctx, cloup.Context)
+            theme = cast(
+                cloup.HelpTheme, ctx.formatter_settings.get("theme", DEFAULT_THEME)
+            )
+            alias_list = self.format_subcommand_aliases(aliases, theme)
+            return f"{name} {alias_list}"
         return name
+
+    @staticmethod
+    def format_subcommand_aliases(aliases: Sequence[str], theme: cloup.HelpTheme) -> str:
+        secondary_style = theme.alias_secondary
+        if secondary_style is None or secondary_style == theme.alias:
+            return theme.alias(f"({', '.join(aliases)})")
+        else:
+            return (
+                secondary_style("(")
+                + secondary_style(", ").join(theme.alias(alias) for alias in aliases)
+                + secondary_style(")")
+            )
 
     # MyPy complains because "Signature of "group" incompatible with supertype".
     # The supertype signature is (*args, **kwargs), which is compatible with
