@@ -24,8 +24,8 @@ When and if the MyPy issue is resolved, the overloads will be removed.
 """
 import inspect
 from typing import (
-    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Tuple, Type,
-    TypeVar, Union, cast, overload,
+    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Sequence, Tuple,
+    Type, TypeVar, Union, cast, overload,
 )
 
 import click
@@ -232,12 +232,21 @@ class Group(SectionMixin, Command, click.Group):
             theme = cast(
                 cloup.HelpTheme, ctx.formatter_settings.get("theme", DEFAULT_THEME)
             )
-            alias_style, sep_style, boundary_style = theme.alias_list_styles
-            alias_list = sep_style(", ").join(alias_style(alias) for alias in aliases)
-            open_par = boundary_style("(")
-            close_par = boundary_style(")")
-            return f"{name} {open_par}{alias_list}{close_par}"
+            alias_list = self.format_subcommand_aliases(aliases, theme)
+            return f"{name} {alias_list}"
         return name
+
+    @staticmethod
+    def format_subcommand_aliases(aliases: Sequence[str], theme: cloup.HelpTheme) -> str:
+        secondary_style = theme.alias_secondary
+        if secondary_style is None or secondary_style == theme.alias:
+            return theme.alias(f"({', '.join(aliases)})")
+        else:
+            return (
+                secondary_style("(")
+                + secondary_style(", ").join(theme.alias(alias) for alias in aliases)
+                + secondary_style(")")
+            )
 
     # MyPy complains because "Signature of "group" incompatible with supertype".
     # The supertype signature is (*args, **kwargs), which is compatible with

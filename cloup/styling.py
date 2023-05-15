@@ -3,11 +3,12 @@ This module contains components that specifically address the styling and themin
 of the ``--help`` output.
 """
 import dataclasses as dc
-from typing import Any, Callable, Dict, NamedTuple, Optional, Tuple
+from typing import Any, Callable, Dict, NamedTuple, Optional
 
 import click
 
 from cloup._util import FrozenSpace, click_version_tuple, delete_keys, identity
+from cloup.typing import MISSING, Possibly
 
 IStyle = Callable[[str], str]
 """A callable that takes a string and returns a styled version of it."""
@@ -39,6 +40,8 @@ class HelpTheme(NamedTuple):
         Style of the second column of a definition list (help text).
     :param epilog:
         Style of the epilog.
+    :param alias:
+        Style of subcommand aliases in a definition lists.
     """
 
     invoked_command: IStyle = identity
@@ -63,24 +66,14 @@ class HelpTheme(NamedTuple):
     """Style of the second column of a definition list (help text)."""
 
     alias: IStyle = identity
-    """Style of command aliases in a definition list."""
+    """Style of subcommand aliases in a definition lists."""
 
-    alias_list_sep: Optional[IStyle] = None
-    """Style of separator and eventual parenthesis/brackets in command alias lists.
-    If not provided, ``col1`` style will be used."""
-
-    alias_list_boundaries: Optional[IStyle] = None
-    """Style of the boundary characters (parenthesis by default) of a command alias list.
-    If not provided, ``alias_list_sep`` will be used."""
+    alias_secondary: Optional[IStyle] = None
+    """Style of separator and eventual parenthesis/brackets in subcommand alias lists.
+    If not provided, the ``alias`` style will be used."""
 
     epilog: IStyle = identity
     """Style of the epilog."""
-
-    @property
-    def alias_list_styles(self) -> Tuple[IStyle, IStyle, IStyle]:
-        sep_style = self.alias_list_sep or self.col1
-        boundary_style = self.alias_list_boundaries or sep_style
-        return self.alias, sep_style, boundary_style
 
     def with_(
         self, invoked_command: Optional[IStyle] = None,
@@ -91,11 +84,12 @@ class HelpTheme(NamedTuple):
         col1: Optional[IStyle] = None,
         col2: Optional[IStyle] = None,
         alias: Optional[IStyle] = None,
-        alias_list_sep: Optional[IStyle] = None,
-        alias_list_boundaries: Optional[IStyle] = None,
+        alias_secondary: Possibly[Optional[IStyle]] = MISSING,
         epilog: Optional[IStyle] = None,
     ) -> 'HelpTheme':
         kwargs = {key: val for key, val in locals().items() if val is not None}
+        if alias_secondary is MISSING:
+            del kwargs["alias_secondary"]
         kwargs.pop('self')
         if kwargs:
             return self._replace(**kwargs)

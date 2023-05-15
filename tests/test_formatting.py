@@ -9,12 +9,12 @@ import click
 import pytest
 
 from cloup import HelpFormatter
-from cloup.typing import Possibly
 from cloup.formatting import HelpSection, unstyled_len
 from cloup.formatting.sep import (
     Hline, RowSepIf, RowSepPolicy, multiline_rows_are_at_least
 )
 from cloup.styling import HelpTheme, Style
+from cloup.typing import Possibly
 from tests.util import parametrize
 
 LOREM = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor."
