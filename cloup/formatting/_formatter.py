@@ -168,10 +168,10 @@ class HelpFormatter(click.HelpFormatter):
         self.buffer += strings
 
     def write_usage(
-        self, prog: str, args: str = "", prefix: Optional[str] = "Usage:"
+        self, prog: str, args: str = "", prefix: Optional[str] = None
     ) -> None:
-        if prefix:
-            prefix = self.theme.heading(prefix) + " "
+        prefix = "Usage:" if prefix is None else prefix
+        prefix = self.theme.heading(prefix) + " "
         prog = self.theme.invoked_command(prog)
         super().write_usage(prog, args, prefix)
 
