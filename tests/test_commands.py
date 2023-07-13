@@ -120,3 +120,60 @@ def test_error_is_raised_when_group_subcommand_decorators_are_used_without_paren
         @root.command
         def subcommand():
             pass
+
+
+def test_group_command_class_is_used_to_create_subcommands(runner):
+    class CustomCommand(cloup.Command):
+
+        def __init__(self, *args, **kwargs):
+            kwargs.setdefault("context_settings", {"help_option_names": ("--help", "-h")})
+            super().__init__(*args, **kwargs)
+
+    class CustomGroup(cloup.Group):
+        command_class = CustomCommand
+
+    @cloup.group("cli", cls=CustomGroup)
+    def my_cli():
+        pass
+
+    @my_cli.command()
+    def subcommand():
+        pass
+
+    assert isinstance(subcommand, CustomCommand)
+
+    res = runner.invoke(my_cli, ["subcommand", "--help"])
+    assert res.output == reindent("""
+        Usage: cli subcommand [OPTIONS]
+
+        Options:
+          -h, --help  Show this message and exit.
+    """)
+
+
+def test_group_class_is_used_to_create_subgroups(runner):
+    class CustomGroup(cloup.Group):
+        group_class = type
+
+    class OtherCustomGroup(cloup.Group):
+        group_class = cloup.Group
+
+    @cloup.group("cli", cls=CustomGroup)
+    def my_cli():
+        pass
+
+    @my_cli.group()
+    def sub_group():
+        pass
+
+    @my_cli.group(cls=OtherCustomGroup)
+    def other_group():
+        pass
+
+    @other_group.group()
+    def other_sub_group():
+        pass
+
+    assert isinstance(sub_group, CustomGroup)
+    assert isinstance(other_group, OtherCustomGroup)
+    assert isinstance(other_sub_group, cloup.Group)

@@ -17,15 +17,15 @@ verbose. The ``@overload`` is on the ``cls`` argument:
 - in one signature, ``cls`` has type ``None`` and it's set to ``None``; in this
   case the type of the instantiated command is ``cloup.Command`` for ``@command``
   and ``cloup.Group`` for ``@group``
-- in the other signature, there's ``cls: ClickCommand`` without a default, where
-  ``ClickCommand`` is a type variable.
+- in the other signature, there's ``cls: C`` without a default, where ``C`` is
+  a type variable; in this case the type of the instantiated command is ``C``.
 
 When and if the MyPy issue is resolved, the overloads will be removed.
 """
 import inspect
 from typing import (
     Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Sequence, Tuple,
-    Type, TypeVar, Union, cast, overload,
+    Type, TypeVar, Union, cast, overload
 )
 
 import click
@@ -39,8 +39,9 @@ from .constraints import ConstraintMixin
 from .styling import DEFAULT_THEME
 from .typing import AnyCallable
 
-ClickCommand = TypeVar('ClickCommand', bound=click.Command)
-ClickGroup = TypeVar('ClickGroup', bound=click.Group)
+# Generic types of ``cls`` args of ``@command`` and ``@group``
+C = TypeVar('C', bound=click.Command)
+G = TypeVar('G', bound=click.Group)
 
 
 class Command(ConstraintMixin, OptionGroupMixin, click.Command):
@@ -256,7 +257,7 @@ class Group(SectionMixin, Command, click.Group):
         self, name: Optional[str] = None,
         *,
         aliases: Optional[Iterable[str]] = None,
-        cls: None = None,  # Command is cloup.Command
+        cls: None = None,  # default to Group.command_class or cloup.Command
         section: Optional[Section] = None,
         context_settings: Optional[Dict[str, Any]] = None,
         formatter_settings: Optional[Dict[str, Any]] = None,
@@ -271,7 +272,7 @@ class Group(SectionMixin, Command, click.Group):
         align_option_groups: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
         params: Optional[List[click.Parameter]] = None,
-    ) -> Callable[[AnyCallable], Command]:
+    ) -> Callable[[AnyCallable], click.Command]:
         ...
 
     @overload
@@ -279,7 +280,7 @@ class Group(SectionMixin, Command, click.Group):
         self, name: Optional[str] = None,
         *,
         aliases: Optional[Iterable[str]] = None,
-        cls: Type[ClickCommand],
+        cls: Type[C],
         section: Optional[Section] = None,
         context_settings: Optional[Dict[str, Any]] = None,
         help: Optional[str] = None,
@@ -292,16 +293,16 @@ class Group(SectionMixin, Command, click.Group):
         deprecated: bool = False,
         params: Optional[List[click.Parameter]] = None,
         **kwargs: Any,
-    ) -> Callable[[AnyCallable], ClickCommand]:
+    ) -> Callable[[AnyCallable], C]:
         ...
 
     def command(
         self, name: Optional[str] = None, *,
         aliases: Optional[Iterable[str]] = None,
-        cls: Optional[Type[ClickCommand]] = None,
+        cls: Optional[Type[C]] = None,
         section: Optional[Section] = None,
         **kwargs: Any
-    ) -> Callable[[AnyCallable], Union[Command, ClickCommand]]:
+    ) -> Callable[[AnyCallable], Union[click.Command, C]]:
         """Return a decorator that creates a new subcommand of this ``Group``
         using the decorated function as callback.
 
@@ -313,9 +314,12 @@ class Group(SectionMixin, Command, click.Group):
         .. versionchanged:: 0.10.0
             all arguments but ``name`` are now keyword-only.
         """
-        make_command = command(name=name, cls=cls, aliases=aliases, **kwargs)
+        make_command = command(
+            name=name, cls=(self.command_class if cls is None else cls),
+            aliases=aliases, **kwargs
+        )
 
-        def decorator(f: AnyCallable) -> Union[Command, ClickCommand]:
+        def decorator(f: AnyCallable) -> click.Command:
             cmd = make_command(f)
             self.add_command(cmd, section=section)
             return cmd
@@ -347,14 +351,14 @@ class Group(SectionMixin, Command, click.Group):
         chain: bool = False,
         hidden: bool = False,
         deprecated: bool = False,
-    ) -> Callable[[AnyCallable], 'Group']:
+    ) -> Callable[[AnyCallable], click.Group]:
         ...
 
     @overload
     def group(  # Why overloading? Refer to module docstring.
         self, name: Optional[str] = None, *,
         aliases: Optional[Iterable[str]] = None,
-        cls: Type[ClickGroup],
+        cls: Optional[Type[G]] = None,
         section: Optional[Section] = None,
         invoke_without_command: bool = False,
         no_args_is_help: bool = False,
@@ -370,17 +374,17 @@ class Group(SectionMixin, Command, click.Group):
         deprecated: bool = False,
         params: Optional[List[click.Parameter]] = None,
         **kwargs: Any
-    ) -> Callable[[AnyCallable], ClickGroup]:
+    ) -> Callable[[AnyCallable], G]:
         ...
 
     def group(  # type: ignore
         self, name: Optional[None] = None,
         *,
-        cls: Optional[Type[ClickGroup]] = None,
+        cls: Optional[Type[G]] = None,
         aliases: Optional[Iterable[str]] = None,
         section: Optional[Section] = None,
         **kwargs: Any
-    ) -> Callable[[AnyCallable], Union["Group", ClickGroup]]:
+    ) -> Callable[[AnyCallable], Union[click.Group, G]]:
         """Return a decorator that creates a new subcommand of this ``Group``
         using the decorated function as callback.
 
@@ -392,14 +396,25 @@ class Group(SectionMixin, Command, click.Group):
         .. versionchanged:: 0.10.0
             all arguments but ``name`` are now keyword-only.
         """
-        make_group = group(name=name, cls=cls, aliases=aliases, **kwargs)
+        make_group = group(
+            name=name, cls=cls or self._default_group_class(), aliases=aliases, **kwargs
+        )
 
-        def decorator(f: AnyCallable) -> Union["Group", ClickGroup]:
+        def decorator(f: AnyCallable) -> Union[click.Group, G]:
             cmd = make_group(f)
             self.add_command(cmd, section=section)
             return cmd
 
         return decorator
+
+    @classmethod
+    def _default_group_class(cls) -> Optional[Type[click.Group]]:
+        if cls.group_class is None:
+            return None
+        if cls.group_class is type:
+            return cls
+        else:
+            return cast(Type[click.Group], cls.group_class)
 
 
 # Why overloading? Refer to module docstring.
@@ -431,7 +446,7 @@ def command(  # In this overload: "cls: ClickCommand"
     name: Optional[str] = None,
     *,
     aliases: Optional[Iterable[str]] = None,
-    cls: Type[ClickCommand],
+    cls: Type[C],
     context_settings: Optional[Dict[str, Any]] = None,
     help: Optional[str] = None,
     short_help: Optional[str] = None,
@@ -443,7 +458,7 @@ def command(  # In this overload: "cls: ClickCommand"
     deprecated: bool = False,
     params: Optional[List[click.Parameter]] = None,
     **kwargs: Any
-) -> Callable[[AnyCallable], ClickCommand]:
+) -> Callable[[AnyCallable], C]:
     ...
 
 
@@ -451,9 +466,9 @@ def command(  # In this overload: "cls: ClickCommand"
 def command(
     name: Optional[str] = None, *,
     aliases: Optional[Iterable[str]] = None,
-    cls: Optional[Type[ClickCommand]] = None,
+    cls: Optional[Type[C]] = None,
     **kwargs: Any
-) -> Callable[[AnyCallable], Union[Command, ClickCommand]]:
+) -> Callable[[AnyCallable], Union[Command, C]]:
     """
     Return a decorator that creates a new command using the decorated function
     as callback.
@@ -538,7 +553,7 @@ def command(
             f"While parenthesis are optional in Click >= 8.1, they are required in Cloup."
         )
 
-    def decorator(f: AnyCallable) -> ClickCommand:
+    def decorator(f: AnyCallable) -> C:
         if hasattr(f, '__cloup_constraints__'):
             if cls and not issubclass(cls, ConstraintMixin):
                 raise TypeError(
@@ -550,7 +565,7 @@ def command(
 
         cmd_cls = cls if cls is not None else Command
         try:
-            cmd = cast(ClickCommand, click.command(name, cls=cmd_cls, **kwargs)(f))
+            cmd = cast(C, click.command(name, cls=cmd_cls, **kwargs)(f))
             if aliases:
                 cmd.aliases = list(aliases)  # type: ignore
             return cmd
@@ -590,7 +605,7 @@ def group(
 def group(
     name: Optional[str] = None,
     *,
-    cls: Type[ClickGroup],
+    cls: Type[G],
     aliases: Optional[Iterable[str]] = None,
     invoke_without_command: bool = False,
     no_args_is_help: bool = False,
@@ -606,12 +621,12 @@ def group(
     deprecated: bool = False,
     params: Optional[List[click.Parameter]] = None,
     **kwargs: Any
-) -> Callable[[AnyCallable], ClickGroup]:
+) -> Callable[[AnyCallable], G]:
     ...
 
 
 def group(
-    name: Optional[str] = None, *, cls: Optional[Type[ClickGroup]] = None, **kwargs: Any
+    name: Optional[str] = None, *, cls: Optional[Type[G]] = None, **kwargs: Any
 ) -> Callable[[AnyCallable], click.Group]:
     """
     Return a decorator that instantiates a ``Group`` (or a subclass of it)
