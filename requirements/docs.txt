@@ -26,8 +26,9 @@ idna==3.4
     # via requests
 imagesize==1.4.1
     # via sphinx
-jinja2==3.1.2
+jinja2==3.0.3
     # via
+    #   -r requirements/docs.in
     #   sphinx
     #   sphinx-autoapi
 lazy-object-proxy==1.9.0
