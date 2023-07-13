@@ -2,6 +2,6 @@
 -r docs.txt
 flake8
 mypy
-tox
+tox < 4
 twine
 sphinx-autobuild

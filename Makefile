@@ -108,18 +108,20 @@ release: dist ## package and upload a release
 test-release: dist   ## package and upload a release
 	twine upload --repository testpypi dist/*
 
+PIP_COMPILE := pip-compile --resolver=backtracking
+
 .PHONY: pip-compile
 pip-compile:  ## pin dependencies in requirements/ using the current env
-	pip-compile requirements/test.in
-	pip-compile requirements/docs.in
-	pip-compile requirements/dev.in
+	$(PIP_COMPILE) requirements/test.in
+	$(PIP_COMPILE) requirements/docs.in
+	$(PIP_COMPILE) requirements/dev.in
 
 .PHONY: pip-upgrade
 pip-upgrade:   ## upgrade pip and dependencies
 	python -m pip install -U pip
-	pip-compile --upgrade requirements/test.in
-	pip-compile --upgrade requirements/docs.in
-	pip-compile --upgrade requirements/dev.in
+	$(PIP_COMPILE) --upgrade requirements/test.in
+	# $(PIP_COMPILE) --upgrade requirements/docs.in
+	$(PIP_COMPILE) --upgrade requirements/dev.in
 
 .PHONY: pip-sync
 pip-sync:  ## sync development environment with requirements/dev.txt
