@@ -2,8 +2,10 @@
 This module contains components that specifically address the styling and theming
 of the ``--help`` output.
 """
+import dataclasses
 import dataclasses as dc
-from typing import Any, Callable, Dict, NamedTuple, Optional
+from dataclasses import dataclass
+from typing import Any, Callable, Dict, Optional
 
 import click
 
@@ -14,8 +16,8 @@ IStyle = Callable[[str], str]
 """A callable that takes a string and returns a styled version of it."""
 
 
-# noinspection PyUnresolvedReferences
-class HelpTheme(NamedTuple):
+@dataclass(frozen=True)
+class HelpTheme:
     """A collection of styles for several elements of the help page.
 
     A "style" is just a function or a callable that takes a string and returns
@@ -95,7 +97,7 @@ class HelpTheme(NamedTuple):
             del kwargs["alias_secondary"]
         kwargs.pop('self')
         if kwargs:
-            return self._replace(**kwargs)
+            return dataclasses.replace(self, **kwargs)
         return self
 
     @staticmethod
