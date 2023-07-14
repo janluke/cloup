@@ -45,9 +45,9 @@
     :alt: Documentation Status (latest release)
     :target: https://cloup.readthedocs.io/en/stable/
 
-.. |downloads| image:: https://img.shields.io/pypi/dw/cloup
+.. |downloads| image:: https://static.pepy.tech/personalized-badge/cloup?period=week&units=international_system&left_color=grey&right_color=blue&left_text=downloads%20/%20week
     :alt: PyPI - Downloads
-    :target: https://pypistats.org/packages/cloup
+    :target: https://pepy.tech/project/cloup
 
 .. |donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
     :alt: Donate with PayPal
