@@ -52,12 +52,14 @@ class Constraint(abc.ABC):
     def __getattr__(self, attr: str) -> Any:
         removed_attrs = ('toggle_consistency_checks', 'consistency_checks_toggled')
         if attr in removed_attrs:
-            raise Exception(
+            raise AttributeError(
                 f'attribute `{attr}` was removed in v0.9. You can now enable/disable '
                 f'consistency checks using the `click.Context` parameter '
                 f'`check_constraints_consistency`. '
                 f'Pass it as part of your `context_settings`.'
             )
+        else:
+            raise AttributeError(attr)
 
     @abc.abstractmethod
     def help(self, ctx: click.Context) -> str:
