@@ -20,7 +20,7 @@ from cloup.constraints import (
 )
 from cloup.constraints.exceptions import ConstraintViolated, UnsatisfiableConstraint
 from tests.util import (
-    make_context, make_fake_context, make_options, parametrize, should_raise
+    make_context, make_fake_context, make_options, parametrize, should_raise,
 )
 
 
@@ -31,8 +31,10 @@ class FakeConstraint(Constraint):
 
     to create a test double with characteristics of both a mock and a fake."""
 
-    def __init__(self, satisfied=True, consistent=True, help='help',
-                 error='error', inconsistency_reason='consistency_error'):
+    def __init__(
+        self, satisfied=True, consistent=True, help='help',
+        error='error', inconsistency_reason='consistency_error'
+    ):
         self.satisfied = satisfied
         self.consistent = consistent
         self._help = help
@@ -349,3 +351,9 @@ class TestRephraser:
         params = make_options('abc')
         with pytest.raises(UnsatisfiableConstraint):
             rephraser.check_consistency(params)
+
+
+def test_a_constraint_can_be_copied_and_deep_copied():
+    import copy
+    copy.copy(RequireAtLeast(1))
+    copy.deepcopy(RequireAtLeast(1))
