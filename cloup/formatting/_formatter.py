@@ -183,7 +183,7 @@ class HelpFormatter(click.HelpFormatter):
     def write_command_help_text(self, cmd: click.Command) -> None:
         help_text = cmd.help or ""
         if help_text and click_version_ge_8_1:
-            help_text = inspect.cleandoc(help_text)
+            help_text = inspect.cleandoc(help_text).partition("\f")[0]
         if cmd.deprecated:
             # Use the same label as Click:
             # https://github.com/pallets/click/blob/b0538df/src/click/core.py#L1331
