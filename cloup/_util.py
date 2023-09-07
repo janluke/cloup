@@ -1,6 +1,8 @@
 """Generic utilities."""
+import asyncio
+import functools
 from typing import (
-    Any, Dict, Hashable, Iterable, List, Optional, Sequence, Type, TypeVar,
+    Any, Dict, Hashable, Iterable, List, Optional, Sequence, Type, TypeVar, Coroutine, Callable,
 )
 
 import click
@@ -159,3 +161,11 @@ def reindent(text: str, indent: int = 0) -> str:
     if indent:
         return tw.indent(text, ' ' * indent)
     return text
+
+
+def async_to_sync(f: Callable[..., Coroutine]):
+    @functools.wraps(f)
+    def sync_func(*args, **kwargs):
+        return asyncio.run(f(*args, **kwargs))
+
+    return sync_func

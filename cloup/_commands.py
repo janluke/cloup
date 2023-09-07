@@ -34,7 +34,7 @@ import cloup
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
-from ._util import click_version_ge_8_1, first_bool, reindent
+from ._util import click_version_ge_8_1, first_bool, reindent, async_to_sync
 from .constraints import ConstraintMixin
 from .styling import DEFAULT_THEME
 from .typing import AnyCallable
@@ -562,6 +562,9 @@ def command(
             constraints = tuple(reversed(f.__cloup_constraints__))
             del f.__cloup_constraints__
             kwargs['constraints'] = constraints
+
+        if inspect.iscoroutinefunction(f):
+            f = async_to_sync(f)
 
         cmd_cls = cls if cls is not None else Command
         try:

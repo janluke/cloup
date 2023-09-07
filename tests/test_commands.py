@@ -1,3 +1,4 @@
+import asyncio
 import re
 
 import click
@@ -177,3 +178,20 @@ def test_group_class_is_used_to_create_subgroups(runner):
     assert isinstance(sub_group, CustomGroup)
     assert isinstance(other_group, OtherCustomGroup)
     assert isinstance(other_sub_group, cloup.Group)
+
+
+def test_async_command(runner):
+
+    async def dummy_fetch(name):
+        await asyncio.sleep(0.1)
+        return f"__{name}__"
+
+    @cloup.command()
+    @cloup.argument("name")
+    async def cmd(name):
+        doc = await dummy_fetch(name)
+        print(f"Doc: {doc}")
+
+    res = runner.invoke(cmd, ["janluke"])
+    assert res.exit_code == 0
+    assert res.output.strip() == "Doc: __janluke__"
