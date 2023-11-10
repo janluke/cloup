@@ -11,7 +11,6 @@ from click import (
     # decorators
     confirmation_option,
     help_option,
-    pass_context,
     pass_obj,
     password_option,
     version_option,
@@ -42,7 +41,7 @@ from .formatting import (
     HelpFormatter,
     HelpSection,
 )
-from ._context import Context
+from ._context import Context, pass_context
 from ._params import Argument, Option, argument, option
 from ._option_groups import (
     OptionGroup,

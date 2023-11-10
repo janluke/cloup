@@ -1,5 +1,8 @@
+from __future__ import annotations
+
 import warnings
-from typing import Any, Callable, Dict, List, Optional, Type
+from typing import Any, Callable, cast, Dict, List, Optional, Type, TypeVar, TYPE_CHECKING
+from functools import update_wrapper
 
 import click
 
@@ -222,3 +225,22 @@ class Context(click.Context):
             dictionary, so that you can be guided by your IDE.
         """
         return pick_non_missing(locals())
+
+
+if TYPE_CHECKING:
+    import typing_extensions as te
+
+    P = te.ParamSpec("P")
+
+R = TypeVar("R")
+
+
+def pass_context(f: Callable[te.Concatenate[Context, P], R]) -> Callable[P, R]:
+    """Marks a callback as wanting to receive the current context
+    object as first argument.
+    """
+
+    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
+        return f(cast(Context, click.get_current_context()), *args, **kwargs)
+
+    return update_wrapper(new_func, f)
