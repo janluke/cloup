@@ -1,8 +1,10 @@
 from __future__ import annotations
 
 import warnings
-from typing import Any, Callable, cast, Dict, List, Optional, Type, TypeVar, TYPE_CHECKING
 from functools import update_wrapper
+from typing import (
+    Any, Callable, cast, Dict, List, Optional, Type, TypeVar, TYPE_CHECKING, overload,
+)
 
 import click
 
@@ -10,6 +12,41 @@ import cloup
 from cloup._util import coalesce, pick_non_missing
 from cloup.formatting import HelpFormatter
 from cloup.typing import MISSING, Possibly
+
+if TYPE_CHECKING:
+    import typing_extensions as te
+
+    P = te.ParamSpec("P")
+
+R = TypeVar("R")
+
+
+@overload
+def get_current_context() -> "Context":
+    ...
+
+
+@overload
+def get_current_context(silent: bool = False) -> "Optional[Context]":
+    ...
+
+
+def get_current_context(silent: bool = False) -> "Optional[Context]":
+    """Equivalent to :func:`click.get_current_context` but casts the returned
+    :class:`click.Context` object to :class:`cloup.Context` (which is safe when using
+    cloup commands classes and decorators)."""
+    return cast(Optional[Context], click.get_current_context(silent=silent))
+
+
+def pass_context(f: "Callable[te.Concatenate[Context, P], R]") -> "Callable[P, R]":
+    """Marks a callback as wanting to receive the current context object as first
+    argument. Equivalent to :func:`click.pass_context` but assumes the current context
+    is of type :class:`cloup.Context`."""
+
+    def new_func(*args: "P.args", **kwargs: "P.kwargs") -> R:
+        return f(get_current_context(), *args, **kwargs)
+
+    return update_wrapper(new_func, f)
 
 
 def _warn_if_formatter_settings_conflict(
@@ -225,22 +262,3 @@ class Context(click.Context):
             dictionary, so that you can be guided by your IDE.
         """
         return pick_non_missing(locals())
-
-
-if TYPE_CHECKING:
-    import typing_extensions as te
-
-    P = te.ParamSpec("P")
-
-R = TypeVar("R")
-
-
-def pass_context(f: Callable[te.Concatenate[Context, P], R]) -> Callable[P, R]:
-    """Marks a callback as wanting to receive the current context
-    object as first argument.
-    """
-
-    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
-        return f(cast(Context, click.get_current_context()), *args, **kwargs)
-
-    return update_wrapper(new_func, f)

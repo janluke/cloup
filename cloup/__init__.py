@@ -41,7 +41,7 @@ from .formatting import (
     HelpFormatter,
     HelpSection,
 )
-from ._context import Context, pass_context
+from ._context import Context, get_current_context, pass_context
 from ._params import Argument, Option, argument, option
 from ._option_groups import (
     OptionGroup,
@@ -103,6 +103,7 @@ __all__ = [
     "constraint",
     "dir_path",
     "file_path",
+    "get_current_context",
     "group",
     "help_option",
     "option",
