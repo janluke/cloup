@@ -25,7 +25,7 @@ When and if the MyPy issue is resolved, the overloads will be removed.
 import inspect
 from typing import (
     Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Sequence, Tuple,
-    Type, TypeVar, Union, cast, overload
+    Type, TypeVar, Union, cast, overload, MutableMapping, Mapping,
 )
 
 import click
@@ -143,7 +143,12 @@ class Group(SectionMixin, Command, click.Group):
     SHOW_SUBCOMMAND_ALIASES: bool = False
 
     def __init__(
-        self, *args: Any, show_subcommand_aliases: Optional[bool] = None, **kwargs: Any
+        self, *args: Any,
+        show_subcommand_aliases: Optional[bool] = None,
+        commands: Optional[
+            Union[MutableMapping[str, click.Command], Sequence[click.Command]]
+        ] = None,
+        **kwargs: Any
     ):
         super().__init__(*args, **kwargs)
         self.show_subcommand_aliases = show_subcommand_aliases
@@ -151,6 +156,19 @@ class Group(SectionMixin, Command, click.Group):
 
         self.alias2name: Dict[str, str] = {}
         """Dictionary mapping each alias to a command name."""
+
+        if commands:
+            self.add_multiple_commands(commands)
+
+    def add_multiple_commands(
+        self, commands: Union[Mapping[str, click.Command], Sequence[click.Command]]
+    ) -> None:
+        if isinstance(commands, Mapping):
+            for name, cmd in commands.items():
+                self.add_command(cmd, name=name)
+        else:
+            for cmd in commands:
+                self.add_command(cmd)
 
     def add_command(
         self, cmd: click.Command,

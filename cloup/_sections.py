@@ -146,7 +146,11 @@ class SectionMixin:
 
     def add_section(self, section: Section) -> None:
         """Add a :class:`Section` to this group. You can add the same
-        section object a single time."""
+        section object only a single time.
+
+        See Also:
+            :meth:`section`
+        """
         if section in self._section_set:
             raise ValueError(f'section "{section}" was already added')
         self._user_sections.append(section)

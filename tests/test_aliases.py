@@ -10,12 +10,8 @@ from cloup.styling import IStyle
 from cloup.typing import MISSING
 
 
-@pytest.fixture()
-def cli() -> cloup.Group:
-    @cloup.group()
-    def cli():
-        """A package installer."""
-
+@pytest.fixture(params=["section", "init_arg"])
+def cli(request) -> cloup.Group:
     @cloup.command(aliases=['i', 'add'])
     @cloup.argument('pkg')
     def install(pkg: str):
@@ -32,7 +28,23 @@ def cli() -> cloup.Group:
         """Remove all installed packages."""
         print('clear')
 
-    cli.section('Commands', install, clear, config)
+    if request.param == "section":
+        @cloup.group()
+        def cli():
+            """A package installer."""
+
+        cli.section("Commands", install, clear, config, is_sorted=True)
+
+    elif request.param == "init_arg":
+        cli = Group(
+            name="cli",
+            help="A package installer.",
+            commands=[install, clear, config],
+        )
+
+    else:
+        raise ValueError(request.param)
+
     return cli
 
 
@@ -45,9 +57,9 @@ cli_help_without_aliases = reindent("""
       --help  Show this message and exit.
 
     Commands:
-      install  Install a package.
       clear    Remove all installed packages.
       config   Manage the configuration.
+      install  Install a package.
 """)
 
 cli_help_with_aliases = reindent("""
@@ -59,9 +71,9 @@ cli_help_with_aliases = reindent("""
       --help  Show this message and exit.
 
     Commands:
-      install (i, add)    Install a package.
       clear (clr)         Remove all installed packages.
       config (conf, cfg)  Manage the configuration.
+      install (i, add)    Install a package.
 """)
 
 
