@@ -87,7 +87,7 @@ Functions
 {% endif %}
 {% endblock %}
 
-{# === ATTTRIBUTES SUMMARY === #}
+{# === ATTRIBUTES SUMMARY === #}
 {% block attributes scoped %}
 {% if visible_attributes %}
 Attributes
