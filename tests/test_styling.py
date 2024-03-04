@@ -6,14 +6,14 @@ import pytest
 from cloup.styling import Color, HelpTheme, Style
 
 
-def test_help_theme_copywith():
+def test_help_theme_copy_with():
     s1, s2 = Style(), Style()
     r1, r2 = Style(), Style()
     theme = HelpTheme(heading=s1, col1=s2).with_(col1=r1, col2=r2)
     assert theme == HelpTheme(heading=s1, col1=r1, col2=r2)
 
 
-def test_help_theme_copywith_takes_the_same_parameters_of_constructor():
+def test_help_theme_copy_with_takes_the_same_parameters_of_constructor():
     def get_param_names(func):
         params = inspect.signature(func).parameters
         return list(params.keys())
@@ -38,17 +38,25 @@ def test_unsupported_style_args_are_ignored_in_click_7():
     Style(overline=True, italic=True, strikethrough=True)
 
 
-def test_Color():
+def test_color_class():
+    # Check values of some attributes
     assert Color.red == 'red'
     assert Color.bright_blue == 'bright_blue'
 
+    # Check it's not instantiable
     with pytest.raises(Exception, match="it's not instantiable"):
         Color()
+
+    # Check only __dunder__ fields are settable
+    Color.__annotations__ = "whatever"
     with pytest.raises(Exception, match="you can't set attributes on this class"):
         Color.red = 'blue'
 
+    # Test __contains__
     assert 'red' in Color
     assert 'pippo' not in Color
+
+    # Test Color.asdict()
     d = Color.asdict()
     for k, v in d.items():
         assert k in Color
