@@ -126,7 +126,13 @@ class FrozenSpaceMeta(type):
         type.__setattr__(cls, '_dict', d)
 
     def __setattr__(cls, key: str, value: Any) -> None:
-        raise Exception("you can't set attributes on this class")
+        if key.startswith("__"):
+            return super().__setattr__(key, value)
+        else:
+            raise Exception(
+                "you can't set attributes on this class; only special dunder attributes "
+                "(e.g. __annotations__) are allowed to be set for compatibility reasons."
+            )
 
     def asdict(cls) -> Dict[str, Any]:
         return cls._dict  # type: ignore
