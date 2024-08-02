@@ -6,14 +6,8 @@ tabular layout). In the future, it may be expanded with something analogous for
 help sections.
 """
 import abc
-import sys
 from itertools import zip_longest
-from typing import Optional, Sequence, Union
-
-if sys.version_info[:2] >= (3, 8):
-    from typing import Protocol
-else:  # pragma: no cover
-    from typing_extensions import Protocol
+from typing import Optional, Protocol, Sequence, Union
 
 SepType = Union[str, 'SepGenerator']
 

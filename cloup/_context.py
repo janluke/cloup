@@ -14,9 +14,9 @@ from cloup.formatting import HelpFormatter
 from cloup.typing import MISSING, Possibly
 
 if TYPE_CHECKING:
-    import typing_extensions as te
+    from typing_extensions import Concatenate, ParamSpec
 
-    P = te.ParamSpec("P")
+    P = ParamSpec("P")
 
 R = TypeVar("R")
 
@@ -38,7 +38,7 @@ def get_current_context(silent: bool = False) -> "Optional[Context]":
     return cast(Optional[Context], click.get_current_context(silent=silent))
 
 
-def pass_context(f: "Callable[te.Concatenate[Context, P], R]") -> "Callable[P, R]":
+def pass_context(f: "Callable[Concatenate[Context, P], R]") -> "Callable[P, R]":
     """Marks a callback as wanting to receive the current context object as first
     argument. Equivalent to :func:`click.pass_context` but assumes the current context
     is of type :class:`cloup.Context`."""
