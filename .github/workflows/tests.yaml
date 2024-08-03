@@ -25,6 +25,7 @@ jobs:
           - { name: 'Python 3.9, Click 8', tox: 'py39-click8', python: '3.9' }
           - { name: 'Python 3.10, Click 8', tox: 'py310-click8', python: '3.10' }
           - { name: 'Python 3.11, Click 8', tox: 'py311-click8', python: '3.11' }
+          - { name: 'Python 3.12, Click 8', tox: 'py312-click8', python: '3.12' }
           # Docs
           - { name: 'Docs', tox: docs,  python: '3.8' }
 
