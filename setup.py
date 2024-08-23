@@ -39,6 +39,7 @@ setup(
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
         'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
     packages=find_packages(include=['cloup', 'cloup.*']),
     zip_safe=False,
