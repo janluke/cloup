@@ -35,7 +35,6 @@ setup(
         'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: 3.10',
@@ -44,9 +43,9 @@ setup(
     packages=find_packages(include=['cloup', 'cloup.*']),
     zip_safe=False,
     include_package_data=True,
-    python_requires='>=3.7',
+    python_requires='>=3.8',
     install_requires=[
         'click >= 8.0, < 9.0',
-        'typing_extensions; python_version<="3.8"',
+        'typing_extensions; python_version<="3.10"',
     ],
 )
