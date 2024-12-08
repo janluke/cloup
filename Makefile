@@ -108,7 +108,7 @@ release: dist ## package and upload a release
 test-release: dist   ## package and upload a release
 	twine upload --repository testpypi dist/*
 
-PIP_COMPILE := pip-compile --resolver=backtracking
+PIP_COMPILE := pip-compile --resolver=backtracking --no-emit-index-url
 
 .PHONY: pip-compile
 pip-compile:  ## pin dependencies in requirements/ using the current env
