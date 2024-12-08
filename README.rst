@@ -49,14 +49,10 @@
     :alt: PyPI - Downloads
     :target: https://pepy.tech/project/cloup
 
-.. |donate| image:: https://img.shields.io/badge/Donate-PayPal-green.svg
-    :alt: Donate with PayPal
-    :target: https://www.paypal.com/donate/?hosted_button_id=4GTN24HXPMNBJ
-
 ========
 Overview
 ========
-|pypi-release| |downloads| |tests-status| |coverage| |dev-docs| |donate|
+|pypi-release| |downloads| |tests-status| |coverage| |dev-docs|
 
 **Cloup** — originally from "**Cl**\ick + option gr\ **oup**\s" — enriches
 `Click <https://github.com/pallets/click>`_ with several features that make it
@@ -150,18 +146,6 @@ If you don't provide ``--pippo`` or ``--pluto``:
 
 This simple example just scratches the surface. Read more in the documentation
 (links below).
-
-
-Supporting the project
-======================
-Designing, testing and documenting a library takes a lot of time. The most
-concrete way to show your appreciation and to support future development is by
-donating. Any amount is appreciated.
-
-|donate|
-
-Apart from that, you can help the project by starring it on GitHub, reporting
-issues, proposing improvements and contributing with your code!
 
 .. docs-index-end
 
