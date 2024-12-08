@@ -56,7 +56,7 @@
 ========
 Overview
 ========
-|pypi-release| |python-versions| |downloads| |tests-status| |coverage| |dev-docs| |donate|
+|pypi-release| |downloads| |tests-status| |coverage| |dev-docs| |donate|
 
 **Cloup** — originally from "**Cl**\ick + option gr\ **oup**\s" — enriches
 `Click <https://github.com/pallets/click>`_ with several features that make it
