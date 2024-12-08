@@ -16,17 +16,17 @@ jobs:
       matrix:
         include:
           # Checks
-          - { name: 'Lint',          tox: lint,  python: '3.8' }
-          - { name: 'Type checking', tox: mypy,  python: '3.8' }
-          - { name: 'Twine check',   tox: twine, python: '3.8' }
+          - { name: 'Lint',          tox: lint,  python: '3.9' }
+          - { name: 'Type checking', tox: mypy,  python: '3.9' }
+          - { name: 'Twine check',   tox: twine, python: '3.9' }
           # Test using Click 8
-          - { name: 'Python 3.8, Click 8', tox: 'py38-click8', python: '3.8' }
           - { name: 'Python 3.9, Click 8', tox: 'py39-click8', python: '3.9' }
           - { name: 'Python 3.10, Click 8', tox: 'py310-click8', python: '3.10' }
           - { name: 'Python 3.11, Click 8', tox: 'py311-click8', python: '3.11' }
           - { name: 'Python 3.12, Click 8', tox: 'py312-click8', python: '3.12' }
+          - { name: 'Python 3.12, Click 8', tox: 'py312-click8', python: '3.13' }
           # Docs
-          - { name: 'Docs', tox: docs,  python: '3.8' }
+          - { name: 'Docs', tox: docs,  python: '3.9' }
 
     steps:
       - name: Checkout
