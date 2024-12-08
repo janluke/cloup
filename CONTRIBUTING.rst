@@ -19,7 +19,7 @@ Ready to contribute? Here's how to set up `cloup` for local development.
     $ cd cloup
 
 3. Create a development virtual environment in `venv` folder. If you have tox
-   and Python 3.8 installed, you can create one with all dependencies running::
+   and Python 3.9 installed, you can create one with all dependencies running::
 
     $ tox -e dev
 
