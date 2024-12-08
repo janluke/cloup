@@ -1,5 +1,5 @@
--r test.txt
--r docs.txt
+-r test.in
+-r docs.in
 flake8
 mypy
 tox < 4
