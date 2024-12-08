@@ -581,7 +581,7 @@ def command(
             del f.__cloup_constraints__
             kwargs['constraints'] = constraints
 
-        cmd_cls = cls if cls is not None else Command
+        cmd_cls = cast(Type[Command], cls if cls is not None else Command)
         try:
             cmd = cast(C, click.command(name, cls=cmd_cls, **kwargs)(f))
             if aliases:
