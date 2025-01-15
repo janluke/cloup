@@ -10,13 +10,16 @@ from cloup import OptionGroup
 
 F = TypeVar('F', bound=Callable[..., Any])
 P = TypeVar('P', bound=click.Parameter)
+C = TypeVar('C', bound=click.Context)
+A = TypeVar('A', bound=click.Argument)
+O = TypeVar('O', bound=click.Option)
 
 SimpleParamTypeLike = Union[click.ParamType, Type[float], Type[int], Type[str]]
 ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
 ParamDefault = Union[Any, Callable[[], Any]]
-ParamCallback = Callable[[click.Context, P, Any], Any]
+ParamCallback = Callable[[C, P, Any], Any]
 ShellCompleteArg = Callable[
-    [click.Context, P, str],
+    [C, P, str],
     Union[List[CompletionItem], List[str]],
 ]
 
@@ -25,7 +28,7 @@ class Argument(click.Argument):
     def __init__(self, *args: Any, help: Optional[str] = None, **attrs: Any):
         ...
 
-    def get_help_record(self, ctx: click.Context) -> Tuple[str, str]:
+    def get_help_record(self, ctx: C) -> Tuple[str, str]:
         ...
 
 
@@ -41,19 +44,19 @@ def argument(
     type: Optional[ParamTypeLike] = None,
     required: Optional[bool] = None,
     default: Optional[ParamDefault] = None,
-    callback: Optional[ParamCallback[click.Argument]] = None,
+    callback: Optional[ParamCallback[A]] = None,
     nargs: Optional[int] = None,
     metavar: Optional[str] = None,
     expose_value: bool = True,
     envvar: Optional[Union[str, Sequence[str]]] = None,
-    shell_complete: Optional[ShellCompleteArg[click.Argument]] = None,
+    shell_complete: Optional[ShellCompleteArg[A]] = None,
     **kwargs: Any,
 ) -> Callable[[F], F]: ...
 
 
 def option(
     *param_decls: str,
-    cls: Optional[Type[click.Option]] = None,
+    cls: Optional[Type[O]] = None,
     # Commonly used
     metavar: Optional[str] = None,
     type: Optional[ParamTypeLike] = None,
@@ -62,7 +65,7 @@ def option(
     required: Optional[bool] = None,
     help: Optional[str] = None,
     # Processing
-    callback: Optional[ParamCallback[click.Option]] = None,
+    callback: Optional[ParamCallback[O]] = None,
     is_eager: bool = False,
     # Help text tuning
     show_choices: bool = True,
@@ -87,6 +90,6 @@ def option(
     expose_value: bool = True,
     # Others
     group: Optional[OptionGroup] = None,
-    shell_complete: Optional[ShellCompleteArg[click.Option]] = None,
+    shell_complete: Optional[ShellCompleteArg[O]] = None,
     **kwargs: Any
 ) -> Callable[[F], F]: ...
