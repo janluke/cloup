@@ -6,11 +6,11 @@ from typing import Any, Callable, List, Optional, Sequence, Tuple, Type, TypeVar
 import click
 from click.shell_completion import CompletionItem
 
-from cloup import OptionGroup
+from cloup import OptionGroup, Context
 
 F = TypeVar('F', bound=Callable[..., Any])
 P = TypeVar('P', bound=click.Parameter)
-C = Union[click.Context, cloup.Context]
+C = Union[click.Context, Context]
 
 SimpleParamTypeLike = Union[click.ParamType, Type[float], Type[int], Type[str]]
 ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
