@@ -10,9 +10,7 @@ from cloup import OptionGroup
 
 F = TypeVar('F', bound=Callable[..., Any])
 P = TypeVar('P', bound=click.Parameter)
-C = TypeVar('C', bound=click.Context)
-A = TypeVar('A', bound=click.Argument)
-O = TypeVar('O', bound=click.Option)
+C = Union[click.Context, cloup.Context]
 
 SimpleParamTypeLike = Union[click.ParamType, Type[float], Type[int], Type[str]]
 ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
@@ -36,6 +34,8 @@ class Option(click.Option):
     def __init__(self, *args: Any, group: Optional[OptionGroup] = None, **attrs: Any):
         ...
 
+A = Union[click.Argument, Argument]
+O = Union[click.Option, Option]
 
 def argument(
     *param_decls: str,
