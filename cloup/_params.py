@@ -1,6 +1,14 @@
 import click
 from click.decorators import _param_memo
 
+from cloup._util import click_version_ge_8_2
+
+
+def make_arg_metavar(arg, ctx) -> str:
+    if click_version_ge_8_2:
+        return arg.make_metavar(ctx)  # type: ignore[call-arg]
+    return arg.make_metavar()  # type: ignore[call-arg]
+
 
 class Argument(click.Argument):
     """A :class:`click.Argument` with help text."""
@@ -10,7 +18,7 @@ class Argument(click.Argument):
         self.help = help
 
     def get_help_record(self, ctx):
-        return self.make_metavar(), self.help or ""
+        return make_arg_metavar(self, ctx), self.help or ""
 
 
 class Option(click.Option):

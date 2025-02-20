@@ -10,7 +10,7 @@ import click
 from click import Option, Parameter
 
 import cloup
-from cloup._params import option
+from cloup._params import option, make_arg_metavar
 from cloup._util import first_bool, make_repr
 from cloup.constraints import Constraint
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
@@ -188,7 +188,7 @@ class OptionGroupMixin:
     ) -> Tuple[str, str]:
         if isinstance(arg, cloup.Argument):
             return arg.get_help_record(ctx)
-        return arg.make_metavar(), ""
+        return make_arg_metavar(arg, ctx), ""
 
     def get_arguments_help_section(self, ctx: click.Context) -> Optional[HelpSection]:
         args_with_help = (arg for arg in self.arguments if getattr(arg, "help", None))
