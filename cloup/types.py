@@ -12,8 +12,9 @@ def path(
     exists: bool = False,
     file_okay: bool = True,
     dir_okay: bool = True,
-    writable: bool = False,
     readable: bool = True,
+    writable: bool = False,
+    executable: bool = False,
     resolve_path: bool = False,
     allow_dash: bool = False,
 ) -> click.Path:
@@ -25,8 +26,9 @@ def dir_path(
     *,
     path_type: type = pathlib.Path,
     exists: bool = False,
-    writable: bool = False,
     readable: bool = True,
+    writable: bool = False,
+    executable: bool = False,
     resolve_path: bool = False,
     allow_dash: bool = False,
 ) -> click.Path:
@@ -39,8 +41,9 @@ def file_path(
     *,
     path_type: type = pathlib.Path,
     exists: bool = False,
-    writable: bool = False,
     readable: bool = True,
+    writable: bool = False,
+    executable: bool = False,
     resolve_path: bool = False,
     allow_dash: bool = False,
 ) -> click.Path:
