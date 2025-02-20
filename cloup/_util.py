@@ -11,6 +11,7 @@ click_version_tuple = tuple(click.__version__.split('.'))
 click_major = int(click_version_tuple[0])
 click_minor = int(click_version_tuple[1])
 click_version_ge_8_1 = (click_major, click_minor) >= (8, 1)
+click_version_ge_8_2 = (click_major, click_minor) >= (8, 2)
 
 T = TypeVar('T')
 K = TypeVar('K', bound=Hashable)
