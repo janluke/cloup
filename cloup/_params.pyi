@@ -21,6 +21,10 @@ ShellCompleteArg = Callable[
 ]
 
 
+def make_arg_metavar(arg: click.Argument, ctx: click.Context) -> str:
+    ...
+
+
 class Argument(click.Argument):
     def __init__(self, *args: Any, help: Optional[str] = None, **attrs: Any):
         ...
