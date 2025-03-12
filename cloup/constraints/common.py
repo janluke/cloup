@@ -77,7 +77,8 @@ def format_param(param: Parameter) -> str:
     # return ' | '.join(param.opts)
     if len(param.opts) == 1:
         return param.opts[0]
-    short, long = sorted(param.opts, key=len)
+    sorted_params = sorted(param.opts, key=len)
+    short, long = sorted_params[0], sorted_params[-1]
     return f'{long} ({short})'
 
 
