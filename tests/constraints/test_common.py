@@ -43,6 +43,18 @@ def test_format_param():
     assert format_param(Option(['--opt', '-o'])) == '--opt (-o)'
     assert format_param(Option(['-o', '--opt'])) == '--opt (-o)'
     assert format_param(Option(['-o/-O', '--opt/--no-opt', 'blah'])) == '--opt (-o)'
+    # Multiple long opts
+    assert format_param(Option(['--name', '--username'])) == (
+        '--name (--username)'
+    )
+    # Multiple short opts
+    assert format_param(Option(['--name', '-n', '-u'])) == (
+        '--name (-n, -u)'
+    )
+    # Multiple short and long opts
+    assert format_param(Option(['-n', '-u', '--name', '--username'])) == (
+        '--name (--username, -n, -u)'
+    )
 
 
 def test_format_param_list():

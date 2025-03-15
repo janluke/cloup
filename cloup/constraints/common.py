@@ -74,12 +74,18 @@ def join_with_and(strings: Sequence[str], sep: str = ', ') -> str:
 def format_param(param: Parameter) -> str:
     if isinstance(param, Argument):
         return param.human_readable_name
-    # return ' | '.join(param.opts)
-    if len(param.opts) == 1:
-        return param.opts[0]
-    sorted_params = sorted(param.opts, key=len)
-    short, long = sorted_params[0], sorted_params[-1]
-    return f'{long} ({short})'
+
+    opts = param.opts
+    if len(opts) == 1:
+        return opts[0]
+
+    # Use the first long opt as the main/canonical one, put all others
+    # opts between parenthesis as aliases, long opts first, then short ones
+    long_opts = [opt for opt in opts if opt.startswith("--")]
+    short_opts = [opt for opt in opts if not opt.startswith("--")]
+    main_opt = long_opts[0]
+    aliases = ", ".join(long_opts[1:] + short_opts)
+    return f'{main_opt} ({aliases})'
 
 
 def format_param_list(param_list: Iterable[Parameter], indent: int = 2) -> str:
