@@ -369,6 +369,7 @@ class Group(SectionMixin, Command, click.Group):
         chain: bool = False,
         hidden: bool = False,
         deprecated: bool = False,
+        show_subcommand_aliases: bool = False,
     ) -> Callable[[AnyCallable], click.Group]:
         ...
 
@@ -391,6 +392,7 @@ class Group(SectionMixin, Command, click.Group):
         hidden: bool = False,
         deprecated: bool = False,
         params: Optional[List[click.Parameter]] = None,
+        show_subcommand_aliases: bool = False,
         **kwargs: Any
     ) -> Callable[[AnyCallable], G]:
         ...
@@ -615,6 +617,7 @@ def group(
     hidden: bool = False,
     deprecated: bool = False,
     params: Optional[List[click.Parameter]] = None,
+    show_subcommand_aliases: bool = False,
 ) -> Callable[[AnyCallable], Group]:
     ...
 
@@ -638,6 +641,7 @@ def group(
     hidden: bool = False,
     deprecated: bool = False,
     params: Optional[List[click.Parameter]] = None,
+    show_subcommand_aliases: bool = False,
     **kwargs: Any
 ) -> Callable[[AnyCallable], G]:
     ...
