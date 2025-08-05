@@ -1,5 +1,5 @@
 """
-This modules contains Cloup command classes and decorators.
+This module contains Cloup command classes and decorators.
 
 Note that Cloup commands *are* Click commands. Apart from supporting more
 features, Cloup command decorators have detailed type hints and are generics so
@@ -9,10 +9,10 @@ the ``cls`` argument.
 Why did you overload all decorators?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 I wanted that the return type of decorators depended from the ``cls`` argument
-but MyPy doesn't allow to set a default value on a generic argument, see:
+but MyPy doesn't allow you to set a default value on a generic argument, see:
 https://github.com/python/mypy/issues/3737.
 So I had to resort to a workaround using @overload which makes things more
-verbose. The ``@overload`` is on the ``cls`` argument:
+verbose. '`@overload`` is on the ``cls`` argument:
 
 - in one signature, ``cls`` has type ``None`` and it's set to ``None``; in this
   case the type of the instantiated command is ``cloup.Command`` for ``@command``
@@ -344,7 +344,7 @@ class Group(SectionMixin, Command, click.Group):
 
         return decorator
 
-    # MyPy complains because "Signature of "group" incompatible with supertype".
+    # MyPy complains: "signature of "group" incompatible with supertype".
     # The supertype signature is (*args, **kwargs), which is compatible with
     # this provided that you pass all arguments (expect "name") as keyword arg.
     @overload  # type: ignore
@@ -369,6 +369,7 @@ class Group(SectionMixin, Command, click.Group):
         chain: bool = False,
         hidden: bool = False,
         deprecated: bool = False,
+        show_subcommand_aliases: bool = False,
     ) -> Callable[[AnyCallable], click.Group]:
         ...
 
@@ -615,6 +616,7 @@ def group(
     hidden: bool = False,
     deprecated: bool = False,
     params: Optional[List[click.Parameter]] = None,
+    show_subcommand_aliases: bool = False,
 ) -> Callable[[AnyCallable], Group]:
     ...
 
