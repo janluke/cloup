@@ -33,6 +33,7 @@ classifiers = [
 
 dependencies = [
     "click>=8.0,<9.0",
+    "typing_extensions; python_version <= '3.10'",
 ]
 
 
@@ -46,7 +47,6 @@ dev = [
     "pytest-cov",
     "pytest-html",
     "setuptools-scm",
-    "typing_extensions; python_version <= '3.10'",
     "tox<4",
     "twine",
 ]
