@@ -47,7 +47,7 @@ dev = [
 ]
   
 [tool.flake8]
-exclude = docs
+exclude = "docs"
 max_line_length = 90
 ignore = [
     "E241", 
@@ -63,6 +63,6 @@ ignore_missing_imports = true
 exclude_lines = [
     "pragma: no covver",
     "raise NotImplementedError",
-    "\.\.\.",
+    "...",
     "if TYPE_CHECKING:",
 ]
