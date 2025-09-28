@@ -30,6 +30,7 @@ classifiers = [
 
 dependencies = [
     "click",
+    "tox<4",
 ]
 
 
@@ -66,6 +67,3 @@ exclude_lines = [
     "...",
     "if TYPE_CHECKING:",
 ]
-
-[tool.tox]
-isolated_build = true
