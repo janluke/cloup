@@ -4,8 +4,6 @@ from typing import (
     Any, Dict, Hashable, Iterable, List, Optional, Sequence, Type, TypeVar,
 )
 
-import click
-
 from cloup.typing import MISSING, Possibly
 
 click_version_tuple = tuple(importlib.metadata.version("click").split('.'))
