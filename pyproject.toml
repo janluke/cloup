@@ -1,0 +1,68 @@
+[build-system]
+requires = ["setuptools>=80", "setuptools-scm>=8"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "cloup"
+dynamic = ["version"]
+
+description = "Adds features to Click: option groups, constraints, subcommand sections and help themes."
+readme = "README.rst"
+license = { text = "BSD 3-Clause" }
+
+requires-python = ">= 3.9"
+authors = [
+    { name = "Gianluca Gippetto", email = "gianluca.gippetto@gmail.com" },
+]
+
+classifiers = [
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
+
+
+dependencies = [
+    "click",
+]
+
+
+[dependency-groups]
+dev = [
+    "build",
+    "flake8",
+    "mypy",
+    "pytest",
+    "pytest-cov",
+    "pytest-html",
+    "setuptools-scm",
+    "tox",
+    "twine",
+]
+  
+[tool.flake8]
+exclude = docs
+max_line_length = 90
+ignore = [
+    "E241", 
+    "E251", 
+    "W503",
+]
+
+[tool.mypy]
+ignore_missing_imports = true
+
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no covver",
+    "raise NotImplementedError",
+    "\.\.\.",
+    "if TYPE_CHECKING:",
+]
