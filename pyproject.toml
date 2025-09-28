@@ -38,6 +38,7 @@ dependencies = [
 dev = [
     "build",
     "flake8",
+    "flake8-pyproject",
     "mypy",
     "pytest",
     "pytest-cov",
@@ -49,7 +50,8 @@ dev = [
   
 [tool.flake8]
 exclude = "docs"
-max_line_length = 90
+max-line-length = 90
+
 ignore = [
     "E241", 
     "E251", 
