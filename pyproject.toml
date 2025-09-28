@@ -10,7 +10,7 @@ name = "cloup"
 dynamic = ["version"]
 
 description = "Adds features to Click: option groups, constraints, subcommand sections and help themes."
-readme = "README.rst"
+readme = { file = "PYPI_README.rst", content-type = "text/x-rst" }
 license = { text = "BSD 3-Clause" }
 
 requires-python = ">= 3.9"
