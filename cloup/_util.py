@@ -1,4 +1,5 @@
 """Generic utilities."""
+import importlib.metadata
 from typing import (
     Any, Dict, Hashable, Iterable, List, Optional, Sequence, Type, TypeVar,
 )
@@ -7,7 +8,7 @@ import click
 
 from cloup.typing import MISSING, Possibly
 
-click_version_tuple = tuple(click.__version__.split('.'))
+click_version_tuple = tuple(importlib.metadata.version("click").split('.'))
 click_major = int(click_version_tuple[0])
 click_minor = int(click_version_tuple[1])
 click_version_ge_8_1 = (click_major, click_minor) >= (8, 1)
