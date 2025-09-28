@@ -66,3 +66,6 @@ exclude_lines = [
     "...",
     "if TYPE_CHECKING:",
 ]
+
+[tool.tox]
+isolated_build = true
