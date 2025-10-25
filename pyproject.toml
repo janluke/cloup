@@ -49,18 +49,22 @@ docs = [
     "sphinx-issues",
 ]
 
+test = [
+    "pytest",
+    "pytest-cov",
+    "pytest-html",
+]
+
 dev = [
     "build",
     "flake8",
     "flake8-pyproject",
     "mypy",
-    "pytest",
-    "pytest-cov",
-    "pytest-html",
     "setuptools-scm",
     "tox<4",
     "twine",
-    {include-group = "docs"}
+    {include-group = "docs"},
+    {include-group = "test"},
 ]
 
 
