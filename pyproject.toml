@@ -38,6 +38,17 @@ dependencies = [
 
 
 [dependency-groups]
+docs = [
+    "furo",
+    "sphinx",
+    "sphinx-autoapi",
+    "sphinx-autobuild",
+    "sphinx-panels",
+    "sphinx-copybutton",
+    "sphinx-version-warning",
+    "sphinx-issues",
+]
+
 dev = [
     "build",
     "flake8",
@@ -49,8 +60,10 @@ dev = [
     "setuptools-scm",
     "tox<4",
     "twine",
+    {include-group = "docs"}
 ]
-  
+
+
 [tool.flake8]
 exclude = "docs"
 max-line-length = 90
