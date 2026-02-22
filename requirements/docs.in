@@ -1,3 +1,4 @@
+setuptools < 81
 sphinx <5
 sphinx-autoapi ~= 1.8.4
 furo == 2021.4.11b34
