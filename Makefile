@@ -97,7 +97,7 @@ clean-test: ## remove test and coverage artifacts
 
 .PHONY: dist
 dist: clean-build ## builds source and wheel package
-	python setup.py sdist bdist_wheel
+	python scripts/make-wheel.py
 	twine check dist/*
 
 .PHONY: release
