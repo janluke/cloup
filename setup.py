@@ -16,7 +16,7 @@ def make_long_description(write_file=False):
 
 setup(
     name='cloup',
-    setup_requires=['setuptools_scm'],
+    setup_requires=['setuptools_scm<10'],
     use_scm_version={
         'write_to': 'cloup/_version.py'
     },
