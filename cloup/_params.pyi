@@ -1,7 +1,7 @@
 """
 Types for parameter decorators are in this stub for convenience of implementation.
 """
-from typing import Any, Callable, List, Optional, Sequence, Tuple, Type, TypeVar, Union
+from typing import Any, Callable, List, Optional, Protocol, Sequence, Tuple, Type, TypeVar, Union
 
 import click
 from click.shell_completion import CompletionItem
@@ -11,7 +11,23 @@ from cloup import OptionGroup
 F = TypeVar('F', bound=Callable[..., Any])
 P = TypeVar('P', bound=click.Parameter)
 
-SimpleParamTypeLike = Union[click.ParamType, Type[float], Type[int], Type[str]]
+class _ParamType(Protocol):
+    # Once Click 8.3 support is dropped, this can be replaced with
+    # click.ParamType[Any].
+    @property
+    def name(self) -> Optional[str]:
+        ...
+
+    def convert(
+        self,
+        value: Any,
+        param: Optional[click.Parameter],
+        ctx: Optional[click.Context],
+    ) -> Any:
+        ...
+
+
+SimpleParamTypeLike = Union[_ParamType, Type[float], Type[int], Type[str]]
 ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
 ParamDefault = Union[Any, Callable[[], Any]]
 ParamCallback = Callable[[click.Context, P, Any], Any]
