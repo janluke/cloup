@@ -108,7 +108,13 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
         self.format_params(ctx, formatter)
         if self.must_show_constraints(ctx):
             self.format_constraints(ctx, formatter)  # type: ignore
-        if isinstance(self, click.MultiCommand):
+        # We use hasattr() in place of isinstance(..., MultiCommand) because
+        # MultiCommand is not a valid type since Click 8.2, which merged MultiCommand
+        # with Group and deprecated it. Since then, MultiCommand returns a
+        # _MultiCommand(Group) fake class through a module-level __getattr__, and mypy
+        # complains that MultiCommand is not a type. This check can be eventually
+        # replaced by isinstance(self, click.Group) when we drop support for Click 8.1.
+        if hasattr(self, "format_commands"):
             self.format_commands(ctx, formatter)
         self.format_epilog(ctx, formatter)
 
