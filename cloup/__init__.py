@@ -14,6 +14,7 @@ from click import (
     pass_obj,
     password_option,
     version_option,
+    make_pass_decorator,
     # types
     BOOL,
     Choice,
@@ -29,6 +30,40 @@ from click import (
     Tuple,
     UNPROCESSED,
     UUID,
+    # core
+    Parameter,
+    # exceptions
+    Abort,
+    BadArgumentUsage,
+    BadOptionUsage,
+    BadParameter,
+    ClickException,
+    FileError,
+    MissingParameter,
+    NoSuchOption,
+    UsageError,
+    # formatting
+    wrap_text,
+    # termui
+    clear,
+    confirm,
+    echo_via_pager,
+    edit,
+    getchar,
+    launch,
+    pause,
+    progressbar,
+    prompt,
+    secho,
+    style,
+    unstyle,
+    # utils
+    echo,
+    format_filename,
+    get_app_dir,
+    get_binary_stream,
+    get_text_stream,
+    open_file,
 )
 
 from . import warnings
@@ -114,4 +149,40 @@ __all__ = [
     "path",
     "version_option",
     "warnings",
+    # click.decorators
+    "make_pass_decorator",
+    # click.core
+    "Parameter",
+    # click.exceptions
+    "Abort",
+    "BadArgumentUsage",
+    "BadOptionUsage",
+    "BadParameter",
+    "ClickException",
+    "FileError",
+    "MissingParameter",
+    "NoSuchOption",
+    "UsageError",
+    # click.formatting
+    "wrap_text",
+    # click.termui
+    "clear",
+    "confirm",
+    "echo_via_pager",
+    "edit",
+    "getchar",
+    "launch",
+    "pause",
+    "progressbar",
+    "prompt",
+    "secho",
+    "style",
+    "unstyle",
+    # click.utils
+    "echo",
+    "format_filename",
+    "get_app_dir",
+    "get_binary_stream",
+    "get_text_stream",
+    "open_file",
 ]
