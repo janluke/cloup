@@ -229,6 +229,7 @@ class HelpFormatter(click.HelpFormatter):
                 self.write("\n")
                 with self.indentation():
                     self.write_text(constraint_text, theme.constraint)
+                self.write("\n")
 
         with self.indentation():
             if s.help:
