@@ -225,6 +225,7 @@ def test_write_section_print_long_constraint_on_a_new_line():
         The heading:
             [This is a long constraint description that doesn't fit the line
             xx.]
+
             This is the help.
             term  This is the definition.
         """)
