@@ -38,62 +38,63 @@ Here's the full list of parameters:
   if True, the option group and all its options are hidden from the help page
   (all contained options will have their hidden attribute set to True).
 
-.. tabbed:: Code
-    :new-group:
+.. tab-set::
 
-    .. code-block:: python
+    .. tab-item:: Code
 
-        import cloup
-        from cloup import option_group, option
-        from cloup.constraints import RequireAtLeast
+        .. code-block:: python
 
-        @cloup.command()
-        @option_group(
-            "Input options",
-            option("--one", help="1st input option"),
-            option("--two", help="2nd input option"),
-            option("--three", help="3rd input option"),
-        )
-        @option_group(
-            "Output options",
-            "This is a an optional description of the option group.",
-            option("--four / --no-four", help="1st output option"),
-            option("--five", help="2nd output option"),
-            option("--six", help="3rd output option"),
-            constraint=RequireAtLeast(1),
-        )
-        # The following will be shown (with --help) under "Other options"
-        @option("--seven", help="1st uncategorized option")
-        @option("--height", help="2nd uncategorized option")
-        def cli(**kwargs):
-            """A CLI that does nothing."""
-            print(kwargs)
+            import cloup
+            from cloup import option_group, option
+            from cloup.constraints import RequireAtLeast
 
-        cli()
+            @cloup.command()
+            @option_group(
+                "Input options",
+                option("--one", help="1st input option"),
+                option("--two", help="2nd input option"),
+                option("--three", help="3rd input option"),
+            )
+            @option_group(
+                "Output options",
+                "This is a an optional description of the option group.",
+                option("--four / --no-four", help="1st output option"),
+                option("--five", help="2nd output option"),
+                option("--six", help="3rd output option"),
+                constraint=RequireAtLeast(1),
+            )
+            # The following will be shown (with --help) under "Other options"
+            @option("--seven", help="1st uncategorized option")
+            @option("--height", help="2nd uncategorized option")
+            def cli(**kwargs):
+                """A CLI that does nothing."""
+                print(kwargs)
 
-.. tabbed:: Generated help
+            cli()
 
-    .. code-block:: none
+    .. tab-item:: Generated help
 
-        Usage: clouptest [OPTIONS]
+        .. code-block:: none
 
-          A CLI that does nothing.
+            Usage: clouptest [OPTIONS]
 
-        Input options:
-          --one TEXT          1st input option
-          --two TEXT          2nd input option
-          --three TEXT        3rd input option
+              A CLI that does nothing.
 
-        Output options: [at least 1 required]
-          This is a an optional description of the option group.
-          --four / --no-four  1st output option
-          --five TEXT         2nd output option
-          --six TEXT          3rd output option
+            Input options:
+              --one TEXT          1st input option
+              --two TEXT          2nd input option
+              --three TEXT        3rd input option
 
-        Other options:
-          --seven TEXT        1st uncategorized option
-          --height TEXT       2nd uncategorized option
-          --help              Show this message and exit.
+            Output options: [at least 1 required]
+              This is a an optional description of the option group.
+              --four / --no-four  1st output option
+              --five TEXT         2nd output option
+              --six TEXT          3rd output option
+
+            Other options:
+              --seven TEXT        1st uncategorized option
+              --height TEXT       2nd uncategorized option
+              --help              Show this message and exit.
 
 Options that are not assigned to an option group are included is the so called
 **default option group**, which is shown for last in the ``--help``.
@@ -124,57 +125,59 @@ Nonetheless, if some of your option groups have shorter options, alignment may
 result in a lot of wasted space and definitions quite far from option names,
 which is bad for readability. See this biased example to compare the two modes:
 
-.. tabbed:: Aligned
+.. tab-set::
 
-    .. code-block:: none
+    .. tab-item:: Aligned
 
-        Usage: clouptest [OPTIONS]
+        .. code-block:: none
 
-          A CLI that does nothing.
+            Usage: clouptest [OPTIONS]
 
-        Input options:
-          --one TEXT                   This description is more likely to be wrapped
-                                       when aligning.
-          --two TEXT                   This description is more likely to be wrapped
-                                       when aligning.
-          --three TEXT                 This description is more likely to be wrapped
-                                       when aligning.
+              A CLI that does nothing.
 
-        Output options:
-          --four                       This description is more likely to be wrapped
-                                       when aligning.
-          --five TEXT                  This description is more likely to be wrapped
-                                       when aligning.
-          --six TEXT                   This description is more likely to be wrapped
-                                       when aligning.
+            Input options:
+              --one TEXT                   This description is more likely to be wrapped
+                                           when aligning.
+              --two TEXT                   This description is more likely to be wrapped
+                                           when aligning.
+              --three TEXT                 This description is more likely to be wrapped
+                                           when aligning.
 
-        Other options:
-          --seven [a|b|c|d|e|f|g|h|i]  First uncategorized option.
-          --height TEXT                Second uncategorized option.
-          --help                       Show this message and exit.
+            Output options:
+              --four                       This description is more likely to be wrapped
+                                           when aligning.
+              --five TEXT                  This description is more likely to be wrapped
+                                           when aligning.
+              --six TEXT                   This description is more likely to be wrapped
+                                           when aligning.
 
-.. tabbed:: Non-aligned
+            Other options:
+              --seven [a|b|c|d|e|f|g|h|i]  First uncategorized option.
+              --height TEXT                Second uncategorized option.
+              --help                       Show this message and exit.
 
-    .. code-block:: none
+    .. tab-item:: Non-aligned
 
-        Usage: clouptest [OPTIONS]
+        .. code-block:: none
 
-          A CLI that does nothing.
+            Usage: clouptest [OPTIONS]
 
-        Input options:
-          --one TEXT    This description is more likely to be wrapped when aligning.
-          --two TEXT    This description is more likely to be wrapped when aligning.
-          --three TEXT  This description is more likely to be wrapped when aligning.
+              A CLI that does nothing.
 
-        Output options:
-          --four       This description is more likely to be wrapped when aligning.
-          --five TEXT  This description is more likely to be wrapped when aligning.
-          --six TEXT   This description is more likely to be wrapped when aligning.
+            Input options:
+              --one TEXT    This description is more likely to be wrapped when aligning.
+              --two TEXT    This description is more likely to be wrapped when aligning.
+              --three TEXT  This description is more likely to be wrapped when aligning.
 
-        Other options:
-          --seven [a|b|c|d|e|f|g|h|i]  First uncategorized option.
-          --height TEXT                Second uncategorized option.
-          --help                       Show this message and exit.
+            Output options:
+              --four       This description is more likely to be wrapped when aligning.
+              --five TEXT  This description is more likely to be wrapped when aligning.
+              --six TEXT   This description is more likely to be wrapped when aligning.
+
+            Other options:
+              --seven [a|b|c|d|e|f|g|h|i]  First uncategorized option.
+              --height TEXT                Second uncategorized option.
+              --help                       Show this message and exit.
 
 In Cloup, you can format each option group independently from each other
 setting the ``@command`` parameter ``align_option_groups=False``.

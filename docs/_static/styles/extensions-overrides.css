@@ -14,22 +14,3 @@ button.copybtn {
     padding: .4em .8em;
     border-radius: 4px;
 }
-
-/*
-    sphinx-panels tabs
-*/
-.tabbed-content {
-    padding-top: 0 !important;
-    padding-bottom: 0 !important;
-    box-shadow:0 -2px var(--tabs-color-overline),0 1px var(--tabs-color-underline);
-}
-
-.tabbed-set > label {
-    margin-bottom: 0 !important;
-    padding: .4em 1.25em !important;
-}
-
-.tabbed-label:hover {
-    background-color: rgba(200, 200, 200, 0.1);
-    border-bottom: 2px solid var(--tabs-color-overline);
-}

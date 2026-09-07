@@ -13,46 +13,47 @@ optional ``help`` parameter. If you pass a non-empty string to at least one of
 the arguments of a command, Cloup will print a "Positional arguments" section
 just below the command description.
 
-.. tabbed:: Code
-    :new-group:
+.. tab-set::
 
-    .. code-block:: python
+    .. tab-item:: Code
 
-        from pprint import pprint
-        import cloup
-        from cloup import option, option_group
+        .. code-block:: python
 
-        @cloup.command()
-        @cloup.argument('input_path', help="Input path")
-        @cloup.argument('out_path', help="Output path")
-        @option_group(
-            'An option group',
-            option('-o', '--one', help='a 1st cool option'),
-            option('-t', '--two', help='a 2nd cool option'),
-            option('--three', help='a 3rd cool option'),
-        )
-        def main(**kwargs):
-            """A test program for cloup."""
-            pprint(kwargs, indent=3)
+            from pprint import pprint
+            import cloup
+            from cloup import option, option_group
 
-        main()
+            @cloup.command()
+            @cloup.argument('input_path', help="Input path")
+            @cloup.argument('out_path', help="Output path")
+            @option_group(
+                'An option group',
+                option('-o', '--one', help='a 1st cool option'),
+                option('-t', '--two', help='a 2nd cool option'),
+                option('--three', help='a 3rd cool option'),
+            )
+            def main(**kwargs):
+                """A test program for cloup."""
+                pprint(kwargs, indent=3)
 
-.. tabbed:: Generated help
+            main()
 
-    .. code-block:: none
+    .. tab-item:: Generated help
 
-        Usage: example [OPTIONS] INPUT_PATH OUT_PATH
+        .. code-block:: none
 
-          A test program for cloup.
+            Usage: example [OPTIONS] INPUT_PATH OUT_PATH
 
-        Positional arguments:
-          INPUT_PATH      Input path
-          OUT_PATH        Output path
+              A test program for cloup.
 
-        An option group:
-          -o, --one TEXT  a 1st cool option
-          -t, --two TEXT  a 2nd cool option
-          --three TEXT    a 3rd cool option
+            Positional arguments:
+              INPUT_PATH      Input path
+              OUT_PATH        Output path
 
-        Other options:
-          --help          Show this message and exit.
+            An option group:
+              -o, --one TEXT  a 1st cool option
+              -t, --two TEXT  a 2nd cool option
+              --three TEXT    a 3rd cool option
+
+            Other options:
+              --help          Show this message and exit.

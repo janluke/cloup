@@ -25,58 +25,59 @@ You can find a runnable example that implements part of the help of Git
 `here <https://github.com/janLuke/cloup/blob/master/examples/git_sections.py>`_.
 The code below is based on that example.
 
-.. tabbed:: Code
-    :new-group:
+.. tab-set::
 
-    .. code-block:: python
+    .. tab-item:: Code
 
-        import cloup
-        from .commands import (  # import your subcommands
-            git_clone, git_init, git_rm, git_sparse_checkout, git_mv,
-            git_status, git_log)
+        .. code-block:: python
 
-        @cloup.group('git')
-        def git():
-            return 0
+            import cloup
+            from .commands import (  # import your subcommands
+                git_clone, git_init, git_rm, git_sparse_checkout, git_mv,
+                git_status, git_log)
 
-        git.section(
-            'Start a working area (see also: git help tutorial)',
-            git_clone,
-            git_init
-        )
-        git.section(
-            'Work on the current change (see also: git help everyday)',
-            git_rm,
-            git_sparse_checkout,
-            git_mv
-        )
-        # Subcommands that are not assigned to a specific section
-        # populate the "default section"
-        git.add_command(git_status)
-        git.add_command(git_log)
+            @cloup.group('git')
+            def git():
+                return 0
+
+            git.section(
+                'Start a working area (see also: git help tutorial)',
+                git_clone,
+                git_init
+            )
+            git.section(
+                'Work on the current change (see also: git help everyday)',
+                git_rm,
+                git_sparse_checkout,
+                git_mv
+            )
+            # Subcommands that are not assigned to a specific section
+            # populate the "default section"
+            git.add_command(git_status)
+            git.add_command(git_log)
 
 
-.. tabbed:: Generated help
+    .. tab-item:: Generated help
 
-    .. code-block:: none
+        .. code-block:: none
 
-        Usage: git [OPTIONS] COMMAND [ARGS]...
+            Usage: git [OPTIONS] COMMAND [ARGS]...
 
-        Options:
-          --help  Show this message and exit.
+            Options:
+              --help  Show this message and exit.
 
-        Start a working area (see also: git help tutorial):
-          clone            Clone a repository into a new directory
-          init             Create an empty Git repository or reinitialize an...
+            Start a working area (see also: git help tutorial):
+              clone            Clone a repository into a new directory
+              init             Create an empty Git repository or reinitialize an...
 
-        Work on the current change (see also: git help everyday):
-          rm               Remove files from the working tree and from the index
-          sparse-checkout  Initialize and modify the sparse-checkout
-          mv               Move or rename a file, a directory, or a symlink
+            Work on the current change (see also: git help everyday):
+              rm               Remove files from the working tree and from the index
+              sparse-checkout  Initialize and modify the sparse-checkout
+              mv               Move or rename a file, a directory, or a symlink
 
-        Other commands:
-          log              Show commit logs
-          status           Show the working tree status
+            Other commands:
+              log              Show commit logs
+              status           Show the working tree status
 
 
 All commands that are not explicitly assigned to a section are assigned to a

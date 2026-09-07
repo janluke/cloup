@@ -246,128 +246,130 @@ Cloup ``HelpFormatter`` switches to a "linear layout", where
 The following tabs compare the ``--help`` of the manim example ("aligned" and
 "non-aligned" refer to the ``align_option_groups`` argument):
 
-.. tabbed:: Linear layout
+.. tab-set::
 
-    .. code-block:: none
+    .. tab-item:: Linear layout
 
-        Usage: manim render [OPTIONS]
-                            SCRIPT_PATH
-                            [SCENE_NAMES]...
+        .. code-block:: none
 
-          Render some or all scenes defined in a Python
-          script.
+            Usage: manim render [OPTIONS]
+                                SCRIPT_PATH
+                                [SCENE_NAMES]...
 
-        Global options:
-          -c, --config_file TEXT
-             Specify the configuration file to use for
-             render settings.
+              Render some or all scenes defined in a Python
+              script.
 
-          --custom_folders
-             Use the folders defined in the
-             [custom_folders] section of the config
-             file to define the output folder
-             structure.
+            Global options:
+              -c, --config_file TEXT
+                 Specify the configuration file to use for
+                 render settings.
 
-          --disable_caching
-             Disable the use of the cache (still
-             generates cache files).
+              --custom_folders
+                 Use the folders defined in the
+                 [custom_folders] section of the config
+                 file to define the output folder
+                 structure.
 
-          --flush_cache
-             Remove cached partial movie files.
+              --disable_caching
+                 Disable the use of the cache (still
+                 generates cache files).
 
-          --tex_template TEXT
-             Specify a custom TeX template file.
+              --flush_cache
+                 Remove cached partial movie files.
 
-          -v, --verbosity [DEBUG|INFO|WARNING|ERROR|CRITICAL]
-             Verbosity of CLI output. Changes ffmpeg
-             log level unless 5+.
+              --tex_template TEXT
+                 Specify a custom TeX template file.
 
-        [...]
+              -v, --verbosity [DEBUG|INFO|WARNING|ERROR|CRITICAL]
+                 Verbosity of CLI output. Changes ffmpeg
+                 log level unless 5+.
 
-.. tabbed:: Standard layout (aligned)
+            [...]
 
-    .. code-block:: none
+    .. tab-item:: Standard layout (aligned)
 
-        Usage: manim render [OPTIONS]
-                            SCRIPT_PATH
-                            [SCENE_NAMES]...
+        .. code-block:: none
 
-          Render some or all scenes defined in a Python
-          script.
+            Usage: manim render [OPTIONS]
+                                SCRIPT_PATH
+                                [SCENE_NAMES]...
 
-        Global options:
-          -c, --config_file TEXT      Specify the
-                                      configuration
-                                      file to use for
-                                      render settings.
-          --custom_folders            Use the folders
+              Render some or all scenes defined in a Python
+              script.
+
+            Global options:
+              -c, --config_file TEXT      Specify the
+                                          configuration
+                                          file to use for
+                                          render settings.
+              --custom_folders            Use the folders
+                                          defined in the
+                                          [custom_folders]
+                                          section of the
+                                          config file to
+                                          define the output
+                                          folder structure.
+              --disable_caching           Disable the use
+                                          of the cache
+                                          (still generates
+                                          cache files).
+              --flush_cache               Remove cached
+                                          partial movie
+                                          files.
+              --tex_template TEXT         Specify a custom
+                                          TeX template
+                                          file.
+              -v, --verbosity [DEBUG|INFO|WARNING|ERROR|CRITICAL]
+                                          Verbosity of CLI
+                                          output. Changes
+                                          ffmpeg log level
+                                          unless 5+.
+
+            [...]
+
+
+    .. tab-item:: Standard layout (non-aligned)
+
+        .. code-block:: none
+
+            Usage: manim render [OPTIONS]
+                                SCRIPT_PATH
+                                [SCENE_NAMES]...
+
+              Render some or all scenes defined in a Python
+              script.
+
+            Global options:
+              -c, --config_file TEXT  Specify the
+                                      configuration file to
+                                      use for render
+                                      settings.
+              --custom_folders        Use the folders
                                       defined in the
                                       [custom_folders]
-                                      section of the
-                                      config file to
-                                      define the output
-                                      folder structure.
-          --disable_caching           Disable the use
-                                      of the cache
-                                      (still generates
-                                      cache files).
-          --flush_cache               Remove cached
-                                      partial movie
-                                      files.
-          --tex_template TEXT         Specify a custom
-                                      TeX template
-                                      file.
-          -v, --verbosity [DEBUG|INFO|WARNING|ERROR|CRITICAL]
+                                      section of the config
+                                      file to define the
+                                      output folder
+                                      structure.
+              --disable_caching       Disable the use of
+                                      the cache (still
+                                      generates cache
+                                      files).
+              --flush_cache           Remove cached partial
+                                      movie files.
+              --tex_template TEXT     Specify a custom TeX
+                                      template file.
+              -v, --verbosity [DEBUG|INFO|WARNING|ERROR|CRITICAL]
                                       Verbosity of CLI
                                       output. Changes
                                       ffmpeg log level
                                       unless 5+.
+              --notify_outdated_version / --silent
+                                      Display warnings for
+                                      outdated
+                                      installation.
 
-        [...]
-
-
-.. tabbed:: Standard layout (non-aligned)
-
-    .. code-block:: none
-
-        Usage: manim render [OPTIONS]
-                            SCRIPT_PATH
-                            [SCENE_NAMES]...
-
-          Render some or all scenes defined in a Python
-          script.
-
-        Global options:
-          -c, --config_file TEXT  Specify the
-                                  configuration file to
-                                  use for render
-                                  settings.
-          --custom_folders        Use the folders
-                                  defined in the
-                                  [custom_folders]
-                                  section of the config
-                                  file to define the
-                                  output folder
-                                  structure.
-          --disable_caching       Disable the use of
-                                  the cache (still
-                                  generates cache
-                                  files).
-          --flush_cache           Remove cached partial
-                                  movie files.
-          --tex_template TEXT     Specify a custom TeX
-                                  template file.
-          -v, --verbosity [DEBUG|INFO|WARNING|ERROR|CRITICAL]
-                                  Verbosity of CLI
-                                  output. Changes
-                                  ffmpeg log level
-                                  unless 5+.
-          --notify_outdated_version / --silent
-                                  Display warnings for
-                                  outdated
-                                  installation.
-
-        [...]
+            [...]
 
 
 The linear layout is used when the available width for the 2nd column is below

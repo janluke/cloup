@@ -120,7 +120,7 @@ pip-compile:  ## pin dependencies in requirements/ using the current env
 pip-upgrade:   ## upgrade pip and dependencies
 	python -m pip install -U pip
 	$(PIP_COMPILE) --upgrade requirements/test.in
-	# $(PIP_COMPILE) --upgrade requirements/docs.in
+	$(PIP_COMPILE) --upgrade requirements/docs.in
 	$(PIP_COMPILE) --upgrade requirements/dev.in
 
 .PHONY: pip-sync

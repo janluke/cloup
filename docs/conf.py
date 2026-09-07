@@ -9,11 +9,10 @@ PROJ_DIR = os.path.abspath(os.path.join(__file__, '..', '..'))
 
 extensions = [
     'sphinx.ext.autodoc',
-    'sphinx.ext.autodoc.typehints',
     'autoapi.extension',
     'sphinx.ext.intersphinx',
     'sphinx.ext.viewcode',
-    'sphinx_panels',
+    'sphinx_design',
     'sphinx_copybutton',  # adds a copy button to code blocks
     'versionwarning.extension',
     'sphinx_issues',  # link to GitHub issues and PRs
@@ -41,15 +40,12 @@ language = "en"
 # Autodoc
 autoclass_content = 'both'
 autodoc_typehints = 'description'
-set_type_checking_flag = True
-typehints_fully_qualified = False
 
 # Autoapi
 autoapi_type = 'python'
 autoapi_dirs = [os.path.join(PROJ_DIR, 'cloup')]
 autoapi_template_dir = '_autoapi_templates'
 templates_path = [autoapi_template_dir]
-autoapi_keep_files = True
 autoapi_add_toctree_entry = False
 autoapi_python_class_content = 'both'
 autoapi_options = [
@@ -68,8 +64,8 @@ intersphinx_mapping = {
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
-source_suffix = '.rst'
-master_doc = 'index'
+source_suffix = {'.rst': 'restructuredtext'}
+root_doc = 'index'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -96,20 +92,6 @@ pygments_style = 'default'  # name of the Pygments (syntax highlighting) style
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
-primary_color = "#0094ff"
-darker_primary_color = "#007bd3"
-def primary_color_alpha(alpha):
-    return "#2a5adf" + "{:02x}".format(int(alpha * 255))
-
-panels_css_variables = {
-    "tabs-color-label-active": darker_primary_color,
-    "tabs-color-label-inactive": "var(--color-foreground-muted)",
-    "tabs-color-overline": "var(--tabs--border)",
-    "tabs-color-underline": "var(--tabs--border)",
-}
-panels_add_bootstrap_css = False
-
-
 # -- Version warning -----------------------------------------------------------
 versionwarning_messages = {
     "latest": (
@@ -135,7 +117,7 @@ htmlhelp_basename = 'cloupdoc'
 # (source start file, target name, title, author, documentclass
 # [howto, manual, or own class]).
 latex_documents = [
-    (master_doc, 'cloup.tex',
+    (root_doc, 'cloup.tex',
      'cloup Documentation',
      'Gianluca Gippetto', 'manual'),
 ]
