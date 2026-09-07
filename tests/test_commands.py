@@ -4,7 +4,7 @@ import click
 import pytest
 
 import cloup
-from cloup._util import click_version_ge_8_2, reindent
+from cloup._util import reindent
 from tests.util import new_dummy_func
 
 
@@ -54,32 +54,44 @@ def test_group_works_with_no_params_and_subcommands(runner):
     """)
 
 
-@pytest.mark.parametrize('command_cls, reference_cls', [
-    (cloup.Command, click.Command),
-    (cloup.Group, click.Group),
+@pytest.mark.parametrize('decorator, usage_args', [
+    (cloup.command, '[OPTIONS]'),
+    (cloup.group, '[OPTIONS] COMMAND [ARGS]...'),
 ])
-@pytest.mark.parametrize('help_text', [
-    None, '', 'Do a thing.', 'First paragraph.\n\nSecond paragraph.\fHidden text.',
+@pytest.mark.parametrize('help_text, expected_help', [
+    (None, ''),
+    ('', ''),
+    ('Do a thing.', 'Do a thing.'),
+    ('First paragraph.\n\nSecond paragraph.', 'First paragraph.\n\n  Second paragraph.'),
+    ('\n    Do a thing.\n    On another line.', 'Do a thing. On another line.'),
+    ('Visible text.\fHidden text.', 'Visible text.'),
 ])
-@pytest.mark.parametrize('deprecated', [False, True, '', 'use `newcmd` instead'])
-def test_deprecated_command_help_matches_click(
-    runner, command_cls, reference_cls, help_text, deprecated,
+@pytest.mark.parametrize('deprecated, expected_label', [
+    (False, ''),
+    (True, '(DEPRECATED)'),
+    ('', ''),
+    ('use `newcmd` instead', '(DEPRECATED: use `newcmd` instead)'),
+])
+def test_deprecated_command_help(
+    runner, decorator, usage_args, help_text, expected_help, deprecated, expected_label,
 ):
-    cmd = command_cls(name='example', help=help_text, deprecated=deprecated)
-    reference = reference_cls(name='example', help=help_text, deprecated=deprecated)
+    cmd = decorator(name='example', help=help_text, deprecated=deprecated)(
+        new_dummy_func())
 
     result = runner.invoke(cmd, ['--help'], terminal_width=80)
-    expected = runner.invoke(reference, ['--help'], terminal_width=80)
 
-    assert result.exit_code == expected.exit_code == 0
-    # Older Click 8.2 releases add an extra space before a standalone label.
-    expected_output = expected.output.replace('\n   (DEPRECATED', '\n  (DEPRECATED')
+    assert result.exit_code == 0
+    body = ' '.join(part for part in (expected_help, expected_label) if part)
+    expected_output = f'Usage: example {usage_args}\n'
+    if body:
+        expected_output += f'\n  {body}\n'
+    expected_output += '\nOptions:\n  --help  Show this message and exit.\n'
     assert result.output == expected_output
 
 
-@pytest.mark.skipif(not click_version_ge_8_2, reason='requires Click 8.2 or newer')
-def test_deprecated_command_help_keeps_theme(runner):
-    @cloup.command(
+@pytest.mark.parametrize('decorator', [cloup.command, cloup.group])
+def test_deprecated_command_help_keeps_theme(runner, decorator):
+    @decorator(
         deprecated='use `newcmd` instead',
         formatter_settings={'theme': cloup.HelpTheme(
             command_help=cloup.Style(fg='yellow'),

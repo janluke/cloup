@@ -555,7 +555,7 @@ def command(
         hide this command from help outputs.
     :param deprecated:
         issues a message indicating that the command is deprecated. A string
-        provides a custom deprecation message (requires Click >= 8.2).
+        provides a custom deprecation message.
     :param align_option_groups:
         whether to align the columns of all option groups' help sections.
         This is also available as a context setting having a lower priority
@@ -706,7 +706,7 @@ def group(
         hide this command from help outputs.
     :param deprecated:
         issues a message indicating that the command is deprecated. A string
-        provides a custom deprecation message (requires Click >= 8.2).
+        provides a custom deprecation message.
     :param invoke_without_command:
         this controls how the multi command itself is invoked. By default it's
         only invoked if a subcommand is provided.
