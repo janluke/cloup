@@ -1,0 +1,199 @@
+version: "3.46.1"
+
+output: prefixed
+
+vars:
+  TEST_ENVS:
+    sh: python scripts/expand-hatch-envs.py 'test*'
+
+tasks:
+  default:
+    desc: List the available project tasks.
+    cmds:
+      - task --list
+    silent: true
+
+  #
+  # Internal utilities
+  #
+
+  run-concurrently:
+    internal: true
+    requires:
+      vars: [TASKS]
+    deps:
+      - for: {var: TASKS}
+        task: "{{.ITEM}}"
+
+  hatch-run:
+    internal: true
+    label: "{{.ENVIRONMENT}}:{{.SCRIPT}}"
+    prefix: "{{.ENVIRONMENT}}:{{.SCRIPT}}"
+    cmds:
+      - hatch run '{{.ENVIRONMENT}}:{{.SCRIPT}}' {{.ARGS}}
+
+  # Prepare shared environments before running scripts from them concurrently.
+  # `hatch run` creates missing environments and also syncs existing ones.
+  prepare-envs:
+    internal: true
+    prefix: prepare:envs
+    requires:
+      vars: [ENVS]
+    cmds:
+      - for: {var: ENVS}
+        cmd: hatch run '{{.ITEM}}:python' -c pass
+
+  #
+  # Development environment
+  #
+
+  env:
+    desc: Create or update the Python 3.10 development environment and show its path.
+    env:
+      HATCH_PYTHON: "3.10"
+    cmds:
+      - hatch run dev:python -c pass
+      - hatch env find dev
+
+  #
+  # Code quality
+  #
+
+  lint:
+    desc: Check code with flake8.
+    cmds:
+      - hatch run lint:check {{.CLI_ARGS}}
+
+  check:
+    desc: Check code with flake8.
+    cmds:
+      - task: lint
+
+  #
+  # Static type checking
+  #
+
+  typing:
+    desc: Type-check in the development environment.
+    cmds:
+      - hatch run dev:typing
+
+  typing:all:
+    desc: Type-check every supported Python version in parallel.
+    deps:
+      - for: {var: TEST_ENVS}
+        task: hatch-run
+        vars:
+          ENVIRONMENT: "{{.ITEM}}"
+          SCRIPT: typing
+
+  #
+  # Testing
+  #
+
+  test:
+    desc: Run tests in the development environment.
+    cmds:
+      - hatch run dev:test {{.CLI_ARGS}}
+
+  test:all:
+    desc: Test every supported Python version in parallel.
+    deps:
+      - for: {var: TEST_ENVS}
+        task: hatch-run
+        vars:
+          ENVIRONMENT: "{{.ITEM}}"
+          SCRIPT: test
+          ARGS: "{{.CLI_ARGS}}"
+
+  cov:
+    desc: Run tests with coverage in the development environment.
+    cmds:
+      - python scripts/remove.py '.coverage*'
+      - hatch run dev:test-cov {{.CLI_ARGS}}
+      - hatch run coverage:report
+
+  cov:all:
+    desc: Collect coverage from every supported Python version and report it.
+    cmds:
+      - python scripts/remove.py '.coverage*'
+      - task: cov:test-envs
+      - hatch run coverage:report
+
+  cov:test-envs:
+    internal: true
+    deps:
+      - for: {var: TEST_ENVS}
+        task: hatch-run
+        vars:
+          ENVIRONMENT: "{{.ITEM}}"
+          SCRIPT: test-cov
+          ARGS: "{{.CLI_ARGS}}"
+
+  #
+  # Quality assurance
+  #
+
+  qa:
+    desc: Run lint, typing, tests, and documentation checks.
+    cmds:
+      - task: lint
+      - task: prepare-envs
+        vars:
+          ENVS: [dev]
+      - task: run-concurrently
+        vars:
+          TASKS: [typing, test, docs]
+
+  qa:all:
+    desc: Run quality checks against every supported Python version.
+    cmds:
+      - task: lint
+      - task: run-concurrently
+        vars:
+          TASKS: [qa:test-envs, docs]
+
+  qa:test-envs:
+    internal: true
+    deps:
+      - for: {var: TEST_ENVS}
+        task: hatch-run
+        vars:
+          ENVIRONMENT: "{{.ITEM}}"
+          SCRIPT: qa
+
+  #
+  # Documentation
+  #
+
+  docs:
+    desc: Build the documentation, treating warnings as errors.
+    cmds:
+      - hatch run docs:build {{.CLI_ARGS}}
+
+  docs:serve:
+    desc: Preview the documentation with live reload.
+    cmds:
+      - hatch run docs:serve {{.CLI_ARGS}}
+
+  #
+  # Packaging and cleanup
+  #
+
+  build:
+    desc: Build and validate the source and wheel distributions.
+    cmds:
+      - hatch run package:build
+
+  clean:
+    desc: Remove build, test, coverage, and documentation artifacts.
+    cmds:
+      - python scripts/remove.py build dist .eggs docs/_build docs/autoapi htmlcov .pytest_cache .mypy_cache '.coverage*'
+      - >-
+        python scripts/remove.py --recursive
+        './cloup/**/__pycache__'
+        './tests/**/__pycache__'
+        './examples/**/__pycache__'
+        './docs/**/__pycache__'
+        './scripts/**/__pycache__'
+      - python scripts/remove.py --recursive './*.egg-info'

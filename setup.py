@@ -16,10 +16,6 @@ def make_long_description(write_file=False):
 
 setup(
     name='cloup',
-    setup_requires=['setuptools_scm<10'],
-    use_scm_version={
-        'write_to': 'cloup/_version.py'
-    },
     author='Gianluca Gippetto',
     author_email='gianluca.gippetto@gmail.com',
     description="Adds features to Click: option groups, constraints, subcommand "
@@ -27,12 +23,11 @@ setup(
     long_description_content_type='text/x-rst',
     long_description=make_long_description(),
     url='https://github.com/janLuke/cloup',
-    license="BSD 3-Clause",
+    license='BSD-3-Clause',
     keywords=['CLI', 'click', 'argument groups', 'option groups', 'constraints',
               'help colors', 'help themes', 'help styles'],
     classifiers=[
         'Intended Audience :: Developers',
-        'License :: OSI Approved :: BSD License',
         'Natural Language :: English',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.10',

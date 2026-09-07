@@ -1,7 +1,0 @@
--r test.in
--r docs.in
-flake8
-mypy
-tox < 4
-twine
-sphinx-autobuild
