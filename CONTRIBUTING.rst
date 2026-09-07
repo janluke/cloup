@@ -1,62 +1,269 @@
-.. highlight:: none
-
-============
 Contributing
 ============
 
-Contributions are welcome, and they are greatly appreciated! Every little bit
-helps, and credit will always be given.
+Thank you for considering a contribution to Cloup.
 
-Get Started!
-------------
+Getting started
+---------------
 
-Ready to contribute? Here's how to set up `cloup` for local development.
+Please discuss a proposed change before opening a pull request:
 
-1. Fork the `cloup` repo on GitHub.
-2. Clone your fork locally::
+1. Search the `issue tracker <https://github.com/janLuke/cloup/issues>`_ for an
+   existing report or proposal.
+2. Open an issue describing the problem, the desired behavior, and your proposed
+   approach.
+3. Wait for a maintainer to confirm that the change is appropriate and agree on
+   its scope.
+4. If the maintainer agrees, create a branch, implement the change, and open a
+   pull request linked to the issue.
 
-    $ git clone git@github.com:your_name_here/cloup.git
+Starting with an issue avoids duplicated work and gives maintainers and contributors
+a place to settle API and compatibility decisions before code is written.
+
+Development
+-----------
+
+Prerequisites
+~~~~~~~~~~~~~
+
+Cloup uses `Hatch <https://hatch.pypa.io/latest/>`_ for isolated Python
+environments and `Task <https://taskfile.dev/>`_ as its project command interface.
+Install both as isolated tools:
+
+.. code-block:: console
+
+    $ pipx install hatch
+    $ pipx install "go-task-bin>=3.46.1"
+
+The equivalent UV commands are:
+
+.. code-block:: console
+
+    $ uv tool install hatch
+    $ uv tool install "go-task-bin>=3.46.1"
+
+``go-task-bin`` is an unofficial Python package that distributes the Task binary.
+See Task's `official installation guide <https://taskfile.dev/docs/installation>`_
+for the other supported installation methods.
+
+Hatch can install and manage the required Python interpreters, so a separate tool
+such as pyenv is not required.
+It creates environments automatically when their commands are first used.
+To store them under ``.hatch/`` in the repository instead of Hatch's global data
+directory, run:
+
+.. code-block:: console
+
+    $ hatch config set dirs.env.virtual .hatch
+
+Set up the development environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Clone your fork and enter the repository:
+
+.. code-block:: console
+
+    $ git clone https://github.com/<your-username>/cloup.git
     $ cd cloup
 
-3. Create a development virtual environment in `venv` folder. If you have tox
-   and Python 3.10 installed, you can create one with all dependencies running::
+Create the ``dev`` environment with Python 3.10 and print its location:
 
-    $ tox -e dev
+.. code-block:: console
 
-   Otherwise, you can create one with ``venv``
-   (`see here for more <https://docs.python.org/3/library/venv.html>`_)::
+    $ task env
 
-    $ python -m venv /venv
+Select the reported Python interpreter in your IDE.
+The environment contains Cloup in editable mode together with the test, coverage,
+and typing dependencies, so it can run tests and type checks directly from the IDE.
 
-   then activate it (the right command depends on the platform/shell you are using)::
+Run ``task --list`` to see all available project commands.
 
-    $ source venv/bin/activate[.fish|.csh]  # bash | fish ...
-    $ venv/Scripts/activate.{bat|ps1}       # Windows (cmd | Powershell)
+Using Task
+~~~~~~~~~~
 
-   and install the requirements::
+Invoke one project task by name, for example:
 
-    $ pip install requirements/dev.txt
+.. code-block:: console
 
-4. Create a branch for local development::
+    $ task lint
 
-    $ git checkout -b name-of-your-bugfix-or-feature
+When several task names are provided on the command line, Task runs them
+sequentially by default.
+Use ``--parallel`` to run independent requested tasks concurrently:
 
-   Now you can make your changes locally.
+.. code-block:: console
 
-5. When you're done making changes, check that your changes pass linting, mypy
-   and tests running tox::
+    $ task --parallel lint docs
 
-    $ tox -p         # run all tests (env) in parallel
-    $ tox -e <env>   # run only the specified env
+Dependencies declared by a single task run concurrently by default, so aggregate
+commands such as ``task test:all`` and ``task qa:all`` need no ``--parallel`` flag.
+Use ``--failfast`` when one failure should cancel the other running tasks:
 
-   Alternatively, you can use ``make`` to run commands only in your dev environment
-   if you have it installed. Run ``make help`` or read the ``Makefile`` to see
-   the available commands.
+.. code-block:: console
 
-6. Commit your changes and push your branch to GitHub::
+    $ task --failfast qa:all
 
-    $ git add .
-    $ git commit -m "Your detailed description of your changes."
-    $ git push origin name-of-your-bugfix-or-feature
+The project does not impose a concurrency limit.
+Set one for a particular run with ``task --concurrency N COMMAND`` or the
+``TASK_CONCURRENCY`` environment variable.
+Parallel output is prefixed with the task that produced it.
 
-7. Submit a pull request through the GitHub website.
+Code quality
+~~~~~~~~~~~~
+
+Use the following commands while developing:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
+
+   * - Command
+     - Purpose
+   * - ``task check``
+     - Check the package, tests, and examples with flake8.
+   * - ``task typing``
+     - Type-check the package, tests, and examples in the development environment.
+   * - ``task typing:all``
+     - Type-check with every supported Python version.
+
+Testing
+~~~~~~~
+
+The primary development environment and every Python test environment expose the
+same test and typing scripts.
+This ensures that type checking observes the dependencies and standard library of
+each supported Python version.
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
+
+   * - Command
+     - Purpose
+   * - ``task test``
+     - Run tests with the development environment.
+   * - ``task test:all``
+     - Run tests with Python 3.10 through 3.14 in parallel.
+   * - ``task cov``
+     - Run tests in the development environment and generate terminal and HTML
+       coverage reports.
+   * - ``task cov:all``
+     - Collect coverage from all supported Python versions in parallel and combine
+       the results.
+
+Use ``--`` before arguments that should be forwarded to pytest.
+For example, stop after the first failure with:
+
+.. code-block:: console
+
+    $ task test -- -x
+
+For example, run the full test matrix sequentially with:
+
+.. code-block:: console
+
+    $ task --concurrency 1 test:all
+
+Quality assurance workflows
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The aggregate tasks are the recommended checks before submitting changes:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 25 75
+
+   * - Command
+     - Purpose
+   * - ``task qa``
+     - Run lint first, then type checking, tests, and documentation using the primary
+       environments.
+   * - ``task qa:all``
+     - Run lint and documentation checks plus typing and tests on every supported
+       Python version.
+
+Use ``task qa`` during routine development and ``task qa:all`` before opening or
+updating a pull request.
+
+For contiguous, failure-focused logs, use Task's grouped output:
+
+.. code-block:: console
+
+    $ task --output group --output-group-error-only qa:all
+
+An `open Task pull request <https://github.com/go-task/task/pull/3015>`_ from
+Cloup's maintainer proposes a built-in ``task --tui`` interface.
+Besides launching tasks, it executes their task graph inside the TUI, gives every
+task invocation a separately inspectable output pane, and can copy or save an
+individual task's output—or save all outputs into separate files.
+The feature is not part of a released Task version yet, and its interface may change
+while the pull request is under review.
+
+.. image:: https://github.com/user-attachments/assets/07e4d5d1-61aa-4554-b281-ae258ae18c3b
+   :alt: Proposed Task TUI showing the task navigator and a selected task's output
+   :target: https://github.com/go-task/task/pull/3015
+
+
+Documentation
+~~~~~~~~~~~~~
+
+Build the documentation and treat warnings as errors with:
+
+.. code-block:: console
+
+    $ task docs
+
+Start a live-reloading server that watches the documentation and package sources
+with:
+
+.. code-block:: console
+
+    $ task docs:serve
+
+Pass ``-a`` after ``--`` when changing CSS or other static files so Sphinx rebuilds
+every page:
+
+.. code-block:: console
+
+    $ task docs:serve -- -a
+
+Dependencies
+~~~~~~~~~~~~
+
+Development dependencies belong to their corresponding environments in
+``hatch.toml``.
+The development and Python test environments deliberately resolve compatible
+versions afresh so scheduled CI can detect dependency compatibility problems.
+Reproducibility-sensitive lint, documentation, and package-checking environments use
+committed PEP 751 lockfiles.
+
+Regenerate affected lockfiles after changing a locked environment:
+
+.. code-block:: console
+
+    $ hatch env lock
+
+Use ``--upgrade`` only when intentionally upgrading locked dependencies:
+
+.. code-block:: console
+
+    $ hatch env lock --upgrade
+
+Commit every changed ``pylock.*.toml`` file together with its ``hatch.toml`` change.
+
+Building distributions
+~~~~~~~~~~~~~~~~~~~~~~
+
+Build the source distribution and wheel and validate their metadata with:
+
+.. code-block:: console
+
+    $ task build
+
+Pull requests
+-------------
+
+Keep pull requests focused on the scope agreed in the issue.
+Include tests for behavioral changes and update user documentation when the public
+API or documented behavior changes.
+Before requesting review, run ``task qa:all`` and ``task build``.

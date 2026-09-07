@@ -1,0 +1,91 @@
+[envs.hatch-uv]
+dependencies = [
+  "uv >= 0.11.31",
+]
+
+[envs.default]
+installer = "uv"
+
+[envs.dev]
+dependencies = [
+  "coverage[toml] >= 6.5",
+  "mypy",
+  "pytest",
+  "pytest-cov",
+  "pytest-xdist[psutil]",
+  "typing-extensions",
+]
+
+[envs.dev.scripts]
+qa = ["typing", "test"]
+test = "pytest {args:-vv}"
+test-cov = "coverage run --parallel-mode -m pytest {args:-vv}"
+typing = [
+  "mypy --strict cloup",
+  "mypy tests examples",
+]
+
+[envs.test]
+template = "dev"
+
+[[envs.test.matrix]]
+python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+[envs.coverage]
+skip-install = true
+dependencies = [
+  "coverage[toml] >= 6.5",
+]
+
+[envs.coverage.scripts]
+report = [
+  "- coverage combine",
+  "coverage report -m",
+  "coverage html",
+]
+
+[envs.lint]
+locked = true
+skip-install = true
+dependencies = [
+  "flake8",
+]
+
+[envs.lint.scripts]
+check = "flake8 {args:cloup tests examples scripts/expand-hatch-envs.py}"
+
+[envs.docs]
+locked = true
+python = "3.10"
+dependencies = [
+  "furo",
+  "sphinx",
+  "sphinx-autoapi",
+  "sphinx-autobuild",
+  "sphinx-copybutton",
+  "sphinx-design",
+  "sphinx-issues",
+  "sphinx-version-warning",
+]
+
+[envs.docs.scripts]
+build = [
+  "python scripts/remove.py docs/_build",
+  "sphinx-build -E -W --keep-going -b html docs docs/_build/html {args}",
+]
+serve = "sphinx-autobuild --watch cloup --ignore 'docs/autoapi/**' --open-browser -b html docs docs/_build/html {args}"
+
+[envs.package]
+locked = true
+skip-install = true
+dependencies = [
+  "build",
+  "twine",
+]
+
+[envs.package.scripts]
+build = [
+  "python scripts/remove.py build dist .eggs",
+  "python -m build",
+  "twine check dist/*",
+]
