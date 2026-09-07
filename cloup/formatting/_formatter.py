@@ -8,7 +8,7 @@ from typing import (
     Tuple, Union,
 )
 
-from cloup._util import click_version_ge_8_1
+from cloup._util import click_version_ge_8_1, click_version_ge_8_2
 from cloup.formatting._util import unstyled_len
 
 if TYPE_CHECKING:
@@ -185,9 +185,14 @@ class HelpFormatter(click.HelpFormatter):
         if help_text and click_version_ge_8_1:
             help_text = inspect.cleandoc(help_text).partition("\f")[0]
         if cmd.deprecated:
-            # Use the same label as Click:
-            # https://github.com/pallets/click/blob/b0538df/src/click/core.py#L1331
-            help_text = "(Deprecated) " + help_text
+            if click_version_ge_8_2:
+                label = (
+                    f"(DEPRECATED: {cmd.deprecated})"
+                    if isinstance(cmd.deprecated, str) else "(DEPRECATED)"
+                )
+                help_text = f"{help_text} {label}" if help_text else label
+            else:
+                help_text = "(Deprecated) " + help_text
         if help_text:
             self.write_paragraph()
             with self.indentation():

@@ -4,7 +4,7 @@ import click
 import pytest
 
 import cloup
-from cloup._util import reindent
+from cloup._util import click_version_ge_8_2, reindent
 from tests.util import new_dummy_func
 
 
@@ -52,6 +52,46 @@ def test_group_works_with_no_params_and_subcommands(runner):
         Options:
           --help  Show this message and exit.
     """)
+
+
+@pytest.mark.parametrize('command_cls, reference_cls', [
+    (cloup.Command, click.Command),
+    (cloup.Group, click.Group),
+])
+@pytest.mark.parametrize('help_text', [
+    None, '', 'Do a thing.', 'First paragraph.\n\nSecond paragraph.\fHidden text.',
+])
+@pytest.mark.parametrize('deprecated', [False, True, '', 'use `newcmd` instead'])
+def test_deprecated_command_help_matches_click(
+    runner, command_cls, reference_cls, help_text, deprecated,
+):
+    cmd = command_cls(name='example', help=help_text, deprecated=deprecated)
+    reference = reference_cls(name='example', help=help_text, deprecated=deprecated)
+
+    result = runner.invoke(cmd, ['--help'], terminal_width=80)
+    expected = runner.invoke(reference, ['--help'], terminal_width=80)
+
+    assert result.exit_code == expected.exit_code == 0
+    # Older Click 8.2 releases add an extra space before a standalone label.
+    expected_output = expected.output.replace('\n   (DEPRECATED', '\n  (DEPRECATED')
+    assert result.output == expected_output
+
+
+@pytest.mark.skipif(not click_version_ge_8_2, reason='requires Click 8.2 or newer')
+def test_deprecated_command_help_keeps_theme(runner):
+    @cloup.command(
+        deprecated='use `newcmd` instead',
+        formatter_settings={'theme': cloup.HelpTheme(
+            command_help=cloup.Style(fg='yellow'),
+        )},
+    )
+    def example():
+        """Do a thing."""
+
+    result = runner.invoke(example, ['--help'], color=True)
+    assert result.exit_code == 0
+    assert click.style('Do a thing. (DEPRECATED: use `newcmd` instead)', fg='yellow') \
+        in result.output
 
 
 class TestDidYouMean:

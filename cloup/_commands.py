@@ -292,7 +292,7 @@ class Group(SectionMixin, Command, click.Group):
         add_help_option: bool = True,
         no_args_is_help: bool = False,
         hidden: bool = False,
-        deprecated: bool = False,
+        deprecated: Union[bool, str] = False,
         align_option_groups: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
         params: Optional[List[click.Parameter]] = None,
@@ -314,7 +314,7 @@ class Group(SectionMixin, Command, click.Group):
         add_help_option: bool = True,
         no_args_is_help: bool = False,
         hidden: bool = False,
-        deprecated: bool = False,
+        deprecated: Union[bool, str] = False,
         params: Optional[List[click.Parameter]] = None,
         **kwargs: Any,
     ) -> Callable[[AnyCallable], C]:
@@ -374,7 +374,7 @@ class Group(SectionMixin, Command, click.Group):
         add_help_option: bool = True,
         chain: bool = False,
         hidden: bool = False,
-        deprecated: bool = False,
+        deprecated: Union[bool, str] = False,
         show_subcommand_aliases: bool = False,
     ) -> Callable[[AnyCallable], click.Group]:
         ...
@@ -396,7 +396,7 @@ class Group(SectionMixin, Command, click.Group):
         add_help_option: bool = True,
         chain: bool = False,
         hidden: bool = False,
-        deprecated: bool = False,
+        deprecated: Union[bool, str] = False,
         params: Optional[List[click.Parameter]] = None,
         **kwargs: Any
     ) -> Callable[[AnyCallable], G]:
@@ -458,7 +458,7 @@ def command(
     add_help_option: bool = True,
     no_args_is_help: bool = False,
     hidden: bool = False,
-    deprecated: bool = False,
+    deprecated: Union[bool, str] = False,
     align_option_groups: Optional[bool] = None,
     show_constraints: Optional[bool] = None,
     params: Optional[List[click.Parameter]] = None,
@@ -480,7 +480,7 @@ def command(  # In this overload: "cls: ClickCommand"
     add_help_option: bool = True,
     no_args_is_help: bool = False,
     hidden: bool = False,
-    deprecated: bool = False,
+    deprecated: Union[bool, str] = False,
     params: Optional[List[click.Parameter]] = None,
     **kwargs: Any
 ) -> Callable[[AnyCallable], C]:
@@ -554,7 +554,8 @@ def command(
     :param hidden:
         hide this command from help outputs.
     :param deprecated:
-        issues a message indicating that the command is deprecated.
+        issues a message indicating that the command is deprecated. A string
+        provides a custom deprecation message (requires Click >= 8.2).
     :param align_option_groups:
         whether to align the columns of all option groups' help sections.
         This is also available as a context setting having a lower priority
@@ -620,7 +621,7 @@ def group(
     add_help_option: bool = True,
     chain: bool = False,
     hidden: bool = False,
-    deprecated: bool = False,
+    deprecated: Union[bool, str] = False,
     params: Optional[List[click.Parameter]] = None,
     show_subcommand_aliases: bool = False,
 ) -> Callable[[AnyCallable], Group]:
@@ -644,7 +645,7 @@ def group(
     add_help_option: bool = True,
     chain: bool = False,
     hidden: bool = False,
-    deprecated: bool = False,
+    deprecated: Union[bool, str] = False,
     params: Optional[List[click.Parameter]] = None,
     **kwargs: Any
 ) -> Callable[[AnyCallable], G]:
@@ -704,7 +705,8 @@ def group(
     :param hidden:
         hide this command from help outputs.
     :param deprecated:
-        issues a message indicating that the command is deprecated.
+        issues a message indicating that the command is deprecated. A string
+        provides a custom deprecation message (requires Click >= 8.2).
     :param invoke_without_command:
         this controls how the multi command itself is invoked. By default it's
         only invoked if a subcommand is provided.
