@@ -79,7 +79,7 @@ tasks:
       - hatch run dev:typing
 
   typing:all:
-    desc: Type-check every supported Python version in parallel.
+    desc: Type-check every test environment in parallel.
     deps:
       - for: {var: TEST_ENVS}
         task: hatch-run
@@ -97,7 +97,7 @@ tasks:
       - hatch run dev:test {{.CLI_ARGS}}
 
   test:all:
-    desc: Test every supported Python version in parallel.
+    desc: Run every test environment in parallel.
     deps:
       - for: {var: TEST_ENVS}
         task: hatch-run
@@ -105,6 +105,15 @@ tasks:
           ENVIRONMENT: "{{.ITEM}}"
           SCRIPT: test
           ARGS: "{{.CLI_ARGS}}"
+
+  test-envs:upgrade-click:
+    desc: Upgrade Click to the latest allowed version in every test environment.
+    deps:
+      - for: {var: TEST_ENVS}
+        task: hatch-run
+        vars:
+          ENVIRONMENT: "{{.ITEM}}"
+          SCRIPT: upgrade-click
 
   cov:
     desc: Run tests with coverage in the development environment.
@@ -114,7 +123,7 @@ tasks:
       - hatch run coverage:report
 
   cov:all:
-    desc: Collect coverage from every supported Python version and report it.
+    desc: Collect coverage from every test environment and report it.
     cmds:
       - python scripts/remove.py '.coverage*'
       - task: cov:test-envs
@@ -146,7 +155,7 @@ tasks:
           TASKS: [typing, test, docs]
 
   qa:all:
-    desc: Run quality checks against every supported Python version.
+    desc: Run quality checks against every test environment.
     cmds:
       - task: lint
       - task: run-concurrently
