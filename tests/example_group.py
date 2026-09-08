@@ -1,6 +1,5 @@
-# flake8: noqa E128
 import cloup
-from cloup import Section, argument, option, option_group
+from cloup import Section, option, option_group
 
 
 def make_example_group(align_sections):

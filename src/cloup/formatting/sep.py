@@ -43,7 +43,7 @@ class RowSepPolicy(metaclass=abc.ABCMeta):
     """
 
     @abc.abstractmethod
-    def __call__(  # noqa E704
+    def __call__(
         self, rows: Sequence[Sequence[str]],
         col_widths: Sequence[int],
         col_spacing: int,
@@ -55,8 +55,7 @@ class RowSepPolicy(metaclass=abc.ABCMeta):
 class RowSepCondition(Protocol):
     """Determines when a definition list should use a row separator."""
 
-    # Ignore error due to flake8 issue: "multiple statements on one line (def)"
-    def __call__(  # noqa E704
+    def __call__(
         self, rows: Sequence[Sequence[str]],
         col_widths: Sequence[int],
         col_spacing: int,

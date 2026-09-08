@@ -120,11 +120,18 @@ Use the following commands while developing:
    * - Command
      - Purpose
    * - ``task check``
-     - Check the package, tests, and examples with flake8.
+     - Lint the package, tests, and examples with Ruff.
    * - ``task typing``
      - Type-check the package, tests, and examples in the development environment.
    * - ``task typing:all``
      - Type-check in every Python and Click compatibility environment.
+
+Ruff enforces Pyflakes rules, stable non-formatting pycodestyle rules, and warnings.
+Whitespace and hard line-length rules that overlap with ``ruff format`` are left to
+the formatter, which uses the existing 90-character target. In particular, the
+former ``E241`` and ``E251`` exceptions are no longer needed, ``W191`` is omitted
+because it conflicts with the formatter, and Ruff does not implement the obsolete
+``W503`` rule.
 
 Testing
 ~~~~~~~

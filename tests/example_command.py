@@ -1,4 +1,3 @@
-# flake8: noqa E128
 from typing import cast
 
 import click
