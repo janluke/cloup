@@ -7,15 +7,15 @@ build:
   os: ubuntu-24.04
   tools:
     python: "3.10"
+  jobs:
+    post_install:
+      - uv pip install --python "$READTHEDOCS_VIRTUALENV_PATH/bin/python" --no-deps .
 
 python:
   install:
     - method: uv
       command: pip
       requirements: pylock.docs.toml
-    - method: uv
-      command: pip
-      path: .
 
 sphinx:
   configuration: docs/conf.py
