@@ -55,8 +55,9 @@ def test_group_works_with_no_params_and_subcommands(runner):
 
 
 class TestDidYouMean:
+    @staticmethod
     @pytest.fixture(scope="class")
-    def cmd(self):
+    def cmd():
         cmd = cloup.Group(name="cmd")
         subcommands = [
             ('install', ['ins']),
