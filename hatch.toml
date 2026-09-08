@@ -17,10 +17,19 @@ dependencies = [
 ]
 
 [envs.dev.scripts]
+pip = '$HATCH_UV" pip {args}'
 qa = ["typing", "test"]
-test = "pytest {args:-vv}"
-test-cov = "coverage run --parallel-mode -m pytest {args:-vv}"
+click-version = "python -c \"from importlib.metadata import version; print('Click version:', version('click'))\""
+test = [
+  "click-version",
+  "pytest {args:-vv}",
+]
+test-cov = [
+  "click-version",
+  "coverage run --parallel-mode -m pytest {args:-vv}",
+]
 typing = [
+  "click-version",
   "mypy --strict cloup",
   "mypy tests examples",
 ]
