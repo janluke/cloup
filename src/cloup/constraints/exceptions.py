@@ -10,18 +10,19 @@ if TYPE_CHECKING:
 
 
 def default_constraint_error(params: Iterable[Parameter], desc: str) -> str:
-    return (
-        'the following constraint on parameters [%s] was not satisfied: %s'
-        % (join_param_labels(params), desc)
+    return "the following constraint on parameters [%s] was not satisfied: %s" % (
+        join_param_labels(params),
+        desc,
     )
 
 
 class ConstraintViolated(click.UsageError):
     def __init__(
-        self, message: str,
+        self,
+        message: str,
         ctx: Context,
-        constraint: 'Constraint',
-        params: Sequence[click.Parameter]
+        constraint: "Constraint",
+        params: Sequence[click.Parameter],
     ):
         super().__init__(message, ctx=ctx)
         self.ctx = ctx
@@ -33,12 +34,14 @@ class ConstraintViolated(click.UsageError):
         cls,
         desc: str,
         ctx: Context,
-        constraint: 'Constraint',
+        constraint: "Constraint",
         params: Sequence[Parameter],
-    ) -> 'ConstraintViolated':
+    ) -> "ConstraintViolated":
         return ConstraintViolated(
             default_constraint_error(params, desc),
-            ctx=ctx, constraint=constraint, params=params,
+            ctx=ctx,
+            constraint=constraint,
+            params=params,
         )
 
 
@@ -48,13 +51,15 @@ class UnsatisfiableConstraint(Exception):
     be satisfied if multiple of the parameters are required."""
 
     def __init__(
-        self, constraint: 'Constraint', params: Iterable[Parameter], reason: str
+        self, constraint: "Constraint", params: Iterable[Parameter], reason: str
     ):
         self.constraint = constraint
         self.params = params
         self.reason = reason
         param_names = join_param_labels(params)
-        message = (f"\nthe constraint {constraint}\n"
-                   f"defined on parameters [{param_names}]\n"
-                   f"cannot be satisfied because {reason}")
+        message = (
+            f"\nthe constraint {constraint}\n"
+            f"defined on parameters [{param_names}]\n"
+            f"cannot be satisfied because {reason}"
+        )
         super().__init__(message)

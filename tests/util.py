@@ -50,17 +50,17 @@ def make_fake_context(
     params: Iterable[click.Parameter],
     command_cls=cloup.Command,
     cls=Context,
-    **ctx_kwargs
+    **ctx_kwargs,
 ) -> Context:
     """Create a simple instance of Command with the specified parameters,
     then create a fake context without actually invoking the command."""
     return cls(
-        command_cls('fake', params=params, callback=new_dummy_func()), **ctx_kwargs
+        command_cls("fake", params=params, callback=new_dummy_func()), **ctx_kwargs
     )
 
 
 def make_options(names: Iterable[str], **common_kwargs) -> List[click.Option]:
-    return [click.Option([f'--{name}'], **common_kwargs) for name in names]
+    return [click.Option([f"--{name}"], **common_kwargs) for name in names]
 
 
 def should_raise(expected_exception, *, when, **kwargs):

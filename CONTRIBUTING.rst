@@ -120,9 +120,15 @@ Use the following commands while developing:
    * - Command
      - Purpose
    * - ``task check``
-     - Lint the package, tests, and examples with Ruff.
+     - Lint the code and check its formatting style.
+   * - ``task fix``
+     - Lint in fix mode and format the code.
+   * - ``task lint [-- --fix]``
+     - Lint the code with Ruff, optionally fixing violations.
+   * - ``task format``
+     - Format the code with Ruff.
    * - ``task typing``
-     - Type-check the package, tests, and examples in the development environment.
+     - Type-check the code in the development environment.
    * - ``task typing:all``
      - Type-check in every Python and Click compatibility environment.
 
@@ -187,11 +193,11 @@ The aggregate tasks are the recommended checks before submitting changes:
    * - Command
      - Purpose
    * - ``task qa``
-     - Run lint first, then type checking, tests, and documentation using the primary
-       environments.
+     - Run lint and formatting checks first, then type checking, tests, and
+       documentation using the primary environments.
    * - ``task qa:all``
-     - Run lint and documentation checks plus typing and tests in every test
-       environment.
+     - Run lint, formatting, and documentation checks plus typing and tests in every
+       test environment.
 
 Use ``task qa`` during routine development and ``task qa:all`` before opening or
 updating a pull request.

@@ -5,6 +5,7 @@ as conditions of conditional constraints (see :class:`cloup.constraints.If`).
 Predicates should be treated as immutable objects, even though immutability
 is not (at the moment) enforced.
 """
+
 import abc
 from typing import Any, Dict, Generic, TypeVar
 
@@ -21,7 +22,7 @@ from .common import (
 )
 from .._util import make_repr
 
-P = TypeVar('P', bound='Predicate')
+P = TypeVar("P", bound="Predicate")
 
 
 class Predicate(abc.ABC):
@@ -37,7 +38,7 @@ class Predicate(abc.ABC):
 
     def negated_description(self, ctx: click.Context) -> str:
         """Succinct description of the negation of this predicate (alias: `neg_desc`)."""
-        return 'NOT(%s)' % self.description(ctx)
+        return "NOT(%s)" % self.description(ctx)
 
     def desc(self, ctx: click.Context) -> str:
         """Short alias for :meth:`description`."""
@@ -67,7 +68,7 @@ class Predicate(abc.ABC):
         return make_repr(self, *self._public_fields().values())
 
     def _public_fields(self) -> Dict[str, Any]:
-        return {k: v for k, v in vars(self).items() if not k.startswith('_')}
+        return {k: v for k, v in vars(self).items() if not k.startswith("_")}
 
     def __eq__(self, other: object) -> bool:
         return isinstance(other, self.__class__) and (
@@ -94,21 +95,23 @@ class Not(Predicate, Generic[P]):
         return self.predicate
 
     def __repr__(self) -> str:
-        return 'Not(%r)' % self.predicate
+        return "Not(%r)" % self.predicate
 
 
 class _Operator(Predicate, metaclass=abc.ABCMeta):
     """Operator between two or more predicates."""
+
     DESC_SEP: str
 
     def __init__(self, *predicates: Predicate):
         if len(predicates) < 2:
-            raise ValueError('provide at least 2 predicates')
+            raise ValueError("provide at least 2 predicates")
         self.predicates = predicates
 
     def description(self, ctx: click.Context) -> str:
         return self.DESC_SEP.join(
-            '(%s)' % p.description(ctx) if isinstance(p, _Operator)
+            "(%s)" % p.description(ctx)
+            if isinstance(p, _Operator)
             else p.description(ctx)
             for p in self.predicates
         )
@@ -119,18 +122,19 @@ class _Operator(Predicate, metaclass=abc.ABCMeta):
 
 class _And(_Operator):
     """Logical AND of two or more predicates."""
-    DESC_SEP = ' and '
+
+    DESC_SEP = " and "
 
     def negated_description(self, ctx: click.Context) -> str:
-        return ' or '.join(
-            '(%s)' % p.neg_desc(ctx) if isinstance(p, _Operator) else p.neg_desc(ctx)
+        return " or ".join(
+            "(%s)" % p.neg_desc(ctx) if isinstance(p, _Operator) else p.neg_desc(ctx)
             for p in self.predicates
         )
 
     def __call__(self, ctx: click.Context) -> bool:
         return all(p(ctx) for p in self.predicates)
 
-    def __and__(self, other: 'Predicate') -> Predicate:
+    def __and__(self, other: "Predicate") -> Predicate:
         if isinstance(other, _And):
             return _And(*self.predicates, *other.predicates)
         return _And(*self.predicates, other)
@@ -138,18 +142,19 @@ class _And(_Operator):
 
 class _Or(_Operator):
     """Logical OR of two or more predicates."""
-    DESC_SEP = ' or '
+
+    DESC_SEP = " or "
 
     def negated_description(self, ctx: click.Context) -> str:
-        return ' and '.join(
-            '(%s)' % p.neg_desc(ctx) if isinstance(p, _Operator) else p.neg_desc(ctx)
+        return " and ".join(
+            "(%s)" % p.neg_desc(ctx) if isinstance(p, _Operator) else p.neg_desc(ctx)
             for p in self.predicates
         )
 
     def __call__(self, ctx: click.Context) -> bool:
         return any(p(ctx) for p in self.predicates)
 
-    def __or__(self, other: 'Predicate') -> Predicate:
+    def __or__(self, other: "Predicate") -> Predicate:
         if isinstance(other, _Or):
             return _Or(*self.predicates, *other.predicates)
         return _Or(*self.predicates, other)
@@ -162,10 +167,10 @@ class IsSet(Predicate):
         self.param_name = param_name
 
     def description(self, ctx: click.Context) -> str:
-        return '%s is set' % param_label_by_name(ctx, self.param_name)
+        return "%s is set" % param_label_by_name(ctx, self.param_name)
 
     def negated_description(self, ctx: click.Context) -> str:
-        return '%s is not set' % param_label_by_name(ctx, self.param_name)
+        return "%s is not set" % param_label_by_name(ctx, self.param_name)
 
     def __call__(self, ctx: click.Context) -> bool:
         command = ensure_constraints_support(ctx.command)
@@ -192,28 +197,30 @@ class AllSet(Predicate):
 
     def __init__(self, *param_names: str):
         if not param_names:
-            raise ValueError('you must provide at least one param name')
+            raise ValueError("you must provide at least one param name")
         self.param_names = param_names
 
     def negated_description(self, ctx: click.Context) -> str:
         labels = get_param_labels(ctx, self.param_names)
         if len(labels) == 1:
-            return f'{labels[0]} is not set'
-        pronoun = 'both' if len(labels) == 2 else 'all'
-        return f'{join_with_and(labels)} are not {pronoun} set'
+            return f"{labels[0]} is not set"
+        pronoun = "both" if len(labels) == 2 else "all"
+        return f"{join_with_and(labels)} are not {pronoun} set"
 
     def description(self, ctx: click.Context) -> str:
         labels = get_param_labels(ctx, self.param_names)
         if len(labels) == 1:
-            return f'{labels[0]} is set'
-        pronoun = 'both' if len(labels) == 2 else 'all'
-        return f'{join_with_and(labels)} are {pronoun} set'
+            return f"{labels[0]} is set"
+        pronoun = "both" if len(labels) == 2 else "all"
+        return f"{join_with_and(labels)} are {pronoun} set"
 
     def __call__(self, ctx: click.Context) -> bool:
         command = ensure_constraints_support(ctx.command)
         params = command.get_params_by_name(self.param_names)
-        return all(param_value_is_set(param, ctx.params[get_param_name(param)])
-                   for param in params)
+        return all(
+            param_value_is_set(param, ctx.params[get_param_name(param)])
+            for param in params
+        )
 
     def __and__(self, other: Predicate) -> Predicate:
         if isinstance(other, AllSet):
@@ -229,30 +236,32 @@ class AnySet(Predicate):
 
     def __init__(self, *param_names: str):
         if not param_names:
-            raise ValueError('you must provide at least one param name')
+            raise ValueError("you must provide at least one param name")
         self.param_names = param_names
 
     def negated_description(self, ctx: click.Context) -> str:
         labels = get_param_labels(ctx, self.param_names)
         if len(labels) == 1:
-            return f'{labels[0]} is not set'
+            return f"{labels[0]} is not set"
         if len(labels) == 2:
-            return 'neither {} nor {} is set'.format(*labels)
-        return f'none of {join_with_and(labels)} is set'
+            return "neither {} nor {} is set".format(*labels)
+        return f"none of {join_with_and(labels)} is set"
 
     def description(self, ctx: click.Context) -> str:
         labels = get_param_labels(ctx, self.param_names)
         if len(labels) == 1:
-            return f'{labels[0]} is set'
+            return f"{labels[0]} is set"
         if len(labels) == 2:
-            return 'either {} or {} is set'.format(*labels)
-        return f'any of {join_with_and(labels)} is set'
+            return "either {} or {} is set".format(*labels)
+        return f"any of {join_with_and(labels)} is set"
 
     def __call__(self, ctx: click.Context) -> bool:
         command = ensure_constraints_support(ctx.command)
         params = command.get_params_by_name(self.param_names)
-        return any(param_value_is_set(param, ctx.params[get_param_name(param)])
-                   for param in params)
+        return any(
+            param_value_is_set(param, ctx.params[get_param_name(param)])
+            for param in params
+        )
 
     def __or__(self, other: Predicate) -> Predicate:
         if isinstance(other, AnySet):

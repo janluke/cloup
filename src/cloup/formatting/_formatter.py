@@ -4,8 +4,16 @@ import shutil
 import textwrap
 from itertools import chain
 from typing import (
-    Any, Callable, Dict, Iterable, Iterator, Optional, Sequence, TYPE_CHECKING,
-    Tuple, Union,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    Optional,
+    Sequence,
+    TYPE_CHECKING,
+    Tuple,
+    Union,
 )
 
 from cloup._util import click_version_ge_8_1
@@ -18,7 +26,10 @@ import click
 from click.formatting import wrap_text
 
 from cloup._util import (
-    check_positive_int, identity, indent_lines, make_repr,
+    check_positive_int,
+    identity,
+    indent_lines,
+    make_repr,
     pick_non_missing,
 )
 from ..typing import MISSING, Possibly
@@ -37,6 +48,7 @@ def _format_deprecation_label(deprecated: Union[bool, str]) -> str:
 @dc.dataclass()
 class HelpSection:
     """A container for a help section data."""
+
     heading: str
     """Help section title."""
 
@@ -111,22 +123,24 @@ class HelpFormatter(click.HelpFormatter):
     """
 
     def __init__(
-        self, indent_increment: int = 2,
+        self,
+        indent_increment: int = 2,
         width: Optional[int] = None,
         max_width: Optional[int] = None,
         col1_max_width: int = 30,
         col2_min_width: int = 35,
         col_spacing: int = 2,
-        row_sep: Union[None, str, 'SepGenerator', 'RowSepPolicy'] = None,
+        row_sep: Union[None, str, "SepGenerator", "RowSepPolicy"] = None,
         theme: HelpTheme = HelpTheme(),
     ):
-        check_positive_int(col1_max_width, 'col1_max_width')
-        check_positive_int(col_spacing, 'col_spacing')
-        if isinstance(row_sep, str) and row_sep.endswith('\n'):
+        check_positive_int(col1_max_width, "col1_max_width")
+        check_positive_int(col_spacing, "col_spacing")
+        if isinstance(row_sep, str) and row_sep.endswith("\n"):
             raise ValueError(
                 "since v0.9, row_sep must not end with '\\n'. The formatter writes "
                 "a '\\n' after it; no other newline is allowed.\n"
-                "If you want an empty line between rows, set row_sep=''.")
+                "If you want an empty line between rows, set row_sep=''."
+            )
 
         max_width = max_width or 80
         # We subtract 1 to the terminal width to leave space for the new line character.
@@ -149,13 +163,14 @@ class HelpFormatter(click.HelpFormatter):
 
     @staticmethod
     def settings(
-        *, width: Possibly[Optional[int]] = MISSING,
+        *,
+        width: Possibly[Optional[int]] = MISSING,
         max_width: Possibly[Optional[int]] = MISSING,
         indent_increment: Possibly[int] = MISSING,
         col1_max_width: Possibly[int] = MISSING,
         col2_min_width: Possibly[int] = MISSING,
         col_spacing: Possibly[int] = MISSING,
-        row_sep: Possibly[Union[None, str, 'SepGenerator', 'RowSepPolicy']] = MISSING,
+        row_sep: Possibly[Union[None, str, "SepGenerator", "RowSepPolicy"]] = MISSING,
         theme: Possibly[HelpTheme] = MISSING,
     ) -> Dict[str, Any]:
         """A utility method for creating a ``formatter_settings`` dictionary to
@@ -204,10 +219,11 @@ class HelpFormatter(click.HelpFormatter):
             self.write(" " * self.current_indent)
         self.write(self.theme.heading(heading + ":"))
         if newline:
-            self.write('\n')
+            self.write("\n")
 
     def write_many_sections(
-        self, sections: Sequence[HelpSection],
+        self,
+        sections: Sequence[HelpSection],
         aligned: bool = True,
     ) -> None:
         if aligned:
@@ -227,8 +243,8 @@ class HelpFormatter(click.HelpFormatter):
         self.write("\n")
         self.write_heading(s.heading, newline=not s.constraint)
         if s.constraint:
-            constraint_text = f'[{s.constraint}]'
-            available_width = self.available_width - len(s.heading) - len(': ')
+            constraint_text = f"[{s.constraint}]"
+            available_width = self.available_width - len(s.heading) - len(": ")
             if len(constraint_text) <= available_width:
                 self.write(" ", theme.constraint(constraint_text), "\n")
             else:
@@ -244,9 +260,10 @@ class HelpFormatter(click.HelpFormatter):
 
     def write_text(self, text: str, style: IStyle = identity) -> None:
         wrapped = wrap_text(
-            text, self.width - self.current_indent, preserve_paragraphs=True)
+            text, self.width - self.current_indent, preserve_paragraphs=True
+        )
         if style is identity:
-            wrapped_text = textwrap.indent(wrapped, prefix=' ' * self.current_indent)
+            wrapped_text = textwrap.indent(wrapped, prefix=" " * self.current_indent)
         else:
             styled_lines = map(style, wrapped.splitlines())
             lines = indent_lines(styled_lines, width=self.current_indent)
@@ -259,7 +276,8 @@ class HelpFormatter(click.HelpFormatter):
         return max(lengths_under_limit, default=0)
 
     def write_dl(
-        self, rows: Iterable[Definition],
+        self,
+        rows: Iterable[Definition],
         col_max: Optional[int] = None,  # default changed to None wrt parent class
         col_spacing: Optional[int] = None,  # default changed to None wrt parent class
         col1_width: Optional[int] = None,
@@ -314,7 +332,8 @@ class HelpFormatter(click.HelpFormatter):
             self.write_tabular_dl(rows, col1_width, col_spacing, col2_width)
 
     def _get_row_sep_for(
-        self, text_rows: Sequence[Sequence[str]],
+        self,
+        text_rows: Sequence[Sequence[str]],
         col_widths: Sequence[int],
         col_spacing: int,
     ) -> Optional[str]:
@@ -322,16 +341,20 @@ class HelpFormatter(click.HelpFormatter):
             return self.row_sep
 
         from .sep import RowSepPolicy
+
         if isinstance(self.row_sep, RowSepPolicy):
             return self.row_sep(text_rows, col_widths, col_spacing)
         elif callable(self.row_sep):  # RowSepPolicy is callable; keep this for last
             return self.row_sep(self.available_width)
         else:
-            raise TypeError('row_sep')
+            raise TypeError("row_sep")
 
     def write_tabular_dl(
-        self, rows: Sequence[Definition],
-        col1_width: int, col_spacing: int, col2_width: int,
+        self,
+        rows: Sequence[Definition],
+        col1_width: int,
+        col_spacing: int,
+        col2_width: int,
     ) -> None:
         """Format a definition list as a 2-column "pseudo-table". If the first
         column of a row exceeds ``col1_width``, the 2nd column is written on
@@ -390,7 +413,7 @@ class HelpFormatter(click.HelpFormatter):
         col2_styler = self.theme.col2
 
         for names, help in iter_defs(dl, help_max_width):
-            self.write(current_indentation + col1_styler(names) + '\n')
+            self.write(current_indentation + col1_styler(names) + "\n")
             if help:
                 self.current_indent += help_extra_indent
                 self.write_text(help, col2_styler)
@@ -403,17 +426,20 @@ class HelpFormatter(click.HelpFormatter):
 
     def __repr__(self) -> str:
         return make_repr(
-            self, width=self.width, indent_increment=self.indent_increment,
-            col1_max_width=self.col1_max_width, col_spacing=self.col_spacing
+            self,
+            width=self.width,
+            indent_increment=self.indent_increment,
+            col1_max_width=self.col1_max_width,
+            col_spacing=self.col_spacing,
         )
 
 
 def iter_defs(rows: Iterable[Definition], col2_width: int) -> Iterator[Tuple[str, str]]:
     for row in rows:
         if len(row) == 1:
-            yield row[0], ''
+            yield row[0], ""
         elif len(row) == 2:
             second = row[1](col2_width) if callable(row[1]) else row[1]
             yield row[0], second
         else:
-            raise ValueError(f'invalid row length: {len(row)}')
+            raise ValueError(f"invalid row length: {len(row)}")

@@ -1,6 +1,7 @@
 """
 This modules contains classes for creating conditional constraints.
 """
+
 from typing import Optional, Sequence, Union
 
 from click import Context, Parameter

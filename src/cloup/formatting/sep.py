@@ -5,11 +5,12 @@ add an extra separator/spacing between the rows of a definition list (only for
 tabular layout). In the future, it may be expanded with something analogous for
 help sections.
 """
+
 import abc
 from itertools import zip_longest
 from typing import Optional, Protocol, Sequence, Union
 
-SepType = Union[str, 'SepGenerator']
+SepType = Union[str, "SepGenerator"]
 
 
 class SepGenerator(Protocol):
@@ -20,8 +21,7 @@ class SepGenerator(Protocol):
     Note: the length of the returned separator may differ from ``width``.
     """
 
-    def __call__(self, width: int) -> str:
-        ...
+    def __call__(self, width: int) -> str: ...
 
 
 class RowSepPolicy(metaclass=abc.ABCMeta):
@@ -44,7 +44,8 @@ class RowSepPolicy(metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def __call__(
-        self, rows: Sequence[Sequence[str]],
+        self,
+        rows: Sequence[Sequence[str]],
         col_widths: Sequence[int],
         col_spacing: int,
     ) -> Optional[str]:
@@ -56,7 +57,8 @@ class RowSepCondition(Protocol):
     """Determines when a definition list should use a row separator."""
 
     def __call__(
-        self, rows: Sequence[Sequence[str]],
+        self,
+        rows: Sequence[Sequence[str]],
         col_widths: Sequence[int],
         col_spacing: int,
     ) -> bool:
@@ -87,12 +89,12 @@ class RowSepIf(RowSepPolicy):
         The empty string corresponds to an empty line separator.
     """
 
-    def __init__(self, condition: RowSepCondition,
-                 sep: Union[str, SepGenerator] = ''):
-        if isinstance(sep, str) and sep.endswith('\n'):
+    def __init__(self, condition: RowSepCondition, sep: Union[str, SepGenerator] = ""):
+        if isinstance(sep, str) and sep.endswith("\n"):
             raise ValueError(
                 "sep must not end with '\\n'. The formatter writes  a '\\n' after it; "
-                "no other newline is allowed.")
+                "no other newline is allowed."
+            )
         self.condition = condition
         self.sep = sep
 
@@ -110,6 +112,7 @@ class RowSepIf(RowSepPolicy):
 # ==========================================
 #  Conditions & related utils
 
+
 def get_total_width(col_widths: Sequence[int], col_spacing: int) -> int:
     """Return the total width of a definition list (or, more generally, a table).
     Useful when implementing a RowSepStrategy."""
@@ -121,14 +124,16 @@ def count_multiline_rows(rows: Sequence[Sequence[str]], col_widths: Sequence[int
     # if len(row) != len(col_widths). An explicit check is not worth it since
     # this should never happen.
     return sum(
-        any(len(col_text) > col_width
-            for col_text, col_width in zip_longest(row, col_widths))
+        any(
+            len(col_text) > col_width
+            for col_text, col_width in zip_longest(row, col_widths)
+        )
         for row in rows
     )
 
 
 def multiline_rows_are_at_least(
-    count_or_percentage: Union[int, float]
+    count_or_percentage: Union[int, float],
 ) -> RowSepCondition:
     """
     Return a ``RowSepStrategy`` that returns a row separator between all rows
@@ -142,7 +147,7 @@ def multiline_rows_are_at_least(
         between 0 and 1 (0 and 1 excluded).
     """
     if count_or_percentage <= 0:
-        raise ValueError('count_or_percentage should be > 0')
+        raise ValueError("count_or_percentage should be > 0")
 
     if isinstance(count_or_percentage, int):
         count_threshold = count_or_percentage
@@ -160,7 +165,8 @@ def multiline_rows_are_at_least(
         if percent_threshold > 1.0:
             raise ValueError(
                 "count_or_percentage must be either an integer or a float in the "
-                f"interval ]0, 1[. You passed a float >= 1.0 ({percent_threshold}).")
+                f"interval ]0, 1[. You passed a float >= 1.0 ({percent_threshold})."
+            )
 
         def condition(
             rows: Sequence[Sequence[str]],
@@ -171,7 +177,7 @@ def multiline_rows_are_at_least(
             percent_multiline = num_multiline / len(rows)
             return percent_multiline >= percent_threshold
     else:
-        raise TypeError('count_or_percentage must be an int or a float')
+        raise TypeError("count_or_percentage must be an int or a float")
 
     return condition
 
@@ -189,10 +195,10 @@ class Hline(SepGenerator):
     """
 
     # Workaround: PyCharm auto-completion doesn't work without these declarations
-    solid: 'Hline'
-    dashed: 'Hline'
-    densely_dashed: 'Hline'
-    dotted: 'Hline'
+    solid: "Hline"
+    dashed: "Hline"
+    densely_dashed: "Hline"
+    dotted: "Hline"
 
     def __init__(self, pattern: str):
         self.pattern = pattern
@@ -208,10 +214,10 @@ class Hline(SepGenerator):
 Hline.solid = Hline("─")
 """Return a line like ``────────``."""
 
-Hline.dashed = Hline('-')
+Hline.dashed = Hline("-")
 """Return a line like ``--------``."""
 
-Hline.densely_dashed = Hline('╌')
+Hline.densely_dashed = Hline("╌")
 """Return a line like ``╌╌╌╌╌╌╌╌``."""
 
 Hline.dotted = Hline("┄")

@@ -29,7 +29,7 @@ def test_help_theme_default_themes():
 
 
 def test_style():
-    text = 'hi there'
+    text = "hi there"
     kwargs = dict(fg=Color.green, bold=True, blink=True)
     assert Style(**kwargs)(text) == click.style(text, **kwargs)
 
@@ -40,8 +40,8 @@ def test_unsupported_style_args_are_ignored_in_click_7():
 
 def test_color_class():
     # Check values of some attributes
-    assert Color.red == 'red'
-    assert Color.bright_blue == 'bright_blue'
+    assert Color.red == "red"
+    assert Color.bright_blue == "bright_blue"
 
     # Check it's not instantiable
     with pytest.raises(Exception, match="it's not instantiable"):
@@ -50,11 +50,11 @@ def test_color_class():
     # Check only __dunder__ fields are settable
     Color.__annotations__ = "whatever"
     with pytest.raises(Exception, match="you can't set attributes on this class"):
-        Color.red = 'blue'
+        Color.red = "blue"
 
     # Test __contains__
-    assert 'red' in Color
-    assert 'pippo' not in Color
+    assert "red" in Color
+    assert "pippo" not in Color
 
     # Test Color.asdict()
     d = Color.asdict()

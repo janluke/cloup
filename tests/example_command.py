@@ -12,52 +12,59 @@ def make_example_command(
     tabular_help: bool = True,
 ) -> Command:
     @cloup.command(
-        'clouptest',
+        "clouptest",
         align_option_groups=align_option_groups,
         formatter_settings=HelpFormatter.settings(
             width=80,
             col2_min_width=30 if tabular_help else 80,
         ),
-        epilog='Made with love by Gianluca.'
+        epilog="Made with love by Gianluca.",
     )
     @argument("arg_one", help="This is the description of argument #1.")
     @argument("arg_two", help="This is the description of argument #2.", required=False)
     @argument("arg_three", required=False)
     @option_group(
-        'Option group A',
-        option('--one', help='The one thing you need to run this command.'),
-        option('--two', help='This is long description that should be wrapped into '
-                             'multiple lines so that the entire text stays inside '
-                             'the allowed width.'),
-        option('--three', help='The 3rd option of group A.'),
+        "Option group A",
+        option("--one", help="The one thing you need to run this command."),
+        option(
+            "--two",
+            help="This is long description that should be wrapped into "
+            "multiple lines so that the entire text stays inside "
+            "the allowed width.",
+        ),
+        option("--three", help="The 3rd option of group A."),
         help="This is a very useful description of group A. This is a rarely used "
-             "feature but, as the others, needs to be tested. I'm making this "
-             "unnecessarily long in order to test wrapping.",
-        constraint=AcceptAtMost(2)
+        "feature but, as the others, needs to be tested. I'm making this "
+        "unnecessarily long in order to test wrapping.",
+        constraint=AcceptAtMost(2),
     )
     @option_group(
-        'Option group B',
-        'Help as positional argument.',
-        option('--four / --no-four', help='The 1st option of group B.'),
-        option('--five', help='The 2nd option of group B.', hidden=True),  # hidden option
-        option('--six', help='The 3rd option of group B.'),
-        constraint=If('three', then=RequireAtLeast(1))
+        "Option group B",
+        "Help as positional argument.",
+        option("--four / --no-four", help="The 1st option of group B."),
+        option("--five", help="The 2nd option of group B.", hidden=True),  # hidden option
+        option("--six", help="The 3rd option of group B."),
+        constraint=If("three", then=RequireAtLeast(1)),
     )
-    @option('--seven', help='First uncategorized option.',
-            type=click.Choice('yes no ask'.split()))
-    @option('--height', help='Second uncategorized option.')
-    @option('--nine', help='Third uncategorized option.', hidden=True)
+    @option(
+        "--seven",
+        help="First uncategorized option.",
+        type=click.Choice("yes no ask".split()),
+    )
+    @option("--height", help="Second uncategorized option.")
+    @option("--nine", help="Third uncategorized option.", hidden=True)
     def cmd(**kwargs):
         """A CLI that does nothing."""
         print(kwargs)
 
     if tabular_help:
-        expected_help = (_TABULAR_ALIGNED_HELP if align_option_groups
-                         else _TABULAR_NON_ALIGNED_HELP)
+        expected_help = (
+            _TABULAR_ALIGNED_HELP if align_option_groups else _TABULAR_NON_ALIGNED_HELP
+        )
     else:
         expected_help = _LINEAR_HELP
 
-    cmd.expected_help = expected_help   # type: ignore
+    cmd.expected_help = expected_help  # type: ignore
     return cast(Command, cmd)
 
 
@@ -176,7 +183,7 @@ Made with love by Gianluca.
 """.strip()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     make_example_command(align_option_groups=False, tabular_help=True)(
-        ['--help'], prog_name='clouptest'
+        ["--help"], prog_name="clouptest"
     )

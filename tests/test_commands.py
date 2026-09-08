@@ -9,11 +9,11 @@ from tests.util import new_dummy_func
 
 
 def test_command_handling_of_unknown_argument():
-    with pytest.raises(TypeError, match='Hint: you set `cls='):
+    with pytest.raises(TypeError, match="Hint: you set `cls="):
         cloup.command(cls=click.Command, align_option_groups=True)(new_dummy_func())
-    with pytest.raises(TypeError, match='nonexisting') as info:
+    with pytest.raises(TypeError, match="nonexisting") as info:
         cloup.command(nonexisting=True)(new_dummy_func())
-    assert re.search(str(info.value), 'Hint') is None
+    assert re.search(str(info.value), "Hint") is None
 
 
 def test_group_raises_if_cls_is_not_subclass_of_click_Group():
@@ -25,16 +25,16 @@ def test_group_raises_if_cls_is_not_subclass_of_click_Group():
 
 
 def test_group_handling_of_unknown_argument():
-    with pytest.raises(TypeError, match='Hint'):
+    with pytest.raises(TypeError, match="Hint"):
         cloup.group(cls=click.Group, align_sections=True)(new_dummy_func())
     with pytest.raises(TypeError) as info:
         cloup.group(unexisting_arg=True)(new_dummy_func())
-    assert re.search(str(info.value), 'Hint') is None
+    assert re.search(str(info.value), "Hint") is None
 
 
 def test_command_works_with_no_parameters(runner):
-    cmd = cloup.Command(name='cmd', callback=new_dummy_func())
-    res = runner.invoke(cmd, '--help')
+    cmd = cloup.Command(name="cmd", callback=new_dummy_func())
+    res = runner.invoke(cmd, "--help")
     assert res.output == reindent("""
         Usage: cmd [OPTIONS]
 
@@ -44,8 +44,8 @@ def test_command_works_with_no_parameters(runner):
 
 
 def test_group_works_with_no_params_and_subcommands(runner):
-    cmd = cloup.Group(name='cmd')
-    res = runner.invoke(cmd, '--help')
+    cmd = cloup.Group(name="cmd")
+    res = runner.invoke(cmd, "--help")
     assert res.output == reindent("""
         Usage: cmd [OPTIONS] COMMAND [ARGS]...
 
@@ -54,56 +54,79 @@ def test_group_works_with_no_params_and_subcommands(runner):
     """)
 
 
-@pytest.mark.parametrize('decorator, usage_args', [
-    (cloup.command, '[OPTIONS]'),
-    (cloup.group, '[OPTIONS] COMMAND [ARGS]...'),
-])
-@pytest.mark.parametrize('help_text, expected_help', [
-    (None, ''),
-    ('', ''),
-    ('Do a thing.', 'Do a thing.'),
-    ('First paragraph.\n\nSecond paragraph.', 'First paragraph.\n\n  Second paragraph.'),
-    ('\n    Do a thing.\n    On another line.', 'Do a thing. On another line.'),
-    ('Visible text.\fHidden text.', 'Visible text.'),
-])
-@pytest.mark.parametrize('deprecated, expected_label', [
-    (False, ''),
-    (True, '(DEPRECATED)'),
-    ('', ''),
-    ('use `newcmd` instead', '(DEPRECATED: use `newcmd` instead)'),
-])
+@pytest.mark.parametrize(
+    "decorator, usage_args",
+    [
+        (cloup.command, "[OPTIONS]"),
+        (cloup.group, "[OPTIONS] COMMAND [ARGS]..."),
+    ],
+)
+@pytest.mark.parametrize(
+    "help_text, expected_help",
+    [
+        (None, ""),
+        ("", ""),
+        ("Do a thing.", "Do a thing."),
+        (
+            "First paragraph.\n\nSecond paragraph.",
+            "First paragraph.\n\n  Second paragraph.",
+        ),
+        ("\n    Do a thing.\n    On another line.", "Do a thing. On another line."),
+        ("Visible text.\fHidden text.", "Visible text."),
+    ],
+)
+@pytest.mark.parametrize(
+    "deprecated, expected_label",
+    [
+        (False, ""),
+        (True, "(DEPRECATED)"),
+        ("", ""),
+        ("use `newcmd` instead", "(DEPRECATED: use `newcmd` instead)"),
+    ],
+)
 def test_deprecated_command_help(
-    runner, decorator, usage_args, help_text, expected_help, deprecated, expected_label,
+    runner,
+    decorator,
+    usage_args,
+    help_text,
+    expected_help,
+    deprecated,
+    expected_label,
 ):
-    cmd = decorator(name='example', help=help_text, deprecated=deprecated)(
-        new_dummy_func())
+    cmd = decorator(name="example", help=help_text, deprecated=deprecated)(
+        new_dummy_func()
+    )
 
-    result = runner.invoke(cmd, ['--help'], terminal_width=80)
+    result = runner.invoke(cmd, ["--help"], terminal_width=80)
 
     assert result.exit_code == 0
-    body = ' '.join(part for part in (expected_help, expected_label) if part)
-    expected_output = f'Usage: example {usage_args}\n'
+    body = " ".join(part for part in (expected_help, expected_label) if part)
+    expected_output = f"Usage: example {usage_args}\n"
     if body:
-        expected_output += f'\n  {body}\n'
-    expected_output += '\nOptions:\n  --help  Show this message and exit.\n'
+        expected_output += f"\n  {body}\n"
+    expected_output += "\nOptions:\n  --help  Show this message and exit.\n"
     assert result.output == expected_output
 
 
-@pytest.mark.parametrize('decorator', [cloup.command, cloup.group])
+@pytest.mark.parametrize("decorator", [cloup.command, cloup.group])
 def test_deprecated_command_help_keeps_theme(runner, decorator):
     @decorator(
-        deprecated='use `newcmd` instead',
-        formatter_settings={'theme': cloup.HelpTheme(
-            command_help=cloup.Style(fg='yellow'),
-        )},
+        deprecated="use `newcmd` instead",
+        formatter_settings={
+            "theme": cloup.HelpTheme(
+                command_help=cloup.Style(fg="yellow"),
+            )
+        },
     )
     def example():
         """Do a thing."""
 
-    result = runner.invoke(example, ['--help'], color=True)
+    result = runner.invoke(example, ["--help"], color=True)
     assert result.exit_code == 0
-    assert click.style('Do a thing. (DEPRECATED: use `newcmd` instead)', fg='yellow') \
+    assert (
+        click.style("Do a thing. (DEPRECATED: use `newcmd` instead)", fg="yellow")
         in result.output
+    )
 
 
 class TestDidYouMean:
@@ -111,18 +134,15 @@ class TestDidYouMean:
     @pytest.fixture(scope="class")
     def cmd():
         cmd = cloup.Group(name="cmd")
-        subcommands = [
-            ('install', ['ins']),
-            ('remove', ['rm']),
-            ('clear', [])
-        ]
+        subcommands = [("install", ["ins"]), ("remove", ["rm"]), ("clear", [])]
         for name, aliases in subcommands:
             cmd.add_command(
-                cloup.Command(name=name, aliases=aliases, callback=new_dummy_func()))
+                cloup.Command(name=name, aliases=aliases, callback=new_dummy_func())
+            )
         return cmd
 
     def test_with_no_matches(self, runner, cmd):
-        res = runner.invoke(cmd, 'asdfdsgdfgdf')
+        res = runner.invoke(cmd, "asdfdsgdfgdf")
         assert res.output == reindent("""
             Usage: cmd [OPTIONS] COMMAND [ARGS]...
             Try 'cmd --help' for help.
@@ -131,7 +151,7 @@ class TestDidYouMean:
         """)
 
     def test_with_one_match(self, runner, cmd):
-        res = runner.invoke(cmd, 'clearr')
+        res = runner.invoke(cmd, "clearr")
         assert res.output == reindent("""
             Usage: cmd [OPTIONS] COMMAND [ARGS]...
             Try 'cmd --help' for help.
@@ -140,7 +160,7 @@ class TestDidYouMean:
         """)
 
     def test_with_multiple_matches(self, runner, cmd):
-        res = runner.invoke(cmd, 'inst')
+        res = runner.invoke(cmd, "inst")
         assert res.output == reindent("""
             Usage: cmd [OPTIONS] COMMAND [ARGS]...
             Try 'cmd --help' for help.
@@ -154,6 +174,7 @@ class TestDidYouMean:
 @pytest.mark.parametrize("decorator", [cloup.command, cloup.group])
 def test_error_is_raised_when_command_decorators_are_used_without_parenthesis(decorator):
     with pytest.raises(Exception, match="parenthesis"):
+
         @decorator
         def cmd():
             pass
@@ -165,11 +186,13 @@ def test_error_is_raised_when_group_subcommand_decorators_are_used_without_paren
         pass
 
     with pytest.raises(Exception, match="parenthesis"):
+
         @root.group
         def subgroup():
             pass
 
     with pytest.raises(Exception, match="parenthesis"):
+
         @root.command
         def subcommand():
             pass
@@ -177,7 +200,6 @@ def test_error_is_raised_when_group_subcommand_decorators_are_used_without_paren
 
 def test_group_command_class_is_used_to_create_subcommands(runner):
     class CustomCommand(cloup.Command):
-
         def __init__(self, *args, **kwargs):
             kwargs.setdefault("context_settings", {"help_option_names": ("--help", "-h")})
             super().__init__(*args, **kwargs)

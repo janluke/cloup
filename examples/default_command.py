@@ -4,6 +4,7 @@ This example:
 - was written in response to a StackOverflow question, not because I think it's
   a good idea to have groups with default command; I tend to not recommend them.
 """
+
 import click
 
 import cloup
@@ -21,7 +22,7 @@ class GroupWithDefaultCommand(cloup.Group, DefaultGroup):
         return super().format_subcommand_name(ctx, name, cmd)
 
 
-@cloup.group(cls=GroupWithDefaultCommand, default='alice')
+@cloup.group(cls=GroupWithDefaultCommand, default="alice")
 def cli():
     pass
 
@@ -38,5 +39,5 @@ def bob(**kwargs):
     print("Called bob with", kwargs)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     cli()

@@ -1,6 +1,7 @@
 """
 Useful functions used to implement constraints and predicates.
 """
+
 from typing import Any, Dict, Iterable, List, Sequence
 
 from click import Argument, Context, Option, Parameter
@@ -33,9 +34,9 @@ def get_param_name(param: Parameter) -> str:
     """
     if param.name is None:
         raise TypeError(
-            '`param.name` is required to be a string in this context.\n'
-            'Hint: `param.name` is None only when `parameter.expose_value` is False, '
-            'so you are probably using this option incorrectly.'
+            "`param.name` is required to be a string in this context.\n"
+            "Hint: `param.name` is None only when `parameter.expose_value` is False, "
+            "so you are probably using this option incorrectly."
         )
     return param.name
 
@@ -45,8 +46,7 @@ def get_params_whose_value_is_set(
 ) -> List[Parameter]:
     """Filter ``params``, returning only the parameters that have a value.
     Boolean flags are considered "set" if their value is ``True``."""
-    return [p for p in params
-            if param_value_is_set(p, values[get_param_name(p)])]
+    return [p for p in params if param_value_is_set(p, values[get_param_name(p)])]
 
 
 def get_required_params(params: Iterable[Parameter]) -> List[Parameter]:
@@ -54,21 +54,21 @@ def get_required_params(params: Iterable[Parameter]) -> List[Parameter]:
 
 
 def get_param_label(param: Parameter) -> str:
-    if param.param_type_name == 'argument':
+    if param.param_type_name == "argument":
         return param.human_readable_name
     return sorted(param.opts, key=len)[-1]
 
 
-def join_param_labels(params: Iterable[Parameter], sep: str = ', ') -> str:
+def join_param_labels(params: Iterable[Parameter], sep: str = ", ") -> str:
     return sep.join(get_param_label(p) for p in params)
 
 
-def join_with_and(strings: Sequence[str], sep: str = ', ') -> str:
+def join_with_and(strings: Sequence[str], sep: str = ", ") -> str:
     if not strings:
-        return ''
+        return ""
     if len(strings) == 1:
         return strings[0]
-    return sep.join(strings[:-1]) + ' and ' + strings[-1]
+    return sep.join(strings[:-1]) + " and " + strings[-1]
 
 
 def format_param(param: Parameter) -> str:
@@ -85,14 +85,13 @@ def format_param(param: Parameter) -> str:
     short_opts = [opt for opt in opts if not opt.startswith("--")]
     main_opt = long_opts[0]
     aliases = ", ".join(long_opts[1:] + short_opts)
-    return f'{main_opt} ({aliases})'
+    return f"{main_opt} ({aliases})"
 
 
 def format_param_list(param_list: Iterable[Parameter], indent: int = 2) -> str:
     lines = map(format_param, param_list)
-    indentation = ' ' * indent
-    return ''.join(indentation + line + '\n'
-                   for line in lines)
+    indentation = " " * indent
+    return "".join(indentation + line + "\n" for line in lines)
 
 
 def param_label_by_name(ctx: Any, name: str) -> str:

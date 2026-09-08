@@ -26,9 +26,7 @@ from ._core import (
     require_any,
     require_one,
 )
-from ._support import (
-    BoundConstraintSpec, ConstraintMixin, constrained_params, constraint
-)
+from ._support import BoundConstraintSpec, ConstraintMixin, constrained_params, constraint
 from .conditions import AllSet, AnySet, Equal, IsSet, Not
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 

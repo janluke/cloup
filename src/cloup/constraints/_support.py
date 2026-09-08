@@ -1,6 +1,15 @@
 from typing import (
-    Any, Callable, Dict, Iterable, List, NamedTuple, Optional, Sequence,
-    TYPE_CHECKING, Tuple, Union,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    List,
+    NamedTuple,
+    Optional,
+    Sequence,
+    TYPE_CHECKING,
+    Tuple,
+    Union,
 )
 
 import click
@@ -17,20 +26,18 @@ if TYPE_CHECKING:
 class BoundConstraintSpec(NamedTuple):
     """A NamedTuple storing a ``Constraint`` and the **names of the parameters**
     it has to check."""
+
     constraint: Constraint
     param_names: Union[Sequence[str]]
 
-    def resolve_params(self, cmd: 'ConstraintMixin') -> 'BoundConstraint':
-        return BoundConstraint(
-            self.constraint,
-            cmd.get_params_by_name(self.param_names)
-        )
+    def resolve_params(self, cmd: "ConstraintMixin") -> "BoundConstraint":
+        return BoundConstraint(self.constraint, cmd.get_params_by_name(self.param_names))
 
 
 def _constraint_memo(
-    f: Any, constr: Union[BoundConstraintSpec, 'BoundConstraint']
+    f: Any, constr: Union[BoundConstraintSpec, "BoundConstraint"]
 ) -> None:
-    if not hasattr(f, '__cloup_constraints__'):
+    if not hasattr(f, "__cloup_constraints__"):
         f.__cloup_constraints__ = []
     f.__cloup_constraints__.append(constr)
 
@@ -114,7 +121,7 @@ class BoundConstraint(NamedTuple):
         constr_help = self.constraint.help(ctx)
         if not constr_help:
             return None
-        param_list = '{%s}' % join_param_labels(self.params)
+        param_list = "{%s}" % join_param_labels(self.params)
         return param_list, constr_help
 
 
@@ -122,7 +129,8 @@ class ConstraintMixin:
     """Provides support for constraints."""
 
     def __init__(
-        self, *args: Any,
+        self,
+        *args: Any,
         constraints: Sequence[Union[BoundConstraintSpec, BoundConstraint]] = (),
         show_constraints: Optional[bool] = None,
         **kwargs: Any,
@@ -148,12 +156,13 @@ class ConstraintMixin:
 
         # This allows constraints to efficiently access parameters by name
         self._params_by_name: Dict[str, click.Parameter] = {
-            param.name: param for param in self.params  # type: ignore
+            param.name: param
+            for param in self.params  # type: ignore
         }
 
         # Collect constraints applied to option groups and bind them to the
         # corresponding Option instances
-        option_groups: Tuple[OptionGroup, ...] = getattr(self, 'option_groups', tuple())
+        option_groups: Tuple[OptionGroup, ...] = getattr(self, "option_groups", tuple())
         self.optgroup_constraints = tuple(
             BoundConstraint(grp.constraint, grp.options)
             for grp in option_groups
@@ -164,7 +173,8 @@ class ConstraintMixin:
         # Bind constraints defined via @constraint to click.Parameter instances
         self.param_constraints: Tuple[BoundConstraint, ...] = tuple(
             (
-                constr if isinstance(constr, BoundConstraint)
+                constr
+                if isinstance(constr, BoundConstraint)
                 else constr.resolve_params(self)
             )
             for constr in constraints
@@ -208,7 +218,7 @@ class ConstraintMixin:
         records_gen = (constr.get_help_record(ctx) for constr in self.param_constraints)
         records = [rec for rec in records_gen if rec is not None]
         if records:
-            with formatter.section('Constraints'):
+            with formatter.section("Constraints"):
                 formatter.write_dl(records)
 
     def must_show_constraints(self, ctx: click.Context) -> bool:
@@ -223,5 +233,4 @@ class ConstraintMixin:
 def ensure_constraints_support(command: click.Command) -> ConstraintMixin:
     if isinstance(command, ConstraintMixin):
         return command
-    raise TypeError(
-        'a Command must inherits from ConstraintMixin to support constraints')
+    raise TypeError("a Command must inherits from ConstraintMixin to support constraints")

@@ -1,9 +1,19 @@
 """
 Implements the "option groups" feature.
 """
+
 from collections import defaultdict
 from typing import (
-    Any, Callable, Dict, Iterable, Iterator, List, Optional, Sequence, Tuple, overload,
+    Any,
+    Callable,
+    Dict,
+    Iterable,
+    Iterator,
+    List,
+    Optional,
+    Sequence,
+    Tuple,
+    overload,
 )
 
 import click
@@ -18,10 +28,13 @@ from cloup.typing import Decorator, F
 
 
 class OptionGroup:
-    def __init__(self, title: str,
-                 help: Optional[str] = None,
-                 constraint: Optional[Constraint] = None,
-                 hidden: bool = False):
+    def __init__(
+        self,
+        title: str,
+        help: Optional[str] = None,
+        constraint: Optional[Constraint] = None,
+        hidden: bool = False,
+    ):
         """Contains the information of an option group and identifies it.
         Note that, as far as the clients of this library are concerned, an
         ``OptionGroups`` acts as a "marker" for options, not as a container for
@@ -33,7 +46,7 @@ class OptionGroup:
             The ``hidden`` parameter.
         """
         if not title:
-            raise ValueError('name is a mandatory argument')  # pragma: no cover
+            raise ValueError("name is a mandatory argument")  # pragma: no cover
         self.title = title
         self.help = help
         self._options: Sequence[click.Option] = []
@@ -57,7 +70,9 @@ class OptionGroup:
         if self.hidden:
             return []
         return [
-            opt.get_help_record(ctx) for opt in self if not opt.hidden  # type: ignore
+            opt.get_help_record(ctx)  # type: ignore[misc]
+            for opt in self
+            if not opt.hidden
         ]  # get_help_record() should return None only if opt.hidden
 
     def option(self, *param_decls: str, **attrs: Any) -> Callable[[F], F]:
@@ -77,16 +92,15 @@ class OptionGroup:
         return make_repr(self, self.title, help=self.help, options=self.options)
 
     def __str__(self) -> str:
-        return make_repr(
-            self, self.title, options=[opt.name for opt in self.options])
+        return make_repr(self, self.title, options=[opt.name for opt in self.options])
 
 
 def has_option_group(param: click.Parameter) -> bool:
-    return getattr(param, 'group', None) is not None
+    return getattr(param, "group", None) is not None
 
 
 def get_option_group_of(param: click.Option) -> Optional[OptionGroup]:
-    return getattr(param, 'group', None)
+    return getattr(param, "group", None)
 
 
 # noinspection PyMethodMayBeStatic
@@ -133,7 +147,7 @@ class OptionGroupMixin:
         super().__init__(*args, **kwargs)
 
         self.align_option_groups = align_option_groups
-        params = kwargs.get('params') or []
+        params = kwargs.get("params") or []
         arguments, option_groups, ungrouped_options = self._group_params(params)
 
         self.arguments = arguments
@@ -151,7 +165,7 @@ class OptionGroupMixin:
 
     @staticmethod
     def _group_params(
-        params: List[Parameter]
+        params: List[Parameter],
     ) -> Tuple[List[click.Argument], List[OptionGroup], List[Option]]:
 
         options_by_group: Dict[OptionGroup, List[click.Option]] = defaultdict(list)
@@ -214,7 +228,7 @@ class OptionGroupMixin:
             heading=group.title,
             definitions=group.get_help_records(ctx),
             help=group.help,
-            constraint=group.constraint.help(ctx) if group.constraint else None
+            constraint=group.constraint.help(ctx) if group.constraint else None,
         )
 
     def must_align_option_groups(
@@ -228,7 +242,7 @@ class OptionGroupMixin:
         """
         return first_bool(
             self.align_option_groups,
-            getattr(ctx, 'align_option_groups', None),
+            getattr(ctx, "align_option_groups", None),
             default,
         )
 
@@ -242,13 +256,12 @@ class OptionGroupMixin:
         .. versionadded:: 0.8.0
         """
         default_group = OptionGroup(
-            "Options" if is_the_only_visible_option_group else "Other options")
+            "Options" if is_the_only_visible_option_group else "Other options"
+        )
         default_group.options = self.get_ungrouped_options(ctx)
         return default_group
 
-    def format_params(
-        self, ctx: click.Context, formatter: click.HelpFormatter
-    ) -> None:
+    def format_params(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
         formatter = ensure_is_cloup_formatter(formatter)
 
         visible_sections = []
@@ -269,7 +282,8 @@ class OptionGroupMixin:
         )
         if not default_group.hidden:
             option_group_sections.append(
-                self.make_option_group_help_section(default_group, ctx))
+                self.make_option_group_help_section(default_group, ctx)
+            )
 
         visible_sections += option_group_sections
 
@@ -286,8 +300,7 @@ def option_group(
     *options: Decorator,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> Callable[[F], F]:
-    ...
+) -> Callable[[F], F]: ...
 
 
 @overload
@@ -297,8 +310,7 @@ def option_group(
     help: Optional[str] = None,
     constraint: Optional[Constraint] = None,
     hidden: bool = False,
-) -> Callable[[F], F]:
-    ...
+) -> Callable[[F], F]: ...
 
 
 # noinspection PyIncorrectDocstring
@@ -353,16 +365,16 @@ def _option_group(
 ) -> Callable[[F], F]:
     if not isinstance(title, str):
         raise TypeError(
-            'the first argument of `@option_group` must be its title, a string; '
-            'you probably forgot it'
+            "the first argument of `@option_group` must be its title, a string; "
+            "you probably forgot it"
         )
 
     if not options:
-        raise ValueError('you must provide at least one option')
+        raise ValueError("you must provide at least one option")
 
     def decorator(f: F) -> F:
         opt_group = OptionGroup(title, help=help, constraint=constraint, hidden=hidden)
-        if not hasattr(f, '__click_params__'):
+        if not hasattr(f, "__click_params__"):
             f.__click_params__ = []  # type: ignore
         cli_params = f.__click_params__  # type: ignore
         for add_option in reversed(options):
@@ -372,13 +384,14 @@ def _option_group(
             for new_option in added_options:
                 if not isinstance(new_option, Option):
                     raise TypeError(
-                        "only parameter of type `Option` can be added to option groups")
+                        "only parameter of type `Option` can be added to option groups"
+                    )
                 existing_group = get_option_group_of(new_option)
                 if existing_group is not None:
                     raise ValueError(
                         f'Option "{new_option}" was first assigned to group '
                         f'"{existing_group}" and then passed as argument to '
-                        f'`@option_group({title!r}, ...)`'
+                        f"`@option_group({title!r}, ...)`"
                     )
                 new_option.group = opt_group  # type: ignore
                 if hidden:
