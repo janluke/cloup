@@ -200,7 +200,7 @@ tasks:
       - python scripts/remove.py build dist .eggs docs/_build docs/autoapi htmlcov .pytest_cache .mypy_cache '.coverage*'
       - >-
         python scripts/remove.py --recursive
-        './cloup/**/__pycache__'
+        './src/cloup/**/__pycache__'
         './tests/**/__pycache__'
         './examples/**/__pycache__'
         './docs/**/__pycache__'

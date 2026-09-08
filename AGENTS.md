@@ -51,7 +51,7 @@ those documents.
 - Keep structural changes and repository-wide mechanical formatting in separate
   commits so history remains reviewable.
 - Use the `.yml` extension for YAML files in this repository.
-- Do not edit generated files such as `cloup/_version.py` or documentation build
+- Do not edit generated files such as `src/cloup/_version.py` or documentation build
   output.
 
 ## Reviews and Git operations
