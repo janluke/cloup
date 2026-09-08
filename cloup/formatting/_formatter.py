@@ -253,7 +253,7 @@ class HelpFormatter(click.HelpFormatter):
         return max(lengths_under_limit, default=0)
 
     def write_dl(
-        self, rows: Sequence[Definition],
+        self, rows: Iterable[Definition],
         col_max: Optional[int] = None,  # default changed to None wrt parent class
         col_spacing: Optional[int] = None,  # default changed to None wrt parent class
         col1_width: Optional[int] = None,
@@ -288,6 +288,8 @@ class HelpFormatter(click.HelpFormatter):
         # |<----------------------- width ------------------------>|
         # |                |<---------- available_width ---------->|
         # | current_indent | col1_width | col_spacing | col2_width |
+
+        rows = list(rows)
 
         col1_max_width = min(
             col_max or self.col1_max_width,

@@ -40,6 +40,16 @@ def test_write_dl_with_col1_max_width_equal_to_longest_col1_value():
     assert formatter.getvalue() == expected
 
 
+def test_write_dl_accepts_iterators():
+    expected = HelpFormatter(width=80)
+    expected.write_dl(ROWS)
+
+    actual = HelpFormatter(width=80)
+    actual.write_dl(iter(ROWS))
+
+    assert actual.getvalue() == expected.getvalue()
+
+
 def test_formatter_excludes_rows_exceeding_col1_max_width_from_col1_width_computation():
     formatter = HelpFormatter(width=80, col1_max_width=len('--short'))
     formatter.current_indent = 4
