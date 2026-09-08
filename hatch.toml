@@ -80,7 +80,7 @@ dependencies = [
 ]
 
 [envs.lint.scripts]
-check = "flake8 {args:cloup tests examples scripts/expand-hatch-envs.py}"
+check = "flake8 {args:cloup tests examples scripts/expand-hatch-envs.py hatch_build.py}"
 
 [envs.docs]
 locked = true

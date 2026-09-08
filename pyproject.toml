@@ -1,24 +1,74 @@
 [build-system]
 requires = [
-  "setuptools >= 80",
-  "setuptools-scm >= 8, < 10",
+  "hatchling",
+  "hatch-vcs",
 ]
-build-backend = "setuptools.build_meta"
+build-backend = "hatchling.build"
 
 [project]
 name = "cloup"
+description = "Adds features to Click: option groups, constraints, subcommand sections and help themes."
+authors = [
+  { name = "Gianluca Gippetto", email = "gianluca.gippetto@gmail.com" },
+]
+license = "BSD-3-Clause"
+license-files = ["LICENSE"]
+requires-python = ">=3.10"
+keywords = [
+  "CLI",
+  "click",
+  "argument groups",
+  "option groups",
+  "constraints",
+  "help colors",
+  "help themes",
+  "help styles",
+]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Natural Language :: English",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+]
+dependencies = [
+  "click >= 8.2.0, < 9.0",
+  'typing_extensions; python_version <= "3.10"',
+]
 dynamic = [
-  "authors",
-  "classifiers",
-  "dependencies",
-  "description",
-  "keywords",
-  "license",
   "readme",
-  "requires-python",
-  "urls",
   "version",
 ]
 
-[tool.setuptools_scm]
-version_file = "cloup/_version.py"
+[project.urls]
+Homepage = "https://github.com/janLuke/cloup"
+
+[tool.hatch.version]
+source = "vcs"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "cloup/_version.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["cloup"]
+
+[tool.hatch.metadata.hooks.custom]
+
+[tool.mypy]
+ignore_missing_imports = true
+
+[tool.coverage.report]
+exclude_lines = [
+  "pragma: no cover",
+  "raise NotImplementedError",
+  "\\.\\.\\.",
+  "if TYPE_CHECKING:",
+]
+
+[tool.coverage.run]
+parallel = true
+relative_files = true
+source = ["cloup"]
