@@ -27,7 +27,7 @@ from cloup.styling import HelpTheme, IStyle
 Definition = Tuple[str, Union[str, Callable[[int], str]]]
 
 
-def _format_deprecated_label(deprecated: Union[bool, str]) -> str:
+def _format_deprecation_label(deprecated: Union[bool, str]) -> str:
     """Return the parenthesized deprecation label shown in help text."""
     if isinstance(deprecated, str):
         return f"(DEPRECATED: {deprecated})"
@@ -192,8 +192,8 @@ class HelpFormatter(click.HelpFormatter):
         if help_text and click_version_ge_8_1:
             help_text = inspect.cleandoc(help_text).partition("\f")[0]
         if cmd.deprecated:
-            label = _format_deprecated_label(cmd.deprecated)
-            help_text = f"{help_text} {label}" if help_text else label
+            deprecation = _format_deprecation_label(cmd.deprecated)
+            help_text = f"{help_text} {deprecation}" if help_text else deprecation
         if help_text:
             self.write_paragraph()
             with self.indentation():
