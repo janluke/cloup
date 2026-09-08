@@ -13,6 +13,13 @@ jobs:
   checks:
     name: Checks
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - { script: lint:check, desc: "Check the code" }
+          - { script: docs:build, desc: "Build documentation" }
+          - { script: package:build, desc: "Build and validate distributions" }
+
     steps:
       - name: Checkout
         uses: actions/checkout@v6
@@ -25,14 +32,8 @@ jobs:
       - name: Install Hatch
         run: python -m pip install --upgrade hatch
 
-      - name: Check code
-        run: hatch run lint:check
-
-      - name: Build documentation
-        run: hatch run docs:build
-
-      - name: Build and validate distributions
-        run: hatch run package:build
+      - name: ${{ matrix.desc }}
+        run: hatch run ${{ matrix.script }}
 
   tests:
     name: Python ${{ matrix.python }}, click ${{ matrix.click }}
