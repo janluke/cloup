@@ -69,6 +69,7 @@ exclude_lines = [
 ]
 
 [tool.coverage.run]
+omit = ["cloup/_version.py"]
 parallel = true
 relative_files = true
 source = ["cloup"]
