@@ -41,7 +41,7 @@ dependencies = [
 report = [
   "- coverage combine",
   "coverage report -m",
-  "coverage html",
+  "coverage {args:html}",
 ]
 
 [envs.lint]
