@@ -16,7 +16,8 @@ jobs:
     strategy:
       matrix:
         include:
-          - { script: code:lint, desc: "Lint code with Ruff" }
+          - { script: code:lint, desc: "Lint files" }
+          - { script: code:format --check, desc: "Check formatting" }
           - { script: docs:build, desc: "Build documentation" }
           - { script: package:build, desc: "Build and validate distributions" }
 

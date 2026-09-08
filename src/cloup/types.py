@@ -1,6 +1,7 @@
 """
 Parameter types and "shortcuts" for creating commonly used types.
 """
+
 import pathlib
 from typing import Type, Any
 

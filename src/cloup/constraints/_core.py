@@ -1,13 +1,26 @@
 import abc
 from typing import (
-    Any, Callable, Optional, Sequence, TypeVar, Union, cast, overload,
+    Any,
+    Callable,
+    Optional,
+    Sequence,
+    TypeVar,
+    Union,
+    cast,
+    overload,
 )
 
 import click
 
 from cloup._util import (
-    FrozenSpace, check_arg, class_name,
-    first_bool, make_one_line_repr, make_repr, pluralize, reindent,
+    FrozenSpace,
+    check_arg,
+    class_name,
+    first_bool,
+    make_one_line_repr,
+    make_repr,
+    pluralize,
+    reindent,
 )
 from .common import (
     format_param_list,
@@ -20,8 +33,8 @@ from .common import (
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
 from ..typing import Decorator, F
 
-Op = TypeVar('Op', bound='Operator')
-HelpRephraser = Callable[[click.Context, 'Constraint'], str]
+Op = TypeVar("Op", bound="Operator")
+HelpRephraser = Callable[[click.Context, "Constraint"], str]
 ErrorRephraser = Callable[[ConstraintViolated], str]
 
 
@@ -45,25 +58,25 @@ class Constraint(abc.ABC):
             this method now a static method and takes a ``click.Context`` in input.
         """
         return first_bool(
-            getattr(ctx, 'check_constraints_consistency', True),
+            getattr(ctx, "check_constraints_consistency", True),
             True,
         )
 
     def __getattr__(self, attr: str) -> Any:
-        removed_attrs = ('toggle_consistency_checks', 'consistency_checks_toggled')
+        removed_attrs = ("toggle_consistency_checks", "consistency_checks_toggled")
         if attr in removed_attrs:
             raise AttributeError(
-                f'attribute `{attr}` was removed in v0.9. You can now enable/disable '
-                f'consistency checks using the `click.Context` parameter '
-                f'`check_constraints_consistency`. '
-                f'Pass it as part of your `context_settings`.'
+                f"attribute `{attr}` was removed in v0.9. You can now enable/disable "
+                f"consistency checks using the `click.Context` parameter "
+                f"`check_constraints_consistency`. "
+                f"Pass it as part of your `context_settings`."
             )
         else:
             raise AttributeError(attr)
 
     @abc.abstractmethod
     def help(self, ctx: click.Context) -> str:
-        """A description of the constraint. """
+        """A description of the constraint."""
 
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         """
@@ -106,16 +119,17 @@ class Constraint(abc.ABC):
     @overload
     def check(
         self, params: Sequence[click.Parameter], ctx: Optional[click.Context] = None
-    ) -> None:
-        ...
+    ) -> None: ...
 
     @overload
-    def check(self, params: Sequence[str], ctx: Optional[click.Context] = None) -> None:
-        ...
+    def check(
+        self, params: Sequence[str], ctx: Optional[click.Context] = None
+    ) -> None: ...
 
     def check(
-        self, params: Union[Sequence[click.Parameter], Sequence[str]],
-        ctx: Optional[click.Context] = None
+        self,
+        params: Union[Sequence[click.Parameter], Sequence[str]],
+        ctx: Optional[click.Context] = None,
     ) -> None:
         """
         Raise an exception if the constraint is not satisfied by the input
@@ -145,8 +159,9 @@ class Constraint(abc.ABC):
 
         ctx = click.get_current_context() if ctx is None else ctx
         if not isinstance(ctx.command, ConstraintMixin):  # this is needed for mypy
-            raise TypeError('constraints work only if the command inherits from '
-                            '`ConstraintMixin`')
+            raise TypeError(
+                "constraints work only if the command inherits from `ConstraintMixin`"
+            )
 
         if isinstance(params[0], str):
             param_names = cast(Sequence[str], params)
@@ -162,7 +177,7 @@ class Constraint(abc.ABC):
         self,
         help: Union[None, str, HelpRephraser] = None,
         error: Union[None, str, ErrorRephraser] = None,
-    ) -> 'Rephraser':
+    ) -> "Rephraser":
         """
         Override the help string and/or the error message of this constraint
         wrapping it with a :class:`Rephraser`.
@@ -185,9 +200,9 @@ class Constraint(abc.ABC):
         """
         return Rephraser(self, help=help, error=error)
 
-    def hidden(self) -> 'Rephraser':
+    def hidden(self) -> "Rephraser":
         """Hide this constraint from the command help."""
-        return Rephraser(self, help='')
+        return Rephraser(self, help="")
 
     def __call__(self, *param_adders: Decorator) -> Callable[[F], F]:
         """Equivalent to calling :func:`cloup.constrained_params` with this
@@ -199,31 +214,38 @@ class Constraint(abc.ABC):
             constraint as first argument.
         """
         from ._support import constrained_params
+
         # TODO: remove this check in the future
         if not callable(param_adders[0]):
             from cloup import __version__
-            raise TypeError(reindent(f"""\n
+
+            raise TypeError(
+                reindent(
+                    f"""\n
                 since Cloup v0.9, calling a constraint has a completely different
                 semantics and takes parameter decorators as arguments, see:
 
                 https://cloup.readthedocs.io/en/v{__version__}/pages/constraints.html#constraints-as-decorators
 
                 To check a constraint imperatively, you can use the check() method.
-            """, 4))
+            """,
+                    4,
+                )
+            )
         return constrained_params(self, *param_adders)
 
-    def __or__(self, other: 'Constraint') -> 'Or':
+    def __or__(self, other: "Constraint") -> "Or":
         return Or(self, other)
 
-    def __and__(self, other: 'Constraint') -> 'And':
+    def __and__(self, other: "Constraint") -> "And":
         return And(self, other)
 
     def __repr__(self) -> str:
-        return f'{class_name(self)}()'
+        return f"{class_name(self)}()"
 
 
 class Operator(Constraint, abc.ABC):
-    """Base class for all n-ary operators defined on constraints. """
+    """Base class for all n-ary operators defined on constraints."""
 
     HELP_SEP: str
     """Used as separator of all constraints' help strings."""
@@ -236,7 +258,7 @@ class Operator(Constraint, abc.ABC):
 
     def help(self, ctx: click.Context) -> str:
         return self.HELP_SEP.join(
-            '(%s)' % c.help(ctx) if isinstance(c, Operator) else c.help(ctx)
+            "(%s)" % c.help(ctx) if isinstance(c, Operator) else c.help(ctx)
             for c in self.constraints
         )
 
@@ -250,13 +272,14 @@ class Operator(Constraint, abc.ABC):
 
 class And(Operator):
     """It's satisfied if all operands are satisfied."""
-    HELP_SEP = ' and '
+
+    HELP_SEP = " and "
 
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
         for c in self.constraints:
             c.check_values(params, ctx)
 
-    def __and__(self, other: Constraint) -> 'And':
+    def __and__(self, other: Constraint) -> "And":
         if isinstance(other, And):
             return And(*self.constraints, *other.constraints)
         return And(*self.constraints, other)
@@ -264,7 +287,8 @@ class And(Operator):
 
 class Or(Operator):
     """It's satisfied if at least one of the operands is satisfied."""
-    HELP_SEP = ' or '
+
+    HELP_SEP = " or "
 
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
         for c in self.constraints:
@@ -277,7 +301,7 @@ class Or(Operator):
             self.help(ctx), ctx=ctx, constraint=self, params=params
         )
 
-    def __or__(self, other: Constraint) -> 'Or':
+    def __or__(self, other: Constraint) -> "Or":
         if isinstance(other, Or):
             return Or(*self.constraints, *other.constraints)
         return Or(*self.constraints, other)
@@ -294,11 +318,11 @@ class ErrorFmt(FrozenSpace):
         )
     """
 
-    error = '{error}'
+    error = "{error}"
     """Replaced by the original error message. Useful if all you want is to
     append or prepend some extra info to the original error message."""
 
-    param_list = '{param_list}'
+    param_list = "{param_list}"
     """Replaced by a 2-space indented list of the constrained parameters."""
 
 
@@ -318,12 +342,13 @@ class Rephraser(Constraint):
     """
 
     def __init__(
-        self, constraint: Constraint,
+        self,
+        constraint: Constraint,
         help: Union[None, str, HelpRephraser] = None,
         error: Union[None, str, ErrorRephraser] = None,
     ):
         if help is None and error is None:
-            raise ValueError('`help` and `error` cannot both be `None`')
+            raise ValueError("`help` and `error` cannot both be `None`")
         self.constraint = constraint
         self._help = help
         self._error = error
@@ -351,8 +376,7 @@ class Rephraser(Constraint):
         try:
             self.constraint.check_consistency(params)
         except UnsatisfiableConstraint as exc:
-            raise UnsatisfiableConstraint(
-                self, params=params, reason=exc.reason)
+            raise UnsatisfiableConstraint(self, params=params, reason=exc.reason)
 
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
         try:
@@ -361,7 +385,8 @@ class Rephraser(Constraint):
             rephrased_error = self._get_rephrased_error(err)
             if rephrased_error:
                 raise ConstraintViolated(
-                    rephrased_error, ctx=ctx, constraint=self, params=params)
+                    rephrased_error, ctx=ctx, constraint=self, params=params
+                )
             raise
 
     def __repr__(self) -> str:
@@ -406,19 +431,23 @@ class _RequireAll(Constraint):
     """Satisfied if all parameters are set."""
 
     def help(self, ctx: click.Context) -> str:
-        return 'all required'
+        return "all required"
 
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
         values = ctx.params
-        unset_params = [param for param in params
-                        if not param_value_is_set(param, values[get_param_name(param)])]
+        unset_params = [
+            param
+            for param in params
+            if not param_value_is_set(param, values[get_param_name(param)])
+        ]
         if any(unset_params):
             raise ConstraintViolated(
                 pluralize(
                     len(unset_params),
                     one=f"{get_param_label(unset_params[0])} is required",
                     many=f"the following parameters are required:\n"
-                         f"{format_param_list(unset_params)}"),
+                    f"{format_param_list(unset_params)}",
+                ),
                 ctx=ctx,
                 constraint=self,
                 params=params,
@@ -433,14 +462,14 @@ class RequireAtLeast(Constraint):
         self.min_num_params = n
 
     def help(self, ctx: click.Context) -> str:
-        return f'at least {self.min_num_params} required'
+        return f"at least {self.min_num_params} required"
 
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         n = self.min_num_params
         if len(params) < n:
             reason = (
-                f'the constraint requires a minimum of {n} parameters but '
-                f'it is applied on a group of only {len(params)} parameters!'
+                f"the constraint requires a minimum of {n} parameters but "
+                f"it is applied on a group of only {len(params)} parameters!"
             )
             raise UnsatisfiableConstraint(self, params, reason)
 
@@ -451,7 +480,9 @@ class RequireAtLeast(Constraint):
             raise ConstraintViolated(
                 f"at least {n} of the following parameters must be set:\n"
                 f"{format_param_list(params)}",
-                ctx=ctx, constraint=self, params=params,
+                ctx=ctx,
+                constraint=self,
+                params=params,
             )
 
     def __repr__(self) -> str:
@@ -466,12 +497,12 @@ class AcceptAtMost(Constraint):
         self.max_num_params = n
 
     def help(self, ctx: click.Context) -> str:
-        return f'at most {self.max_num_params} accepted'
+        return f"at most {self.max_num_params} accepted"
 
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         num_required_params = len(get_required_params(params))
         if num_required_params > self.max_num_params:
-            reason = f'{num_required_params} of the parameters are required'
+            reason = f"{num_required_params} of the parameters are required"
             raise UnsatisfiableConstraint(self, params, reason)
 
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
@@ -481,7 +512,9 @@ class AcceptAtMost(Constraint):
             raise ConstraintViolated(
                 f"no more than {n} of the following parameters can be set:\n"
                 f"{format_param_list(params)}",
-                ctx=ctx, constraint=self, params=params,
+                ctx=ctx,
+                constraint=self,
+                params=params,
             )
 
     def __repr__(self) -> str:
@@ -498,7 +531,7 @@ class RequireExactly(WrapperConstraint):
         self.num_params = n
 
     def help(self, ctx: click.Context) -> str:
-        return f'exactly {self.num_params} required'
+        return f"exactly {self.num_params} required"
 
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
         n = self.num_params
@@ -506,11 +539,10 @@ class RequireExactly(WrapperConstraint):
         if len(given_params) != n:
             reason = pluralize(
                 count=n,
-                zero='none of the following parameters must be set:\n',
-                many=f'exactly {n} of the following parameters must be set:\n'
+                zero="none of the following parameters must be set:\n",
+                many=f"exactly {n} of the following parameters must be set:\n",
             ) + format_param_list(params)
-            raise ConstraintViolated(
-                reason, ctx=ctx, constraint=self, params=params)
+            raise ConstraintViolated(reason, ctx=ctx, constraint=self, params=params)
 
     def __repr__(self) -> str:
         return make_repr(self, self.num_params)
@@ -524,40 +556,40 @@ class AcceptBetween(WrapperConstraint):
         :param min: must be an integer >= 0
         :param max: must be an integer > min
         """
-        check_arg(min >= 0, 'min must be non-negative')
+        check_arg(min >= 0, "min must be non-negative")
         if max is not None:
-            check_arg(min < max, 'must be: min < max.')
+            check_arg(min < max, "must be: min < max.")
         super().__init__(RequireAtLeast(min) & AcceptAtMost(max), min=min, max=max)
         self.min_num_params = min
         self.max_num_params = max
 
     def help(self, ctx: click.Context) -> str:
-        return f'at least {self.min_num_params} required, ' \
-               f'at most {self.max_num_params} accepted'
+        return (
+            f"at least {self.min_num_params} required, "
+            f"at most {self.max_num_params} accepted"
+        )
 
 
 require_all = _RequireAll()
 """Satisfied if all parameters are set."""
 
 accept_none = AcceptAtMost(0).rephrased(
-    help='all forbidden',
-    error=f'the following parameters should not be provided:\n'
-          f'{ErrorFmt.param_list}'
+    help="all forbidden",
+    error=f"the following parameters should not be provided:\n{ErrorFmt.param_list}",
 )
 """Satisfied if none of the parameters is set. Useful only in conditional constraints."""
 
 all_or_none = (require_all | accept_none).rephrased(
-    help='provide all or none',
-    error=f'the following parameters should be provided together (or none of '
-          f'them should be provided):\n'
-          f'{ErrorFmt.param_list}',
+    help="provide all or none",
+    error=f"the following parameters should be provided together (or none of "
+    f"them should be provided):\n"
+    f"{ErrorFmt.param_list}",
 )
 """Satisfied if either all or none of the parameters are set."""
 
 mutually_exclusive = AcceptAtMost(1).rephrased(
-    help='mutually exclusive',
-    error=f'the following parameters are mutually exclusive:\n'
-          f'{ErrorFmt.param_list}'
+    help="mutually exclusive",
+    error=f"the following parameters are mutually exclusive:\n{ErrorFmt.param_list}",
 )
 """Satisfied if at most one of the parameters is set."""
 

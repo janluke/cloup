@@ -1,20 +1,29 @@
 """Generic utilities."""
+
 import importlib.metadata
 from typing import (
-    Any, Dict, Hashable, Iterable, List, Optional, Sequence, Type, TypeVar,
+    Any,
+    Dict,
+    Hashable,
+    Iterable,
+    List,
+    Optional,
+    Sequence,
+    Type,
+    TypeVar,
 )
 
 from cloup.typing import MISSING, Possibly
 
-click_version_tuple = tuple(importlib.metadata.version("click").split('.'))
+click_version_tuple = tuple(importlib.metadata.version("click").split("."))
 click_major = int(click_version_tuple[0])
 click_minor = int(click_version_tuple[1])
 click_version_ge_8_1 = (click_major, click_minor) >= (8, 1)
 click_version_ge_8_2 = (click_major, click_minor) >= (8, 2)
 
-T = TypeVar('T')
-K = TypeVar('K', bound=Hashable)
-V = TypeVar('V')
+T = TypeVar("T")
+K = TypeVar("K", bound=Hashable)
+V = TypeVar("V")
 
 
 def pick_non_missing(d: Dict[K, Possibly[V]]) -> Dict[K, V]:
@@ -25,22 +34,18 @@ def class_name(obj: object) -> str:
     return obj.__class__.__name__
 
 
-def check_arg(condition: bool, msg: str = '') -> None:
+def check_arg(condition: bool, msg: str = "") -> None:
     if not condition:
         raise ValueError(msg)
 
 
 def indent_lines(lines: Iterable[str], width: int = 2) -> List[str]:
-    spaces = ' ' * width
+    spaces = " " * width
     return [spaces + line for line in lines]
 
 
 def make_repr(
-    obj: Any,
-    *args: Any,
-    _line_len: int = 60,
-    _indent: int = 2,
-    **kwargs: Any
+    obj: Any, *args: Any, _line_len: int = 60, _indent: int = 2, **kwargs: Any
 ) -> str:
     """
     Generate repr(obj).
@@ -61,17 +66,17 @@ def make_repr(
     cls_name = obj.__class__.__name__
     arglist = [
         *(repr(arg) for arg in args),
-        *(f'{key}={value!r}' for key, value in kwargs.items()),
+        *(f"{key}={value!r}" for key, value in kwargs.items()),
     ]
     len_arglist = sum(len(s) for s in arglist)
     total_len = len(cls_name) + len_arglist + 2 * len(arglist)
     if 0 <= _line_len < total_len:
         lines = indent_lines(arglist, width=_indent)
-        args_text = ',\n'.join(lines)
-        return f'{cls_name}(\n{args_text}\n)'
+        args_text = ",\n".join(lines)
+        return f"{cls_name}(\n{args_text}\n)"
     else:
-        args_text = ', '.join(arglist)
-        return f'{cls_name}({args_text})'
+        args_text = ", ".join(arglist)
+        return f"{cls_name}({args_text})"
 
 
 def make_one_line_repr(obj: object, *args: Any, **kwargs: Any) -> str:
@@ -79,7 +84,10 @@ def make_one_line_repr(obj: object, *args: Any, **kwargs: Any) -> str:
 
 
 def pluralize(
-    count: int, zero: str = '', one: str = '', many: str = '',
+    count: int,
+    zero: str = "",
+    one: str = "",
+    many: str = "",
 ) -> str:
     if count == 0 and zero:
         return zero
@@ -111,7 +119,7 @@ def check_positive_int(value: Any, arg_name: str) -> None:
         error_type = ValueError
     if error_type:
         raise error_type(
-            f'argument `{arg_name}` should be a positive integer; it is {value!r}'
+            f"argument `{arg_name}` should be a positive integer; it is {value!r}"
         )
 
 
@@ -122,8 +130,8 @@ def identity(x: T) -> T:
 class FrozenSpaceMeta(type):
     def __init__(cls, *args: Any):
         super().__init__(*args)
-        d = {k: v for k, v in vars(cls).items() if not k.startswith('_')}
-        type.__setattr__(cls, '_dict', d)
+        d = {k: v for k, v in vars(cls).items() if not k.startswith("_")}
+        type.__setattr__(cls, "_dict", d)
 
     def __setattr__(cls, key: str, value: Any) -> None:
         if key.startswith("__"):
@@ -149,7 +157,8 @@ class FrozenSpace(metaclass=FrozenSpaceMeta):
 
     def __init__(self) -> None:
         raise Exception(
-            "this class is just a namespace for constants, it's not instantiable.")
+            "this class is just a namespace for constants, it's not instantiable."
+        )
 
 
 def delete_keys(d: Dict[Any, Any], keys: Sequence[str]) -> None:
@@ -159,9 +168,10 @@ def delete_keys(d: Dict[Any, Any], keys: Sequence[str]) -> None:
 
 def reindent(text: str, indent: int = 0) -> str:
     import textwrap as tw
-    if text.startswith('\n'):
+
+    if text.startswith("\n"):
         text = text[1:]
     text = tw.dedent(text)
     if indent:
-        return tw.indent(text, ' ' * indent)
+        return tw.indent(text, " " * indent)
     return text

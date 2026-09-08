@@ -3,7 +3,16 @@ from __future__ import annotations
 import warnings
 from functools import update_wrapper
 from typing import (
-    Any, Callable, cast, Dict, List, Optional, Type, TypeVar, TYPE_CHECKING, overload,
+    Any,
+    Callable,
+    cast,
+    Dict,
+    List,
+    Optional,
+    Type,
+    TypeVar,
+    TYPE_CHECKING,
+    overload,
 )
 
 import click
@@ -22,13 +31,11 @@ R = TypeVar("R")
 
 
 @overload
-def get_current_context() -> "Context":
-    ...
+def get_current_context() -> "Context": ...
 
 
 @overload
-def get_current_context(silent: bool = False) -> "Optional[Context]":
-    ...
+def get_current_context(silent: bool = False) -> "Optional[Context]": ...
 
 
 def get_current_context(silent: bool = False) -> "Optional[Context]":
@@ -57,15 +64,18 @@ def _warn_if_formatter_settings_conflict(
 ) -> None:
     if ctx_kwargs.get(ctx_key) and formatter_settings.get(formatter_key):
         from textwrap import dedent
-        formatter_arg = f'formatter_settings.{formatter_key}'
-        warnings.warn(dedent(f"""
+
+        formatter_arg = f"formatter_settings.{formatter_key}"
+        warnings.warn(
+            dedent(f"""
         You provided both {ctx_key} and {formatter_arg} as arguments of a Context.
         Unless you have a particular reason, you should set only one of them..
         If you use both, {formatter_arg} will be used by the formatter.
         You can suppress this warning by setting:
 
             cloup.warnings.formatter_settings_conflict = False
-        """))
+        """)
+        )
 
 
 class Context(click.Context):
@@ -105,10 +115,12 @@ class Context(click.Context):
     :param ctx_kwargs:
         keyword arguments forwarded to :class:`click.Context`.
     """
+
     formatter_class: Type[HelpFormatter] = HelpFormatter
 
     def __init__(
-        self, *ctx_args: Any,
+        self,
+        *ctx_args: Any,
         align_option_groups: Optional[bool] = None,
         align_sections: Optional[bool] = None,
         show_subcommand_aliases: Optional[bool] = None,
@@ -121,46 +133,48 @@ class Context(click.Context):
 
         self.align_option_groups = coalesce(
             align_option_groups,
-            getattr(self.parent, 'align_option_groups', None),
+            getattr(self.parent, "align_option_groups", None),
         )
         self.align_sections = coalesce(
             align_sections,
-            getattr(self.parent, 'align_sections', None),
+            getattr(self.parent, "align_sections", None),
         )
         self.show_subcommand_aliases = coalesce(
             show_subcommand_aliases,
-            getattr(self.parent, 'show_subcommand_aliases', None),
+            getattr(self.parent, "show_subcommand_aliases", None),
         )
         self.show_constraints = coalesce(
             show_constraints,
-            getattr(self.parent, 'show_constraints', None),
+            getattr(self.parent, "show_constraints", None),
         )
         self.check_constraints_consistency = coalesce(
             check_constraints_consistency,
-            getattr(self.parent, 'check_constraints_consistency', None)
+            getattr(self.parent, "check_constraints_consistency", None),
         )
 
         if cloup.warnings.formatter_settings_conflict:
             _warn_if_formatter_settings_conflict(
-                'terminal_width', 'width', ctx_kwargs, formatter_settings)
+                "terminal_width", "width", ctx_kwargs, formatter_settings
+            )
             _warn_if_formatter_settings_conflict(
-                'max_content_width', 'max_width', ctx_kwargs, formatter_settings)
+                "max_content_width", "max_width", ctx_kwargs, formatter_settings
+            )
 
         #: Keyword arguments for the HelpFormatter. Obtained by merging the options
         #: of the parent context with the one passed to this context. Before creating
         #: the help formatter, these options are merged with the (eventual) options
         #: provided to the command (having higher priority).
         self.formatter_settings = {
-            **getattr(self.parent, 'formatter_settings', {}),
+            **getattr(self.parent, "formatter_settings", {}),
             **formatter_settings,
         }
 
     def get_formatter_settings(self) -> Dict[str, Any]:
         return {
-            'width': self.terminal_width,
-            'max_width': self.max_content_width,
+            "width": self.terminal_width,
+            "max_width": self.max_content_width,
             **self.formatter_settings,
-            **getattr(self.command, 'formatter_settings', {})
+            **getattr(self.command, "formatter_settings", {}),
         }
 
     def make_formatter(self) -> HelpFormatter:
@@ -169,7 +183,8 @@ class Context(click.Context):
 
     @staticmethod
     def settings(
-        *, auto_envvar_prefix: Possibly[str] = MISSING,
+        *,
+        auto_envvar_prefix: Possibly[str] = MISSING,
         default_map: Possibly[Dict[str, Any]] = MISSING,
         terminal_width: Possibly[int] = MISSING,
         max_content_width: Possibly[int] = MISSING,

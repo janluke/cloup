@@ -1,31 +1,39 @@
 """
 Types for parameter decorators are in this stub for convenience of implementation.
 """
-from typing import Any, Callable, List, Optional, Protocol, Sequence, Tuple, Type, TypeVar, Union
+
+from typing import (
+    Any,
+    Callable,
+    List,
+    Optional,
+    Protocol,
+    Sequence,
+    Tuple,
+    Type,
+    TypeVar,
+    Union,
+)
 
 import click
 from click.shell_completion import CompletionItem
 
 from cloup import OptionGroup
 
-F = TypeVar('F', bound=Callable[..., Any])
-P = TypeVar('P', bound=click.Parameter)
+F = TypeVar("F", bound=Callable[..., Any])
+P = TypeVar("P", bound=click.Parameter)
 
 class _ParamType(Protocol):
     # Once Click 8.3 support is dropped, this can be replaced with
     # click.ParamType[Any].
     @property
-    def name(self) -> Optional[str]:
-        ...
-
+    def name(self) -> Optional[str]: ...
     def convert(
         self,
         value: Any,
         param: Optional[click.Parameter],
         ctx: Optional[click.Context],
-    ) -> Any:
-        ...
-
+    ) -> Any: ...
 
 SimpleParamTypeLike = Union[_ParamType, Type[float], Type[int], Type[str]]
 ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
@@ -36,23 +44,14 @@ ShellCompleteArg = Callable[
     Union[List[CompletionItem], List[str]],
 ]
 
-
-def make_arg_metavar(arg: click.Argument, ctx: click.Context) -> str:
-    ...
-
+def make_arg_metavar(arg: click.Argument, ctx: click.Context) -> str: ...
 
 class Argument(click.Argument):
-    def __init__(self, *args: Any, help: Optional[str] = None, **attrs: Any):
-        ...
-
-    def get_help_record(self, ctx: click.Context) -> Tuple[str, str]:
-        ...
-
+    def __init__(self, *args: Any, help: Optional[str] = None, **attrs: Any): ...
+    def get_help_record(self, ctx: click.Context) -> Tuple[str, str]: ...
 
 class Option(click.Option):
-    def __init__(self, *args: Any, group: Optional[OptionGroup] = None, **attrs: Any):
-        ...
-
+    def __init__(self, *args: Any, group: Optional[OptionGroup] = None, **attrs: Any): ...
 
 def argument(
     *param_decls: str,
@@ -69,8 +68,6 @@ def argument(
     shell_complete: Optional[ShellCompleteArg[click.Argument]] = None,
     **kwargs: Any,
 ) -> Callable[[F], F]: ...
-
-
 def option(
     *param_decls: str,
     cls: Optional[Type[click.Option]] = None,
@@ -108,5 +105,5 @@ def option(
     # Others
     group: Optional[OptionGroup] = None,
     shell_complete: Optional[ShellCompleteArg[click.Option]] = None,
-    **kwargs: Any
+    **kwargs: Any,
 ) -> Callable[[F], F]: ...

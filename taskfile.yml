@@ -60,14 +60,24 @@ tasks:
   #
 
   lint:
-    desc: Lint code with Ruff.
+    desc: Run linters. Pass --fix to fix supported violations.
     cmds:
       - hatch run code:lint {{.CLI_ARGS}}
 
-  check:
-    desc: Lint code with Ruff.
+  format:
+    desc: Format files. Pass -- --check to check formatting.
     cmds:
-      - task: lint
+      - hatch run code:format {{.CLI_ARGS}}
+
+  check:
+    desc: Check linting and formatting.
+    cmds:
+      - hatch run code:check
+
+  fix:
+    desc: Fix lint violations and format files.
+    cmds:
+      - hatch run code:fix
 
   #
   # Static type checking
@@ -144,9 +154,9 @@ tasks:
   #
 
   qa:
-    desc: Run lint, typing, tests, and documentation checks.
+    desc: Run lint, formatting, typing, tests, and documentation checks.
     cmds:
-      - task: lint
+      - task: check
       - task: prepare-envs
         vars:
           ENVS: [dev]
@@ -157,7 +167,7 @@ tasks:
   qa:all:
     desc: Run quality checks against every test environment.
     cmds:
-      - task: lint
+      - task: check
       - task: run-concurrently
         vars:
           TASKS: [qa:test-envs, docs]

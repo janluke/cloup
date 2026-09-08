@@ -2,6 +2,7 @@
 This module contains components that specifically address the styling and theming
 of the ``--help`` output.
 """
+
 import dataclasses
 import dataclasses as dc
 from dataclasses import dataclass
@@ -81,7 +82,8 @@ class HelpTheme:
     """Style of the epilog."""
 
     def with_(
-        self, invoked_command: Optional[IStyle] = None,
+        self,
+        invoked_command: Optional[IStyle] = None,
         command_help: Optional[IStyle] = None,
         heading: Optional[IStyle] = None,
         constraint: Optional[IStyle] = None,
@@ -91,11 +93,11 @@ class HelpTheme:
         alias: Optional[IStyle] = None,
         alias_secondary: Possibly[Optional[IStyle]] = MISSING,
         epilog: Optional[IStyle] = None,
-    ) -> 'HelpTheme':
+    ) -> "HelpTheme":
         kwargs = {key: val for key, val in locals().items() if val is not None}
         if alias_secondary is MISSING:
             del kwargs["alias_secondary"]
-        kwargs.pop('self')
+        kwargs.pop("self")
         if kwargs:
             return dataclasses.replace(self, **kwargs)
         return self
@@ -104,22 +106,22 @@ class HelpTheme:
     def dark() -> "HelpTheme":
         """A theme assuming a dark terminal background color."""
         return HelpTheme(
-            invoked_command=Style(fg='bright_yellow'),
-            heading=Style(fg='bright_white', bold=True),
-            constraint=Style(fg='magenta'),
-            col1=Style(fg='bright_yellow'),
-            alias=Style(fg='yellow'),
-            alias_secondary=Style(fg='white'),
+            invoked_command=Style(fg="bright_yellow"),
+            heading=Style(fg="bright_white", bold=True),
+            constraint=Style(fg="magenta"),
+            col1=Style(fg="bright_yellow"),
+            alias=Style(fg="yellow"),
+            alias_secondary=Style(fg="white"),
         )
 
     @staticmethod
     def light() -> "HelpTheme":
         """A theme assuming a light terminal background color."""
         return HelpTheme(
-            invoked_command=Style(fg='yellow'),
-            heading=Style(fg='bright_blue'),
-            constraint=Style(fg='red'),
-            col1=Style(fg='yellow'),
+            invoked_command=Style(fg="yellow"),
+            heading=Style(fg="bright_blue"),
+            constraint=Style(fg="red"),
+            col1=Style(fg="yellow"),
         )
 
 
@@ -156,6 +158,7 @@ class Style:
 
     .. versionadded:: 0.8.0
     """
+
     fg: Optional[str] = None
     bg: Optional[str] = None
     bold: Optional[bool] = None
@@ -173,11 +176,11 @@ class Style:
     def __call__(self, text: str) -> str:
         if self._style_kwargs is None:
             kwargs = dc.asdict(self)
-            delete_keys(kwargs, ['text_transform', '_style_kwargs'])
+            delete_keys(kwargs, ["text_transform", "_style_kwargs"])
             if int(click_version_tuple[0]) < 8:
                 # These arguments are not supported in Click < 8. Ignore them.
-                delete_keys(kwargs, ['overline', 'italic', 'strikethrough'])
-            object.__setattr__(self, '_style_kwargs', kwargs)
+                delete_keys(kwargs, ["overline", "italic", "strikethrough"])
+            object.__setattr__(self, "_style_kwargs", kwargs)
         else:
             kwargs = self._style_kwargs
 
@@ -188,6 +191,7 @@ class Style:
 
 class Color(FrozenSpace):
     """Colors accepted by :class:`Style` and :func:`click.style`."""
+
     black = "black"
     red = "red"
     green = "green"

@@ -14,16 +14,17 @@ def runner():
     return runner
 
 
-@fixture(scope='session')
+@fixture(scope="session")
 def get_example_command():
     def get_command(tabular_help=True, align_option_groups=True):
         return make_example_command(
-            align_option_groups=align_option_groups, tabular_help=tabular_help)
+            align_option_groups=align_option_groups, tabular_help=tabular_help
+        )
 
     return get_command
 
 
-@fixture(scope='session')
+@fixture(scope="session")
 def get_example_group():
     def get_group(align_sections):
         return make_example_group(align_sections=align_sections)

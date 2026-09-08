@@ -72,6 +72,7 @@ report = [
   "coverage {args:html}",
 ]
 
+# Code quality and style (ruff)
 [envs.code]
 locked = true
 skip-install = true
@@ -81,6 +82,16 @@ dependencies = [
 
 [envs.code.scripts]
 lint = "ruff check {args}"
+format = "ruff format {args}"
+check = [
+    "format --check",
+    "lint",
+]
+fix = [
+    "lint --fix",
+    "format",
+    "check",
+]
 
 [envs.docs]
 locked = true

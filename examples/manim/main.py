@@ -3,6 +3,7 @@ Example based on the CLI of Manim Community, which actually uses Cloup.
 This example shows how a real-world application could look like and serves to me
 as a test bench for trying out styling and formatting.
 """
+
 import cloup
 from cloup import (
     Color,
@@ -15,7 +16,7 @@ from cloup.formatting.sep import RowSepIf, multiline_rows_are_at_least
 from config import config
 from render import render
 
-VERSION = '0.5.0'
+VERSION = "0.5.0"
 CONTEXT_SETTINGS = Context.settings(
     help_option_names=["-h", "--help"],
     align_option_groups=False,
@@ -49,7 +50,7 @@ CONTEXT_SETTINGS = Context.settings(
 
 
 @cloup.group(
-    name='Manim',
+    name="Manim",
     no_args_is_help=True,
     context_settings=CONTEXT_SETTINGS,
     epilog="Made with <3 by Manim Community developers.",
@@ -63,4 +64,4 @@ main.add_command(render)
 main.add_command(config)
 
 if __name__ == "__main__":
-    main(prog_name='manim')
+    main(prog_name="manim")
