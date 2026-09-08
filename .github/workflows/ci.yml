@@ -1,4 +1,4 @@
-name: Tests
+name: CI
 
 on:
   push:
@@ -11,7 +11,7 @@ on:
 
 jobs:
   checks:
-    name: Checks
+    name: ${{ matrix.desc }}
     runs-on: ubuntu-latest
     strategy:
       matrix:
