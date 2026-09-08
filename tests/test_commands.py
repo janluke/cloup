@@ -54,6 +54,58 @@ def test_group_works_with_no_params_and_subcommands(runner):
     """)
 
 
+@pytest.mark.parametrize('decorator, usage_args', [
+    (cloup.command, '[OPTIONS]'),
+    (cloup.group, '[OPTIONS] COMMAND [ARGS]...'),
+])
+@pytest.mark.parametrize('help_text, expected_help', [
+    (None, ''),
+    ('', ''),
+    ('Do a thing.', 'Do a thing.'),
+    ('First paragraph.\n\nSecond paragraph.', 'First paragraph.\n\n  Second paragraph.'),
+    ('\n    Do a thing.\n    On another line.', 'Do a thing. On another line.'),
+    ('Visible text.\fHidden text.', 'Visible text.'),
+])
+@pytest.mark.parametrize('deprecated, expected_label', [
+    (False, ''),
+    (True, '(DEPRECATED)'),
+    ('', ''),
+    ('use `newcmd` instead', '(DEPRECATED: use `newcmd` instead)'),
+])
+def test_deprecated_command_help(
+    runner, decorator, usage_args, help_text, expected_help, deprecated, expected_label,
+):
+    cmd = decorator(name='example', help=help_text, deprecated=deprecated)(
+        new_dummy_func())
+
+    result = runner.invoke(cmd, ['--help'], terminal_width=80)
+
+    assert result.exit_code == 0
+    body = ' '.join(part for part in (expected_help, expected_label) if part)
+    expected_output = f'Usage: example {usage_args}\n'
+    if body:
+        expected_output += f'\n  {body}\n'
+    expected_output += '\nOptions:\n  --help  Show this message and exit.\n'
+    assert result.output == expected_output
+
+
+@pytest.mark.parametrize('decorator', [cloup.command, cloup.group])
+def test_deprecated_command_help_keeps_theme(runner, decorator):
+    @decorator(
+        deprecated='use `newcmd` instead',
+        formatter_settings={'theme': cloup.HelpTheme(
+            command_help=cloup.Style(fg='yellow'),
+        )},
+    )
+    def example():
+        """Do a thing."""
+
+    result = runner.invoke(example, ['--help'], color=True)
+    assert result.exit_code == 0
+    assert click.style('Do a thing. (DEPRECATED: use `newcmd` instead)', fg='yellow') \
+        in result.output
+
+
 class TestDidYouMean:
     @staticmethod
     @pytest.fixture(scope="class")
