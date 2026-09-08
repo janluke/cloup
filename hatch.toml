@@ -96,6 +96,9 @@ dependencies = [
   "sphinx-version-warning",
 ]
 
+[envs.docs.env-vars]
+PYTHONPATH = "{root}"  # work around Hatch bug: https://github.com/pypa/hatch/issues/2372
+
 [envs.docs.scripts]
 build = [
   "python scripts/remove.py docs/_build",
