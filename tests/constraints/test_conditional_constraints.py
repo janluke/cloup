@@ -217,7 +217,7 @@ class TestIsSet:
     def test_evaluation(self, sample_cmd, param, is_set):
         ctx = make_context(sample_cmd, self.SHELL_INPUT)
         assert IsSet(param)(ctx) == is_set
-        assert ~IsSet(param)(ctx) != is_set
+        assert (~IsSet(param))(ctx) != is_set
 
     def test_descriptions(self, sample_cmd):
         ctx = make_context(sample_cmd, '')
@@ -249,7 +249,7 @@ class TestEqual:
             assert Equal(name, value)(ctx)
             assert not Equal(name, 'blah')(ctx)
             assert not (~Equal(name, value))(ctx)
-            assert ~Equal(name, 'blah')(ctx)
+            assert (~Equal(name, 'blah'))(ctx)
 
     def test_descriptions(self, sample_cmd):
         ctx = make_context(sample_cmd, '')
