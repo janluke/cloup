@@ -1,0 +1,9 @@
+lock-version = "1.0"
+created-by = "uv"
+requires-python = ">=3.10.12"
+
+[[packages]]
+name = "ruff"
+version = "0.16.6"
+sdist = { url = "https://files.pythonhosted.org/packages/a4/7c/6adb35d70e7c027e308274557901c7e00fb3407750faf3620c184ae058cb/ruff-0.16.6.tar.gz", upload-time = 2026-09-03T16:57:29Z, size = 4921251, hashes = { sha256 = "dcf8a73d2ff77e99dde91244b4da16feba7f14e6beeb4015dee7c5a909e99050" } }
+wheels = [{ url = "https://files.pythonhosted.org/packages/8b/98/083d8b4ef3c51a0d19db84367791cbe9f44e4b53343d19dfa83556e1cd9a/ruff-0.16.6-py3-none-manylinux_2_17_x86_64.manylinux2014_x86_64.whl", upload-time = 2026-09-03T16:57:03Z, size = 10317748, hashes = { sha256 = "d72c591a96986ee4268860e2b7235082129ca5e4cb9cbba653a4b57c11893757" } }]

@@ -60,12 +60,12 @@ tasks:
   #
 
   lint:
-    desc: Check code with flake8.
+    desc: Lint code with Ruff.
     cmds:
-      - hatch run lint:check {{.CLI_ARGS}}
+      - hatch run code:lint {{.CLI_ARGS}}
 
   check:
-    desc: Check code with flake8.
+    desc: Lint code with Ruff.
     cmds:
       - task: lint
 

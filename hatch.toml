@@ -72,15 +72,15 @@ report = [
   "coverage {args:html}",
 ]
 
-[envs.lint]
+[envs.code]
 locked = true
 skip-install = true
 dependencies = [
-  "flake8",
+  "ruff",
 ]
 
-[envs.lint.scripts]
-check = "flake8 {args:src/cloup tests examples scripts/expand-hatch-envs.py hatch_build.py}"
+[envs.code.scripts]
+lint = "ruff check {args}"
 
 [envs.docs]
 locked = true
