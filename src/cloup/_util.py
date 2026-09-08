@@ -1,6 +1,5 @@
 """Generic utilities."""
 
-import importlib.metadata
 from typing import (
     Any,
     Dict,
@@ -15,11 +14,9 @@ from typing import (
 
 from cloup.typing import MISSING, Possibly
 
-click_version_tuple = tuple(importlib.metadata.version("click").split("."))
-click_major = int(click_version_tuple[0])
-click_minor = int(click_version_tuple[1])
-click_version_ge_8_1 = (click_major, click_minor) >= (8, 1)
-click_version_ge_8_2 = (click_major, click_minor) >= (8, 2)
+# click_version_tuple = tuple(importlib.metadata.version("click").split("."))
+# click_major = int(click_version_tuple[0])
+# click_minor = int(click_version_tuple[1])
 
 T = TypeVar("T")
 K = TypeVar("K", bound=Hashable)

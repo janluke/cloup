@@ -49,7 +49,7 @@ import cloup
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin
-from ._util import click_version_ge_8_1, first_bool, reindent
+from ._util import first_bool, reindent
 from .constraints import ConstraintMixin
 from .styling import DEFAULT_THEME
 from .typing import AnyCallable
@@ -95,7 +95,7 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
         )
 
     def get_normalized_epilog(self) -> str:
-        if self.epilog and click_version_ge_8_1:
+        if self.epilog:
             return inspect.cleandoc(self.epilog)
         return self.epilog or ""
 

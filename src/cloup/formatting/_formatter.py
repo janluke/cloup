@@ -16,7 +16,6 @@ from typing import (
     Union,
 )
 
-from cloup._util import click_version_ge_8_1
 from cloup.formatting._util import unstyled_len
 
 if TYPE_CHECKING:
@@ -204,8 +203,7 @@ class HelpFormatter(click.HelpFormatter):
 
     def write_command_help_text(self, cmd: click.Command) -> None:
         help_text = cmd.help or ""
-        if help_text and click_version_ge_8_1:
-            help_text = inspect.cleandoc(help_text).partition("\f")[0]
+        help_text = inspect.cleandoc(help_text).partition("\f")[0]
         if cmd.deprecated:
             deprecation = _format_deprecation_label(cmd.deprecated)
             help_text = f"{help_text} {deprecation}" if help_text else deprecation
