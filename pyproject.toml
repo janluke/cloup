@@ -50,10 +50,10 @@ Homepage = "https://github.com/janLuke/cloup"
 source = "vcs"
 
 [tool.hatch.build.hooks.vcs]
-version-file = "cloup/_version.py"
+version-file = "src/cloup/_version.py"
 
 [tool.hatch.build.targets.wheel]
-packages = ["cloup"]
+packages = ["src/cloup"]
 
 [tool.hatch.metadata.hooks.custom]
 
@@ -69,7 +69,7 @@ exclude_lines = [
 ]
 
 [tool.coverage.run]
-omit = ["cloup/_version.py"]
+omit = ["src/cloup/_version.py"]
 parallel = true
 relative_files = true
 source = ["cloup"]

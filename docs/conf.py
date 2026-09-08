@@ -43,7 +43,7 @@ autodoc_typehints = 'description'
 
 # Autoapi
 autoapi_type = 'python'
-autoapi_dirs = [os.path.join(PROJ_DIR, 'cloup')]
+autoapi_dirs = [os.path.join(PROJ_DIR, 'src', 'cloup')]
 autoapi_template_dir = '_autoapi_templates'
 templates_path = [autoapi_template_dir]
 autoapi_add_toctree_entry = False
