@@ -24,12 +24,31 @@ typing = [
   "mypy --strict cloup",
   "mypy tests examples",
 ]
+upgrade-click = '"$HATCH_UV" pip install --upgrade-package click -r pyproject.toml'
 
 [envs.test]
 template = "dev"
+matrix-name-format = "{variable}_{value}"
 
+# Matrix 1: test against supported versions of Python, without pinning Click.
+# Fresh environments resolve the latest compatible version of Click; existing
+# environments can be updated with `task test-envs:upgrade-click`.
 [[envs.test.matrix]]
 python = ["3.10", "3.11", "3.12", "3.13", "3.14"]
+
+# Matrix 2: test against past versions of click that are still supported, only on the
+# latest version of Python, to limit the number of test envs.
+[[envs.test.matrix]]
+python = ["3.14"]
+click = ["8.2", "8.3", "8.4"]
+
+[envs.test.overrides]
+matrix.click.dependencies = [
+    "click == {matrix:click}.*"
+]
+matrix.click.scripts = [
+  { key = "upgrade-click", value = '"$HATCH_UV" pip install --upgrade-package click -r pyproject.toml "click == {matrix:click}.*"' },
+]
 
 [envs.coverage]
 skip-install = true

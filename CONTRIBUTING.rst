@@ -124,15 +124,17 @@ Use the following commands while developing:
    * - ``task typing``
      - Type-check the package, tests, and examples in the development environment.
    * - ``task typing:all``
-     - Type-check with every supported Python version.
+     - Type-check in every Python and Click compatibility environment.
 
 Testing
 ~~~~~~~
 
-The primary development environment and every Python test environment expose the
-same test and typing scripts.
-This ensures that type checking observes the dependencies and standard library of
-each supported Python version.
+The primary development environment and every test environment expose the same test
+and typing scripts.
+The test matrix covers every supported Python version with the latest compatible
+Click release, plus older supported Click release lines on the latest Python.
+This ensures that type checking observes the same dependencies and standard library
+as the corresponding test run.
 
 .. list-table::
    :header-rows: 1
@@ -143,13 +145,15 @@ each supported Python version.
    * - ``task test``
      - Run tests with the development environment.
    * - ``task test:all``
-     - Run tests with Python 3.10 through 3.14 in parallel.
+     - Run every Python and Click compatibility environment in parallel.
+   * - ``task test-envs:upgrade-click``
+     - Upgrade Click to the latest release allowed by each test environment.
    * - ``task cov``
      - Run tests in the development environment and generate terminal and HTML
        coverage reports.
    * - ``task cov:all``
-     - Collect coverage from all supported Python versions in parallel and combine
-       the results.
+     - Collect coverage from every test environment in parallel and combine the
+       results.
 
 Use ``--`` before arguments that should be forwarded to pytest.
 For example, stop after the first failure with:
@@ -179,8 +183,8 @@ The aggregate tasks are the recommended checks before submitting changes:
      - Run lint first, then type checking, tests, and documentation using the primary
        environments.
    * - ``task qa:all``
-     - Run lint and documentation checks plus typing and tests on every supported
-       Python version.
+     - Run lint and documentation checks plus typing and tests in every test
+       environment.
 
 Use ``task qa`` during routine development and ``task qa:all`` before opening or
 updating a pull request.
