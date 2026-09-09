@@ -4,7 +4,7 @@ import click
 import pytest
 
 import cloup
-from cloup._util import reindent
+from cloup._util import reindent, click_semver
 from tests.util import new_dummy_func
 
 
@@ -35,23 +35,27 @@ def test_group_handling_of_unknown_argument():
 def test_command_works_with_no_parameters(runner):
     cmd = cloup.Command(name="cmd", callback=new_dummy_func())
     res = runner.invoke(cmd, "--help")
-    assert res.output == reindent("""
+    assert res.output == reindent(
+        """
         Usage: cmd [OPTIONS]
 
         Options:
           --help  Show this message and exit.
-    """)
+        """
+    )
 
 
 def test_group_works_with_no_params_and_subcommands(runner):
     cmd = cloup.Group(name="cmd")
     res = runner.invoke(cmd, "--help")
-    assert res.output == reindent("""
+    assert res.output == reindent(
+        """
         Usage: cmd [OPTIONS] COMMAND [ARGS]...
 
         Options:
           --help  Show this message and exit.
-    """)
+        """
+    )
 
 
 @pytest.mark.parametrize(
@@ -143,32 +147,38 @@ class TestDidYouMean:
 
     def test_with_no_matches(self, runner, cmd):
         res = runner.invoke(cmd, "asdfdsgdfgdf")
-        assert res.output == reindent("""
+        assert res.output == reindent(
+            """
             Usage: cmd [OPTIONS] COMMAND [ARGS]...
             Try 'cmd --help' for help.
 
             Error: No such command 'asdfdsgdfgdf'.
-        """)
+            """
+        )
 
     def test_with_one_match(self, runner, cmd):
         res = runner.invoke(cmd, "clearr")
-        assert res.output == reindent("""
+        assert res.output == reindent(
+            """
             Usage: cmd [OPTIONS] COMMAND [ARGS]...
             Try 'cmd --help' for help.
 
             Error: No such command 'clearr'. Did you mean 'clear'?
-        """)
+            """
+        )
 
     def test_with_multiple_matches(self, runner, cmd):
         res = runner.invoke(cmd, "inst")
-        assert res.output == reindent("""
+        assert res.output == reindent(
+            """
             Usage: cmd [OPTIONS] COMMAND [ARGS]...
             Try 'cmd --help' for help.
 
             Error: No such command 'inst'. Did you mean one of these?
                ins
                install
-        """)
+            """
+        )
 
 
 @pytest.mark.parametrize("decorator", [cloup.command, cloup.group])
@@ -218,12 +228,14 @@ def test_group_command_class_is_used_to_create_subcommands(runner):
     assert isinstance(subcommand, CustomCommand)
 
     res = runner.invoke(my_cli, ["subcommand", "--help"])
-    assert res.output == reindent("""
-        Usage: cli subcommand [OPTIONS]
+    assert res.output == reindent(
+        """
+                Usage: cli subcommand [OPTIONS]
 
-        Options:
-          -h, --help  Show this message and exit.
-    """)
+                Options:
+                  -h, --help  Show this message and exit.
+                """
+    )
 
 
 def test_group_class_is_used_to_create_subgroups(runner):
@@ -252,3 +264,50 @@ def test_group_class_is_used_to_create_subgroups(runner):
     assert isinstance(sub_group, CustomGroup)
     assert isinstance(other_group, OtherCustomGroup)
     assert isinstance(other_sub_group, cloup.Group)
+
+
+@pytest.mark.skipif(click_semver < (8, 5), reason="do not support arguments with help")
+def test_click_positional_arguments_with_help_are_supported(runner):
+    @cloup.command()
+    @click.argument("input_path", help="Input path")
+    def cmd(_):
+        """Case B: click.argument(help=...) in a cloup command."""
+
+    res = runner.invoke(cmd, ["--help"], prog_name="example")
+    assert res.output == reindent(
+        """
+        Usage: example [OPTIONS] INPUT_PATH
+
+          Case B: click.argument(help=...) in a cloup command.
+
+        Positional arguments:
+          INPUT_PATH  Input path
+
+        Options:
+          --help      Show this message and exit.
+        """
+    )
+
+
+def test_deprecation_label_is_correctly_applied_to_cloup_arguments(runner):
+    @cloup.command()
+    @cloup.argument(
+        "input_path", help="Input path", deprecated="use --path instead", required=False
+    )
+    def cmd(_):
+        """A command."""
+
+    res = runner.invoke(cmd, ["--help"], prog_name="example")
+    assert res.output == reindent(
+        """
+        Usage: example [OPTIONS] [INPUT_PATH!]
+
+          A command.
+
+        Positional arguments:
+          [INPUT_PATH!]  Input path (DEPRECATED: use --path instead)
+
+        Options:
+          --help         Show this message and exit.
+        """
+    )
