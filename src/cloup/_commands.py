@@ -587,7 +587,8 @@ def command(
     """
     if callable(name):
         raise Exception(
-            f"you forgot parenthesis in the command decorator for `{name.__name__}`. "
+            f"you forgot parenthesis in the command decorator for "
+            f"`{getattr(name, '__name__', name)}`. "
             f"While parenthesis are optional in Click >= 8.1, they are required in Cloup."
         )
 
