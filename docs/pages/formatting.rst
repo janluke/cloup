@@ -154,6 +154,50 @@ the styles using :meth:`HelpTheme.with_`, e.g.:
     )
 
 
+Extending themes
+~~~~~~~~~~~~~~~~
+
+You can add fields by subclassing :class:`HelpTheme` with a frozen dataclass.
+The predefined theme methods create instances of your subclass, using the defaults
+for its additional fields. The :meth:`~HelpTheme.with_` method preserves the subclass
+and accepts its additional fields as keyword arguments::
+
+    from dataclasses import dataclass
+    from cloup import HelpTheme, Style
+    from cloup.styling import IStyle
+
+    @dataclass(frozen=True)
+    class MyTheme(HelpTheme):
+        metavar: IStyle = Style()
+
+    theme = MyTheme.dark().with_(metavar=Style(fg="cyan"))
+
+If a subclass needs its own predefined colors, it can reuse the base presets and
+then customize the added fields:
+
+.. code-block:: python
+
+    @dataclass(frozen=True)
+    class MyTheme(HelpTheme):
+        metavar: IStyle = Style()
+
+        @classmethod
+        def dark(cls) -> "MyTheme":
+            return super().dark().with_(metavar=Style(fg="cyan"))
+
+        @classmethod
+        def light(cls) -> "MyTheme":
+            return super().light().with_(metavar=Style(fg="blue"))
+
+    dark_theme = MyTheme.dark()
+    light_theme = MyTheme.light()
+
+Additional keyword arguments to ``with_()`` are passed to ``dataclasses.replace()``
+as supplied, including ``None``. Invalid field names raise ``TypeError``. Custom
+fields are available for use by your own formatter code; adding a field does not
+change the built-in formatter's output.
+
+
 .. _row-separators:
 
 Row separators

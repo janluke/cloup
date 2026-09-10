@@ -5,10 +5,16 @@ of the ``--help`` output.
 
 import dataclasses
 import dataclasses as dc
+import sys
 from dataclasses import dataclass
 from typing import Callable, Optional, Union
 
 import click
+
+if sys.version_info >= (3, 11):
+    from typing import Self
+else:
+    from typing_extensions import Self
 
 from cloup._util import FrozenSpace, identity
 from cloup.typing import MISSING, Possibly
@@ -93,19 +99,27 @@ class HelpTheme:
         alias: Optional[IStyle] = None,
         alias_secondary: Possibly[Optional[IStyle]] = MISSING,
         epilog: Optional[IStyle] = None,
-    ) -> "HelpTheme":
-        kwargs = {key: val for key, val in locals().items() if val is not None}
+        **kwargs: object,
+    ) -> Self:
+        """Return a theme of the same type with the supplied fields replaced.
+
+        Additional keyword arguments are passed to :func:`dataclasses.replace`
+        to support fields added by subclasses.
+        """
+        replacements = {key: val for key, val in locals().items() if val is not None}
         if alias_secondary is MISSING:
-            del kwargs["alias_secondary"]
-        kwargs.pop("self")
-        if kwargs:
-            return dataclasses.replace(self, **kwargs)
+            del replacements["alias_secondary"]
+        replacements.pop("self")
+        replacements.pop("kwargs")
+        replacements.update(kwargs)
+        if replacements:
+            return dataclasses.replace(self, **replacements)
         return self
 
-    @staticmethod
-    def dark() -> "HelpTheme":
+    @classmethod
+    def dark(cls) -> Self:
         """A theme assuming a dark terminal background color."""
-        return HelpTheme(
+        return cls(
             invoked_command=Style(fg="bright_yellow"),
             heading=Style(fg="bright_white", bold=True),
             constraint=Style(fg="magenta"),
@@ -114,10 +128,10 @@ class HelpTheme:
             alias_secondary=Style(fg="white"),
         )
 
-    @staticmethod
-    def light() -> "HelpTheme":
+    @classmethod
+    def light(cls) -> Self:
         """A theme assuming a light terminal background color."""
-        return HelpTheme(
+        return cls(
             invoked_command=Style(fg="yellow"),
             heading=Style(fg="bright_blue"),
             constraint=Style(fg="red"),
