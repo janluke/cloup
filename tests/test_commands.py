@@ -4,7 +4,7 @@ import click
 import pytest
 
 import cloup
-from cloup._util import reindent, click_semver
+from cloup._util import reindent
 from tests.util import new_dummy_func
 
 
@@ -266,7 +266,6 @@ def test_group_class_is_used_to_create_subgroups(runner):
     assert isinstance(other_sub_group, cloup.Group)
 
 
-@pytest.mark.skipif(click_semver < (8, 5), reason="do not support arguments with help")
 def test_click_positional_arguments_with_help_are_supported(runner):
     @cloup.command()
     @click.argument("input_path", help="Input path")

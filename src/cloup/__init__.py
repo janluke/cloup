@@ -9,6 +9,7 @@ __version__ = _version.version
 __version_tuple__ = _version.version_tuple
 
 from click import (
+    Argument,
     # decorators
     confirmation_option,
     help_option,
@@ -43,7 +44,7 @@ from .formatting import (
     HelpSection,
 )
 from ._context import Context, get_current_context, pass_context
-from ._params import Argument, Option, argument, option
+from ._params import Option, argument, option
 from ._option_groups import (
     OptionGroup,
     OptionGroupMixin,
