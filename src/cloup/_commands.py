@@ -249,19 +249,13 @@ class Group(SectionMixin, Command, click.Group):
         :param error: the original error coming from Click.
         :return: the original error or a new one.
         """
-        import difflib
-
-        matches = difflib.get_close_matches(bad_name, valid_names)
-        if not matches:
-            return error
-        elif len(matches) == 1:
-            extra_msg = f"Did you mean '{matches[0]}'?"
-        else:
-            matches_list = "\n".join("   " + match for match in matches)
-            extra_msg = "Did you mean one of these?\n" + matches_list
-
-        error_msg = str(error) + " " + extra_msg
-        return click.exceptions.UsageError(error_msg, error.ctx)
+        suggestion_error = click.NoSuchCommand(
+            bad_name,
+            message=str(error),
+            possibilities=valid_names,
+            ctx=error.ctx,
+        )
+        return suggestion_error if suggestion_error.possibilities else error
 
     def must_show_subcommand_aliases(self, ctx: click.Context) -> bool:
         return first_bool(

@@ -174,9 +174,32 @@ class TestDidYouMean:
             Usage: cmd [OPTIONS] COMMAND [ARGS]...
             Try 'cmd --help' for help.
 
-            Error: No such command 'inst'. Did you mean one of these?
-               ins
-               install
+            Error: No such command 'inst'. (Did you mean one of: 'ins', 'install'?)
+            """
+        )
+
+    def test_raises_click_no_such_command_with_alias_possibilities(self, cmd):
+        with pytest.raises(click.NoSuchCommand) as exc_info:
+            cmd.main(["inst"], prog_name="cmd", standalone_mode=False)
+
+        assert exc_info.value.possibilities == ["ins", "install"]
+
+    def test_token_normalization_preserves_fallback_behavior(self, runner):
+        cmd = cloup.Group(
+            name="cmd", context_settings={"token_normalize_func": str.lower}
+        )
+        cmd.add_command(
+            cloup.Command(name="install", aliases=["ins"], callback=new_dummy_func())
+        )
+
+        res = runner.invoke(cmd, "INSS")
+
+        assert res.output == reindent(
+            """
+            Usage: cmd [OPTIONS] COMMAND [ARGS]...
+            Try 'cmd --help' for help.
+
+            Error: No such command 'inss'.
             """
         )
 
