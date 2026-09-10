@@ -115,7 +115,12 @@ build = [
   "python scripts/remove.py docs/_build",
   "sphinx-build -E -W --keep-going -b html docs docs/_build/html {args}",
 ]
-serve = "sphinx-autobuild --watch src/cloup --ignore 'docs/autoapi/**' --open-browser -b html docs docs/_build/html {args}"
+serve = """
+sphinx-autobuild --watch src/cloup --watch docs/_static/styles \
+--ignore 'docs/autoapi/**' \
+--open-browser \
+-b html docs docs/_build/html {args}
+"""
 
 [envs.package]
 locked = true
