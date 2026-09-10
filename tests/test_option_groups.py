@@ -169,6 +169,18 @@ def test_that_optgroup_is_hidden_if_all_its_options_are_hidden(runner):
     assert "Hidden group" not in result.output
 
 
+def test_option_group_omits_options_without_help_records():
+    class OptionWithoutHelpRecord(click.Option):
+        def get_help_record(self, ctx: click.Context) -> None:
+            return None
+
+    group = OptionGroup("Options")
+    group.options = [OptionWithoutHelpRecord(["--empty"]), click.Option(["--shown"])]
+
+    ctx = click.Context(click.Command("cmd"))
+    assert group.get_help_records(ctx) == [("--shown TEXT", "")]
+
+
 def test_option_group_options_setter_set_the_hidden_attr_of_options():
     opts = make_options("abc")
     group = OptionGroup("name")

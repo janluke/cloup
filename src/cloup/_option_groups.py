@@ -69,10 +69,8 @@ class OptionGroup:
         if self.hidden:
             return []
         return [
-            opt.get_help_record(ctx)  # type: ignore[misc]
-            for opt in self
-            if not opt.hidden
-        ]  # get_help_record() should return None only if opt.hidden
+            record for opt in self if (record := opt.get_help_record(ctx)) is not None
+        ]
 
     def option(self, *param_decls: str, **attrs: Any) -> Callable[[F], F]:
         """Refer to :func:`cloup.option`."""
