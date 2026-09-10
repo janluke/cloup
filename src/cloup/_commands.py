@@ -374,7 +374,10 @@ class Group(SectionMixin, Command, click.Group):
         invoke_without_command: bool = False,
         no_args_is_help: bool = False,
         context_settings: Optional[Dict[str, Any]] = None,
-        formatter_settings: Dict[str, Any] = {},
+        formatter_settings: Optional[Dict[str, Any]] = None,
+        align_option_groups: Optional[bool] = None,
+        show_constraints: Optional[bool] = None,
+        params: Optional[List[click.Parameter]] = None,
         help: Optional[str] = None,
         epilog: Optional[str] = None,
         short_help: Optional[str] = None,
@@ -393,7 +396,7 @@ class Group(SectionMixin, Command, click.Group):
         name: Optional[str] = None,
         *,
         aliases: Optional[Iterable[str]] = None,
-        cls: Optional[Type[G]] = None,
+        cls: Type[G],
         section: Optional[Section] = None,
         invoke_without_command: bool = False,
         no_args_is_help: bool = False,
@@ -411,9 +414,9 @@ class Group(SectionMixin, Command, click.Group):
         **kwargs: Any,
     ) -> Callable[[AnyCallable], G]: ...
 
-    def group(  # type: ignore
+    def group(
         self,
-        name: Optional[None] = None,
+        name: Optional[str] = None,
         *,
         cls: Optional[Type[G]] = None,
         aliases: Optional[Iterable[str]] = None,
@@ -622,7 +625,9 @@ def group(
     invoke_without_command: bool = False,
     no_args_is_help: bool = False,
     context_settings: Optional[Dict[str, Any]] = None,
-    formatter_settings: Dict[str, Any] = {},
+    formatter_settings: Optional[Dict[str, Any]] = None,
+    align_option_groups: Optional[bool] = None,
+    show_constraints: Optional[bool] = None,
     help: Optional[str] = None,
     short_help: Optional[str] = None,
     epilog: Optional[str] = None,
