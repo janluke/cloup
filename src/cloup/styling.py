@@ -6,7 +6,7 @@ of the ``--help`` output.
 import dataclasses
 import dataclasses as dc
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Callable, Optional, Union
 
 import click
 
@@ -159,8 +159,8 @@ class Style:
     .. versionadded:: 0.8.0
     """
 
-    fg: Optional[str] = None
-    bg: Optional[str] = None
+    fg: Union[int, tuple[int, int, int], str, None] = None
+    bg: Union[int, tuple[int, int, int], str, None] = None
     bold: Optional[bool] = None
     dim: Optional[bool] = None
     underline: Optional[bool] = None
