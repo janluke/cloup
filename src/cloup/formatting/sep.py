@@ -64,6 +64,7 @@ class RowSepCondition(Protocol):
     ) -> bool:
         """Return ``True`` if the input definition list should use a row
         separator (in addition to the usual ``\\n``)."""
+        ...
 
 
 class RowSepIf(RowSepPolicy):
