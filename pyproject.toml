@@ -35,7 +35,7 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
 ]
 dependencies = [
-  "click >= 8.2.0, < 9.0",
+  "click >= 8.5.0, < 9.0",
   'typing_extensions; python_version <= "3.10"',
 ]
 dynamic = [
