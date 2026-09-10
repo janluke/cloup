@@ -62,10 +62,17 @@ ignore_missing_imports = true
 
 [tool.pyrefly]
 preset = "default"
-project-includes = ["src/cloup", "tests/test_typing.py"]
+project-includes = ["src/cloup", "tests", "examples"]
+search-path = ["src", ".", "examples/manim"]
+ignore-missing-imports = ["click_default_group"]
 
 [tool.pyrefly.errors]
 unused-ignore = "error"
+
+[[tool.pyrefly.sub-config]]
+matches = "tests/**"
+# Match Mypy's default behavior for dynamic test helpers; annotated tests remain checked.
+check-unannotated-defs = false
 
 [tool.ruff]
 extend-exclude = ["docs", "src/cloup/_version.py"]
