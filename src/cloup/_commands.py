@@ -285,6 +285,7 @@ class Group(SectionMixin, Command, click.Group):
     # Click also supports bare decorators and positional cls; Cloup requires
     # parentheses and keyword-only cls, so this override is intentionally narrower.
     @overload  # type: ignore[override]
+    # pyrefly: ignore[bad-override]
     def command(  # Why overloading? Refer to module docstring.
         self,
         name: Optional[str] = None,
@@ -364,6 +365,7 @@ class Group(SectionMixin, Command, click.Group):
 
     # As with command(), Cloup intentionally has a narrower decorator API.
     @overload  # type: ignore[override]
+    # pyrefly: ignore[bad-override]
     def group(  # Why overloading? Refer to module docstring.
         self,
         name: Optional[str] = None,
