@@ -6,21 +6,18 @@ features, Cloup command decorators have detailed type hints and are generics so
 that type checkers can precisely infer the type of the returned command based on
 the ``cls`` argument.
 
-Why did you overload all decorators?
+Why do the decorators have overloads?
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-I wanted that the return type of decorators depended from the ``cls`` argument
-but MyPy doesn't allow you to set a default value on a generic argument, see:
-https://github.com/python/mypy/issues/3737.
-So I had to resort to a workaround using @overload which makes things more
-verbose. '`@overload`` is on the ``cls`` argument:
+The overloads distinguish the default command class from an explicitly supplied
+``cls``, preserving the concrete return type for custom command classes. Click
+uses the same pattern. A generic parameter with a concrete default still does
+not work in MyPy; see https://github.com/python/mypy/issues/3737.
 
-- in one signature, ``cls`` has type ``None`` and it's set to ``None``; in this
-  case the type of the instantiated command is ``cloup.Command`` for ``@command``
-  and ``cloup.Group`` for ``@group``
-- in the other signature, there's ``cls: C`` without a default, where ``C`` is
-  a type variable; in this case the type of the instantiated command is ``C``.
+The explicit keyword parameters provide IDE completion and show defaults.
+``TypedDict`` and ``Unpack`` can describe shared keyword arguments, but do not
+record their default values. The custom-class overloads also allow arbitrary
+extra keywords for subclass constructors.
 
-When and if the MyPy issue is resolved, the overloads will be removed.
 """
 
 import inspect
@@ -126,13 +123,7 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
         self.format_params(ctx, formatter)
         if self.must_show_constraints(ctx):
             self.format_constraints(ctx, formatter)  # type: ignore
-        # We use hasattr() in place of isinstance(..., MultiCommand) because
-        # MultiCommand is not a valid type since Click 8.2, which merged MultiCommand
-        # with Group and deprecated it. Since then, MultiCommand returns a
-        # _MultiCommand(Group) fake class through a module-level __getattr__, and mypy
-        # complains that MultiCommand is not a type. This check can be eventually
-        # replaced by isinstance(self, click.Group) when we drop support for Click 8.1.
-        if hasattr(self, "format_commands"):
+        if isinstance(self, click.Group):
             self.format_commands(ctx, formatter)
         self.format_epilog(ctx, formatter)
 
@@ -289,10 +280,9 @@ class Group(SectionMixin, Command, click.Group):
                 + secondary_style(")")
             )
 
-    # MyPy complains because "Signature of "group" incompatible with supertype".
-    # The supertype signature is (*args, **kwargs), which is compatible with
-    # this provided that you pass all arguments (expect "name") as keyword arg.
-    @overload  # type: ignore
+    # Click also supports bare decorators and positional cls; Cloup requires
+    # parentheses and keyword-only cls, so this override is intentionally narrower.
+    @overload  # type: ignore[override]
     def command(  # Why overloading? Refer to module docstring.
         self,
         name: Optional[str] = None,
@@ -370,10 +360,8 @@ class Group(SectionMixin, Command, click.Group):
 
         return decorator
 
-    # MyPy complains: "signature of "group" incompatible with supertype".
-    # The supertype signature is (*args, **kwargs), which is compatible with
-    # this provided that you pass all arguments (expect "name") as keyword arg.
-    @overload  # type: ignore
+    # As with command(), Cloup intentionally has a narrower decorator API.
+    @overload  # type: ignore[override]
     def group(  # Why overloading? Refer to module docstring.
         self,
         name: Optional[str] = None,
