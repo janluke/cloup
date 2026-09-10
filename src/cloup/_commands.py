@@ -599,8 +599,8 @@ def command(
                     f"a `Command` must inherit from `cloup.ConstraintMixin` to support "
                     f"constraints; `{cls}` doesn't"
                 )
-            constraints = tuple(reversed(f.__cloup_constraints__))
-            del f.__cloup_constraints__
+            constraints = tuple(reversed(getattr(f, "__cloup_constraints__")))
+            delattr(f, "__cloup_constraints__")
             kwargs["constraints"] = constraints
 
         cmd_cls = cast(Type[Command], cls if cls is not None else Command)
