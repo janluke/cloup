@@ -5,13 +5,15 @@ from functools import update_wrapper
 from typing import (
     Any,
     Callable,
+    Concatenate,
     cast,
     Dict,
     List,
+    Literal,
     Optional,
+    ParamSpec,
     Type,
     TypeVar,
-    TYPE_CHECKING,
     overload,
 )
 
@@ -22,20 +24,16 @@ from cloup._util import coalesce, pick_non_missing
 from cloup.formatting import HelpFormatter
 from cloup.typing import MISSING, Possibly
 
-if TYPE_CHECKING:
-    from typing_extensions import Concatenate, ParamSpec
-
-    P = ParamSpec("P")
-
+P = ParamSpec("P")
 R = TypeVar("R")
 
 
 @overload
-def get_current_context() -> "Context": ...
+def get_current_context(silent: Literal[False] = False) -> Context: ...
 
 
 @overload
-def get_current_context(silent: bool = False) -> "Optional[Context]": ...
+def get_current_context(silent: bool) -> Optional[Context]: ...
 
 
 def get_current_context(silent: bool = False) -> "Optional[Context]":
@@ -45,12 +43,12 @@ def get_current_context(silent: bool = False) -> "Optional[Context]":
     return cast(Optional[Context], click.get_current_context(silent=silent))
 
 
-def pass_context(f: "Callable[Concatenate[Context, P], R]") -> "Callable[P, R]":
+def pass_context(f: Callable[Concatenate[Context, P], R]) -> Callable[P, R]:
     """Marks a callback as wanting to receive the current context object as first
     argument. Equivalent to :func:`click.pass_context` but assumes the current context
     is of type :class:`cloup.Context`."""
 
-    def new_func(*args: "P.args", **kwargs: "P.kwargs") -> R:
+    def new_func(*args: P.args, **kwargs: P.kwargs) -> R:
         return f(get_current_context(), *args, **kwargs)
 
     return update_wrapper(new_func, f)
