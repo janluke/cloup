@@ -1,9 +1,18 @@
+from __future__ import annotations
+
+from typing import TYPE_CHECKING, Optional
+
 import click
 from click.decorators import _param_memo
+
+if TYPE_CHECKING:
+    from ._option_groups import OptionGroup
 
 
 class Option(click.Option):
     """A :class:`click.Option` with an extra field ``group`` of type ``OptionGroup``."""
+
+    group: Optional[OptionGroup]
 
     def __init__(self, *args, group=None, **attrs):
         super().__init__(*args, **attrs)
@@ -29,13 +38,8 @@ def option(*param_decls, cls=None, group=None, **attrs):
     Refer to :class:`click.Option` and :class:`click.Parameter` for more info
     about the accepted parameters.
 
-    In your IDE, you won't see arguments relating to shell completion,
-    because they are different in Click 7 and 8 (both supported by Cloup):
-
-    - in Click 7, it's ``autocompletion``
-    - in Click 8, it's ``shell_complete``.
-
-    These arguments have different semantics, refer to Click's docs.
+    The type hints include Click's ``shell_complete`` callback and the
+    Cloup-specific ``group`` argument.
     """
     OptionClass = cls or Option
 

@@ -7,7 +7,6 @@ from typing import (
     Callable,
     List,
     Optional,
-    Protocol,
     Sequence,
     Tuple,
     Type,
@@ -23,19 +22,7 @@ from cloup import OptionGroup
 F = TypeVar("F", bound=Callable[..., Any])
 P = TypeVar("P", bound=click.Parameter)
 
-class _ParamType(Protocol):
-    # Once Click 8.3 support is dropped, this can be replaced with
-    # click.ParamType[Any].
-    @property
-    def name(self) -> Optional[str]: ...
-    def convert(
-        self,
-        value: Any,
-        param: Optional[click.Parameter],
-        ctx: Optional[click.Context],
-    ) -> Any: ...
-
-SimpleParamTypeLike = Union[_ParamType, Type[float], Type[int], Type[str]]
+SimpleParamTypeLike = Union[click.ParamType[Any], Callable[[str], Any]]
 ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
 ParamDefault = Union[Any, Callable[[], Any]]
 ParamCallback = Callable[[click.Context, P, Any], Any]
@@ -44,21 +31,14 @@ ShellCompleteArg = Callable[
     Union[List[CompletionItem], List[str]],
 ]
 
-class Argument(click.Argument):
-    def __init__(
-        self,
-        *args: Any,
-        help: Optional[str] = None,
-        deprecated: bool | str = False,
-        **attrs: Any,
-    ): ...
-
 class Option(click.Option):
+    group: Optional[OptionGroup]
+
     def __init__(self, *args: Any, group: Optional[OptionGroup] = None, **attrs: Any): ...
 
 def argument(
     *param_decls: str,
-    cls: Optional[Type[Argument]] = None,
+    cls: Optional[Type[click.Argument]] = None,
     help: Optional[str] = None,
     deprecated: bool | str = False,
     type: Optional[ParamTypeLike] = None,
@@ -88,7 +68,7 @@ def option(
     is_eager: bool = False,
     # Help text tuning
     show_choices: bool = True,
-    show_default: bool = False,
+    show_default: Union[bool, str, None] = None,
     show_envvar: bool = False,
     # Flag options
     flag_value: Optional[Any] = None,
