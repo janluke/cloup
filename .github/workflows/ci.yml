@@ -67,8 +67,11 @@ jobs:
       - name: Install Hatch
         run: python -m pip install --upgrade hatch
 
-      - name: Check types
-        run: hatch run $TEST_ENV:typing
+      - name: Check types with Pyrefly
+        run: hatch run $TEST_ENV:typing-pyrefly
+
+      - name: Check types with mypy
+        run: hatch run $TEST_ENV:typing-mypy
 
       - name: Run tests with coverage
         run: hatch run $TEST_ENV:test-cov

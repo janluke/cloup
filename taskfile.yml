@@ -27,10 +27,12 @@ tasks:
 
   hatch-run:
     internal: true
+    requires:
+      vars: [ENVIRONMENT, SCRIPT]
     label: "{{.ENVIRONMENT}}:{{.SCRIPT}}"
     prefix: "{{.ENVIRONMENT}}:{{.SCRIPT}}"
     cmds:
-      - hatch run '{{.ENVIRONMENT}}:{{.SCRIPT}}' {{.ARGS}}
+      - hatch run {{.ENVIRONMENT}}:{{.SCRIPT}} {{.ARGS}}
 
   # Prepare shared environments before running scripts from them concurrently.
   # `hatch run` creates missing environments and also syncs existing ones.
@@ -83,19 +85,50 @@ tasks:
   # Static type checking
   #
 
-  typing:
-    desc: Type-check in the development environment.
+  mypy:
+    desc: Type-check with mypy in the development environment.
     cmds:
-      - hatch run dev:typing
+      - "hatch run dev:typing-mypy"
 
-  typing:all:
-    desc: Type-check every test environment in parallel.
+  pyrefly:
+    desc: Type-check with Pyrefly in the development environment.
+    cmds:
+      - "hatch run dev:typing-pyrefly"
+
+  typing:
+    desc: Type-check with Pyrefly, then mypy.
+    cmds:
+      - task: pyrefly
+      - task: mypy
+
+  mypy:all:
+    desc: Type-check with mypy every test environment in parallel.
     deps:
-      - for: {var: TEST_ENVS}
+      - for: { var: TEST_ENVS }
         task: hatch-run
         vars:
           ENVIRONMENT: "{{.ITEM}}"
-          SCRIPT: typing
+          SCRIPT: "typing-mypy"
+
+  pyrefly:all:
+    desc: Type-check with Pyrefly every test environment in parallel.
+    deps:
+      - for: { var: TEST_ENVS }
+        task: hatch-run
+        vars:
+          ENVIRONMENT: "{{.ITEM}}"
+          SCRIPT: "typing-pyrefly"
+
+  typing:all:
+    desc: Type-check every test environment in parallel.
+    cmds:
+      - task: prepare-envs
+        vars:
+          ENVS: "{{.TEST_ENVS}}"
+      - task: run-concurrently
+        vars:
+          TASKS: ["pyrefly:all", "mypy:all"]
+
 
   #
   # Testing

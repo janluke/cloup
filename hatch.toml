@@ -10,6 +10,7 @@ installer = "uv"
 dependencies = [
   "coverage[toml] >= 6.5",
   "mypy",
+  "pyrefly",
   "pytest",
   "pytest-cov",
   "pytest-xdist[psutil]",
@@ -28,10 +29,17 @@ test-cov = [
   "click-version",
   "coverage run --parallel-mode -m pytest {args:-vv}",
 ]
-typing = [
-  "click-version",
+typing-mypy = [
   "mypy --strict src/cloup",
   "mypy tests examples",
+]
+typing-pyrefly = [
+  "pyrefly check",
+]
+typing = [
+  "click-version",
+  "typing-pyrefly",
+  "typing-mypy",
 ]
 upgrade-click = '"$HATCH_UV" pip install --upgrade-package click -r pyproject.toml'
 
