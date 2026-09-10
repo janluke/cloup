@@ -1,17 +1,22 @@
 Arguments with ``help``
 =======================
 
-If you've used Click before, you probably know that:
+.. note:: Also available in Click since version 8.5.0
+
+    Cloup introduced this feature before it was available in Click.
+
+Before version 8.5.0, Click did not allow a ``help`` description for positional
+arguments:
 
     ``click.argument()`` does not take a help parameter. This is to follow the
     general convention of Unix tools of using arguments for only the most
     necessary things, and to document them in the command help text by referring
     to them by name.
 
-Cloup doesn't force the Unix convention on you. ``cloup.argument`` takes an
-optional ``help`` parameter. If you pass a non-empty string to at least one of
-the arguments of a command, Cloup will print a "Positional arguments" section
-just below the command description.
+Cloup does not force the Unix convention on you. ``cloup.argument`` takes an optional
+``help`` parameter. If you pass a non-empty string to at least one of the arguments of a
+command, Cloup will print a "Positional arguments" section just below the command
+description.
 
 .. tab-set::
 

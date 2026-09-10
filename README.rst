@@ -58,7 +58,7 @@ Overview
 `Click <https://github.com/pallets/click>`_ with several features that make it
 more expressive and configurable:
 
-- **option groups** and an (optional) help section for positional arguments
+- **option groups**
 
 - **constraints**, like ``mutually_exclusive``, that can be applied to option groups
   or to any group of parameters, even *conditionally*
@@ -75,11 +75,26 @@ more expressive and configurable:
   - use a different layout when the terminal width is below a certain threshold
     in order to improve readability
 
-- suggestions like "did you mean <subcommand>?" when you mistype a subcommand.
+- additional types, e.g. path types that use ``pathlib.Path`` instead of ``str`` by
+  default.
 
-Moreover, Cloup improves on **IDE support** providing decorators with *detailed*
-type hints and adding the static methods ``Context.settings()`` and
-``HelpFormatter.settings()`` for creating dictionaries of settings.
+Other Cloup features and refinements have since been added, in full or in part, to
+Click itself:
+
+- (optional) help section for positional arguments
+
+  - added to Click in version 8.5.0
+
+- "did you mean <subcommand>?" suggestions when you mistype a subcommand
+
+  - added to Click in version 8.4.0
+
+- detailed type annotations and typed helpers such as ``Context.settings()`` and
+  ``HelpFormatter.settings()`` for better IDE support
+
+  - Click also has type annotations, but its parameter and command decorators do not
+    type supported keyword arguments individually. The settings helpers remain specific
+    to Cloup
 
 Cloup is **statically type-checked** with MyPy in strict mode and extensively **tested**
 against multiple versions of Python with nearly 100% coverage.
