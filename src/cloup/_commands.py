@@ -592,7 +592,7 @@ def command(
             f"While parenthesis are optional in Click >= 8.1, they are required in Cloup."
         )
 
-    def decorator(f: AnyCallable) -> C:
+    def decorator(f: AnyCallable) -> Union[Command, C]:
         if hasattr(f, "__cloup_constraints__"):
             if cls and not issubclass(cls, ConstraintMixin):
                 raise TypeError(
@@ -603,9 +603,9 @@ def command(
             delattr(f, "__cloup_constraints__")
             kwargs["constraints"] = constraints
 
-        cmd_cls = cast(Type[Command], cls if cls is not None else Command)
+        cmd_cls: Type[Union[Command, C]] = cls if cls is not None else Command
         try:
-            cmd = cast(C, click.command(name, cls=cmd_cls, **kwargs)(f))
+            cmd = click.command(name, cls=cmd_cls, **kwargs)(f)
             if aliases:
                 cmd.aliases = list(aliases)  # type: ignore
             return cmd
@@ -773,7 +773,7 @@ _ARGS_INFO = {
 
 
 def _process_unexpected_kwarg_error(
-    error: TypeError, args_info: Dict[str, _ArgInfo], cls: Type[Command]
+    error: TypeError, args_info: Dict[str, _ArgInfo], cls: Type[click.Command]
 ) -> TypeError:
     """Check if the developer tried to pass a Cloup-specific argument to a ``cls``
     that doesn't support it and if that's the case, augments the error message
