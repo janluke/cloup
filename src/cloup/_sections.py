@@ -18,7 +18,7 @@ from cloup._util import first_bool, pick_not_none
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
 CommandType = TypeVar("CommandType", bound=Type[click.Command])
-Subcommands = Union[Iterable[click.Command], Dict[str, click.Command]]
+Subcommands = Union[Sequence[click.Command], Dict[str, click.Command]]
 
 
 class Section:
@@ -53,7 +53,7 @@ class Section:
             for cmd in commands:
                 self.add_command(cmd)
         elif isinstance(commands, dict):
-            self.commands = OrderedDict(commands)
+            self.commands = OrderedDict(commands.items())
         else:
             raise TypeError(
                 "argument `commands` must be a sequence of commands "
