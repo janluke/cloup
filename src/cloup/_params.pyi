@@ -44,11 +44,14 @@ ShellCompleteArg = Callable[
     Union[List[CompletionItem], List[str]],
 ]
 
-def make_arg_metavar(arg: click.Argument, ctx: click.Context) -> str: ...
-
 class Argument(click.Argument):
-    def __init__(self, *args: Any, help: Optional[str] = None, **attrs: Any): ...
-    def get_help_record(self, ctx: click.Context) -> Tuple[str, str]: ...
+    def __init__(
+        self,
+        *args: Any,
+        help: Optional[str] = None,
+        deprecated: bool | str = False,
+        **attrs: Any,
+    ): ...
 
 class Option(click.Option):
     def __init__(self, *args: Any, group: Optional[OptionGroup] = None, **attrs: Any): ...
@@ -57,6 +60,7 @@ def argument(
     *param_decls: str,
     cls: Optional[Type[Argument]] = None,
     help: Optional[str] = None,
+    deprecated: bool | str = False,
     type: Optional[ParamTypeLike] = None,
     required: Optional[bool] = None,
     default: Optional[ParamDefault] = None,
@@ -78,6 +82,7 @@ def option(
     default: Optional[ParamDefault] = None,
     required: Optional[bool] = None,
     help: Optional[str] = None,
+    deprecated: bool | str = False,
     # Processing
     callback: Optional[ParamCallback[click.Option]] = None,
     is_eager: bool = False,

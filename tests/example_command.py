@@ -182,7 +182,6 @@ Other options:
 Made with love by Gianluca.
 """.strip()
 
-
 if __name__ == "__main__":
     make_example_command(align_option_groups=False, tabular_help=True)(
         ["--help"], prog_name="clouptest"
