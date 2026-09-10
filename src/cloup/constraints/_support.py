@@ -28,7 +28,7 @@ class BoundConstraintSpec(NamedTuple):
     it has to check."""
 
     constraint: Constraint
-    param_names: Union[Sequence[str]]
+    param_names: Sequence[str]
 
     def resolve_params(self, cmd: "ConstraintMixin") -> "BoundConstraint":
         return BoundConstraint(self.constraint, cmd.get_params_by_name(self.param_names))
