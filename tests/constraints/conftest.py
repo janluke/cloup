@@ -1,4 +1,3 @@
-from typing import cast
 from unittest.mock import Mock
 
 import click
@@ -45,4 +44,4 @@ def sample_cmd() -> Command:
     def f(**kwargs):
         print("It works")
 
-    return cast(Command, f)
+    return f

@@ -1,5 +1,3 @@
-from typing import cast
-
 import click
 
 import cloup
@@ -65,7 +63,7 @@ def make_example_command(
         expected_help = _LINEAR_HELP
 
     cmd.expected_help = expected_help  # type: ignore
-    return cast(Command, cmd)
+    return cmd
 
 
 _TABULAR_ALIGNED_HELP = """
