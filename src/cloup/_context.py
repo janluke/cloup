@@ -114,6 +114,8 @@ class Context(click.Context):
         keyword arguments forwarded to :class:`click.Context`.
     """
 
+    # The Cloup context contract requires the Cloup formatter extensions.
+    # pyrefly: ignore[bad-override-mutable-attribute]
     formatter_class: Type[HelpFormatter] = HelpFormatter
 
     def __init__(

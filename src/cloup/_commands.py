@@ -74,6 +74,8 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
     .. versionadded:: 0.8.0
     """
 
+    # The Cloup command contract requires the Cloup context extensions.
+    # pyrefly: ignore[bad-override-mutable-attribute]
     context_class: Type[Context] = Context
 
     def __init__(
