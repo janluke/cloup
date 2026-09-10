@@ -6,11 +6,11 @@ of the ``--help`` output.
 import dataclasses
 import dataclasses as dc
 from dataclasses import dataclass
-from typing import Any, Callable, Dict, Optional
+from typing import Callable, Optional
 
 import click
 
-from cloup._util import FrozenSpace, delete_keys, identity
+from cloup._util import FrozenSpace, identity
 from cloup.typing import MISSING, Possibly
 
 IStyle = Callable[[str], str]
@@ -171,19 +171,23 @@ class Style:
     strikethrough: Optional[bool] = None
     text_transform: Optional[IStyle] = None
 
-    _style_kwargs: Optional[Dict[str, Any]] = dc.field(init=False, default=None)
-
     def __call__(self, text: str) -> str:
-        if self._style_kwargs is None:
-            kwargs = dc.asdict(self)
-            delete_keys(kwargs, ["text_transform", "_style_kwargs"])
-            object.__setattr__(self, "_style_kwargs", kwargs)
-        else:
-            kwargs = self._style_kwargs
-
         if self.text_transform:
             text = self.text_transform(text)
-        return click.style(text, **kwargs)
+
+        return click.style(
+            text,
+            fg=self.fg,
+            bg=self.bg,
+            bold=self.bold,
+            dim=self.dim,
+            underline=self.underline,
+            overline=self.overline,
+            italic=self.italic,
+            blink=self.blink,
+            reverse=self.reverse,
+            strikethrough=self.strikethrough,
+        )
 
 
 class Color(FrozenSpace):

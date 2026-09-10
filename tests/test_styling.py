@@ -61,3 +61,10 @@ def test_color_class():
     for k, v in d.items():
         assert k in Color
         assert Color[k] == v
+
+
+def test_style_is_hashable_after_calling():
+    s = Style(fg="red")
+    hash(s)  # no exception
+    s("ciao")
+    hash(s)  # still hashable
