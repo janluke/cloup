@@ -185,8 +185,8 @@ class HelpFormatter(click.HelpFormatter):
     def available_width(self) -> int:
         return self.width - self.current_indent
 
-    def write(self, *strings: str) -> None:
-        self.buffer += strings
+    def write(self, string: str = "", *strings: str) -> None:
+        self.buffer += (string, *strings)
 
     def write_usage(
         self, prog: str, args: str = "", prefix: Optional[str] = None
