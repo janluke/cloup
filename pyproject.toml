@@ -60,6 +60,13 @@ packages = ["src/cloup"]
 [tool.mypy]
 ignore_missing_imports = true
 
+[tool.pyrefly]
+preset = "default"
+project-includes = ["src/cloup", "tests/test_typing.py"]
+
+[tool.pyrefly.errors]
+unused-ignore = "error"
+
 [tool.ruff]
 extend-exclude = ["docs", "src/cloup/_version.py"]
 include = [
