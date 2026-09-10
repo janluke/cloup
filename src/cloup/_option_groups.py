@@ -391,7 +391,7 @@ def _option_group(
                         f'"{existing_group}" and then passed as argument to '
                         f"`@option_group({title!r}, ...)`"
                     )
-                new_option.group = opt_group  # type: ignore
+                new_option.group = opt_group  # type: ignore[attr-defined]
                 if hidden:
                     new_option.hidden = True
         return f
