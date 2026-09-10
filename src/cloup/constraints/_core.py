@@ -167,6 +167,8 @@ class Constraint(abc.ABC):
             param_names = cast(Sequence[str], params)
             params_objects = ctx.command.get_params_by_name(param_names)
         else:
+            # Mypy does not narrow this union from the first element check.
+            # pyrefly: ignore[redundant-cast]
             params_objects = cast(Sequence[click.Parameter], params)
 
         if Constraint.must_check_consistency(ctx):
