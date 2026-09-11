@@ -29,6 +29,20 @@ def test_cloup_all_contains_click_public_namespace(
     assert click_public_names <= set(cloup.__all__)
 
 
+def test_warnings_module_is_not_exported_by_star_import(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    namespace: dict[str, object] = {}
+    with pytest.warns(DeprecationWarning):
+        exec("from cloup import *", namespace)
+
+    assert "warnings" not in cloup.__all__
+    assert "warnings" not in namespace
+
+    monkeypatch.setattr(cloup.warnings, "formatter_settings_conflict", False)
+    assert cloup.warnings.formatter_settings_conflict is False
+
+
 def test_click_names_are_reexported_or_intentionally_overridden(
     click_public_names: set[str],
 ) -> None:

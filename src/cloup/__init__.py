@@ -98,7 +98,7 @@ else:
         raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
-from . import warnings
+from . import warnings as warnings
 from .styling import (
     HelpTheme,
     Style,
@@ -217,6 +217,5 @@ __all__ = [
     "style",
     "unstyle",
     "version_option",
-    "warnings",
     "wrap_text",
 ]
