@@ -5,6 +5,7 @@ import pytest
 
 import cloup
 from cloup._util import reindent
+from cloup.constraints import mutually_exclusive
 from tests.util import new_dummy_func
 
 
@@ -244,31 +245,47 @@ def test_group_subcommand_decorators_accept_cls_as_positional_argument():
     assert root.commands == {"sub-cmd": subcommand, "sub-grp": subgroup}
 
 
-@pytest.mark.parametrize("decorator", [cloup.command, cloup.group])
-def test_error_is_raised_when_command_decorators_are_used_without_parenthesis(decorator):
-    with pytest.raises(Exception, match="parenthesis"):
+@pytest.mark.parametrize(
+    "decorator, expected_cls",
+    [(cloup.command, cloup.Command), (cloup.group, cloup.Group)],
+)
+def test_command_decorators_can_be_used_without_parenthesis(decorator, expected_cls):
+    @decorator
+    def cmd_without_parenthesis():
+        pass
 
-        @decorator
-        def cmd():
-            pass
+    assert isinstance(cmd_without_parenthesis, expected_cls)
+    # The callback takes the place of `name`, so the name is derived from it.
+    assert cmd_without_parenthesis.name == "cmd-without-parenthesis"
 
 
-def test_error_is_raised_when_group_subcommand_decorators_are_used_without_parenthesis():
+def test_group_subcommand_decorators_can_be_used_without_parenthesis():
     @cloup.group()
     def root():
         pass
 
-    with pytest.raises(Exception, match="parenthesis"):
+    @root.group
+    def subgroup():
+        pass
 
-        @root.group
-        def subgroup():
-            pass
+    @root.command
+    def subcommand():
+        pass
 
-    with pytest.raises(Exception, match="parenthesis"):
+    assert isinstance(subgroup, cloup.Group)
+    assert isinstance(subcommand, cloup.Command)
+    assert root.commands == {"subgroup": subgroup, "subcommand": subcommand}
 
-        @root.command
-        def subcommand():
-            pass
+
+def test_command_decorators_without_parenthesis_support_constraints():
+    @cloup.command
+    @cloup.option("--one")
+    @cloup.option("--two")
+    @cloup.constraint(mutually_exclusive, ["one", "two"])
+    def cmd(one, two):
+        pass
+
+    assert len(cmd.param_constraints) == 1
 
 
 def test_group_command_class_is_used_to_create_subcommands(runner):
