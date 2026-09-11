@@ -34,7 +34,8 @@ typing-mypy = [
   "mypy tests examples",
 ]
 typing-pyrefly = [
-  "pyrefly check",
+  "pyrefly check --preset strict src/cloup",
+  "pyrefly check tests examples",
 ]
 typing = [
   "click-version",
