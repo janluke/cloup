@@ -38,7 +38,7 @@ class Predicate(abc.ABC):
 
     def negated_description(self, ctx: click.Context) -> str:
         """Succinct description of the negation of this predicate (alias: `neg_desc`)."""
-        return "NOT({})".format(self.description(ctx))
+        return f"NOT({self.description(ctx)})"
 
     def desc(self, ctx: click.Context) -> str:
         """Short alias for :meth:`description`."""
@@ -95,7 +95,7 @@ class Not(Predicate, Generic[P]):
         return self.predicate
 
     def __repr__(self) -> str:
-        return "Not({!r})".format(self.predicate)
+        return f"Not({self.predicate!r})"
 
 
 class _Operator(Predicate, metaclass=abc.ABCMeta):
@@ -110,9 +110,7 @@ class _Operator(Predicate, metaclass=abc.ABCMeta):
 
     def description(self, ctx: click.Context) -> str:
         return self.DESC_SEP.join(
-            "({})".format(p.description(ctx))
-            if isinstance(p, _Operator)
-            else p.description(ctx)
+            f"({p.description(ctx)})" if isinstance(p, _Operator) else p.description(ctx)
             for p in self.predicates
         )
 
@@ -127,9 +125,7 @@ class _And(_Operator):
 
     def negated_description(self, ctx: click.Context) -> str:
         return " or ".join(
-            "({})".format(p.neg_desc(ctx))
-            if isinstance(p, _Operator)
-            else p.neg_desc(ctx)
+            f"({p.neg_desc(ctx)})" if isinstance(p, _Operator) else p.neg_desc(ctx)
             for p in self.predicates
         )
 
@@ -149,9 +145,7 @@ class _Or(_Operator):
 
     def negated_description(self, ctx: click.Context) -> str:
         return " and ".join(
-            "({})".format(p.neg_desc(ctx))
-            if isinstance(p, _Operator)
-            else p.neg_desc(ctx)
+            f"({p.neg_desc(ctx)})" if isinstance(p, _Operator) else p.neg_desc(ctx)
             for p in self.predicates
         )
 
@@ -171,10 +165,10 @@ class IsSet(Predicate):
         self.param_name = param_name
 
     def description(self, ctx: click.Context) -> str:
-        return "{} is set".format(param_label_by_name(ctx, self.param_name))
+        return f"{param_label_by_name(ctx, self.param_name)} is set"
 
     def negated_description(self, ctx: click.Context) -> str:
-        return "{} is not set".format(param_label_by_name(ctx, self.param_name))
+        return f"{param_label_by_name(ctx, self.param_name)} is not set"
 
     def __call__(self, ctx: click.Context) -> bool:
         command = ensure_constraints_support(ctx.command)

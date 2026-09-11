@@ -77,7 +77,7 @@ class Section:
         return len(self.commands)
 
     def __repr__(self) -> str:
-        return "Section({}, is_sorted={})".format(self.title, self.is_sorted)
+        return f"Section({self.title}, is_sorted={self.is_sorted})"
 
 
 class SectionMixin:
