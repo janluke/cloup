@@ -1,12 +1,11 @@
 from collections import OrderedDict
 from typing import (
     Any,
-    Iterable,
     Optional,
-    Sequence,
     TypeVar,
     Union,
 )
+from collections.abc import Iterable, Sequence
 
 import click
 

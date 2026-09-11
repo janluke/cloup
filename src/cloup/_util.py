@@ -3,12 +3,10 @@
 import importlib.metadata
 from typing import (
     Any,
-    Hashable,
-    Iterable,
     Optional,
-    Sequence,
     TypeVar,
 )
+from collections.abc import Hashable, Iterable, Sequence
 
 from cloup.typing import MISSING, Possibly
 

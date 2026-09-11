@@ -2,7 +2,8 @@
 This modules contains classes for creating conditional constraints.
 """
 
-from typing import Optional, Sequence, Union
+from typing import Optional, Union
+from collections.abc import Sequence
 
 from click import Context, Parameter
 

@@ -90,7 +90,7 @@ target-version = "py310"
 [tool.ruff.lint]
 # Preserve Flake8's non-formatting error coverage while leaving formatter-owned
 # whitespace and line-length rules to `ruff format`. W503 has no Ruff equivalent.
-select = ["E4", "E7", "E9", "F", "UP006", "W"]
+select = ["E4", "E7", "E9", "F", "UP006", "UP035", "W"]
 
 [tool.coverage.report]
 exclude_lines = [

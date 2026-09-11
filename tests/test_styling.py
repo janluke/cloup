@@ -1,6 +1,7 @@
 import inspect
 from dataclasses import dataclass
-from typing import Callable, Optional
+from typing import Optional
+from collections.abc import Callable
 
 import click
 import pytest

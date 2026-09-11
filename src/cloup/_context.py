@@ -4,7 +4,6 @@ import warnings
 from functools import update_wrapper
 from typing import (
     Any,
-    Callable,
     Concatenate,
     cast,
     Literal,
@@ -13,6 +12,7 @@ from typing import (
     TypeVar,
     overload,
 )
+from collections.abc import Callable
 
 import click
 
