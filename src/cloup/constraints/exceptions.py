@@ -11,7 +11,7 @@ if TYPE_CHECKING:
 
 
 def default_constraint_error(params: Iterable[Parameter], desc: str) -> str:
-    return "the following constraint on parameters [%s] was not satisfied: %s" % (
+    return "the following constraint on parameters [{}] was not satisfied: {}".format(
         join_param_labels(params),
         desc,
     )

@@ -115,7 +115,7 @@ class BoundConstraint(NamedTuple):
         constr_help = self.constraint.help(ctx)
         if not constr_help:
             return None
-        param_list = "{%s}" % join_param_labels(self.params)
+        param_list = "{{{}}}".format(join_param_labels(self.params))
         return param_list, constr_help
 
 

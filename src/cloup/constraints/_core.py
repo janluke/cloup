@@ -255,7 +255,7 @@ class Operator(Constraint, abc.ABC):
 
     def help(self, ctx: click.Context) -> str:
         return self.HELP_SEP.join(
-            "(%s)" % c.help(ctx) if isinstance(c, Operator) else c.help(ctx)
+            "({})".format(c.help(ctx)) if isinstance(c, Operator) else c.help(ctx)
             for c in self.constraints
         )
 
