@@ -32,7 +32,7 @@ def get_current_context(silent: Literal[False] = False) -> Context: ...
 def get_current_context(silent: bool) -> Context | None: ...
 
 
-def get_current_context(silent: bool = False) -> "Context | None":
+def get_current_context(silent: bool = False) -> Context | None:
     """Equivalent to :func:`click.get_current_context` but casts the returned
     :class:`click.Context` object to :class:`cloup.Context` (which is safe when using
     cloup commands classes and decorators)."""
