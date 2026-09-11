@@ -32,7 +32,8 @@ def _constraint_memo(
     f: Any, constr: Union[BoundConstraintSpec, "BoundConstraint"]
 ) -> None:
     if not hasattr(f, "__cloup_constraints__"):
-        f.__cloup_constraints__ = []
+        constraints: list[BoundConstraintSpec | BoundConstraint] = []
+        f.__cloup_constraints__ = constraints
     f.__cloup_constraints__.append(constr)
 
 
