@@ -2,8 +2,6 @@
 Example of option groups, "flat style".
 """
 
-import click
-
 import cloup
 from cloup import OptionGroup, option
 from cloup.constraints import If, RequireAtLeast, mutually_exclusive
@@ -30,7 +28,7 @@ _output = OptionGroup(
 @_output.option("--six", help="3rd output option")
 # Other options
 @option(
-    "--seven", help="first uncategorized option", type=click.Choice("yes no ask".split())
+    "--seven", help="first uncategorized option", type=cloup.Choice(["yes", "no", "ask"])
 )
 @option("--height", help="second uncategorized option")
 def main(**kwargs):
