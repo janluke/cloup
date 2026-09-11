@@ -1,9 +1,12 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING
+from collections.abc import Callable
+from typing import TYPE_CHECKING, Any
 
 import click
 from click.decorators import _param_memo
+
+from .typing import F
 
 if TYPE_CHECKING:
     from ._option_groups import OptionGroup
@@ -14,7 +17,12 @@ class Option(click.Option):
 
     group: OptionGroup | None
 
-    def __init__(self, *args, group=None, **attrs):
+    def __init__(
+        self,
+        *args: Any,
+        group: OptionGroup | None = None,
+        **attrs: Any,
+    ) -> None:
         super().__init__(*args, **attrs)
         self.group = group
 
@@ -23,17 +31,26 @@ GroupedOption = Option
 """Alias of ``Option``."""
 
 
-def argument(*param_decls, cls=None, **attrs):
+def argument(
+    *param_decls: str,
+    cls: type[click.Argument] | None = None,
+    **attrs: Any,
+) -> Callable[[F], F]:
     cls = cls or click.Argument
 
-    def decorator(f):
+    def decorator(f: F) -> F:
         _param_memo(f, cls(param_decls, **attrs))
         return f
 
     return decorator
 
 
-def option(*param_decls, cls=None, group=None, **attrs):
+def option(
+    *param_decls: str,
+    cls: type[click.Option] | None = None,
+    group: OptionGroup | None = None,
+    **attrs: Any,
+) -> Callable[[F], F]:
     """Attach an ``Option`` to the command.
     Refer to :class:`click.Option` and :class:`click.Parameter` for more info
     about the accepted parameters.
@@ -43,10 +60,10 @@ def option(*param_decls, cls=None, group=None, **attrs):
     """
     OptionClass = cls or Option
 
-    def decorator(f):
-        _param_memo(f, OptionClass(param_decls, **attrs))
-        new_option = f.__click_params__[-1]
-        new_option.group = group
+    def decorator(f: F) -> F:
+        new_option = OptionClass(param_decls, **attrs)
+        _param_memo(f, new_option)
+        setattr(new_option, "group", group)
         if group and group.hidden:
             new_option.hidden = True
         return f
