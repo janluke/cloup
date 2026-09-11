@@ -1,7 +1,7 @@
 __all__ = ["AnyCallable", "MISSING", "Possibly", "Decorator", "F"]
 
 from enum import Enum
-from typing import Any, TypeVar, Union
+from typing import Any, TypeAlias, TypeVar
 from collections.abc import Callable
 
 
@@ -17,7 +17,7 @@ Useful when None can't be used to play the role because it represents a valid
 non-null value."""
 
 _T = TypeVar("_T")
-Possibly = Union[_Missing, _T]
+Possibly: TypeAlias = _Missing | _T
 """Possibly[T] is like Optional[T] but uses MISSING for missing values."""
 
 AnyCallable = Callable[..., Any]

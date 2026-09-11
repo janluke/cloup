@@ -3,7 +3,6 @@ from typing import (
     Any,
     Optional,
     TypeVar,
-    Union,
     cast,
     overload,
 )
@@ -127,7 +126,7 @@ class Constraint(abc.ABC):
 
     def check(
         self,
-        params: Union[Sequence[click.Parameter], Sequence[str]],
+        params: Sequence[click.Parameter] | Sequence[str],
         ctx: Optional[click.Context] = None,
     ) -> None:
         """
@@ -176,8 +175,8 @@ class Constraint(abc.ABC):
 
     def rephrased(
         self,
-        help: Union[None, str, HelpRephraser] = None,
-        error: Union[None, str, ErrorRephraser] = None,
+        help: None | str | HelpRephraser = None,
+        error: None | str | ErrorRephraser = None,
     ) -> "Rephraser":
         """
         Override the help string and/or the error message of this constraint
@@ -345,8 +344,8 @@ class Rephraser(Constraint):
     def __init__(
         self,
         constraint: Constraint,
-        help: Union[None, str, HelpRephraser] = None,
-        error: Union[None, str, ErrorRephraser] = None,
+        help: None | str | HelpRephraser = None,
+        error: None | str | ErrorRephraser = None,
     ):
         if help is None and error is None:
             raise ValueError("`help` and `error` cannot both be `None`")

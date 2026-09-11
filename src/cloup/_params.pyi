@@ -6,7 +6,6 @@ from typing import (
     Any,
     Optional,
     TypeVar,
-    Union,
 )
 from collections.abc import Callable, Sequence
 
@@ -18,13 +17,13 @@ from cloup import OptionGroup
 F = TypeVar("F", bound=Callable[..., Any])
 P = TypeVar("P", bound=click.Parameter)
 
-SimpleParamTypeLike = Union[click.ParamType[Any], Callable[[str], Any]]
-ParamTypeLike = Union[SimpleParamTypeLike, tuple[SimpleParamTypeLike, ...]]
-ParamDefault = Union[Any, Callable[[], Any]]
+SimpleParamTypeLike = click.ParamType[Any] | Callable[[str], Any]
+ParamTypeLike = SimpleParamTypeLike | tuple[SimpleParamTypeLike, ...]
+ParamDefault = Any | Callable[[], Any]
 ParamCallback = Callable[[click.Context, P, Any], Any]
 ShellCompleteArg = Callable[
     [click.Context, P, str],
-    Union[list[CompletionItem], list[str]],
+    list[CompletionItem] | list[str],
 ]
 
 class Option(click.Option):
@@ -44,7 +43,7 @@ def argument(
     nargs: Optional[int] = None,
     metavar: Optional[str] = None,
     expose_value: bool = True,
-    envvar: Optional[Union[str, Sequence[str]]] = None,
+    envvar: Optional[str | Sequence[str]] = None,
     shell_complete: Optional[ShellCompleteArg[click.Argument]] = None,
     **kwargs: Any,
 ) -> Callable[[F], F]: ...
@@ -64,7 +63,7 @@ def option(
     is_eager: bool = False,
     # Help text tuning
     show_choices: bool = True,
-    show_default: Union[bool, str, None] = None,
+    show_default: bool | str | None = None,
     show_envvar: bool = False,
     # Flag options
     flag_value: Optional[Any] = None,
@@ -73,13 +72,13 @@ def option(
     nargs: Optional[int] = None,
     multiple: bool = False,
     # Prompt
-    prompt: Union[bool, str] = False,
-    confirmation_prompt: Union[bool, str] = False,
+    prompt: bool | str = False,
+    confirmation_prompt: bool | str = False,
     prompt_required: bool = True,
     hide_input: bool = False,
     # Environment
     allow_from_autoenv: bool = True,
-    envvar: Optional[Union[str, Sequence[str]]] = None,
+    envvar: Optional[str | Sequence[str]] = None,
     # Hiding
     hidden: bool = False,
     expose_value: bool = True,

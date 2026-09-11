@@ -91,7 +91,7 @@ class RowSepIf(RowSepPolicy):
         The empty string corresponds to an empty line separator.
     """
 
-    def __init__(self, condition: RowSepCondition, sep: Union[str, SepGenerator] = ""):
+    def __init__(self, condition: RowSepCondition, sep: str | SepGenerator = ""):
         if isinstance(sep, str) and sep.endswith("\n"):
             raise ValueError(
                 "sep must not end with '\\n'. The formatter writes  a '\\n' after it; "
@@ -135,7 +135,7 @@ def count_multiline_rows(rows: Sequence[Sequence[str]], col_widths: Sequence[int
 
 
 def multiline_rows_are_at_least(
-    count_or_percentage: Union[int, float],
+    count_or_percentage: int | float,
 ) -> RowSepCondition:
     """
     Return a ``RowSepStrategy`` that returns a row separator between all rows

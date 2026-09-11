@@ -7,7 +7,7 @@ import dataclasses
 import dataclasses as dc
 import sys
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Optional
 from collections.abc import Callable
 
 import click
@@ -174,8 +174,8 @@ class Style:
     .. versionadded:: 0.8.0
     """
 
-    fg: Union[int, tuple[int, int, int], str, None] = None
-    bg: Union[int, tuple[int, int, int], str, None] = None
+    fg: int | tuple[int, int, int] | str | None = None
+    bg: int | tuple[int, int, int] | str | None = None
     bold: Optional[bool] = None
     dim: Optional[bool] = None
     underline: Optional[bool] = None
