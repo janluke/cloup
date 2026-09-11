@@ -1,4 +1,5 @@
 import abc
+import sys
 from collections.abc import Callable, Sequence
 from typing import (
     Any,
@@ -8,6 +9,11 @@ from typing import (
 )
 
 import click
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 from cloup._util import (
     FrozenSpace,
@@ -260,6 +266,7 @@ class Operator(Constraint, abc.ABC):
             for c in self.constraints
         )
 
+    @override
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         for c in self.constraints:
             c.check_consistency(params)
@@ -277,6 +284,7 @@ class And(Operator):
         for c in self.constraints:
             c.check_values(params, ctx)
 
+    @override
     def __and__(self, other: Constraint) -> "And":
         if isinstance(other, And):
             return And(*self.constraints, *other.constraints)
@@ -299,6 +307,7 @@ class Or(Operator):
             self.help(ctx), ctx=ctx, constraint=self, params=params
         )
 
+    @override
     def __or__(self, other: Constraint) -> "Or":
         if isinstance(other, Or):
             return Or(*self.constraints, *other.constraints)
@@ -370,6 +379,7 @@ class Rephraser(Constraint):
         else:
             return self._error(err)
 
+    @override
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         try:
             self.constraint.check_consistency(params)
@@ -387,6 +397,7 @@ class Rephraser(Constraint):
                 )
             raise
 
+    @override
     def __repr__(self) -> str:
         return make_one_line_repr(self, help=self._help)
 
@@ -412,6 +423,7 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
     def help(self, ctx: click.Context) -> str:
         return self._constraint.help(ctx)
 
+    @override
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         try:
             self._constraint.check_consistency(params)
@@ -421,6 +433,7 @@ class WrapperConstraint(Constraint, metaclass=abc.ABCMeta):
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
         self._constraint.check_values(params, ctx)
 
+    @override
     def __repr__(self) -> str:
         return make_repr(self, **self._attrs)
 
@@ -462,6 +475,7 @@ class RequireAtLeast(Constraint):
     def help(self, ctx: click.Context) -> str:
         return f"at least {self.min_num_params} required"
 
+    @override
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         n = self.min_num_params
         if len(params) < n:
@@ -483,6 +497,7 @@ class RequireAtLeast(Constraint):
                 params=params,
             )
 
+    @override
     def __repr__(self) -> str:
         return make_repr(self, self.min_num_params)
 
@@ -497,6 +512,7 @@ class AcceptAtMost(Constraint):
     def help(self, ctx: click.Context) -> str:
         return f"at most {self.max_num_params} accepted"
 
+    @override
     def check_consistency(self, params: Sequence[click.Parameter]) -> None:
         num_required_params = len(get_required_params(params))
         if num_required_params > self.max_num_params:
@@ -515,6 +531,7 @@ class AcceptAtMost(Constraint):
                 params=params,
             )
 
+    @override
     def __repr__(self) -> str:
         return make_repr(self, self.max_num_params)
 
@@ -528,9 +545,11 @@ class RequireExactly(WrapperConstraint):
         super().__init__(RequireAtLeast(n) & AcceptAtMost(n))
         self.num_params = n
 
+    @override
     def help(self, ctx: click.Context) -> str:
         return f"exactly {self.num_params} required"
 
+    @override
     def check_values(self, params: Sequence[click.Parameter], ctx: click.Context) -> None:
         n = self.num_params
         given_params = get_params_whose_value_is_set(params, ctx.params)
@@ -542,6 +561,7 @@ class RequireExactly(WrapperConstraint):
             ) + format_param_list(params)
             raise ConstraintViolated(reason, ctx=ctx, constraint=self, params=params)
 
+    @override
     def __repr__(self) -> str:
         return make_repr(self, self.num_params)
 
@@ -561,6 +581,7 @@ class AcceptBetween(WrapperConstraint):
         self.min_num_params = min
         self.max_num_params = max
 
+    @override
     def help(self, ctx: click.Context) -> str:
         return (
             f"at least {self.min_num_params} required, "

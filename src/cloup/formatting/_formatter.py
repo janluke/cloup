@@ -1,6 +1,7 @@
 import dataclasses as dc
 import inspect
 import shutil
+import sys
 import textwrap
 from collections.abc import Callable, Iterable, Iterator, Sequence
 from itertools import chain
@@ -17,6 +18,11 @@ if TYPE_CHECKING:
 
 import click
 from click.formatting import wrap_text
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 from cloup._util import (
     check_positive_int,
@@ -180,9 +186,11 @@ class HelpFormatter(click.HelpFormatter):
     def available_width(self) -> int:
         return self.width - self.current_indent
 
+    @override
     def write(self, string: str = "", *strings: str) -> None:
         self.buffer += (string, *strings)
 
+    @override
     def write_usage(self, prog: str, args: str = "", prefix: str | None = None) -> None:
         prefix = "Usage:" if prefix is None else prefix
         prefix = self.theme.heading(prefix) + " "
@@ -205,6 +213,7 @@ class HelpFormatter(click.HelpFormatter):
             with self.indentation():
                 self.write_text(help_text, style=self.theme.command_help)
 
+    @override
     def write_heading(self, heading: str, newline: bool = True) -> None:
         if self.current_indent:
             self.write(" " * self.current_indent)
@@ -249,6 +258,7 @@ class HelpFormatter(click.HelpFormatter):
                 self.write_text(s.help, theme.section_help)
             self.write_dl(s.definitions, col1_width=col1_width)
 
+    @override
     def write_text(self, text: str, style: IStyle = identity) -> None:
         wrapped = wrap_text(
             text, self.width - self.current_indent, preserve_paragraphs=True
@@ -266,6 +276,7 @@ class HelpFormatter(click.HelpFormatter):
         lengths_under_limit = (length for length in col1_lengths if length <= max_width)
         return max(lengths_under_limit, default=0)
 
+    @override
     def write_dl(
         self,
         rows: Iterable[Definition],

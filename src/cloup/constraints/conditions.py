@@ -7,9 +7,15 @@ is not (at the moment) enforced.
 """
 
 import abc
+import sys
 from typing import Any, Generic, TypeVar
 
 import click
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 from .._util import make_repr
 from ._support import ensure_constraints_support
@@ -85,15 +91,18 @@ class Not(Predicate, Generic[P]):
     def description(self, ctx: click.Context) -> str:
         return self.predicate.negated_description(ctx)
 
+    @override
     def negated_description(self, ctx: click.Context) -> str:
         return self.predicate.description(ctx)
 
     def __call__(self, ctx: click.Context) -> bool:
         return not self.predicate(ctx)
 
+    @override
     def __invert__(self) -> P:
         return self.predicate
 
+    @override
     def __repr__(self) -> str:
         return f"Not({self.predicate!r})"
 
@@ -114,6 +123,7 @@ class _Operator(Predicate, metaclass=abc.ABCMeta):
             for p in self.predicates
         )
 
+    @override
     def __repr__(self) -> str:
         return make_repr(self, *self.predicates)
 
@@ -123,6 +133,7 @@ class _And(_Operator):
 
     DESC_SEP = " and "
 
+    @override
     def negated_description(self, ctx: click.Context) -> str:
         return " or ".join(
             f"({p.neg_desc(ctx)})" if isinstance(p, _Operator) else p.neg_desc(ctx)
@@ -132,6 +143,7 @@ class _And(_Operator):
     def __call__(self, ctx: click.Context) -> bool:
         return all(p(ctx) for p in self.predicates)
 
+    @override
     def __and__(self, other: "Predicate") -> Predicate:
         if isinstance(other, _And):
             return _And(*self.predicates, *other.predicates)
@@ -143,6 +155,7 @@ class _Or(_Operator):
 
     DESC_SEP = " or "
 
+    @override
     def negated_description(self, ctx: click.Context) -> str:
         return " and ".join(
             f"({p.neg_desc(ctx)})" if isinstance(p, _Operator) else p.neg_desc(ctx)
@@ -152,6 +165,7 @@ class _Or(_Operator):
     def __call__(self, ctx: click.Context) -> bool:
         return any(p(ctx) for p in self.predicates)
 
+    @override
     def __or__(self, other: "Predicate") -> Predicate:
         if isinstance(other, _Or):
             return _Or(*self.predicates, *other.predicates)
@@ -167,6 +181,7 @@ class IsSet(Predicate):
     def description(self, ctx: click.Context) -> str:
         return f"{param_label_by_name(ctx, self.param_name)} is set"
 
+    @override
     def negated_description(self, ctx: click.Context) -> str:
         return f"{param_label_by_name(ctx, self.param_name)} is not set"
 
@@ -176,11 +191,13 @@ class IsSet(Predicate):
         value = param_value_by_name(ctx, self.param_name)
         return param_value_is_set(param, value)
 
+    @override
     def __and__(self, other: Predicate) -> Predicate:
         if isinstance(other, IsSet):
             return AllSet(self.param_name, other.param_name)
         return super().__and__(other)
 
+    @override
     def __or__(self, other: Predicate) -> Predicate:
         if isinstance(other, IsSet):
             return AnySet(self.param_name, other.param_name)
@@ -198,6 +215,7 @@ class AllSet(Predicate):
             raise ValueError("you must provide at least one param name")
         self.param_names = param_names
 
+    @override
     def negated_description(self, ctx: click.Context) -> str:
         labels = get_param_labels(ctx, self.param_names)
         if len(labels) == 1:
@@ -220,6 +238,7 @@ class AllSet(Predicate):
             for param in params
         )
 
+    @override
     def __and__(self, other: Predicate) -> Predicate:
         if isinstance(other, AllSet):
             return AllSet(*self.param_names, *other.param_names)
@@ -237,6 +256,7 @@ class AnySet(Predicate):
             raise ValueError("you must provide at least one param name")
         self.param_names = param_names
 
+    @override
     def negated_description(self, ctx: click.Context) -> str:
         labels = get_param_labels(ctx, self.param_names)
         if len(labels) == 1:
@@ -261,6 +281,7 @@ class AnySet(Predicate):
             for param in params
         )
 
+    @override
     def __or__(self, other: Predicate) -> Predicate:
         if isinstance(other, AnySet):
             return AnySet(*self.param_names, *other.param_names)
@@ -278,6 +299,7 @@ class Equal(Predicate):
         param_label = param_label_by_name(ctx, self.param_name)
         return f'{param_label}="{self.value}"'
 
+    @override
     def negated_description(self, ctx: click.Context) -> str:
         param_label = param_label_by_name(ctx, self.param_name)
         return f'{param_label}!="{self.value}"'

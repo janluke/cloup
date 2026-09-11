@@ -2,9 +2,15 @@
 This modules contains classes for creating conditional constraints.
 """
 
+import sys
 from collections.abc import Sequence
 
 from click import Context, Parameter
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 from .._util import make_repr
 from ._core import Constraint
@@ -60,6 +66,7 @@ class If(Constraint):
         else:
             return f"{then_help} if {condition}, otherwise {else_help}"
 
+    @override
     def check_consistency(self, params: Sequence[Parameter]) -> None:
         self._then.check_consistency(params)
         if self._else:
@@ -83,6 +90,7 @@ class If(Constraint):
                 f"when {desc}, {err}", ctx=ctx, constraint=self, params=params
             )
 
+    @override
     def __repr__(self) -> str:
         if self._else:
             return make_repr(self, self._condition, then=self._then, else_=self._else)

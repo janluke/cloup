@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import sys
 import warnings
 from collections.abc import Callable
 from functools import update_wrapper
@@ -14,6 +15,11 @@ from typing import (
 )
 
 import click
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 import cloup
 from cloup._util import coalesce, pick_non_missing
@@ -173,6 +179,7 @@ class Context(click.Context):
             **getattr(self.command, "formatter_settings", {}),
         }
 
+    @override
     def make_formatter(self) -> HelpFormatter:
         opts = self.get_formatter_settings()
         return self.formatter_class(**opts)

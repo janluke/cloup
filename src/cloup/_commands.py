@@ -21,6 +21,7 @@ extra keywords for subclass constructors.
 """
 
 import inspect
+import sys
 from collections.abc import Callable, Iterable, Mapping, MutableMapping, Sequence
 from typing import (
     Any,
@@ -31,6 +32,11 @@ from typing import (
 )
 
 import click
+
+if sys.version_info >= (3, 12):
+    from typing import override
+else:
+    from typing_extensions import override
 
 import cloup
 
@@ -90,6 +96,7 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
         return self.epilog or ""
 
     # Differently from Click, this doesn't indent the epilog.
+    @override
     def format_epilog(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
         if self.epilog:
             assert isinstance(formatter, cloup.HelpFormatter)
@@ -97,6 +104,7 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
             formatter.write_paragraph()
             formatter.write_epilog(epilog)
 
+    @override
     def format_help_text(
         self, ctx: click.Context, formatter: click.HelpFormatter
     ) -> None:
@@ -109,6 +117,7 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
         assert isinstance(formatter, cloup.HelpFormatter)
         formatter.write_aliases(self.aliases)
 
+    @override
     def format_help(self, ctx: click.Context, formatter: click.HelpFormatter) -> None:
         self.format_usage(ctx, formatter)
         self.format_aliases(ctx, formatter)
@@ -180,6 +189,7 @@ class Group(SectionMixin, Command, click.Group):
             for cmd in commands:
                 self.add_command(cmd)
 
+    @override
     def add_command(
         self,
         cmd: click.Command,
@@ -202,6 +212,7 @@ class Group(SectionMixin, Command, click.Group):
             return name
         return self.alias2name.get(name)
 
+    @override
     def resolve_command(
         self, ctx: click.Context, args: list[str]
     ) -> tuple[str | None, click.Command | None, list[str]]:
@@ -248,6 +259,7 @@ class Group(SectionMixin, Command, click.Group):
             Group.SHOW_SUBCOMMAND_ALIASES,
         )
 
+    @override
     def format_subcommand_name(
         self, ctx: click.Context, name: str, cmd: click.Command
     ) -> str:
@@ -320,6 +332,7 @@ class Group(SectionMixin, Command, click.Group):
         **kwargs: Any,
     ) -> Callable[[AnyCallable], C]: ...
 
+    @override
     def command(
         self,
         name: str | None = None,
@@ -409,6 +422,7 @@ class Group(SectionMixin, Command, click.Group):
         **kwargs: Any,
     ) -> Callable[[AnyCallable], G]: ...
 
+    @override
     def group(
         self,
         name: str | None = None,
