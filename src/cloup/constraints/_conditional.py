@@ -2,7 +2,7 @@
 This modules contains classes for creating conditional constraints.
 """
 
-from typing import Optional, Union
+from typing import Optional
 from collections.abc import Sequence
 
 from click import Context, Parameter
@@ -13,7 +13,7 @@ from .exceptions import ConstraintViolated
 from .._util import make_repr
 
 
-def as_predicate(arg: Union[str, Sequence[str], Predicate]) -> Predicate:
+def as_predicate(arg: str | Sequence[str] | Predicate) -> Predicate:
     if isinstance(arg, str):
         return IsSet(arg)
     elif isinstance(arg, Predicate):
@@ -44,7 +44,7 @@ class If(Constraint):
 
     def __init__(
         self,
-        condition: Union[str, Sequence[str], Predicate],
+        condition: str | Sequence[str] | Predicate,
         then: Constraint,
         else_: Optional[Constraint] = None,
     ):

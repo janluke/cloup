@@ -126,7 +126,7 @@ class ConstraintMixin:
     def __init__(
         self,
         *args: Any,
-        constraints: Sequence[Union[BoundConstraintSpec, BoundConstraint]] = (),
+        constraints: Sequence[BoundConstraintSpec | BoundConstraint] = (),
         show_constraints: Optional[bool] = None,
         **kwargs: Any,
     ):

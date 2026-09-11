@@ -29,10 +29,10 @@ from cloup._util import (
 from ..typing import MISSING, Possibly
 from cloup.styling import HelpTheme, IStyle
 
-Definition = tuple[str, Union[str, Callable[[int], str]]]
+Definition = tuple[str, str | Callable[[int], str]]
 
 
-def _format_deprecation_label(deprecated: Union[bool, str]) -> str:
+def _format_deprecation_label(deprecated: bool | str) -> str:
     """Return the parenthesized deprecation label shown in help text."""
     if isinstance(deprecated, str):
         return f"(DEPRECATED: {deprecated})"

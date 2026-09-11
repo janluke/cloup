@@ -26,7 +26,6 @@ from typing import (
     NamedTuple,
     Optional,
     TypeVar,
-    Union,
     cast,
     overload,
 )
@@ -157,7 +156,7 @@ class Group(SectionMixin, Command, click.Group):
         *args: Any,
         show_subcommand_aliases: Optional[bool] = None,
         commands: Optional[
-            Union[MutableMapping[str, click.Command], Sequence[click.Command]]
+            MutableMapping[str, click.Command] | Sequence[click.Command]
         ] = None,
         **kwargs: Any,
     ):
@@ -172,7 +171,7 @@ class Group(SectionMixin, Command, click.Group):
             self.add_multiple_commands(commands)
 
     def add_multiple_commands(
-        self, commands: Union[Mapping[str, click.Command], Sequence[click.Command]]
+        self, commands: Mapping[str, click.Command] | Sequence[click.Command]
     ) -> None:
         if isinstance(commands, Mapping):
             for name, cmd in commands.items():
@@ -294,7 +293,7 @@ class Group(SectionMixin, Command, click.Group):
         add_help_option: bool = True,
         no_args_is_help: bool = False,
         hidden: bool = False,
-        deprecated: Union[bool, str] = False,
+        deprecated: bool | str = False,
         align_option_groups: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
         params: Optional[list[click.Parameter]] = None,
@@ -316,7 +315,7 @@ class Group(SectionMixin, Command, click.Group):
         add_help_option: bool = True,
         no_args_is_help: bool = False,
         hidden: bool = False,
-        deprecated: Union[bool, str] = False,
+        deprecated: bool | str = False,
         params: Optional[list[click.Parameter]] = None,
         **kwargs: Any,
     ) -> Callable[[AnyCallable], C]: ...
@@ -329,7 +328,7 @@ class Group(SectionMixin, Command, click.Group):
         cls: Optional[type[C]] = None,
         section: Optional[Section] = None,
         **kwargs: Any,
-    ) -> Callable[[AnyCallable], Union[click.Command, C]]:
+    ) -> Callable[[AnyCallable], click.Command | C]:
         """Return a decorator that creates a new subcommand of this ``Group``
         using the decorated function as callback.
 
@@ -382,7 +381,7 @@ class Group(SectionMixin, Command, click.Group):
         add_help_option: bool = True,
         chain: bool = False,
         hidden: bool = False,
-        deprecated: Union[bool, str] = False,
+        deprecated: bool | str = False,
         show_subcommand_aliases: bool = False,
     ) -> Callable[[AnyCallable], click.Group]: ...
 
@@ -405,7 +404,7 @@ class Group(SectionMixin, Command, click.Group):
         add_help_option: bool = True,
         chain: bool = False,
         hidden: bool = False,
-        deprecated: Union[bool, str] = False,
+        deprecated: bool | str = False,
         params: Optional[list[click.Parameter]] = None,
         **kwargs: Any,
     ) -> Callable[[AnyCallable], G]: ...
@@ -418,7 +417,7 @@ class Group(SectionMixin, Command, click.Group):
         aliases: Optional[Iterable[str]] = None,
         section: Optional[Section] = None,
         **kwargs: Any,
-    ) -> Callable[[AnyCallable], Union[click.Group, G]]:
+    ) -> Callable[[AnyCallable], click.Group | G]:
         """Return a decorator that creates a new subcommand of this ``Group``
         using the decorated function as callback.
 
@@ -434,7 +433,7 @@ class Group(SectionMixin, Command, click.Group):
             name=name, cls=cls or self._default_group_class(), aliases=aliases, **kwargs
         )
 
-        def decorator(f: AnyCallable) -> Union[click.Group, G]:
+        def decorator(f: AnyCallable) -> click.Group | G:
             cmd = make_group(f)
             self.add_command(cmd, section=section)
             return cmd
@@ -467,7 +466,7 @@ def command(
     add_help_option: bool = True,
     no_args_is_help: bool = False,
     hidden: bool = False,
-    deprecated: Union[bool, str] = False,
+    deprecated: bool | str = False,
     align_option_groups: Optional[bool] = None,
     show_constraints: Optional[bool] = None,
     params: Optional[list[click.Parameter]] = None,
@@ -488,7 +487,7 @@ def command(  # In this overload: "cls: ClickCommand"
     add_help_option: bool = True,
     no_args_is_help: bool = False,
     hidden: bool = False,
-    deprecated: Union[bool, str] = False,
+    deprecated: bool | str = False,
     params: Optional[list[click.Parameter]] = None,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], C]: ...
@@ -501,7 +500,7 @@ def command(
     aliases: Optional[Iterable[str]] = None,
     cls: Optional[type[C]] = None,
     **kwargs: Any,
-) -> Callable[[AnyCallable], Union[Command, C]]:
+) -> Callable[[AnyCallable], Command | C]:
     """
     Return a decorator that creates a new command using the decorated function
     as callback.
@@ -588,7 +587,7 @@ def command(
             f"While parenthesis are optional in Click >= 8.1, they are required in Cloup."
         )
 
-    def decorator(f: AnyCallable) -> Union[Command, C]:
+    def decorator(f: AnyCallable) -> Command | C:
         if hasattr(f, "__cloup_constraints__"):
             if cls and not issubclass(cls, ConstraintMixin):
                 raise TypeError(
@@ -599,7 +598,7 @@ def command(
             delattr(f, "__cloup_constraints__")
             kwargs["constraints"] = constraints
 
-        cmd_cls: type[Union[Command, C]] = cls if cls is not None else Command
+        cmd_cls: type[Command | C] = cls if cls is not None else Command
         try:
             cmd = click.command(name, cls=cmd_cls, **kwargs)(f)
             if aliases:
@@ -633,7 +632,7 @@ def group(
     add_help_option: bool = True,
     chain: bool = False,
     hidden: bool = False,
-    deprecated: Union[bool, str] = False,
+    deprecated: bool | str = False,
     params: Optional[list[click.Parameter]] = None,
     show_subcommand_aliases: bool = False,
 ) -> Callable[[AnyCallable], Group]: ...
@@ -656,7 +655,7 @@ def group(
     add_help_option: bool = True,
     chain: bool = False,
     hidden: bool = False,
-    deprecated: Union[bool, str] = False,
+    deprecated: bool | str = False,
     params: Optional[list[click.Parameter]] = None,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], G]: ...

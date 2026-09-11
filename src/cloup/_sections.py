@@ -3,7 +3,6 @@ from typing import (
     Any,
     Optional,
     TypeVar,
-    Union,
 )
 from collections.abc import Iterable, Sequence
 
@@ -13,7 +12,7 @@ from cloup._util import first_bool, pick_not_none
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
 CommandType = TypeVar("CommandType", bound=type[click.Command])
-Subcommands = Union[Sequence[click.Command], dict[str, click.Command]]
+Subcommands = Sequence[click.Command] | dict[str, click.Command]
 
 
 class Section:
