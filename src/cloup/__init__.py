@@ -109,7 +109,7 @@ from .formatting import (
     HelpSection,
 )
 from ._context import Context, get_current_context, pass_context
-from ._params import Option, argument, option
+from ._params import ArgumentKwargs, Option, OptionKwargs, argument, option
 from ._option_groups import (
     OptionGroup,
     OptionGroupMixin,
@@ -135,6 +135,7 @@ from .types import dir_path, file_path, path
 __all__ = [
     "Abort",
     "Argument",
+    "ArgumentKwargs",
     "BOOL",
     "BadArgumentUsage",
     "BadOptionUsage",
@@ -165,6 +166,7 @@ __all__ = [
     "Option",
     "OptionGroup",
     "OptionGroupMixin",
+    "OptionKwargs",
     "OptionParser",
     "ParamType",
     "Parameter",

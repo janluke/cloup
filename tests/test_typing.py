@@ -160,7 +160,7 @@ if TYPE_CHECKING:
         parent = cloup.Group("parent")
         parent.group(unknown=True)  # type: ignore[call-overload]
         parent.group(cls=None, unknown=True)  # type: ignore[call-overload]
-        cloup.option("--value", show_default=123)  # type: ignore[arg-type]
+        cloup.option("--value", show_default=123)  # type: ignore[call-overload]
 
         @cloup.pass_context
         def func(ctx: cloup.Context, value: int) -> str:
