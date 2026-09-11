@@ -6,13 +6,11 @@ from itertools import chain
 from typing import (
     Any,
     Callable,
-    Dict,
     Iterable,
     Iterator,
     Optional,
     Sequence,
     TYPE_CHECKING,
-    Tuple,
     Union,
 )
 
@@ -34,7 +32,7 @@ from cloup._util import (
 from ..typing import MISSING, Possibly
 from cloup.styling import HelpTheme, IStyle
 
-Definition = Tuple[str, Union[str, Callable[[int], str]]]
+Definition = tuple[str, Union[str, Callable[[int], str]]]
 
 
 def _format_deprecation_label(deprecated: Union[bool, str]) -> str:
@@ -171,7 +169,7 @@ class HelpFormatter(click.HelpFormatter):
         col_spacing: Possibly[int] = MISSING,
         row_sep: Possibly[Union[None, str, "SepGenerator", "RowSepPolicy"]] = MISSING,
         theme: Possibly[HelpTheme] = MISSING,
-    ) -> Dict[str, Any]:
+    ) -> dict[str, Any]:
         """A utility method for creating a ``formatter_settings`` dictionary to
         pass as context settings or command attribute. This method exists for
         one only reason: it enables auto-complete for formatter options, thus
@@ -370,7 +368,7 @@ class HelpFormatter(click.HelpFormatter):
         row_sep = self._get_row_sep_for(text_rows, (col1_width, col2_width), col_spacing)
         col1_styler, col2_styler = self.theme.col1, self.theme.col2
 
-        def write_row(row: Tuple[str, str]) -> None:
+        def write_row(row: tuple[str, str]) -> None:
             first, second = row
             self.write(indentation, col1_styler(first))
             if not second:
@@ -432,7 +430,7 @@ class HelpFormatter(click.HelpFormatter):
         )
 
 
-def iter_defs(rows: Iterable[Definition], col2_width: int) -> Iterator[Tuple[str, str]]:
+def iter_defs(rows: Iterable[Definition], col2_width: int) -> Iterator[tuple[str, str]]:
     for row in rows:
         if len(row) == 1:
             yield row[0], ""

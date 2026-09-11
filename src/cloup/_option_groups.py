@@ -6,13 +6,10 @@ from collections import defaultdict
 from typing import (
     Any,
     Callable,
-    Dict,
     Iterable,
     Iterator,
-    List,
     Optional,
     Sequence,
-    Tuple,
     overload,
 )
 
@@ -65,7 +62,7 @@ class OptionGroup:
         elif all(opt.hidden for opt in opts):
             self.hidden = True
 
-    def get_help_records(self, ctx: click.Context) -> List[Tuple[str, str]]:
+    def get_help_records(self, ctx: click.Context) -> list[tuple[str, str]]:
         if self.hidden:
             return []
         return [
@@ -162,12 +159,12 @@ class OptionGroupMixin:
 
     @staticmethod
     def _group_params(
-        params: List[Parameter],
-    ) -> Tuple[List[click.Argument], List[OptionGroup], List[Option]]:
+        params: list[Parameter],
+    ) -> tuple[list[click.Argument], list[OptionGroup], list[Option]]:
 
-        options_by_group: Dict[OptionGroup, List[click.Option]] = defaultdict(list)
-        arguments: List[click.Argument] = []
-        ungrouped_options: List[click.Option] = []
+        options_by_group: dict[OptionGroup, list[click.Option]] = defaultdict(list)
+        arguments: list[click.Argument] = []
+        ungrouped_options: list[click.Option] = []
         for param in params:
             if isinstance(param, click.Argument):
                 arguments.append(param)
@@ -196,7 +193,7 @@ class OptionGroupMixin:
 
     def get_argument_help_record(
         self, arg: click.Argument, ctx: click.Context
-    ) -> Tuple[str, str]:
+    ) -> tuple[str, str]:
         """Like Argument.get_help_record, but it returns a tuple even if help is empty"""
         return arg.make_metavar(ctx), getattr(arg, "help", "")
 

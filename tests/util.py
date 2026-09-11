@@ -1,5 +1,5 @@
 from contextlib import contextmanager
-from typing import Iterable, List
+from typing import Iterable
 from unittest.mock import Mock
 
 import click
@@ -59,7 +59,7 @@ def make_fake_context(
     )
 
 
-def make_options(names: Iterable[str], **common_kwargs) -> List[click.Option]:
+def make_options(names: Iterable[str], **common_kwargs) -> list[click.Option]:
     return [click.Option([f"--{name}"], **common_kwargs) for name in names]
 
 

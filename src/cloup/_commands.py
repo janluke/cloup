@@ -24,14 +24,10 @@ import inspect
 from typing import (
     Any,
     Callable,
-    Dict,
     Iterable,
-    List,
     NamedTuple,
     Optional,
     Sequence,
-    Tuple,
-    Type,
     TypeVar,
     Union,
     cast,
@@ -76,20 +72,20 @@ class Command(ConstraintMixin, OptionGroupMixin, click.Command):
 
     # The Cloup command contract requires the Cloup context extensions.
     # pyrefly: ignore[bad-override-mutable-attribute]
-    context_class: Type[Context] = Context
+    context_class: type[Context] = Context
 
     def __init__(
         self,
         *args: Any,
         aliases: Optional[Iterable[str]] = None,
-        formatter_settings: Optional[Dict[str, Any]] = None,
+        formatter_settings: Optional[dict[str, Any]] = None,
         **kwargs: Any,
     ):
         super().__init__(*args, **kwargs)
         #: HelpFormatter options that are merged with ``Context.formatter_settings``
         #: (eventually overriding some values).
-        self.aliases: List[str] = [] if aliases is None else list(aliases)
-        self.formatter_settings: Dict[str, Any] = (
+        self.aliases: list[str] = [] if aliases is None else list(aliases)
+        self.formatter_settings: dict[str, Any] = (
             {} if formatter_settings is None else formatter_settings
         )
 
@@ -173,7 +169,7 @@ class Group(SectionMixin, Command, click.Group):
         self.show_subcommand_aliases = show_subcommand_aliases
         """Whether to show subcommand aliases."""
 
-        self.alias2name: Dict[str, str] = {}
+        self.alias2name: dict[str, str] = {}
         """Dictionary mapping each alias to a command name."""
 
         if commands:
@@ -212,8 +208,8 @@ class Group(SectionMixin, Command, click.Group):
         return self.alias2name.get(name)
 
     def resolve_command(
-        self, ctx: click.Context, args: List[str]
-    ) -> Tuple[Optional[str], Optional[click.Command], List[str]]:
+        self, ctx: click.Context, args: list[str]
+    ) -> tuple[Optional[str], Optional[click.Command], list[str]]:
         normalized_name = self.resolve_command_name(ctx, args[0])
         if normalized_name:
             # Replacing this string ensures that super().resolve_command() returns a
@@ -232,7 +228,7 @@ class Group(SectionMixin, Command, click.Group):
             raise new_error
 
     def handle_bad_command_name(
-        self, bad_name: str, valid_names: List[str], error: click.UsageError
+        self, bad_name: str, valid_names: list[str], error: click.UsageError
     ) -> click.UsageError:
         """This method is called when a command name cannot be resolved.
         Useful to implement the "Did you mean <x>?" feature.
@@ -293,8 +289,8 @@ class Group(SectionMixin, Command, click.Group):
         aliases: Optional[Iterable[str]] = None,
         cls: None = None,  # default to Group.command_class or cloup.Command
         section: Optional[Section] = None,
-        context_settings: Optional[Dict[str, Any]] = None,
-        formatter_settings: Optional[Dict[str, Any]] = None,
+        context_settings: Optional[dict[str, Any]] = None,
+        formatter_settings: Optional[dict[str, Any]] = None,
         help: Optional[str] = None,
         epilog: Optional[str] = None,
         short_help: Optional[str] = None,
@@ -305,7 +301,7 @@ class Group(SectionMixin, Command, click.Group):
         deprecated: Union[bool, str] = False,
         align_option_groups: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
-        params: Optional[List[click.Parameter]] = None,
+        params: Optional[list[click.Parameter]] = None,
     ) -> Callable[[AnyCallable], click.Command]: ...
 
     @overload
@@ -314,9 +310,9 @@ class Group(SectionMixin, Command, click.Group):
         name: Optional[str] = None,
         *,
         aliases: Optional[Iterable[str]] = None,
-        cls: Type[C],
+        cls: type[C],
         section: Optional[Section] = None,
-        context_settings: Optional[Dict[str, Any]] = None,
+        context_settings: Optional[dict[str, Any]] = None,
         help: Optional[str] = None,
         epilog: Optional[str] = None,
         short_help: Optional[str] = None,
@@ -325,7 +321,7 @@ class Group(SectionMixin, Command, click.Group):
         no_args_is_help: bool = False,
         hidden: bool = False,
         deprecated: Union[bool, str] = False,
-        params: Optional[List[click.Parameter]] = None,
+        params: Optional[list[click.Parameter]] = None,
         **kwargs: Any,
     ) -> Callable[[AnyCallable], C]: ...
 
@@ -334,7 +330,7 @@ class Group(SectionMixin, Command, click.Group):
         name: Optional[str] = None,
         *,
         aliases: Optional[Iterable[str]] = None,
-        cls: Optional[Type[C]] = None,
+        cls: Optional[type[C]] = None,
         section: Optional[Section] = None,
         **kwargs: Any,
     ) -> Callable[[AnyCallable], Union[click.Command, C]]:
@@ -377,11 +373,11 @@ class Group(SectionMixin, Command, click.Group):
         align_sections: Optional[bool] = None,
         invoke_without_command: bool = False,
         no_args_is_help: bool = False,
-        context_settings: Optional[Dict[str, Any]] = None,
-        formatter_settings: Optional[Dict[str, Any]] = None,
+        context_settings: Optional[dict[str, Any]] = None,
+        formatter_settings: Optional[dict[str, Any]] = None,
         align_option_groups: Optional[bool] = None,
         show_constraints: Optional[bool] = None,
-        params: Optional[List[click.Parameter]] = None,
+        params: Optional[list[click.Parameter]] = None,
         help: Optional[str] = None,
         epilog: Optional[str] = None,
         short_help: Optional[str] = None,
@@ -400,11 +396,11 @@ class Group(SectionMixin, Command, click.Group):
         name: Optional[str] = None,
         *,
         aliases: Optional[Iterable[str]] = None,
-        cls: Type[G],
+        cls: type[G],
         section: Optional[Section] = None,
         invoke_without_command: bool = False,
         no_args_is_help: bool = False,
-        context_settings: Optional[Dict[str, Any]] = None,
+        context_settings: Optional[dict[str, Any]] = None,
         help: Optional[str] = None,
         epilog: Optional[str] = None,
         short_help: Optional[str] = None,
@@ -414,7 +410,7 @@ class Group(SectionMixin, Command, click.Group):
         chain: bool = False,
         hidden: bool = False,
         deprecated: Union[bool, str] = False,
-        params: Optional[List[click.Parameter]] = None,
+        params: Optional[list[click.Parameter]] = None,
         **kwargs: Any,
     ) -> Callable[[AnyCallable], G]: ...
 
@@ -422,7 +418,7 @@ class Group(SectionMixin, Command, click.Group):
         self,
         name: Optional[str] = None,
         *,
-        cls: Optional[Type[G]] = None,
+        cls: Optional[type[G]] = None,
         aliases: Optional[Iterable[str]] = None,
         section: Optional[Section] = None,
         **kwargs: Any,
@@ -450,13 +446,13 @@ class Group(SectionMixin, Command, click.Group):
         return decorator
 
     @classmethod
-    def _default_group_class(cls) -> Optional[Type[click.Group]]:
+    def _default_group_class(cls) -> Optional[type[click.Group]]:
         if cls.group_class is None:
             return None
         if cls.group_class is type:
             return cls
         else:
-            return cast(Type[click.Group], cls.group_class)
+            return cast(type[click.Group], cls.group_class)
 
 
 # Why overloading? Refer to module docstring.
@@ -466,8 +462,8 @@ def command(
     *,
     aliases: Optional[Iterable[str]] = None,
     cls: None = None,
-    context_settings: Optional[Dict[str, Any]] = None,
-    formatter_settings: Optional[Dict[str, Any]] = None,
+    context_settings: Optional[dict[str, Any]] = None,
+    formatter_settings: Optional[dict[str, Any]] = None,
     help: Optional[str] = None,
     short_help: Optional[str] = None,
     epilog: Optional[str] = None,
@@ -478,7 +474,7 @@ def command(
     deprecated: Union[bool, str] = False,
     align_option_groups: Optional[bool] = None,
     show_constraints: Optional[bool] = None,
-    params: Optional[List[click.Parameter]] = None,
+    params: Optional[list[click.Parameter]] = None,
 ) -> Callable[[AnyCallable], Command]: ...
 
 
@@ -487,8 +483,8 @@ def command(  # In this overload: "cls: ClickCommand"
     name: Optional[str] = None,
     *,
     aliases: Optional[Iterable[str]] = None,
-    cls: Type[C],
-    context_settings: Optional[Dict[str, Any]] = None,
+    cls: type[C],
+    context_settings: Optional[dict[str, Any]] = None,
     help: Optional[str] = None,
     short_help: Optional[str] = None,
     epilog: Optional[str] = None,
@@ -497,7 +493,7 @@ def command(  # In this overload: "cls: ClickCommand"
     no_args_is_help: bool = False,
     hidden: bool = False,
     deprecated: Union[bool, str] = False,
-    params: Optional[List[click.Parameter]] = None,
+    params: Optional[list[click.Parameter]] = None,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], C]: ...
 
@@ -507,7 +503,7 @@ def command(
     name: Optional[str] = None,
     *,
     aliases: Optional[Iterable[str]] = None,
-    cls: Optional[Type[C]] = None,
+    cls: Optional[type[C]] = None,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], Union[Command, C]]:
     """
@@ -607,7 +603,7 @@ def command(
             delattr(f, "__cloup_constraints__")
             kwargs["constraints"] = constraints
 
-        cmd_cls: Type[Union[Command, C]] = cls if cls is not None else Command
+        cmd_cls: type[Union[Command, C]] = cls if cls is not None else Command
         try:
             cmd = click.command(name, cls=cmd_cls, **kwargs)(f)
             if aliases:
@@ -629,8 +625,8 @@ def group(
     align_sections: Optional[bool] = None,
     invoke_without_command: bool = False,
     no_args_is_help: bool = False,
-    context_settings: Optional[Dict[str, Any]] = None,
-    formatter_settings: Optional[Dict[str, Any]] = None,
+    context_settings: Optional[dict[str, Any]] = None,
+    formatter_settings: Optional[dict[str, Any]] = None,
     align_option_groups: Optional[bool] = None,
     show_constraints: Optional[bool] = None,
     help: Optional[str] = None,
@@ -642,7 +638,7 @@ def group(
     chain: bool = False,
     hidden: bool = False,
     deprecated: Union[bool, str] = False,
-    params: Optional[List[click.Parameter]] = None,
+    params: Optional[list[click.Parameter]] = None,
     show_subcommand_aliases: bool = False,
 ) -> Callable[[AnyCallable], Group]: ...
 
@@ -651,11 +647,11 @@ def group(
 def group(
     name: Optional[str] = None,
     *,
-    cls: Type[G],
+    cls: type[G],
     aliases: Optional[Iterable[str]] = None,
     invoke_without_command: bool = False,
     no_args_is_help: bool = False,
-    context_settings: Optional[Dict[str, Any]] = None,
+    context_settings: Optional[dict[str, Any]] = None,
     help: Optional[str] = None,
     short_help: Optional[str] = None,
     epilog: Optional[str] = None,
@@ -665,13 +661,13 @@ def group(
     chain: bool = False,
     hidden: bool = False,
     deprecated: Union[bool, str] = False,
-    params: Optional[List[click.Parameter]] = None,
+    params: Optional[list[click.Parameter]] = None,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], G]: ...
 
 
 def group(
-    name: Optional[str] = None, *, cls: Optional[Type[G]] = None, **kwargs: Any
+    name: Optional[str] = None, *, cls: Optional[type[G]] = None, **kwargs: Any
 ) -> Callable[[AnyCallable], click.Group]:
     """
     Return a decorator that instantiates a ``Group`` (or a subclass of it)
@@ -761,7 +757,7 @@ def group(
 
 class _ArgInfo(NamedTuple):
     arg_name: str
-    requires: Type[Any]
+    requires: type[Any]
     supported_by: str = ""
 
 
@@ -777,7 +773,7 @@ _ARGS_INFO = {
 
 
 def _process_unexpected_kwarg_error(
-    error: TypeError, args_info: Dict[str, _ArgInfo], cls: Type[click.Command]
+    error: TypeError, args_info: dict[str, _ArgInfo], cls: type[click.Command]
 ) -> TypeError:
     """Check if the developer tried to pass a Cloup-specific argument to a ``cls``
     that doesn't support it and if that's the case, augments the error message

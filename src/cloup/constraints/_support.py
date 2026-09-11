@@ -1,14 +1,11 @@
 from typing import (
     Any,
     Callable,
-    Dict,
     Iterable,
-    List,
     NamedTuple,
     Optional,
     Sequence,
     TYPE_CHECKING,
-    Tuple,
     Union,
 )
 
@@ -117,7 +114,7 @@ class BoundConstraint(NamedTuple):
     def check_values(self, ctx: click.Context) -> None:
         self.constraint.check_values(self.params, ctx)
 
-    def get_help_record(self, ctx: click.Context) -> Optional[Tuple[str, str]]:
+    def get_help_record(self, ctx: click.Context) -> Optional[tuple[str, str]]:
         constr_help = self.constraint.help(ctx)
         if not constr_help:
             return None
@@ -155,14 +152,14 @@ class ConstraintMixin:
         self.show_constraints = show_constraints
 
         # This allows constraints to efficiently access parameters by name
-        self._params_by_name: Dict[str, click.Parameter] = {
+        self._params_by_name: dict[str, click.Parameter] = {
             param.name: param
             for param in self.params  # type: ignore
         }
 
         # Collect constraints applied to option groups and bind them to the
         # corresponding Option instances
-        option_groups: Tuple[OptionGroup, ...] = getattr(self, "option_groups", tuple())
+        option_groups: tuple[OptionGroup, ...] = getattr(self, "option_groups", tuple())
         self.optgroup_constraints = tuple(
             BoundConstraint(grp.constraint, grp.options)
             for grp in option_groups
@@ -171,7 +168,7 @@ class ConstraintMixin:
         """Constraints applied to ``OptionGroup`` instances."""
 
         # Bind constraints defined via @constraint to click.Parameter instances
-        self.param_constraints: Tuple[BoundConstraint, ...] = tuple(
+        self.param_constraints: tuple[BoundConstraint, ...] = tuple(
             (
                 constr
                 if isinstance(constr, BoundConstraint)
@@ -184,7 +181,7 @@ class ConstraintMixin:
         self.all_constraints = self.optgroup_constraints + self.param_constraints
         """All constraints applied to parameter/option groups of this command."""
 
-    def parse_args(self, ctx: click.Context, args: List[str]) -> List[str]:
+    def parse_args(self, ctx: click.Context, args: list[str]) -> list[str]:
         # Check constraints' consistency *before* parsing
         if not ctx.resilient_parsing and Constraint.must_check_consistency(ctx):
             for constr in self.all_constraints:

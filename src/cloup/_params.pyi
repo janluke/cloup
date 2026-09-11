@@ -5,11 +5,8 @@ Types for parameter decorators are in this stub for convenience of implementatio
 from typing import (
     Any,
     Callable,
-    List,
     Optional,
     Sequence,
-    Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -23,12 +20,12 @@ F = TypeVar("F", bound=Callable[..., Any])
 P = TypeVar("P", bound=click.Parameter)
 
 SimpleParamTypeLike = Union[click.ParamType[Any], Callable[[str], Any]]
-ParamTypeLike = Union[SimpleParamTypeLike, Tuple[SimpleParamTypeLike, ...]]
+ParamTypeLike = Union[SimpleParamTypeLike, tuple[SimpleParamTypeLike, ...]]
 ParamDefault = Union[Any, Callable[[], Any]]
 ParamCallback = Callable[[click.Context, P, Any], Any]
 ShellCompleteArg = Callable[
     [click.Context, P, str],
-    Union[List[CompletionItem], List[str]],
+    Union[list[CompletionItem], list[str]],
 ]
 
 class Option(click.Option):
@@ -38,7 +35,7 @@ class Option(click.Option):
 
 def argument(
     *param_decls: str,
-    cls: Optional[Type[click.Argument]] = None,
+    cls: Optional[type[click.Argument]] = None,
     help: Optional[str] = None,
     deprecated: bool | str = False,
     type: Optional[ParamTypeLike] = None,
@@ -54,7 +51,7 @@ def argument(
 ) -> Callable[[F], F]: ...
 def option(
     *param_decls: str,
-    cls: Optional[Type[click.Option]] = None,
+    cls: Optional[type[click.Option]] = None,
     # Commonly used
     metavar: Optional[str] = None,
     type: Optional[ParamTypeLike] = None,
