@@ -22,6 +22,9 @@ Like Click, Cloup accepts ``cls`` positionally. That form needs an overload of
 its own, and it repeats the keyword arguments of the keyword-``cls`` overload so
 that they keep being type-checked in both call styles.
 
+A last overload covers the parenthesis-less form (``@command`` instead of
+``@command()``), in which the decorated callback takes the place of ``name``.
+
 """
 
 import inspect
@@ -289,10 +292,18 @@ class Group(SectionMixin, Command, click.Group):
                 + secondary_style(")")
             )
 
-    # Click also supports bare decorators, which Cloup rejects, so this override
-    # is intentionally narrower than the one it replaces.
-    @overload  # type: ignore[override]
+    # Click types these methods as ``(*args: Any, **kwargs: Any)``, i.e. as an
+    # unspecified signature, so any signature naming its arguments is formally
+    # narrower. MyPy reads an unspecified supertype signature as "anything goes"
+    # and accepts it; Pyrefly has no such rule, hence the suppression. Satisfying
+    # Pyrefly would require a trailing ``(*args: Any, **kwargs: Any)`` overload,
+    # which would swallow every keyword argument error these overloads exist to
+    # catch.
+    @overload
     # pyrefly: ignore[bad-override]
+    def command(self, name: AnyCallable, /) -> click.Command: ...
+
+    @overload
     def command(  # Why overloading? Refer to module docstring.
         self,
         name: str | None = None,
@@ -360,13 +371,13 @@ class Group(SectionMixin, Command, click.Group):
     @override
     def command(
         self,
-        name: str | None = None,
+        name: str | AnyCallable | None = None,
         cls: type[C] | None = None,
         *,
         aliases: Iterable[str] | None = None,
         section: Section | None = None,
         **kwargs: Any,
-    ) -> Callable[[AnyCallable], click.Command | C]:
+    ) -> click.Command | Callable[[AnyCallable], click.Command | C]:
         """Return a decorator that creates a new subcommand of this ``Group``
         using the decorated function as callback.
 
@@ -376,11 +387,13 @@ class Group(SectionMixin, Command, click.Group):
             if provided, put the subcommand in this section.
 
         .. versionchanged:: 4.0.0
-            ``cls`` can be passed positionally, like in Click.
+            the decorator can be applied without parentheses and ``cls`` can be
+            passed positionally, like in Click.
 
         .. versionchanged:: 0.10.0
             all arguments but ``name`` are now keyword-only.
         """
+        func, name = _resolve_decorator_first_arg(name)
         make_command = command(
             name=name,
             cls=(self.command_class if cls is None else cls),
@@ -393,11 +406,14 @@ class Group(SectionMixin, Command, click.Group):
             self.add_command(cmd, section=section)
             return cmd
 
-        return decorator
+        return decorator(func) if func is not None else decorator
 
-    # As with command(), Cloup intentionally has a narrower decorator API.
-    @overload  # type: ignore[override]
+    # Narrower than Click's for the same reason as command(); see the note there.
+    @overload
     # pyrefly: ignore[bad-override]
+    def group(self, name: AnyCallable, /) -> click.Group: ...
+
+    @overload
     def group(  # Why overloading? Refer to module docstring.
         self,
         name: str | None = None,
@@ -477,13 +493,13 @@ class Group(SectionMixin, Command, click.Group):
     @override
     def group(
         self,
-        name: str | None = None,
+        name: str | AnyCallable | None = None,
         cls: type[G] | None = None,
         *,
         aliases: Iterable[str] | None = None,
         section: Section | None = None,
         **kwargs: Any,
-    ) -> Callable[[AnyCallable], click.Group | G]:
+    ) -> click.Group | Callable[[AnyCallable], click.Group | G]:
         """Return a decorator that creates a new subcommand of this ``Group``
         using the decorated function as callback.
 
@@ -493,11 +509,13 @@ class Group(SectionMixin, Command, click.Group):
             if provided, put the subcommand in this section.
 
         .. versionchanged:: 4.0.0
-            ``cls`` can be passed positionally, like in Click.
+            the decorator can be applied without parentheses and ``cls`` can be
+            passed positionally, like in Click.
 
         .. versionchanged:: 0.10.0
             all arguments but ``name`` are now keyword-only.
         """
+        func, name = _resolve_decorator_first_arg(name)
         make_group = group(
             name=name, cls=cls or self._default_group_class(), aliases=aliases, **kwargs
         )
@@ -507,7 +525,7 @@ class Group(SectionMixin, Command, click.Group):
             self.add_command(cmd, section=section)
             return cmd
 
-        return decorator
+        return decorator(func) if func is not None else decorator
 
     @classmethod
     def _default_group_class(cls) -> type[click.Group] | None:
@@ -520,6 +538,10 @@ class Group(SectionMixin, Command, click.Group):
 
 
 # Why overloading? Refer to module docstring.
+@overload  # In this overload: bare decorator, i.e. "@command" without parentheses
+def command(name: AnyCallable, /) -> Command: ...
+
+
 @overload  # In this overload: "cls: None = None"
 def command(
     name: str | None = None,
@@ -584,12 +606,12 @@ def command(  # In this overload: "cls" passed positionally, as Click allows
 
 # noinspection PyIncorrectDocstring
 def command(
-    name: str | None = None,
+    name: str | AnyCallable | None = None,
     cls: type[C] | None = None,
     *,
     aliases: Iterable[str] | None = None,
     **kwargs: Any,
-) -> Callable[[AnyCallable], Command | C]:
+) -> Command | Callable[[AnyCallable], Command | C]:
     """
     Return a decorator that creates a new command using the decorated function
     as callback.
@@ -602,7 +624,8 @@ def command(
     - this function has detailed type hints and uses generics for the ``cls``
       argument and return type.
 
-    Like in Click, ``cls`` can be passed positionally.
+    Like in Click, the decorator can be applied with or without parentheses and
+    ``cls`` can be passed positionally.
 
     Note that the following arguments are about Cloup-specific features and are
     not supported by all ``click.Command``, so if you provide a custom ``cls``
@@ -613,7 +636,8 @@ def command(
     - ``show_constraints`` (``cls`` needs to inherit ``ConstraintMixin``).
 
     .. versionchanged:: 4.0.0
-        ``cls`` can be passed positionally, like in Click.
+        the decorator can be applied without parentheses and ``cls`` can be passed
+        positionally, like in Click.
 
     .. versionchanged:: 0.10.0
         this function is now generic: the return type depends on what you provide
@@ -674,12 +698,7 @@ def command(
     :param kwargs:
         any other argument accepted by the instantiated command class (``cls``).
     """
-    if callable(name):
-        raise Exception(
-            f"you forgot parenthesis in the command decorator for "
-            f"`{getattr(name, '__name__', name)}`. "
-            f"While parenthesis are optional in Click >= 8.1, they are required in Cloup."
-        )
+    func, name = _resolve_decorator_first_arg(name)
 
     def decorator(f: AnyCallable) -> Command | C:
         if hasattr(f, "__cloup_constraints__"):
@@ -701,10 +720,15 @@ def command(
         except TypeError as error:
             raise _process_unexpected_kwarg_error(error, _ARGS_INFO, cmd_cls)
 
-    return decorator
+    return decorator(func) if func is not None else decorator
 
 
-@overload  # Why overloading? Refer to module docstring.
+# Why overloading? Refer to module docstring.
+@overload  # In this overload: bare decorator, i.e. "@group" without parentheses
+def group(name: AnyCallable, /) -> Group: ...
+
+
+@overload
 def group(
     name: str | None = None,
     cls: None = None,
@@ -779,16 +803,18 @@ def group(  # In this overload: "cls" passed positionally, as Click allows
 
 
 def group(
-    name: str | None = None, cls: type[G] | None = None, **kwargs: Any
-) -> Callable[[AnyCallable], click.Group]:
+    name: str | AnyCallable | None = None, cls: type[G] | None = None, **kwargs: Any
+) -> click.Group | Callable[[AnyCallable], click.Group]:
     """
     Return a decorator that instantiates a ``Group`` (or a subclass of it)
     using the decorated function as callback.
 
-    As with :func:`command`, ``cls`` can be passed positionally.
+    As with :func:`command`, the decorator can be applied with or without
+    parentheses and ``cls`` can be passed positionally.
 
     .. versionchanged:: 4.0.0
-        ``cls`` can be passed positionally, like in Click.
+        the decorator can be applied without parentheses and ``cls`` can be passed
+        positionally, like in Click.
 
     .. versionchanged:: 0.10.0
         the ``cls`` argument can now be any ``click.Group`` (previously had to
@@ -863,8 +889,23 @@ def group(
         raise TypeError(
             "this decorator requires `cls` to be a `click.Group` (or a subclass)"
         )
+    func, name = _resolve_decorator_first_arg(name)
     group_cls: type[click.Group] = Group if cls is None else cls
-    return command(name=name, cls=group_cls, **kwargs)
+    make_group = command(name=name, cls=group_cls, **kwargs)
+    return make_group(func) if func is not None else make_group
+
+
+def _resolve_decorator_first_arg(
+    name: str | AnyCallable | None,
+) -> tuple[AnyCallable | None, str | None]:
+    """Resolve the first argument of a command decorator into ``(func, name)``.
+
+    Click's decorators can be applied without parentheses, in which case the
+    decorated callback takes the place of ``name``. Cloup mirrors that.
+    """
+    if callable(name):
+        return name, None
+    return None, name
 
 
 # Side stuff for better error messages
