@@ -178,7 +178,6 @@ __all__ = [
     "UNPROCESSED",
     "UUID",
     "UsageError",
-    "_version",
     "argument",
     "clear",
     "command",
