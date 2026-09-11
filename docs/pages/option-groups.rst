@@ -240,8 +240,7 @@ The above notation is just syntax sugar on top of ``@cloup.option``:
 Option groups without decorators
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 For some reason, you may need to work at a lower level, by passing parameters
-to a ``Command`` constructor. In that case you can use :class:`cloup.Option`
-(or the alias ``GroupedOption``)::
+to a ``Command`` constructor. In that case you can use :class:`cloup.Option`::
 
     from cloup import Command, Option, OptionGroup
 

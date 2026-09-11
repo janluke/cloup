@@ -27,10 +27,6 @@ class Option(click.Option):
         self.group = group
 
 
-GroupedOption = Option
-"""Alias of ``Option``."""
-
-
 def argument(
     *param_decls: str,
     cls: type[click.Argument] | None = None,
