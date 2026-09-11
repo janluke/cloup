@@ -18,6 +18,10 @@ The explicit keyword parameters provide IDE completion and show defaults.
 record their default values. The custom-class overloads also allow arbitrary
 extra keywords for subclass constructors.
 
+Like Click, Cloup accepts ``cls`` positionally. That form needs an overload of
+its own, and it repeats the keyword arguments of the keyword-``cls`` overload so
+that they keep being type-checked in both call styles.
+
 """
 
 import inspect
@@ -285,16 +289,16 @@ class Group(SectionMixin, Command, click.Group):
                 + secondary_style(")")
             )
 
-    # Click also supports bare decorators and positional cls; Cloup requires
-    # parentheses and keyword-only cls, so this override is intentionally narrower.
+    # Click also supports bare decorators, which Cloup rejects, so this override
+    # is intentionally narrower than the one it replaces.
     @overload  # type: ignore[override]
     # pyrefly: ignore[bad-override]
     def command(  # Why overloading? Refer to module docstring.
         self,
         name: str | None = None,
+        cls: None = None,  # default to Group.command_class or cloup.Command
         *,
         aliases: Iterable[str] | None = None,
-        cls: None = None,  # default to Group.command_class or cloup.Command
         section: Section | None = None,
         context_settings: dict[str, Any] | None = None,
         formatter_settings: dict[str, Any] | None = None,
@@ -332,13 +336,34 @@ class Group(SectionMixin, Command, click.Group):
         **kwargs: Any,
     ) -> Callable[[AnyCallable], C]: ...
 
+    @overload
+    def command(  # In this overload: "cls" passed positionally, as Click allows
+        self,
+        name: str | None,
+        cls: type[C],
+        *,
+        aliases: Iterable[str] | None = None,
+        section: Section | None = None,
+        context_settings: dict[str, Any] | None = None,
+        help: str | None = None,
+        epilog: str | None = None,
+        short_help: str | None = None,
+        options_metavar: str | None = "[OPTIONS]",
+        add_help_option: bool = True,
+        no_args_is_help: bool = False,
+        hidden: bool = False,
+        deprecated: bool | str = False,
+        params: list[click.Parameter] | None = None,
+        **kwargs: Any,
+    ) -> Callable[[AnyCallable], C]: ...
+
     @override
     def command(
         self,
         name: str | None = None,
+        cls: type[C] | None = None,
         *,
         aliases: Iterable[str] | None = None,
-        cls: type[C] | None = None,
         section: Section | None = None,
         **kwargs: Any,
     ) -> Callable[[AnyCallable], click.Command | C]:
@@ -349,6 +374,9 @@ class Group(SectionMixin, Command, click.Group):
 
         ``section``: ``Optional[Section]``
             if provided, put the subcommand in this section.
+
+        .. versionchanged:: 4.0.0
+            ``cls`` can be passed positionally, like in Click.
 
         .. versionchanged:: 0.10.0
             all arguments but ``name`` are now keyword-only.
@@ -373,9 +401,9 @@ class Group(SectionMixin, Command, click.Group):
     def group(  # Why overloading? Refer to module docstring.
         self,
         name: str | None = None,
+        cls: None = None,  # cls not provided
         *,
         aliases: Iterable[str] | None = None,
-        cls: None = None,  # cls not provided
         section: Section | None = None,
         sections: Iterable[Section] = (),
         align_sections: bool | None = None,
@@ -422,12 +450,36 @@ class Group(SectionMixin, Command, click.Group):
         **kwargs: Any,
     ) -> Callable[[AnyCallable], G]: ...
 
+    @overload
+    def group(  # In this overload: "cls" passed positionally, as Click allows
+        self,
+        name: str | None,
+        cls: type[G],
+        *,
+        aliases: Iterable[str] | None = None,
+        section: Section | None = None,
+        invoke_without_command: bool = False,
+        no_args_is_help: bool = False,
+        context_settings: dict[str, Any] | None = None,
+        help: str | None = None,
+        epilog: str | None = None,
+        short_help: str | None = None,
+        options_metavar: str | None = "[OPTIONS]",
+        subcommand_metavar: str | None = None,
+        add_help_option: bool = True,
+        chain: bool = False,
+        hidden: bool = False,
+        deprecated: bool | str = False,
+        params: list[click.Parameter] | None = None,
+        **kwargs: Any,
+    ) -> Callable[[AnyCallable], G]: ...
+
     @override
     def group(
         self,
         name: str | None = None,
-        *,
         cls: type[G] | None = None,
+        *,
         aliases: Iterable[str] | None = None,
         section: Section | None = None,
         **kwargs: Any,
@@ -439,6 +491,9 @@ class Group(SectionMixin, Command, click.Group):
 
         ``section``: ``Optional[Section]``
             if provided, put the subcommand in this section.
+
+        .. versionchanged:: 4.0.0
+            ``cls`` can be passed positionally, like in Click.
 
         .. versionchanged:: 0.10.0
             all arguments but ``name`` are now keyword-only.
@@ -468,9 +523,9 @@ class Group(SectionMixin, Command, click.Group):
 @overload  # In this overload: "cls: None = None"
 def command(
     name: str | None = None,
+    cls: None = None,
     *,
     aliases: Iterable[str] | None = None,
-    cls: None = None,
     context_settings: dict[str, Any] | None = None,
     formatter_settings: dict[str, Any] | None = None,
     help: str | None = None,
@@ -507,12 +562,32 @@ def command(  # In this overload: "cls: ClickCommand"
 ) -> Callable[[AnyCallable], C]: ...
 
 
+@overload
+def command(  # In this overload: "cls" passed positionally, as Click allows
+    name: str | None,
+    cls: type[C],
+    *,
+    aliases: Iterable[str] | None = None,
+    context_settings: dict[str, Any] | None = None,
+    help: str | None = None,
+    short_help: str | None = None,
+    epilog: str | None = None,
+    options_metavar: str | None = "[OPTIONS]",
+    add_help_option: bool = True,
+    no_args_is_help: bool = False,
+    hidden: bool = False,
+    deprecated: bool | str = False,
+    params: list[click.Parameter] | None = None,
+    **kwargs: Any,
+) -> Callable[[AnyCallable], C]: ...
+
+
 # noinspection PyIncorrectDocstring
 def command(
     name: str | None = None,
+    cls: type[C] | None = None,
     *,
     aliases: Iterable[str] | None = None,
-    cls: type[C] | None = None,
     **kwargs: Any,
 ) -> Callable[[AnyCallable], Command | C]:
     """
@@ -527,6 +602,8 @@ def command(
     - this function has detailed type hints and uses generics for the ``cls``
       argument and return type.
 
+    Like in Click, ``cls`` can be passed positionally.
+
     Note that the following arguments are about Cloup-specific features and are
     not supported by all ``click.Command``, so if you provide a custom ``cls``
     make sure you don't set these:
@@ -534,6 +611,9 @@ def command(
     - ``formatter_settings``
     - ``align_option_groups`` (``cls`` needs to inherit from ``OptionGroupMixin``)
     - ``show_constraints`` (``cls`` needs to inherit ``ConstraintMixin``).
+
+    .. versionchanged:: 4.0.0
+        ``cls`` can be passed positionally, like in Click.
 
     .. versionchanged:: 0.10.0
         this function is now generic: the return type depends on what you provide
@@ -627,8 +707,8 @@ def command(
 @overload  # Why overloading? Refer to module docstring.
 def group(
     name: str | None = None,
-    *,
     cls: None = None,
+    *,
     aliases: Iterable[str] | None = None,
     sections: Iterable[Section] = (),
     align_sections: bool | None = None,
@@ -675,12 +755,40 @@ def group(
 ) -> Callable[[AnyCallable], G]: ...
 
 
+@overload
+def group(  # In this overload: "cls" passed positionally, as Click allows
+    name: str | None,
+    cls: type[G],
+    *,
+    aliases: Iterable[str] | None = None,
+    invoke_without_command: bool = False,
+    no_args_is_help: bool = False,
+    context_settings: dict[str, Any] | None = None,
+    help: str | None = None,
+    short_help: str | None = None,
+    epilog: str | None = None,
+    options_metavar: str | None = "[OPTIONS]",
+    subcommand_metavar: str | None = None,
+    add_help_option: bool = True,
+    chain: bool = False,
+    hidden: bool = False,
+    deprecated: bool | str = False,
+    params: list[click.Parameter] | None = None,
+    **kwargs: Any,
+) -> Callable[[AnyCallable], G]: ...
+
+
 def group(
-    name: str | None = None, *, cls: type[G] | None = None, **kwargs: Any
+    name: str | None = None, cls: type[G] | None = None, **kwargs: Any
 ) -> Callable[[AnyCallable], click.Group]:
     """
     Return a decorator that instantiates a ``Group`` (or a subclass of it)
     using the decorated function as callback.
+
+    As with :func:`command`, ``cls`` can be passed positionally.
+
+    .. versionchanged:: 4.0.0
+        ``cls`` can be passed positionally, like in Click.
 
     .. versionchanged:: 0.10.0
         the ``cls`` argument can now be any ``click.Group`` (previously had to
@@ -751,14 +859,12 @@ def group(
     :param kwargs:
         any other argument accepted by the instantiated command class.
     """
-    if cls is None:
-        return command(name=name, cls=Group, **kwargs)
-    elif issubclass(cls, click.Group):
-        return command(name=name, cls=cls, **kwargs)
-    else:
+    if cls is not None and not issubclass(cls, click.Group):
         raise TypeError(
             "this decorator requires `cls` to be a `click.Group` (or a subclass)"
         )
+    group_cls: type[click.Group] = Group if cls is None else cls
+    return command(name=name, cls=group_cls, **kwargs)
 
 
 # Side stuff for better error messages

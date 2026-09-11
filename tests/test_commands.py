@@ -204,6 +204,46 @@ class TestDidYouMean:
         )
 
 
+@pytest.mark.parametrize(
+    "decorator, cls",
+    [(cloup.command, cloup.Command), (cloup.group, cloup.Group)],
+)
+def test_command_decorators_accept_cls_as_positional_argument(decorator, cls):
+    class CustomClass(cls):
+        pass
+
+    @decorator("cmd", CustomClass)
+    def cmd():
+        pass
+
+    assert isinstance(cmd, CustomClass)
+    assert cmd.name == "cmd"
+
+
+def test_group_subcommand_decorators_accept_cls_as_positional_argument():
+    class CustomCommand(cloup.Command):
+        pass
+
+    class CustomGroup(cloup.Group):
+        pass
+
+    @cloup.group()
+    def root():
+        pass
+
+    @root.command("sub-cmd", CustomCommand)
+    def subcommand():
+        pass
+
+    @root.group("sub-grp", CustomGroup)
+    def subgroup():
+        pass
+
+    assert isinstance(subcommand, CustomCommand)
+    assert isinstance(subgroup, CustomGroup)
+    assert root.commands == {"sub-cmd": subcommand, "sub-grp": subgroup}
+
+
 @pytest.mark.parametrize("decorator", [cloup.command, cloup.group])
 def test_error_is_raised_when_command_decorators_are_used_without_parenthesis(decorator):
     with pytest.raises(Exception, match="parenthesis"):
