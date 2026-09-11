@@ -9,8 +9,6 @@ NOTE: the goal of this example is to showcase Cloup's option groups and constrai
 
 from pprint import pprint
 
-from click import Choice
-
 import cloup
 from cloup import option, option_group
 from cloup.constraints import (
@@ -43,7 +41,7 @@ from cloup.constraints import (
     option("--six", help="a 6th cool option"),
     constraint=If("three", then=RequireExactly(1)),  # conditional constraint
 )
-@option("--seven", help="an uncategorized option", type=Choice(["foo", "bar"]))
+@option("--seven", help="an uncategorized option", type=cloup.Choice(["foo", "bar"]))
 @option("--eight", help="second uncategorized option")
 # Usage of @constraint
 @constraint(mutually_exclusive, ["one", "two"])

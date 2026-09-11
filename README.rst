@@ -96,9 +96,16 @@ Click itself:
     type supported keyword arguments individually. The settings helpers remain specific
     to Cloup
 
-Cloup is **statically type-checked** with MyPy in strict mode and extensively **tested**
+Cloup is **statically type-checked** with MyPy and Pyrefly and extensively **tested**
 against multiple versions of Python with nearly 100% coverage.
 
+Does it replace Click?
+======================
+
+Since version 4.0.0, Cloup makes an effort to re-export the public symbols in Click's
+top-level namespace. Applications using Cloup can therefore access most Click
+functionality through ``cloup`` without maintaining separate top-level imports from
+both packages.
 
 A simple example
 ================
