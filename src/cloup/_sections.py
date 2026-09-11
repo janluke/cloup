@@ -1,13 +1,9 @@
 from collections import OrderedDict
 from typing import (
     Any,
-    Dict,
     Iterable,
-    List,
     Optional,
     Sequence,
-    Tuple,
-    Type,
     TypeVar,
     Union,
 )
@@ -17,8 +13,8 @@ import click
 from cloup._util import first_bool, pick_not_none
 from cloup.formatting import HelpSection, ensure_is_cloup_formatter
 
-CommandType = TypeVar("CommandType", bound=Type[click.Command])
-Subcommands = Union[Sequence[click.Command], Dict[str, click.Command]]
+CommandType = TypeVar("CommandType", bound=type[click.Command])
+Subcommands = Union[Sequence[click.Command], dict[str, click.Command]]
 
 
 class Section:
@@ -72,7 +68,7 @@ class Section:
             raise Exception(f'command "{name}" already exists')
         self.commands[name] = cmd
 
-    def list_commands(self) -> List[Tuple[str, click.Command]]:
+    def list_commands(self) -> list[tuple[str, click.Command]]:
         command_list = [
             (name, cmd) for name, cmd in self.commands.items() if not cmd.hidden
         ]
@@ -117,7 +113,7 @@ class SectionMixin:
     def __init__(
         self,
         *args: Any,
-        commands: Optional[Dict[str, click.Command]] = None,
+        commands: Optional[dict[str, click.Command]] = None,
         sections: Iterable[Section] = (),
         align_sections: Optional[bool] = None,
         **kwargs: Any,
@@ -137,7 +133,7 @@ class SectionMixin:
         super().__init__(*args, commands=commands, **kwargs)  # type: ignore
         self.align_sections = align_sections
         self._default_section = Section("__DEFAULT", commands=commands or [])
-        self._user_sections: List[Section] = []
+        self._user_sections: list[Section] = []
         self._section_set = {self._default_section}
         for section in sections:
             self.add_section(section)
@@ -210,7 +206,7 @@ class SectionMixin:
 
     def list_sections(
         self, ctx: click.Context, include_default_section: bool = True
-    ) -> List[Section]:
+    ) -> list[Section]:
         """
         Return the list of all sections in the "correct order".
 

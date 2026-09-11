@@ -3,13 +3,10 @@
 import importlib.metadata
 from typing import (
     Any,
-    Dict,
     Hashable,
     Iterable,
-    List,
     Optional,
     Sequence,
-    Type,
     TypeVar,
 )
 
@@ -24,7 +21,7 @@ K = TypeVar("K", bound=Hashable)
 V = TypeVar("V")
 
 
-def pick_non_missing(d: Dict[K, Possibly[V]]) -> Dict[K, V]:
+def pick_non_missing(d: dict[K, Possibly[V]]) -> dict[K, V]:
     return {key: val for key, val in d.items() if val is not MISSING}
 
 
@@ -37,7 +34,7 @@ def check_arg(condition: bool, msg: str = "") -> None:
         raise ValueError(msg)
 
 
-def indent_lines(lines: Iterable[str], width: int = 2) -> List[str]:
+def indent_lines(lines: Iterable[str], width: int = 2) -> list[str]:
     spaces = " " * width
     return [spaces + line for line in lines]
 
@@ -105,12 +102,12 @@ def first_bool(*values: Any) -> bool:
     return next(val for val in values if isinstance(val, bool))
 
 
-def pick_not_none(iterable: Iterable[Optional[T]]) -> List[T]:
+def pick_not_none(iterable: Iterable[Optional[T]]) -> list[T]:
     return [x for x in iterable if x is not None]
 
 
 def check_positive_int(value: Any, arg_name: str) -> None:
-    error_type: Optional[Type[Exception]] = None
+    error_type: Optional[type[Exception]] = None
     if not isinstance(value, int):
         error_type = TypeError
     elif value <= 0:
@@ -140,7 +137,7 @@ class FrozenSpaceMeta(type):
                 "(e.g. __annotations__) are allowed to be set for compatibility reasons."
             )
 
-    def asdict(cls) -> Dict[str, Any]:
+    def asdict(cls) -> dict[str, Any]:
         return cls._dict  # type: ignore
 
     def __contains__(cls, item: str) -> bool:
@@ -159,7 +156,7 @@ class FrozenSpace(metaclass=FrozenSpaceMeta):
         )
 
 
-def delete_keys(d: Dict[Any, Any], keys: Sequence[str]) -> None:
+def delete_keys(d: dict[Any, Any], keys: Sequence[str]) -> None:
     for key in keys:
         del d[key]
 

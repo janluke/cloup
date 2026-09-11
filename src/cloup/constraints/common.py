@@ -2,7 +2,7 @@
 Useful functions used to implement constraints and predicates.
 """
 
-from typing import Any, Dict, Iterable, List, Sequence
+from typing import Any, Iterable, Sequence
 
 from click import Argument, Context, Option, Parameter
 
@@ -42,14 +42,14 @@ def get_param_name(param: Parameter) -> str:
 
 
 def get_params_whose_value_is_set(
-    params: Iterable[Parameter], values: Dict[str, Any]
-) -> List[Parameter]:
+    params: Iterable[Parameter], values: dict[str, Any]
+) -> list[Parameter]:
     """Filter ``params``, returning only the parameters that have a value.
     Boolean flags are considered "set" if their value is ``True``."""
     return [p for p in params if param_value_is_set(p, values[get_param_name(p)])]
 
 
-def get_required_params(params: Iterable[Parameter]) -> List[Parameter]:
+def get_required_params(params: Iterable[Parameter]) -> list[Parameter]:
     return [p for p in params if p.required]
 
 
@@ -98,7 +98,7 @@ def param_label_by_name(ctx: Any, name: str) -> str:
     return get_param_label(ctx.command.get_param_by_name(name))
 
 
-def get_param_labels(ctx: Any, param_names: Iterable[str]) -> List[str]:
+def get_param_labels(ctx: Any, param_names: Iterable[str]) -> list[str]:
     params = ctx.command.get_params_by_name(param_names)
     return [get_param_label(param) for param in params]
 

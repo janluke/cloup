@@ -3,14 +3,14 @@ Parameter types and "shortcuts" for creating commonly used types.
 """
 
 import pathlib
-from typing import Type, Any
+from typing import Any
 
 import click
 
 
 def path(
     *,
-    path_type: Type[Any] = pathlib.Path,
+    path_type: type[Any] = pathlib.Path,
     exists: bool = False,
     file_okay: bool = True,
     dir_okay: bool = True,
@@ -26,7 +26,7 @@ def path(
 
 def dir_path(
     *,
-    path_type: Type[Any] = pathlib.Path,
+    path_type: type[Any] = pathlib.Path,
     exists: bool = False,
     readable: bool = True,
     writable: bool = False,
@@ -41,7 +41,7 @@ def dir_path(
 
 def file_path(
     *,
-    path_type: Type[Any] = pathlib.Path,
+    path_type: type[Any] = pathlib.Path,
     exists: bool = False,
     readable: bool = True,
     writable: bool = False,

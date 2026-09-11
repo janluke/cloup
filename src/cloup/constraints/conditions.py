@@ -7,7 +7,7 @@ is not (at the moment) enforced.
 """
 
 import abc
-from typing import Any, Dict, Generic, TypeVar
+from typing import Any, Generic, TypeVar
 
 import click
 
@@ -67,7 +67,7 @@ class Predicate(abc.ABC):
     def __repr__(self) -> str:
         return make_repr(self, *self._public_fields().values())
 
-    def _public_fields(self) -> Dict[str, Any]:
+    def _public_fields(self) -> dict[str, Any]:
         return {k: v for k, v in vars(self).items() if not k.startswith("_")}
 
     def __eq__(self, other: object) -> bool:
