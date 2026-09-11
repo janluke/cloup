@@ -2,7 +2,6 @@
 This modules contains classes for creating conditional constraints.
 """
 
-from typing import Optional
 from collections.abc import Sequence
 
 from click import Context, Parameter
@@ -46,7 +45,7 @@ class If(Constraint):
         self,
         condition: str | Sequence[str] | Predicate,
         then: Constraint,
-        else_: Optional[Constraint] = None,
+        else_: Constraint | None = None,
     ):
         self._condition = as_predicate(condition)
         self._then = then

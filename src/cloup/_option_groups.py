@@ -5,7 +5,6 @@ Implements the "option groups" feature.
 from collections import defaultdict
 from typing import (
     Any,
-    Optional,
     overload,
 )
 from collections.abc import Callable, Iterable, Iterator, Sequence
@@ -24,8 +23,8 @@ class OptionGroup:
     def __init__(
         self,
         title: str,
-        help: Optional[str] = None,
-        constraint: Optional[Constraint] = None,
+        help: str | None = None,
+        constraint: Constraint | None = None,
         hidden: bool = False,
     ):
         """Contains the information of an option group and identifies it.
@@ -90,7 +89,7 @@ def has_option_group(param: click.Parameter) -> bool:
     return getattr(param, "group", None) is not None
 
 
-def get_option_group_of(param: click.Option) -> Optional[OptionGroup]:
+def get_option_group_of(param: click.Option) -> OptionGroup | None:
     return getattr(param, "group", None)
 
 
@@ -121,7 +120,7 @@ class OptionGroupMixin:
     """
 
     def __init__(
-        self, *args: Any, align_option_groups: Optional[bool] = None, **kwargs: Any
+        self, *args: Any, align_option_groups: bool | None = None, **kwargs: Any
     ) -> None:
         """
         :param align_option_groups:
@@ -194,7 +193,7 @@ class OptionGroupMixin:
         """Like Argument.get_help_record, but it returns a tuple even if help is empty"""
         return arg.make_metavar(ctx), getattr(arg, "help", "")
 
-    def get_arguments_help_section(self, ctx: click.Context) -> Optional[HelpSection]:
+    def get_arguments_help_section(self, ctx: click.Context) -> HelpSection | None:
         args_with_help = (arg for arg in self.arguments if getattr(arg, "help", None))
         if not any(args_with_help):
             return None
@@ -222,7 +221,7 @@ class OptionGroupMixin:
         )
 
     def must_align_option_groups(
-        self, ctx: Optional[click.Context], default: bool = True
+        self, ctx: click.Context | None, default: bool = True
     ) -> bool:
         """
         Return ``True`` if the help sections of all options groups should have
@@ -288,7 +287,7 @@ def option_group(
     title: str,
     help: str,
     *options: Decorator,
-    constraint: Optional[Constraint] = None,
+    constraint: Constraint | None = None,
     hidden: bool = False,
 ) -> Callable[[F], F]: ...
 
@@ -297,8 +296,8 @@ def option_group(
 def option_group(
     title: str,
     *options: Decorator,
-    help: Optional[str] = None,
-    constraint: Optional[Constraint] = None,
+    help: str | None = None,
+    constraint: Constraint | None = None,
     hidden: bool = False,
 ) -> Callable[[F], F]: ...
 
@@ -349,8 +348,8 @@ def option_group(title: str, *args: Any, **kwargs: Any) -> Callable[[F], F]:
 def _option_group(
     title: str,
     options: Sequence[Callable[[F], F]],
-    help: Optional[str] = None,
-    constraint: Optional[Constraint] = None,
+    help: str | None = None,
+    constraint: Constraint | None = None,
     hidden: bool = False,
 ) -> Callable[[F], F]:
     if not isinstance(title, str):

@@ -1,5 +1,3 @@
-from typing import Optional
-
 import click
 import pytest
 
@@ -188,7 +186,7 @@ def test_alias_are_correctly_styled(runner):
     red = Style(fg=Color.red)
     green = Style(fg=Color.green)
 
-    def fmt(alias: IStyle = identity, alias_secondary: Optional[IStyle] = None):
+    def fmt(alias: IStyle = identity, alias_secondary: IStyle | None = None):
         theme = HelpTheme(alias=alias, alias_secondary=alias_secondary)
         return Group.format_subcommand_aliases(["i", "add"], theme)
 

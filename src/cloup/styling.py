@@ -7,7 +7,6 @@ import dataclasses
 import dataclasses as dc
 import sys
 from dataclasses import dataclass
-from typing import Optional
 from collections.abc import Callable
 
 import click
@@ -81,7 +80,7 @@ class HelpTheme:
     alias: IStyle = identity
     """Style of subcommand aliases in a definition lists."""
 
-    alias_secondary: Optional[IStyle] = None
+    alias_secondary: IStyle | None = None
     """Style of separator and eventual parenthesis/brackets in subcommand alias lists.
     If not provided, the ``alias`` style will be used."""
 
@@ -90,16 +89,16 @@ class HelpTheme:
 
     def with_(
         self,
-        invoked_command: Optional[IStyle] = None,
-        command_help: Optional[IStyle] = None,
-        heading: Optional[IStyle] = None,
-        constraint: Optional[IStyle] = None,
-        section_help: Optional[IStyle] = None,
-        col1: Optional[IStyle] = None,
-        col2: Optional[IStyle] = None,
-        alias: Optional[IStyle] = None,
-        alias_secondary: Possibly[Optional[IStyle]] = MISSING,
-        epilog: Optional[IStyle] = None,
+        invoked_command: IStyle | None = None,
+        command_help: IStyle | None = None,
+        heading: IStyle | None = None,
+        constraint: IStyle | None = None,
+        section_help: IStyle | None = None,
+        col1: IStyle | None = None,
+        col2: IStyle | None = None,
+        alias: IStyle | None = None,
+        alias_secondary: Possibly[IStyle | None] = MISSING,
+        epilog: IStyle | None = None,
         **kwargs: object,
     ) -> Self:
         """Return a theme of the same type with the supplied fields replaced.
@@ -176,15 +175,15 @@ class Style:
 
     fg: int | tuple[int, int, int] | str | None = None
     bg: int | tuple[int, int, int] | str | None = None
-    bold: Optional[bool] = None
-    dim: Optional[bool] = None
-    underline: Optional[bool] = None
-    overline: Optional[bool] = None
-    italic: Optional[bool] = None
-    blink: Optional[bool] = None
-    reverse: Optional[bool] = None
-    strikethrough: Optional[bool] = None
-    text_transform: Optional[IStyle] = None
+    bold: bool | None = None
+    dim: bool | None = None
+    underline: bool | None = None
+    overline: bool | None = None
+    italic: bool | None = None
+    blink: bool | None = None
+    reverse: bool | None = None
+    strikethrough: bool | None = None
+    text_transform: IStyle | None = None
 
     def __call__(self, text: str) -> str:
         if self.text_transform:

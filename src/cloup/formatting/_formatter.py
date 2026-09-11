@@ -5,7 +5,6 @@ import textwrap
 from itertools import chain
 from typing import (
     Any,
-    Optional,
     TYPE_CHECKING,
     Union,
 )
@@ -50,10 +49,10 @@ class HelpSection:
     """Rows with 2 columns each. The 2nd element of each row can also be a function
     taking an integer (the available width for the 2nd column) and returning a string."""
 
-    help: Optional[str] = None
+    help: str | None = None
     """(Optional) long description of the section."""
 
-    constraint: Optional[str] = None
+    constraint: str | None = None
     """(Optional) option group constraint description."""
 
 
@@ -119,8 +118,8 @@ class HelpFormatter(click.HelpFormatter):
     def __init__(
         self,
         indent_increment: int = 2,
-        width: Optional[int] = None,
-        max_width: Optional[int] = None,
+        width: int | None = None,
+        max_width: int | None = None,
         col1_max_width: int = 30,
         col2_min_width: int = 35,
         col_spacing: int = 2,
@@ -158,8 +157,8 @@ class HelpFormatter(click.HelpFormatter):
     @staticmethod
     def settings(
         *,
-        width: Possibly[Optional[int]] = MISSING,
-        max_width: Possibly[Optional[int]] = MISSING,
+        width: Possibly[int | None] = MISSING,
+        max_width: Possibly[int | None] = MISSING,
         indent_increment: Possibly[int] = MISSING,
         col1_max_width: Possibly[int] = MISSING,
         col2_min_width: Possibly[int] = MISSING,
@@ -183,9 +182,7 @@ class HelpFormatter(click.HelpFormatter):
     def write(self, string: str = "", *strings: str) -> None:
         self.buffer += (string, *strings)
 
-    def write_usage(
-        self, prog: str, args: str = "", prefix: Optional[str] = None
-    ) -> None:
+    def write_usage(self, prog: str, args: str = "", prefix: str | None = None) -> None:
         prefix = "Usage:" if prefix is None else prefix
         prefix = self.theme.heading(prefix) + " "
         prog = self.theme.invoked_command(prog)
@@ -231,7 +228,7 @@ class HelpFormatter(click.HelpFormatter):
         for s in sections:
             self.write_section(s, col1_width=col1_width)
 
-    def write_section(self, s: HelpSection, col1_width: Optional[int] = None) -> None:
+    def write_section(self, s: HelpSection, col1_width: int | None = None) -> None:
         theme = self.theme
         self.write("\n")
         self.write_heading(s.heading, newline=not s.constraint)
@@ -271,9 +268,9 @@ class HelpFormatter(click.HelpFormatter):
     def write_dl(
         self,
         rows: Iterable[Definition],
-        col_max: Optional[int] = None,  # default changed to None wrt parent class
-        col_spacing: Optional[int] = None,  # default changed to None wrt parent class
-        col1_width: Optional[int] = None,
+        col_max: int | None = None,  # default changed to None wrt parent class
+        col_spacing: int | None = None,  # default changed to None wrt parent class
+        col1_width: int | None = None,
     ) -> None:
         """Write a definition list into the buffer. This is how options
         and commands are usually formatted.
@@ -329,7 +326,7 @@ class HelpFormatter(click.HelpFormatter):
         text_rows: Sequence[Sequence[str]],
         col_widths: Sequence[int],
         col_spacing: int,
-    ) -> Optional[str]:
+    ) -> str | None:
         if self.row_sep is None or isinstance(self.row_sep, str):
             return self.row_sep
 

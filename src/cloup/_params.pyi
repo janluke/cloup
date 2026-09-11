@@ -4,7 +4,6 @@ Types for parameter decorators are in this stub for convenience of implementatio
 
 from typing import (
     Any,
-    Optional,
     TypeVar,
 )
 from collections.abc import Callable, Sequence
@@ -27,49 +26,49 @@ ShellCompleteArg = Callable[
 ]
 
 class Option(click.Option):
-    group: Optional[OptionGroup]
+    group: OptionGroup | None
 
-    def __init__(self, *args: Any, group: Optional[OptionGroup] = None, **attrs: Any): ...
+    def __init__(self, *args: Any, group: OptionGroup | None = None, **attrs: Any): ...
 
 def argument(
     *param_decls: str,
-    cls: Optional[type[click.Argument]] = None,
-    help: Optional[str] = None,
+    cls: type[click.Argument] | None = None,
+    help: str | None = None,
     deprecated: bool | str = False,
-    type: Optional[ParamTypeLike] = None,
-    required: Optional[bool] = None,
-    default: Optional[ParamDefault] = None,
-    callback: Optional[ParamCallback[click.Argument]] = None,
-    nargs: Optional[int] = None,
-    metavar: Optional[str] = None,
+    type: ParamTypeLike | None = None,
+    required: bool | None = None,
+    default: ParamDefault | None = None,
+    callback: ParamCallback[click.Argument] | None = None,
+    nargs: int | None = None,
+    metavar: str | None = None,
     expose_value: bool = True,
-    envvar: Optional[str | Sequence[str]] = None,
-    shell_complete: Optional[ShellCompleteArg[click.Argument]] = None,
+    envvar: str | Sequence[str] | None = None,
+    shell_complete: ShellCompleteArg[click.Argument] | None = None,
     **kwargs: Any,
 ) -> Callable[[F], F]: ...
 def option(
     *param_decls: str,
-    cls: Optional[type[click.Option]] = None,
+    cls: type[click.Option] | None = None,
     # Commonly used
-    metavar: Optional[str] = None,
-    type: Optional[ParamTypeLike] = None,
-    is_flag: Optional[bool] = None,
-    default: Optional[ParamDefault] = None,
-    required: Optional[bool] = None,
-    help: Optional[str] = None,
+    metavar: str | None = None,
+    type: ParamTypeLike | None = None,
+    is_flag: bool | None = None,
+    default: ParamDefault | None = None,
+    required: bool | None = None,
+    help: str | None = None,
     deprecated: bool | str = False,
     # Processing
-    callback: Optional[ParamCallback[click.Option]] = None,
+    callback: ParamCallback[click.Option] | None = None,
     is_eager: bool = False,
     # Help text tuning
     show_choices: bool = True,
     show_default: bool | str | None = None,
     show_envvar: bool = False,
     # Flag options
-    flag_value: Optional[Any] = None,
+    flag_value: Any | None = None,
     count: bool = False,
     # Multiple values
-    nargs: Optional[int] = None,
+    nargs: int | None = None,
     multiple: bool = False,
     # Prompt
     prompt: bool | str = False,
@@ -78,12 +77,12 @@ def option(
     hide_input: bool = False,
     # Environment
     allow_from_autoenv: bool = True,
-    envvar: Optional[str | Sequence[str]] = None,
+    envvar: str | Sequence[str] | None = None,
     # Hiding
     hidden: bool = False,
     expose_value: bool = True,
     # Others
-    group: Optional[OptionGroup] = None,
-    shell_complete: Optional[ShellCompleteArg[click.Option]] = None,
+    group: OptionGroup | None = None,
+    shell_complete: ShellCompleteArg[click.Option] | None = None,
     **kwargs: Any,
 ) -> Callable[[F], F]: ...
