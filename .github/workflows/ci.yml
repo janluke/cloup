@@ -43,7 +43,7 @@ jobs:
       fail-fast: false
       matrix:
         python: [ "3.10", "3.11", "3.12", "3.13", "3.14" ]
-        click: [ "latest" ]
+        click: [ "latest-supported" ]
         include:
           - { python: "3.14", click: "8.5" }
 
@@ -51,7 +51,7 @@ jobs:
       - name: Set test env name
         run: |
           TEST_ENV="test.py${{ matrix.python }}"
-          if [[ "${{ matrix.click }}" != "latest" ]]; then
+          if [[ "${{ matrix.click }}" != "latest-supported" ]]; then
             TEST_ENV="${TEST_ENV}-click_${{ matrix.click }}"
           fi
           echo "TEST_ENV=${TEST_ENV}" >> "$GITHUB_ENV"
