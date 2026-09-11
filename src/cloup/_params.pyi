@@ -4,12 +4,11 @@ Types for parameter decorators are in this stub for convenience of implementatio
 
 from typing import (
     Any,
-    Callable,
     Optional,
-    Sequence,
     TypeVar,
     Union,
 )
+from collections.abc import Callable, Sequence
 
 import click
 from click.shell_completion import CompletionItem

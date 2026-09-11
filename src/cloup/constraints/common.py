@@ -2,7 +2,8 @@
 Useful functions used to implement constraints and predicates.
 """
 
-from typing import Any, Iterable, Sequence
+from typing import Any
+from collections.abc import Iterable, Sequence
 
 from click import Argument, Context, Option, Parameter
 

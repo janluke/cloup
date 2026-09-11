@@ -1,5 +1,5 @@
 from functools import partial
-from typing import Sequence
+from collections.abc import Sequence
 from unittest import mock
 from unittest.mock import Mock
 

@@ -1,14 +1,13 @@
 import abc
 from typing import (
     Any,
-    Callable,
     Optional,
-    Sequence,
     TypeVar,
     Union,
     cast,
     overload,
 )
+from collections.abc import Callable, Sequence
 
 import click
 

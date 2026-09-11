@@ -8,7 +8,8 @@ help sections.
 
 import abc
 from itertools import zip_longest
-from typing import Optional, Protocol, Sequence, Union
+from typing import Optional, Protocol, Union
+from collections.abc import Sequence
 
 SepType = Union[str, "SepGenerator"]
 

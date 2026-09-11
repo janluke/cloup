@@ -1,13 +1,11 @@
 from typing import (
     Any,
-    Callable,
-    Iterable,
     NamedTuple,
     Optional,
-    Sequence,
     TYPE_CHECKING,
     Union,
 )
+from collections.abc import Callable, Iterable, Sequence
 
 import click
 

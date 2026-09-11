@@ -5,13 +5,10 @@ Implements the "option groups" feature.
 from collections import defaultdict
 from typing import (
     Any,
-    Callable,
-    Iterable,
-    Iterator,
     Optional,
-    Sequence,
     overload,
 )
+from collections.abc import Callable, Iterable, Iterator, Sequence
 
 import click
 from click import Option, Parameter

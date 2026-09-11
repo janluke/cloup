@@ -23,18 +23,14 @@ extra keywords for subclass constructors.
 import inspect
 from typing import (
     Any,
-    Callable,
-    Iterable,
     NamedTuple,
     Optional,
-    Sequence,
     TypeVar,
     Union,
     cast,
     overload,
-    MutableMapping,
-    Mapping,
 )
+from collections.abc import Callable, Iterable, Sequence, MutableMapping, Mapping
 
 import click
 

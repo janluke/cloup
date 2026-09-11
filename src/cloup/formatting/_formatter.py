@@ -5,14 +5,11 @@ import textwrap
 from itertools import chain
 from typing import (
     Any,
-    Callable,
-    Iterable,
-    Iterator,
     Optional,
-    Sequence,
     TYPE_CHECKING,
     Union,
 )
+from collections.abc import Callable, Iterable, Iterator, Sequence
 
 from cloup.formatting._util import unstyled_len
 
