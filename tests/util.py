@@ -1,5 +1,5 @@
-from contextlib import contextmanager
 from collections.abc import Iterable
+from contextlib import contextmanager
 from unittest.mock import Mock
 
 import click

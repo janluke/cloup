@@ -2,7 +2,6 @@ from pathlib import Path
 
 from hatchling.metadata.plugin.interface import MetadataHookInterface
 
-
 PYPI_README_START = ".. docs-index-start"
 
 

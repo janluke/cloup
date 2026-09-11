@@ -1,9 +1,9 @@
 from collections import OrderedDict
+from collections.abc import Iterable, Sequence
 from typing import (
     Any,
     TypeVar,
 )
-from collections.abc import Iterable, Sequence
 
 import click
 

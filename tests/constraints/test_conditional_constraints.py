@@ -16,7 +16,7 @@ from cloup.constraints.conditions import (
     _Or,
 )
 from tests.constraints.test_constraints import FakeConstraint
-from tests.util import make_context, parametrize, mock_repr
+from tests.util import make_context, mock_repr, parametrize
 
 
 class FakePredicate(Predicate):

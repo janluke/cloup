@@ -1,17 +1,17 @@
 from __future__ import annotations
 
 import warnings
+from collections.abc import Callable
 from functools import update_wrapper
 from typing import (
     Any,
     Concatenate,
-    cast,
     Literal,
     ParamSpec,
     TypeVar,
+    cast,
     overload,
 )
-from collections.abc import Callable
 
 import click
 

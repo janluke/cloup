@@ -1,11 +1,11 @@
 import abc
+from collections.abc import Callable, Sequence
 from typing import (
     Any,
     TypeVar,
     cast,
     overload,
 )
-from collections.abc import Callable, Sequence
 
 import click
 
@@ -19,6 +19,8 @@ from cloup._util import (
     pluralize,
     reindent,
 )
+
+from ..typing import Decorator, F
 from .common import (
     format_param_list,
     get_param_label,
@@ -28,7 +30,6 @@ from .common import (
     param_value_is_set,
 )
 from .exceptions import ConstraintViolated, UnsatisfiableConstraint
-from ..typing import Decorator, F
 
 Op = TypeVar("Op", bound="Operator")
 HelpRephraser = Callable[[click.Context, "Constraint"], str]

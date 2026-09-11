@@ -1,5 +1,5 @@
-from typing import TYPE_CHECKING
 from collections.abc import Iterable, Sequence
+from typing import TYPE_CHECKING
 
 import click
 from click import Context, Parameter

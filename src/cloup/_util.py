@@ -1,11 +1,8 @@
 """Generic utilities."""
 
 import importlib.metadata
-from typing import (
-    Any,
-    TypeVar,
-)
 from collections.abc import Hashable, Iterable, Sequence
+from typing import Any, TypeVar
 
 from cloup.typing import MISSING, Possibly
 

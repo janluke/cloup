@@ -7,7 +7,7 @@ from cloup.constraints.common import (
     join_with_and,
     param_value_is_set,
 )
-from tests.util import bool_opt, flag_opt, int_opt, parametrize, multi_opt, tuple_opt
+from tests.util import bool_opt, flag_opt, int_opt, multi_opt, parametrize, tuple_opt
 
 
 @parametrize(

@@ -3,11 +3,11 @@ Implements the "option groups" feature.
 """
 
 from collections import defaultdict
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from typing import (
     Any,
     overload,
 )
-from collections.abc import Callable, Iterable, Iterator, Sequence
 
 import click
 from click import Option, Parameter

@@ -6,10 +6,10 @@ from collections.abc import Sequence
 
 from click import Context, Parameter
 
+from .._util import make_repr
 from ._core import Constraint
 from .conditions import AllSet, IsSet, Predicate
 from .exceptions import ConstraintViolated
-from .._util import make_repr
 
 
 def as_predicate(arg: str | Sequence[str] | Predicate) -> Predicate:

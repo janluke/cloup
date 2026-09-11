@@ -11,6 +11,7 @@ from typing import Any, Generic, TypeVar
 
 import click
 
+from .._util import make_repr
 from ._support import ensure_constraints_support
 from .common import (
     get_param_labels,
@@ -20,7 +21,6 @@ from .common import (
     param_value_by_name,
     param_value_is_set,
 )
-from .._util import make_repr
 
 P = TypeVar("P", bound="Predicate")
 

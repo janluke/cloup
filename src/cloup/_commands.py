@@ -21,6 +21,7 @@ extra keywords for subclass constructors.
 """
 
 import inspect
+from collections.abc import Callable, Iterable, Mapping, MutableMapping, Sequence
 from typing import (
     Any,
     NamedTuple,
@@ -28,11 +29,11 @@ from typing import (
     cast,
     overload,
 )
-from collections.abc import Callable, Iterable, Sequence, MutableMapping, Mapping
 
 import click
 
 import cloup
+
 from ._context import Context
 from ._option_groups import OptionGroupMixin
 from ._sections import Section, SectionMixin

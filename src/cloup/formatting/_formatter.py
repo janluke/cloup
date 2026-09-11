@@ -2,13 +2,13 @@ import dataclasses as dc
 import inspect
 import shutil
 import textwrap
+from collections.abc import Callable, Iterable, Iterator, Sequence
 from itertools import chain
 from typing import (
-    Any,
     TYPE_CHECKING,
+    Any,
     Union,
 )
-from collections.abc import Callable, Iterable, Iterator, Sequence
 
 from cloup.formatting._util import unstyled_len
 
@@ -25,8 +25,9 @@ from cloup._util import (
     make_repr,
     pick_non_missing,
 )
-from ..typing import MISSING, Possibly
 from cloup.styling import HelpTheme, IStyle
+
+from ..typing import MISSING, Possibly
 
 Definition = tuple[str, str | Callable[[int], str]]
 

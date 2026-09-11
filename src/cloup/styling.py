@@ -6,8 +6,8 @@ of the ``--help`` output.
 import dataclasses
 import dataclasses as dc
 import sys
-from dataclasses import dataclass
 from collections.abc import Callable
+from dataclasses import dataclass
 
 import click
 

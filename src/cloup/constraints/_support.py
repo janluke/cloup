@@ -1,17 +1,17 @@
+from collections.abc import Callable, Iterable, Sequence
 from typing import (
+    TYPE_CHECKING,
     Any,
     NamedTuple,
-    TYPE_CHECKING,
     Union,
 )
-from collections.abc import Callable, Iterable, Sequence
 
 import click
 
-from ._core import Constraint
-from .common import join_param_labels
 from .._util import first_bool
 from ..typing import Decorator, F
+from ._core import Constraint
+from .common import join_param_labels
 
 if TYPE_CHECKING:
     from cloup import HelpFormatter, OptionGroup

@@ -1,8 +1,8 @@
 __all__ = ["AnyCallable", "MISSING", "Possibly", "Decorator", "F"]
 
+from collections.abc import Callable
 from enum import Enum
 from typing import Any, TypeAlias, TypeVar
-from collections.abc import Callable
 
 
 # PEP-blessed solution for defining a Singleton type:
