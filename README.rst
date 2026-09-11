@@ -75,26 +75,12 @@ more expressive and configurable:
   - use a different layout when the terminal width is below a certain threshold
     in order to improve readability
 
-- additional types, e.g. path types that use ``pathlib.Path`` instead of ``str`` by
-  default.
+- additional parameter types, e.g. path types that use ``pathlib.Path`` instead of
+  ``str`` by default.
 
-Other Cloup features and refinements have since been added, in full or in part, to
-Click itself:
-
-- (optional) help section for positional arguments
-
-  - added to Click in version 8.5.0
-
-- "did you mean <subcommand>?" suggestions when you mistype a subcommand
-
-  - added to Click in version 8.4.0
-
-- detailed type annotations and typed helpers such as ``Context.settings()`` and
-  ``HelpFormatter.settings()`` for better IDE support
-
-  - Click also has type annotations, but its parameter and command decorators do not
-    type supported keyword arguments individually. The settings helpers remain specific
-    to Cloup
+- command decorators with individually typed keyword arguments, plus typed helpers
+  such as ``Context.settings()`` and ``HelpFormatter.settings()``, for better IDE
+  and static type checker support.
 
 Cloup is **statically type-checked** with MyPy and Pyrefly and extensively **tested**
 against multiple versions of Python with nearly 100% coverage.
