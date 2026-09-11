@@ -1,6 +1,5 @@
 import inspect
 from dataclasses import dataclass
-from typing import Optional
 from collections.abc import Callable
 
 import click
@@ -14,7 +13,7 @@ from cloup.styling import Color, HelpTheme, IStyle, Style
 @dataclass(frozen=True)
 class CustomTheme(HelpTheme):
     metavar: IStyle = identity
-    label: Optional[str] = "default"
+    label: str | None = "default"
 
 
 @dataclass(frozen=True)

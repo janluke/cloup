@@ -4,7 +4,6 @@ Tip: in your editor, set a ruler at 80 characters.
 
 import inspect
 from textwrap import dedent
-from typing import Optional
 
 import click
 import pytest
@@ -146,7 +145,7 @@ def test_fixed_row_sep(row_sep):
     ),
     pytest.param(RowSepIf(multiline_rows_are_at_least(4)), None, id="no_sep"),
 )
-def test_conditional_row_sep(policy: RowSepPolicy, expected_sep: Optional[str]):
+def test_conditional_row_sep(policy: RowSepPolicy, expected_sep: str | None):
     formatter = HelpFormatter(
         width=80,
         col1_max_width=30,

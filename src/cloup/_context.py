@@ -7,7 +7,6 @@ from typing import (
     Concatenate,
     cast,
     Literal,
-    Optional,
     ParamSpec,
     TypeVar,
     overload,
@@ -30,14 +29,14 @@ def get_current_context(silent: Literal[False] = False) -> Context: ...
 
 
 @overload
-def get_current_context(silent: bool) -> Optional[Context]: ...
+def get_current_context(silent: bool) -> Context | None: ...
 
 
-def get_current_context(silent: bool = False) -> "Optional[Context]":
+def get_current_context(silent: bool = False) -> "Context | None":
     """Equivalent to :func:`click.get_current_context` but casts the returned
     :class:`click.Context` object to :class:`cloup.Context` (which is safe when using
     cloup commands classes and decorators)."""
-    return cast(Optional[Context], click.get_current_context(silent=silent))
+    return cast(Context | None, click.get_current_context(silent=silent))
 
 
 def pass_context(f: Callable[Concatenate[Context, P], R]) -> Callable[P, R]:
@@ -118,11 +117,11 @@ class Context(click.Context):
     def __init__(
         self,
         *ctx_args: Any,
-        align_option_groups: Optional[bool] = None,
-        align_sections: Optional[bool] = None,
-        show_subcommand_aliases: Optional[bool] = None,
-        show_constraints: Optional[bool] = None,
-        check_constraints_consistency: Optional[bool] = None,
+        align_option_groups: bool | None = None,
+        align_sections: bool | None = None,
+        show_subcommand_aliases: bool | None = None,
+        show_constraints: bool | None = None,
+        check_constraints_consistency: bool | None = None,
         formatter_settings: dict[str, Any] = {},
         **ctx_kwargs: Any,
     ):

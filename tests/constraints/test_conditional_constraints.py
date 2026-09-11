@@ -1,5 +1,4 @@
 from itertools import combinations
-from typing import Optional
 from unittest.mock import Mock
 
 import pytest
@@ -25,7 +24,7 @@ class FakePredicate(Predicate):
         self,
         value: bool = True,
         desc: str = "description",
-        neg_desc: Optional[str] = None,
+        neg_desc: str | None = None,
     ):
         self.value = value
         self._desc = desc

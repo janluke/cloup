@@ -1,7 +1,6 @@
 import abc
 from typing import (
     Any,
-    Optional,
     TypeVar,
     cast,
     overload,
@@ -116,18 +115,16 @@ class Constraint(abc.ABC):
 
     @overload
     def check(
-        self, params: Sequence[click.Parameter], ctx: Optional[click.Context] = None
+        self, params: Sequence[click.Parameter], ctx: click.Context | None = None
     ) -> None: ...
 
     @overload
-    def check(
-        self, params: Sequence[str], ctx: Optional[click.Context] = None
-    ) -> None: ...
+    def check(self, params: Sequence[str], ctx: click.Context | None = None) -> None: ...
 
     def check(
         self,
         params: Sequence[click.Parameter] | Sequence[str],
-        ctx: Optional[click.Context] = None,
+        ctx: click.Context | None = None,
     ) -> None:
         """
         Raise an exception if the constraint is not satisfied by the input
@@ -361,7 +358,7 @@ class Rephraser(Constraint):
         else:
             return self._help(ctx, self.constraint)
 
-    def _get_rephrased_error(self, err: ConstraintViolated) -> Optional[str]:
+    def _get_rephrased_error(self, err: ConstraintViolated) -> str | None:
         if self._error is None:
             return None
         elif isinstance(self._error, str):

@@ -3,7 +3,6 @@
 import importlib.metadata
 from typing import (
     Any,
-    Optional,
     TypeVar,
 )
 from collections.abc import Hashable, Iterable, Sequence
@@ -89,7 +88,7 @@ def pluralize(
     return many.format(count=count)
 
 
-def coalesce(*values: Optional[T]) -> Optional[T]:
+def coalesce(*values: T | None) -> T | None:
     """Return the first value that is not ``None``
     (or ``None`` if no such value exists)."""
     return next((val for val in values if val is not None), None)
@@ -100,12 +99,12 @@ def first_bool(*values: Any) -> bool:
     return next(val for val in values if isinstance(val, bool))
 
 
-def pick_not_none(iterable: Iterable[Optional[T]]) -> list[T]:
+def pick_not_none(iterable: Iterable[T | None]) -> list[T]:
     return [x for x in iterable if x is not None]
 
 
 def check_positive_int(value: Any, arg_name: str) -> None:
-    error_type: Optional[type[Exception]] = None
+    error_type: type[Exception] | None = None
     if not isinstance(value, int):
         error_type = TypeError
     elif value <= 0:

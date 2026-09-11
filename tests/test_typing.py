@@ -2,7 +2,7 @@
 
 # mypy: warn-unused-ignores
 
-from typing import TYPE_CHECKING, Any, Optional, get_type_hints
+from typing import TYPE_CHECKING, Any, get_type_hints
 
 import click
 import pytest
@@ -114,7 +114,7 @@ def test_parameter_decorators_preserve_callback_types() -> None:
 def test_option_group_attribute_type() -> None:
     group = cloup.OptionGroup("Options")
     option = cloup.Option(["--value"], group=group)
-    assert_type(option.group, Optional[cloup.OptionGroup])
+    assert_type(option.group, cloup.OptionGroup | None)
     assert option.group is group
 
 
@@ -133,7 +133,7 @@ def test_context_types() -> None:
         assert_type(cloup.get_current_context(), cloup.Context)
         assert_type(cloup.get_current_context(False), cloup.Context)
         assert_type(cloup.get_current_context(silent=False), cloup.Context)
-        assert_type(cloup.get_current_context(True), Optional[cloup.Context])
+        assert_type(cloup.get_current_context(True), cloup.Context | None)
         assert cloup.get_current_context(False) is ctx
     assert cloup.get_current_context(silent=True) is None
     with pytest.raises(RuntimeError):
@@ -156,7 +156,7 @@ def test_pass_context_preserves_signature() -> None:
 if TYPE_CHECKING:
 
     def check_rejected_calls(silent: bool) -> None:
-        assert_type(cloup.get_current_context(silent), Optional[cloup.Context])
+        assert_type(cloup.get_current_context(silent), cloup.Context | None)
         parent = cloup.Group("parent")
         parent.group(unknown=True)  # type: ignore[call-overload]
         parent.group(cls=None, unknown=True)  # type: ignore[call-overload]

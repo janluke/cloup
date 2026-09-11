@@ -8,7 +8,7 @@ help sections.
 
 import abc
 from itertools import zip_longest
-from typing import Optional, Protocol, Union
+from typing import Protocol, Union
 from collections.abc import Sequence
 
 SepType = Union[str, "SepGenerator"]
@@ -49,7 +49,7 @@ class RowSepPolicy(metaclass=abc.ABCMeta):
         rows: Sequence[Sequence[str]],
         col_widths: Sequence[int],
         col_spacing: int,
-    ) -> Optional[str]:
+    ) -> str | None:
         """Decide which row separator to use (eventually none) in the given
         definition list."""
 
@@ -102,7 +102,7 @@ class RowSepIf(RowSepPolicy):
 
     def __call__(
         self, rows: Sequence[Sequence[str]], col_widths: Sequence[int], col_spacing: int
-    ) -> Optional[str]:
+    ) -> str | None:
         if self.condition(rows, col_widths, col_spacing):
             if callable(self.sep):
                 total_width = get_total_width(col_widths, col_spacing)

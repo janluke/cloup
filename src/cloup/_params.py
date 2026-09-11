@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Optional
+from typing import TYPE_CHECKING
 
 import click
 from click.decorators import _param_memo
@@ -12,7 +12,7 @@ if TYPE_CHECKING:
 class Option(click.Option):
     """A :class:`click.Option` with an extra field ``group`` of type ``OptionGroup``."""
 
-    group: Optional[OptionGroup]
+    group: OptionGroup | None
 
     def __init__(self, *args, group=None, **attrs):
         super().__init__(*args, **attrs)

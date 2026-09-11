@@ -1,7 +1,6 @@
 from typing import (
     Any,
     NamedTuple,
-    Optional,
     TYPE_CHECKING,
     Union,
 )
@@ -112,7 +111,7 @@ class BoundConstraint(NamedTuple):
     def check_values(self, ctx: click.Context) -> None:
         self.constraint.check_values(self.params, ctx)
 
-    def get_help_record(self, ctx: click.Context) -> Optional[tuple[str, str]]:
+    def get_help_record(self, ctx: click.Context) -> tuple[str, str] | None:
         constr_help = self.constraint.help(ctx)
         if not constr_help:
             return None
@@ -127,7 +126,7 @@ class ConstraintMixin:
         self,
         *args: Any,
         constraints: Sequence[BoundConstraintSpec | BoundConstraint] = (),
-        show_constraints: Optional[bool] = None,
+        show_constraints: bool | None = None,
         **kwargs: Any,
     ):
         """

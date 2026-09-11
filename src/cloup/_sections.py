@@ -1,7 +1,6 @@
 from collections import OrderedDict
 from typing import (
     Any,
-    Optional,
     TypeVar,
 )
 from collections.abc import Iterable, Sequence
@@ -58,7 +57,7 @@ class Section:
     def sorted(cls, title: str, commands: Subcommands = ()) -> "Section":
         return cls(title, commands, is_sorted=True)
 
-    def add_command(self, cmd: click.Command, name: Optional[str] = None) -> None:
+    def add_command(self, cmd: click.Command, name: str | None = None) -> None:
         name = name or cmd.name
         if not name:
             raise TypeError("missing command name")
@@ -111,9 +110,9 @@ class SectionMixin:
     def __init__(
         self,
         *args: Any,
-        commands: Optional[dict[str, click.Command]] = None,
+        commands: dict[str, click.Command] | None = None,
         sections: Iterable[Section] = (),
-        align_sections: Optional[bool] = None,
+        align_sections: bool | None = None,
         **kwargs: Any,
     ):
         """
@@ -139,8 +138,8 @@ class SectionMixin:
     def _add_command_to_section(
         self,
         cmd: click.Command,
-        name: Optional[str] = None,
-        section: Optional[Section] = None,
+        name: str | None = None,
+        section: Section | None = None,
     ) -> None:
         """Add a command to the section (if specified) or to the default section."""
         name = name or cmd.name
@@ -176,8 +175,8 @@ class SectionMixin:
     def add_command(
         self,
         cmd: click.Command,
-        name: Optional[str] = None,
-        section: Optional[Section] = None,
+        name: str | None = None,
+        section: Section | None = None,
         fallback_to_default_section: bool = True,
     ) -> None:
         """
@@ -233,7 +232,7 @@ class SectionMixin:
 
     def make_commands_help_section(
         self, ctx: click.Context, section: Section
-    ) -> Optional[HelpSection]:
+    ) -> HelpSection | None:
         visible_subcommands = section.list_commands()
         if not visible_subcommands:
             return None
@@ -246,7 +245,7 @@ class SectionMixin:
         )
 
     def must_align_sections(
-        self, ctx: Optional[click.Context], default: bool = True
+        self, ctx: click.Context | None, default: bool = True
     ) -> bool:
         return first_bool(
             self.align_sections,
