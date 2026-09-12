@@ -1,4 +1,4 @@
-"""Public typing contracts, checked by MyPy and executable with pytest."""
+"""Public typing contracts, checked by Mypy and executable with pytest."""
 
 # mypy: warn-unused-ignores
 

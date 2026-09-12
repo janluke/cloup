@@ -11,7 +11,7 @@ Why do the decorators have overloads?
 The overloads distinguish the default command class from an explicitly supplied
 ``cls``, preserving the concrete return type for custom command classes. Click
 uses the same pattern. A generic parameter with a concrete default still does
-not work in MyPy; see https://github.com/python/mypy/issues/3737.
+not work in Mypy; see https://github.com/python/mypy/issues/3737.
 
 The explicit keyword parameters provide IDE completion and show defaults.
 ``TypedDict`` and ``Unpack`` can describe shared keyword arguments, but do not
@@ -294,7 +294,7 @@ class Group(SectionMixin, Command, click.Group):
 
     # Click types these methods as ``(*args: Any, **kwargs: Any)``, i.e. as an
     # unspecified signature, so any signature naming its arguments is formally
-    # narrower. MyPy reads an unspecified supertype signature as "anything goes"
+    # narrower. Mypy reads an unspecified supertype signature as "anything goes"
     # and accepts it; Pyrefly has no such rule, hence the suppression. Satisfying
     # Pyrefly would require a trailing ``(*args: Any, **kwargs: Any)`` overload,
     # which would swallow every keyword argument error these overloads exist to

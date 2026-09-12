@@ -82,7 +82,7 @@ more expressive and configurable:
   such as ``Context.settings()`` and ``HelpFormatter.settings()``, for better IDE
   and static type checker support.
 
-Cloup is **statically type-checked** with MyPy and Pyrefly and extensively **tested**
+Cloup is **statically type-checked** with Mypy and Pyrefly and extensively **tested**
 against multiple versions of Python with nearly 100% coverage.
 
 Does it replace Click?
