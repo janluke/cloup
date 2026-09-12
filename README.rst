@@ -162,7 +162,7 @@ Links
 =====
 
 * Documentation (release_ | development_)
-* `Changelog <https://cloup.readthedocs.io/en/stable/pages/changelog.html>`_
+* `Release notes <https://github.com/janLuke/cloup/releases>`_
 * `GitHub repository <https://github.com/janLuke/cloup>`_
 * `Q&A and discussions <https://github.com/janLuke/cloup/discussions>`_
 
