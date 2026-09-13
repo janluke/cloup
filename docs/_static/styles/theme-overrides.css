@@ -94,18 +94,42 @@ body[data-theme="dark"] {
     - use a dark blue for code.literal
 */
 
-h1, h2, h3 {
+h1, h2, h3, h4, h5 {
     color: var(--color-brand-primary);
     font-weight: 300;
+    line-height: 1.2;
 }
 
-h1 { font-size: 2.25rem; }
-h2 { font-size: 1.75rem; margin-top: 1.25em; }
-h3 { font-size: 1.5em; margin-top: 1.25em; }
+h1 {
+    font-size: 2.25rem;
+    margin-block: 0 1.5rem;
+}
 
-h1 + .section h2:first-of-type,
-h2 + .section h3:first-of-type {
-    margin-top: .5em;
+h2 {
+    font-size: 1.85rem;
+    margin-block: 3rem 1rem;
+}
+
+h3 {
+    font-size: 1.6rem;
+    margin-block: 2.5rem .75rem;
+}
+
+h4 {
+    font-size: 1.4rem;
+    margin-block: 2rem .625rem;
+}
+
+h5 {
+    font-size: 1.2rem;
+    margin-block: 1.75rem .25rem;
+}
+
+h1 + section > h2:first-child,
+h2 + section > h3:first-child,
+h3 + section > h4:first-child,
+h4 + section > h5:first-child {
+    margin-block-start: 1rem;
 }
 
 .content {
@@ -120,7 +144,7 @@ article {
 }
 
 section > p {
-    margin: 1.25em 0;
+    margin: .5em 0 1.25em;
 }
 
 code.literal {
