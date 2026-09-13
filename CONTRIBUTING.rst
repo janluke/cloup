@@ -14,8 +14,8 @@ Please discuss a proposed change before opening a pull request:
    approach.
 3. Wait for a maintainer to confirm that the change is appropriate and agree on
    its scope.
-4. If the maintainer agrees, create a branch, implement the change, and open a
-   pull request linked to the issue.
+4. If the maintainer agrees, fork the repository, create a branch, implement the change,
+   and open a pull request linked to the issue.
 
 Starting with an issue avoids duplicated work and gives maintainers and contributors
 a place to settle API and compatibility decisions before code is written.
@@ -23,50 +23,154 @@ a place to settle API and compatibility decisions before code is written.
 Development
 -----------
 
-Prerequisites
-~~~~~~~~~~~~~
+Set up a development environment
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Cloup uses `Hatch <https://hatch.pypa.io/latest/>`_ for isolated Python
 environments and `Task <https://taskfile.dev/>`_ as its project command interface.
-Install both as isolated tools:
 
-.. code-block:: console
+To set up a development environment you have two options:
 
-    $ pipx install hatch
-    $ pipx install "go-task-bin>=3.46.1"
+1. (recommended) use the Dev Container configuration provided with the repository;
+   this is the quickest option when Docker is available. The dev container also
+   includes the experimental Task build with the TUI described in the box below.
 
-The equivalent UV commands are:
+2. Install them manually.
 
-.. code-block:: console
+.. admonition:: Experimental TUI for Task
 
-    $ uv tool install hatch
-    $ uv tool install "go-task-bin>=3.46.1"
+    Cloup's maintainer uses an experimental build of Task including a TUI he's authored
+    and submitted as a `PR <https://github.com/go-task/task/pull/3015>`_. The TUI greatly
+    improves DX (at least for humans) when running tasks with parallel dependencies.
 
-``go-task-bin`` is an unofficial Python package that distributes the Task binary.
-See Task's `official installation guide <https://taskfile.dev/docs/installation>`_
-for the other supported installation methods.
+    If you use the Dev Container, it comes pre-installed. If you chose the manual setup
+    route, installation instructions are provided below. Refer to the PR description for
+    how to use it.
 
-Hatch can install and manage the required Python interpreters, so a separate tool
-such as pyenv is not required.
-It creates environments automatically when their commands are first used.
-To store them under ``.hatch/`` in the repository instead of Hatch's global data
-directory, run:
+    .. image:: https://github.com/user-attachments/assets/07e4d5d1-61aa-4554-b281-ae258ae18c3b
+        :alt: Proposed Task TUI showing the task navigator and a selected task's output
+        :target: https://github.com/go-task/task/pull/3015
+
+Option 1: using the Dev Container
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The repository includes a `Dev Container <https://containers.dev/>`_ configuration
+for clients such as Visual Studio Code and GitHub Codespaces. It requires Docker
+when run locally.
+
+All you have to do is open the repository folder in the container. For example,
+in Visual Studio Code, make sure you have the
+`Dev Container Extension <https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers>`_
+installed; then follow
+`these simple steps <https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-an-existing-folder-in-a-container>`_.
+
+After the container is created, the ``dev`` Python virtual environment is created
+automatically (using ``task env``). If you use Visual Studio Code, the IDE comes
+already configured to use the Python interpreter in this environment. In other IDEs,
+you will have to select it manually; its location inside the container is::
+
+    ~/.local/share/cloup/dev/bin/python
+
+The container provides two Task executables:
+
+* ``task`` is an official released build used for the project commands.
+* ``task-tui`` is a pinned experimental build including a TUI written by Cloup's
+  maintainer, which was submitted as a `PR <https://github.com/go-task/task/pull/3015>`_.
+
+Run the experimental build directly with ``task-tui --tui`` or use its ``tui``
+alias. The stable ``task`` command remains unchanged.
+
+Option 2: manual setup
+^^^^^^^^^^^^^^^^^^^^^^
+
+Install Hatch
+"""""""""""""
+
+You can install hatch with either pipx or uv:
+
+.. tab-set::
+
+    .. tab-item:: Using uv
+
+        .. code-block:: console
+
+            uv tool install hatch
+
+    .. tab-item:: Using pipx
+
+        .. code-block:: console
+
+            pipx install hatch
+
+Hatch creates environments automatically when their commands are first used.
+By default, Hatch environments are stored in Hatch's global data directory.
+If you prefer to store them in each project/repository folder, under a ``.hatch/``
+subfolder, run:
 
 .. code-block:: console
 
     $ hatch config set dirs.env.virtual .hatch
 
-Set up the development environment
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Install Task
+""""""""""""
 
-Clone your fork and enter the repository:
+To install the canonical Task, you can either follow the
+`official installation guide <https://taskfile.dev/docs/installation>`_ for your OS
+or install it through the **unofficial** Python package:
+
+.. tab-set::
+
+    .. tab-item:: Using uv
+
+        .. code-block:: console
+
+            $ uv tool install "go-task-bin>=3.46.1"
+
+    .. tab-item:: Using pipx
+
+        .. code-block:: console
+
+            $ pipx install "go-task-bin>=3.46.1"
+
+(Optional) Install Task with TUI
+""""""""""""""""""""""""""""""""
+
+To install the experimental build including the TUI, follow these steps:
+
+1. Install `Go <https://go.dev/doc/install>`_ 1.26.4 or newer and Git.
+
+2. Clone the ``tui`` branch outside the Cloup checkout and build it as
+   ``task-tui`` in ``~/.local/bin``:
+
+   .. code-block:: console
+
+       $ mkdir -p "$HOME/src" "$HOME/.local/bin"
+       $ git clone --depth 1 --branch tui https://github.com/janluke/task.git "$HOME/src/task-tui"
+       $ go -C "$HOME/src/task-tui" build -trimpath -o "$HOME/.local/bin/task-tui" ./cmd/task
+
+3. Ensure ``~/.local/bin`` is on ``PATH``, then add this alias to your shell's
+   startup file, such as ``~/.bashrc`` or ``~/.zshrc``:
+
+   .. code-block:: bash
+
+       alias tui='task-tui --tui'
+
+The fork is installed under a distinct name, so it does not replace the canonical
+``task`` executable. To update it later, pull the branch and repeat the build:
 
 .. code-block:: console
 
-    $ git clone https://github.com/<your-username>/cloup.git
-    $ cd cloup
+    $ git -C "$HOME/src/task-tui" pull --ff-only
+    $ go -C "$HOME/src/task-tui" build -trimpath -o "$HOME/.local/bin/task-tui" ./cmd/task
 
-Create the ``dev`` environment with Python 3.10 and print its location:
+
+Set up a Python venv for your IDE
+"""""""""""""""""""""""""""""""""
+
+Even if Hatch creates environments automatically when needed, you probably
+still want to set a Python environment for your IDE.
+
+To create the ``dev`` environment and print its location, run:
 
 .. code-block:: console
 
@@ -76,16 +180,16 @@ Select the reported Python interpreter in your IDE.
 The environment contains Cloup in editable mode together with the test, coverage,
 and typing dependencies, so it can run tests and type checks directly from the IDE.
 
-Run ``task --list`` to see all available project commands.
-
 Using Task
 ~~~~~~~~~~
+
+Run ``task --list`` to see all available project commands.
 
 Invoke one project task by name, for example:
 
 .. code-block:: console
 
-    $ task lint
+    $ task fix
 
 When several task names are provided on the command line, Task runs them
 sequentially by default.
@@ -105,8 +209,30 @@ Use ``--failfast`` when one failure should cancel the other running tasks:
 
 The project does not impose a concurrency limit.
 Set one for a particular run with ``task --concurrency N COMMAND`` or the
-``TASK_CONCURRENCY`` environment variable.
-Parallel output is prefixed with the task that produced it.
+``TASK_CONCURRENCY`` environment variable. For example, to run tasks sequentially:
+
+.. code-block:: console
+
+    $ task --concurrency 1 qa:all
+
+For contiguous, failure-focused logs, use Task's grouped output:
+
+.. code-block:: console
+
+    $ task --output group --output-group-error-only qa:all
+
+Using the experimental Task TUI
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+When running tasks that execute multiple tasks in parallel, it's very useful to
+be able to inspect the output of each one separately in a UI.
+
+The Dev Container includes a pinned build of the branch as ``task-tui``; run it with
+the ``tui`` alias while keeping the official release available as ``task``, e.g.:
+
+.. code-block:: console
+
+    tui qa:all
 
 Code quality
 ~~~~~~~~~~~~
@@ -122,22 +248,11 @@ Use the following commands while developing:
    * - ``task check``
      - Lint the code and check its formatting style.
    * - ``task fix``
-     - Lint in fix mode and format the code.
-   * - ``task lint [-- --fix]``
-     - Lint the code with Ruff, optionally fixing violations.
-   * - ``task format``
-     - Format the code with Ruff.
+     - Fix lint violations and format the code with Ruff.
    * - ``task typing``
      - Type-check the code in the development environment.
    * - ``task typing:all``
      - Type-check in every Python and Click compatibility environment.
-
-Ruff enforces Pyflakes rules, stable non-formatting pycodestyle rules, and warnings.
-Whitespace and hard line-length rules that overlap with ``ruff format`` are left to
-the formatter, which uses the existing 90-character target. In particular, the
-former ``E241`` and ``E251`` exceptions are no longer needed, ``W191`` is omitted
-because it conflicts with the formatter, and Ruff does not implement the obsolete
-``W503`` rule.
 
 Testing
 ~~~~~~~
@@ -199,27 +314,8 @@ The aggregate tasks are the recommended checks before submitting changes:
      - Run lint, formatting, and documentation checks plus typing and tests in every
        test environment.
 
-Use ``task qa`` during routine development and ``task qa:all`` before opening or
-updating a pull request.
-
-For contiguous, failure-focused logs, use Task's grouped output:
-
-.. code-block:: console
-
-    $ task --output group --output-group-error-only qa:all
-
-An `open Task pull request <https://github.com/go-task/task/pull/3015>`_ from
-Cloup's maintainer proposes a built-in ``task --tui`` interface.
-Besides launching tasks, it executes their task graph inside the TUI, gives every
-task invocation a separately inspectable output pane, and can copy or save an
-individual task's output—or save all outputs into separate files.
-The feature is not part of a released Task version yet, and its interface may change
-while the pull request is under review.
-
-.. image:: https://github.com/user-attachments/assets/07e4d5d1-61aa-4554-b281-ae258ae18c3b
-   :alt: Proposed Task TUI showing the task navigator and a selected task's output
-   :target: https://github.com/go-task/task/pull/3015
-
+Use ``task qa`` during routine development. Run ``task qa:all`` for changes that
+may affect supported Python or Click versions.
 
 Documentation
 ~~~~~~~~~~~~~
@@ -254,19 +350,21 @@ versions afresh so scheduled CI can detect dependency compatibility problems.
 Reproducibility-sensitive lint, documentation, and package-checking environments use
 committed PEP 751 lockfiles.
 
-Regenerate affected lockfiles after changing a locked environment:
+Regenerate an affected lockfile after changing a locked environment:
 
 .. code-block:: console
 
-    $ hatch env lock
+    $ hatch env lock ENV_NAME
 
-Use ``--upgrade`` only when intentionally upgrading locked dependencies:
+Use ``--upgrade`` or ``--upgrade-package <package>`` only when intentionally
+upgrading locked dependencies:
 
 .. code-block:: console
 
-    $ hatch env lock --upgrade
+    $ hatch env lock ENV_NAME --upgrade
 
-Commit every changed ``pylock.*.toml`` file together with its ``hatch.toml`` change.
+Commit each changed ``pylock.*.toml`` file with the configuration change that
+required it, or as part of a clearly identified intentional dependency refresh.
 
 Building distributions
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -283,4 +381,6 @@ Pull requests
 Keep pull requests focused on the scope agreed in the issue.
 Include tests for behavioral changes and update user documentation when the public
 API or documented behavior changes.
-Before requesting review, run ``task qa:all`` and ``task build``.
+Before requesting review, run the appropriate QA command described above. Also run
+``task build`` after changing packaging, project metadata, package layout, or build
+hooks.

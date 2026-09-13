@@ -1,0 +1,19 @@
+{
+  "name": "Cloup",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "remoteUser": "vscode",
+  "postCreateCommand": "sh .devcontainer/post-create.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "charliermarsh.ruff",
+        "ms-python.python"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "${userHome}/.local/share/cloup/dev/bin/python"
+      }
+    }
+  }
+}
