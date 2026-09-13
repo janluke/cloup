@@ -1,7 +1,7 @@
 Arguments with ``help``
 =======================
 
-.. note:: Also available in Click since version 8.5.0
+.. admonition:: Also available in Click since version 8.5.0
 
     Cloup introduced this feature before it was available in Click.
 
