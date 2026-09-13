@@ -105,6 +105,7 @@ ENV/
 .dmypy.json
 
 # IDE settings
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 .idea/
 .mcp.json
