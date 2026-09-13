@@ -84,6 +84,7 @@ report = [
 # Code quality and style (ruff)
 [envs.code]
 locked = true
+python = "3.10"
 skip-install = true
 dependencies = [
   "ruff",
@@ -133,6 +134,7 @@ sphinx-autobuild --watch src/cloup --watch docs/_static/styles --watch README.rs
 
 [envs.package]
 locked = true
+python = "3.10"
 skip-install = true
 dependencies = [
   "build",

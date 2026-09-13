@@ -46,6 +46,9 @@ dynamic = [
 [project.urls]
 Homepage = "https://github.com/janLuke/cloup"
 
+[tool.uv.pip]
+universal = true  # universal (multi-platform) lockfiles
+
 [tool.hatch.version]
 source = "vcs"
 
