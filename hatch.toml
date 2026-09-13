@@ -125,8 +125,8 @@ build = [
   "sphinx-build -E -W --keep-going -b html docs docs/_build/html {args}",
 ]
 serve = """
-sphinx-autobuild --watch src/cloup --watch docs/_static/styles \
---ignore 'docs/autoapi/**' \
+sphinx-autobuild --watch src/cloup --watch docs/_static/styles --watch README.rst --watch CONTRIBUTING.rst \
+--ignore docs/autoapi \
 --open-browser \
 -b html docs docs/_build/html {args}
 """
