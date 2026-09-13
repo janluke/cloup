@@ -2,6 +2,7 @@
 src/cloup/_version.py
 
 act/
+*.local.*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
