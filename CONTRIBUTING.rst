@@ -41,11 +41,12 @@ To set up a development environment you have two options:
 
     Cloup's maintainer uses an experimental build of Task including a TUI he's authored
     and submitted as a `PR <https://github.com/go-task/task/pull/3015>`_. The TUI greatly
-    improves DX (at least for humans) when running tasks with parallel dependencies.
+    improves DX when running tasks with parallel dependencies.
 
     If you use the Dev Container, it comes pre-installed. If you chose the manual setup
-    route, installation instructions are provided below. Refer to the PR description for
-    how to use it.
+    route, download it from the `task-tui releases page
+    <https://github.com/janluke/task-tui/releases>`_ as described below. Refer to the
+    PR description for how to use it.
 
     .. image:: https://github.com/user-attachments/assets/07e4d5d1-61aa-4554-b281-ae258ae18c3b
         :alt: Proposed Task TUI showing the task navigator and a selected task's output
@@ -74,8 +75,9 @@ you will have to select it manually; its location inside the container is::
 The container provides two Task executables:
 
 * ``task`` is an official released build used for the project commands.
-* ``task-tui`` is a pinned experimental build including a TUI written by Cloup's
-  maintainer, which was submitted as a `PR <https://github.com/go-task/task/pull/3015>`_.
+* ``task-tui`` is a pinned `build <https://github.com/janluke/task-tui/releases>`_
+  of the experimental TUI written by Cloup's maintainer, which was submitted as a
+  `PR <https://github.com/go-task/task/pull/3015>`_.
 
 Run the experimental build directly with ``task-tui --tui`` or use its ``tui``
 alias. The stable ``task`` command remains unchanged.
@@ -135,33 +137,31 @@ or install it through the **unofficial** Python package:
 (Optional) Install Task with TUI
 """"""""""""""""""""""""""""""""
 
-To install the experimental build including the TUI, follow these steps:
+Builds are published on the `task-tui releases page
+<https://github.com/janluke/task-tui/releases>`_ for Linux, macOS, and Windows.
 
-1. Install `Go <https://go.dev/doc/install>`_ 1.26.4 or newer and Git.
-
-2. Clone the ``tui`` branch outside the Cloup checkout and build it as
-   ``task-tui`` in ``~/.local/bin``:
-
-   .. code-block:: console
-
-       $ mkdir -p "$HOME/src" "$HOME/.local/bin"
-       $ git clone --depth 1 --branch tui https://github.com/janluke/task.git "$HOME/src/task-tui"
-       $ go -C "$HOME/src/task-tui" build -trimpath -o "$HOME/.local/bin/task-tui" ./cmd/task
-
-3. Ensure ``~/.local/bin`` is on ``PATH``, then add this alias to your shell's
-   startup file, such as ``~/.bashrc`` or ``~/.zshrc``:
-
-   .. code-block:: bash
-
-       alias tui='task-tui --tui'
-
-The fork is installed under a distinct name, so it does not replace the canonical
-``task`` executable. To update it later, pull the branch and repeat the build:
+Download the archive for your platform and extract ``task-tui`` into a
+directory on your ``PATH``. On Linux with an x86-64 processor:
 
 .. code-block:: console
 
-    $ git -C "$HOME/src/task-tui" pull --ff-only
-    $ go -C "$HOME/src/task-tui" build -trimpath -o "$HOME/.local/bin/task-tui" ./cmd/task
+   $ mkdir -p "$HOME/.local/bin"
+   $ curl -fsSL https://github.com/janluke/task-tui/releases/latest/download/task-tui_linux_amd64.tar.gz \
+       | tar -xz -C "$HOME/.local/bin" task-tui
+
+Replace ``linux_amd64`` with ``linux_arm64``, ``darwin_amd64`` or
+``darwin_arm64`` as needed; the Windows archives are ``.zip`` files.
+
+Consider adding the `tui` alias to your shell's startup file, such as ``~/.bashrc``
+or ``~/.zshrc``:
+
+.. code-block:: bash
+
+   alias tui='task-tui --tui'
+
+The build is installed under a distinct name, so it does not replace the
+canonical ``task`` executable. To update it later, download a newer release the
+same way.
 
 
 Set up a Python venv for your IDE

@@ -1,29 +1,8 @@
-ARG GO_VERSION=1.26.7
-
-FROM golang:${GO_VERSION}-bookworm AS task-tui-builder
-
-ARG TASK_TUI_REF=f96f3c88be6d2936be8b7bf7b1c6929b15a67c14
-
-WORKDIR /src/task
-
-RUN git init \
-    && git remote add origin https://github.com/janluke/task.git \
-    && git fetch --depth 1 origin "${TASK_TUI_REF}" \
-    && git checkout --detach FETCH_HEAD
-
-RUN --mount=type=cache,target=/go/pkg/mod \
-    --mount=type=cache,target=/root/.cache/go-build \
-    for attempt in 1 2 3; do \
-        CGO_ENABLED=0 go build -trimpath -o /out/task-tui ./cmd/task && exit 0; \
-        if [ "${attempt}" -eq 3 ]; then exit 1; fi; \
-        sleep 5; \
-    done
-
-
 FROM mcr.microsoft.com/devcontainers/python:3-3.10-bookworm
 
 ARG HATCH_VERSION=1.18.0
 ARG TASK_VERSION=v3.53.1
+ARG TASK_TUI_VERSION=tui-v0.1.0-task-v3.53.1
 
 USER root
 
@@ -35,9 +14,22 @@ RUN pipx install "hatch==${HATCH_VERSION}" \
     && rm /tmp/install-task.sh \
     && task --version
 
-COPY --from=task-tui-builder /out/task-tui /usr/local/bin/task-tui
-
-RUN task-tui --version \
+# Unofficial Task build with the TUI, from https://github.com/janluke/task-tui.
+# It installs as `task-tui`, leaving the official `task` above untouched.
+RUN architecture="$(dpkg --print-architecture)" \
+    && case "${architecture}" in \
+        amd64|arm64) archive="task-tui_linux_${architecture}.tar.gz" ;; \
+        *) echo "Unsupported architecture: ${architecture}" >&2; exit 1 ;; \
+    esac \
+    && release_url="https://github.com/janluke/task-tui/releases/download/${TASK_TUI_VERSION}" \
+    && curl --fail --location --silent --show-error \
+        "${release_url}/${archive}" --output "/tmp/${archive}" \
+    && curl --fail --location --silent --show-error \
+        "${release_url}/checksums.txt" --output /tmp/checksums.txt \
+    && (cd /tmp && sha256sum --check --ignore-missing checksums.txt) \
+    && tar -xzf "/tmp/${archive}" -C /usr/local/bin task-tui \
+    && rm "/tmp/${archive}" /tmp/checksums.txt \
+    && task-tui --version \
     && printf "\nalias tui='task-tui --tui'\n" >> /etc/bash.bashrc \
     && printf "\nalias tui='task-tui --tui'\n" >> /etc/zsh/zshrc
 
