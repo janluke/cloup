@@ -5,6 +5,7 @@
   },
   "remoteUser": "vscode",
   "postCreateCommand": "sh .devcontainer/post-create.sh",
+  "waitFor": "postCreateCommand",
   "customizations": {
     "vscode": {
       "extensions": [
@@ -12,7 +13,7 @@
         "ms-python.python"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "/home/vscode/.local/share/cloup/dev/bin/python"
+        "python.defaultInterpreterPath": "${workspaceFolder}/.dev-container-venv/bin/python"
       }
     }
   }

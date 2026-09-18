@@ -66,11 +66,14 @@ installed; then follow
 `these simple steps <https://code.visualstudio.com/docs/devcontainers/containers#_quick-start-open-an-existing-folder-in-a-container>`_.
 
 After the container is created, the ``dev`` Python virtual environment is created
-automatically (using ``task env``). If you use Visual Studio Code, the IDE comes
-already configured to use the Python interpreter in this environment. In other IDEs,
-you will have to select it manually; its location inside the container is::
+automatically (using ``task env``) and linked as ``.dev-container-venv`` in the
+repository directory. Visual Studio Code selects that interpreter by itself, because
+the container waits for the environment before letting editors connect. In other IDEs,
+select it manually::
 
-    ~/.local/share/cloup/dev/bin/python
+    .dev-container-venv/bin/python
+
+The link is ignored by Git and points nowhere outside the container.
 
 The container provides two Task executables:
 

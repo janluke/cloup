@@ -4,10 +4,7 @@ set -eu
 
 task env
 
-# Hatch's default path includes a hash of the project location. Give IDEs a
-# stable path without changing where Hatch stores the environment itself.
-environment_path=$(hatch env find dev)
-environment_link_dir="$HOME/.local/share/cloup"
-
-mkdir -p "$environment_link_dir"
-ln -sfnT "$environment_path" "$environment_link_dir/dev"
+# Hatch keeps its environments outside the repository, but editors only select
+# an interpreter by themselves when it sits inside the workspace, so link it
+# here. The link is ignored by Git and points nowhere outside the container.
+ln -sfnT "$(hatch env find dev)" .dev-container-venv
