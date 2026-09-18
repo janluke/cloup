@@ -7,7 +7,11 @@ ARG TASK_TUI_VERSION=tui-v0.1.0-task-v3.53.1
 USER root
 
 RUN pipx install "hatch==${HATCH_VERSION}" \
-    && curl --fail --location --silent --show-error \
+    && hatch --version
+
+# The install script is the way Task documents; it is removed in the same layer
+# so that it does not stay in the image.
+RUN curl --fail --location --silent --show-error \
         https://taskfile.dev/install.sh \
         --output /tmp/install-task.sh \
     && sh /tmp/install-task.sh -b /usr/local/bin "${TASK_VERSION}" \
