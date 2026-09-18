@@ -12,7 +12,7 @@
         "ms-python.python"
       ],
       "settings": {
-        "python.defaultInterpreterPath": "${userHome}/.local/share/cloup/dev/bin/python"
+        "python.defaultInterpreterPath": "/home/vscode/.local/share/cloup/dev/bin/python"
       }
     }
   }
