@@ -1,14 +1,9 @@
 """Generic utilities."""
 
-import importlib.metadata
 from collections.abc import Hashable, Iterable, Sequence
 from typing import Any, TypeVar
 
 from cloup.typing import MISSING, Possibly
-
-click_version_tuple = tuple(importlib.metadata.version("click").split("."))
-click_semver = tuple(int(x) for x in click_version_tuple[:3])
-click_version_ge_8_5 = click_semver >= (8, 5)
 
 T = TypeVar("T")
 K = TypeVar("K", bound=Hashable)
