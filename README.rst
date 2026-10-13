@@ -1,3 +1,9 @@
+.. note::
+
+    ⚠️ Cloup is in maintenance mode. Bug-fix releases continue for at least the
+    lifetime of Click 8. Small, valuable changes and additions are welcome. No large
+    architectural change is planned.
+
 .. raw:: html
 
     <p align="center">
