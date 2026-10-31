@@ -6,6 +6,7 @@ import pytest
 import cloup
 from cloup._util import reindent
 from cloup.constraints import mutually_exclusive
+from cloup.formatting import _formatter
 from tests.util import new_dummy_func
 
 
@@ -111,6 +112,20 @@ def test_deprecated_command_help(
         expected_output += f"\n  {body}\n"
     expected_output += "\nOptions:\n  --help  Show this message and exit.\n"
     assert result.output == expected_output
+
+
+@pytest.mark.parametrize("decorator", [cloup.command, cloup.group])
+def test_deprecated_label_is_translatable(runner, decorator, monkeypatch):
+    monkeypatch.setattr(_formatter, "_", lambda message: "obsolete")
+
+    @decorator(deprecated="use `newcmd` instead")
+    def example():
+        """Do a thing."""
+
+    result = runner.invoke(example, ["--help"], terminal_width=80)
+
+    assert result.exit_code == 0
+    assert "Do a thing. (OBSOLETE: use `newcmd` instead)" in result.output
 
 
 @pytest.mark.parametrize("decorator", [cloup.command, cloup.group])

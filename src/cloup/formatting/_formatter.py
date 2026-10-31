@@ -4,6 +4,7 @@ import shutil
 import sys
 import textwrap
 from collections.abc import Callable, Iterable, Iterator, Sequence
+from gettext import gettext as _
 from itertools import chain
 from typing import (
     TYPE_CHECKING,
@@ -39,10 +40,15 @@ Definition = tuple[str, str | Callable[[int], str]]
 
 
 def _format_deprecation_label(deprecated: bool | str) -> str:
-    """Return the parenthesized deprecation label shown in help text."""
+    """Return the parenthesized deprecation label shown in help text.
+
+    The label is translated through the application's ``gettext`` catalog, the way
+    Click translates its own.
+    """
+    label = _("deprecated").upper()
     if isinstance(deprecated, str):
-        return f"(DEPRECATED: {deprecated})"
-    return "(DEPRECATED)"
+        return f"({label}: {deprecated})"
+    return f"({label})"
 
 
 @dc.dataclass()
