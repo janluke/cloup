@@ -77,6 +77,37 @@ An example
         ...
 
 
+Translating built-in labels
+---------------------------
+
+Cloup's default help headings, usage prefix, aliases label, and deprecation label
+use Python's :mod:`gettext`, following Click's convention. Applications provide
+the translation catalogs; Cloup does not bundle translations.
+
+Configure the application's gettext domain before rendering help or invoking the CLI:
+
+.. code-block:: python
+
+    import gettext
+
+    gettext.bindtextdomain("myapp", "/path/to/locales")
+    gettext.textdomain("myapp")
+
+Gettext selects the language from the locale environment, including ``LANGUAGE``.
+For example, an Italian catalog would be located at
+``/path/to/locales/it/LC_MESSAGES/myapp.mo``. Include messages from Cloup and Click
+when preparing the application's catalog.
+
+Calling ``gettext.install()`` alone does not configure the domain used by Cloup
+and Click: it installs a translation function in Python's built-in namespace.
+
+Application-provided titles, descriptions, help text, and explicit usage prefixes
+are used as supplied; translate them in your application. Built-in constraint
+descriptions and error messages remain in English. Applications can customize
+constraint help and errors with :meth:`~cloup.constraints.Constraint.rephrased`,
+using callbacks to translate messages at runtime.
+
+
 Themes
 ------
 You can set a "help theme" using the ``theme`` key of ``formatter_settings``.
