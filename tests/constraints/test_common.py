@@ -5,6 +5,7 @@ from click import Argument, Option
 from cloup.constraints.common import (
     format_param,
     format_param_list,
+    get_human_readable_name,
     get_param_label,
     join_with_and,
     param_value_is_set,
@@ -34,6 +35,11 @@ def test_param_value_is_set(param_type, value, expected):
     assert actual == expected
 
 
+def test_get_human_readable_name():
+    assert get_human_readable_name(Argument(["arg"])) == "ARG"
+    assert get_human_readable_name(Argument(["arg"], metavar="<file>")) == "<file>"
+
+
 def test_get_param_label():
     assert get_param_label(Argument(["arg"])) == "ARG"
     assert get_param_label(Argument(["arg"], metavar="<file>")) == "<file>"
@@ -43,7 +49,7 @@ def test_get_param_label():
     assert get_param_label(Option(["-o/-O", "--opt/--no-opt"])) == "--opt"
 
 
-@parametrize("formatter", get_param_label, format_param)
+@parametrize("formatter", get_human_readable_name, get_param_label, format_param)
 def test_argument_formatters_prefer_spec(formatter, monkeypatch):
     class CustomArgument(Argument):
         @property
