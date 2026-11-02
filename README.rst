@@ -93,12 +93,13 @@ top-level namespace. Applications using Cloup can therefore access most Click
 functionality through ``cloup`` without maintaining separate top-level imports from
 both packages.
 
+Nonetheless, some of Cloup’s features can be used independently in existing Click projects through dedicated mixins.
+
 Project status
 ==============
 
 Cloup is stable. It began as a set of extensions to Click, and the features it set
-out to provide are now implemented. Although Cloup can be used as a wrapper around
-Click, its extensions can also be adopted individually in an existing Click project.
+out to provide are now implemented.
 
 No new major features will be added to Cloup. Proposals for small improvements are
 welcome, and bugs will continue to be fixed.
