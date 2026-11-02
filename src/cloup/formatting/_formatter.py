@@ -198,13 +198,13 @@ class HelpFormatter(click.HelpFormatter):
 
     @override
     def write_usage(self, prog: str, args: str = "", prefix: str | None = None) -> None:
-        prefix = "Usage:" if prefix is None else prefix
+        prefix = _("Usage:") if prefix is None else prefix
         prefix = self.theme.heading(prefix) + " "
         prog = self.theme.invoked_command(prog)
         super().write_usage(prog, args, prefix)
 
     def write_aliases(self, aliases: Sequence[str]) -> None:
-        self.write_heading("Aliases", newline=False)
+        self.write_heading(_("Aliases"), newline=False)
         alias_list = ", ".join(self.theme.col1(alias) for alias in aliases)
         self.write(f" {alias_list}\n")
 

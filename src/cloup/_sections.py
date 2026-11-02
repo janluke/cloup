@@ -1,5 +1,6 @@
 from collections import OrderedDict
 from collections.abc import Iterable, Sequence
+from gettext import gettext as _
 from typing import (
     Any,
     TypeVar,
@@ -213,7 +214,9 @@ class SectionMixin:
         section_list = list(self._user_sections)
         if include_default_section and len(self._default_section) > 0:
             default_section = Section.sorted(
-                title="Other commands" if len(self._user_sections) > 0 else "Commands",
+                title=_("Other commands")
+                if len(self._user_sections) > 0
+                else _("Commands"),
                 commands=self._default_section.commands,
             )
             section_list.append(default_section)

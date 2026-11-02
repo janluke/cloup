@@ -4,6 +4,7 @@ Implements the "option groups" feature.
 
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator, Sequence
+from gettext import gettext as _
 from typing import (
     Any,
     overload,
@@ -198,7 +199,7 @@ class OptionGroupMixin:
         if not any(args_with_help):
             return None
         return HelpSection(
-            heading="Positional arguments",
+            heading=_("Positional arguments"),
             definitions=[
                 self.get_argument_help_record(arg, ctx) for arg in self.arguments
             ],
@@ -245,7 +246,7 @@ class OptionGroupMixin:
         .. versionadded:: 0.8.0
         """
         default_group = OptionGroup(
-            "Options" if is_the_only_visible_option_group else "Other options"
+            _("Options") if is_the_only_visible_option_group else _("Other options")
         )
         default_group.options = self.get_ungrouped_options(ctx)
         return default_group

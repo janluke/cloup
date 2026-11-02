@@ -1,4 +1,5 @@
 from collections.abc import Callable, Iterable, Sequence
+from gettext import gettext as _
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -213,7 +214,7 @@ class ConstraintMixin:
         records_gen = (constr.get_help_record(ctx) for constr in self.param_constraints)
         records = [rec for rec in records_gen if rec is not None]
         if records:
-            with formatter.section("Constraints"):
+            with formatter.section(_("Constraints")):
                 formatter.write_dl(records)
 
     def must_show_constraints(self, ctx: click.Context) -> bool:
