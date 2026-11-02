@@ -1,3 +1,5 @@
+from unittest.mock import PropertyMock
+
 from click import Argument, Option
 
 from cloup.constraints.common import (
@@ -34,14 +36,31 @@ def test_param_value_is_set(param_type, value, expected):
 
 def test_get_param_label():
     assert get_param_label(Argument(["arg"])) == "ARG"
+    assert get_param_label(Argument(["arg"], metavar="<file>")) == "<file>"
     assert get_param_label(Option(["--opt"])) == "--opt"
     assert get_param_label(Option(["--opt", "-o"])) == "--opt"
     assert get_param_label(Option(["-o", "--opt"])) == "--opt"
     assert get_param_label(Option(["-o/-O", "--opt/--no-opt"])) == "--opt"
 
 
+@parametrize("formatter", get_param_label, format_param)
+def test_argument_formatters_prefer_spec(formatter, monkeypatch):
+    class CustomArgument(Argument):
+        @property
+        def spec(self) -> str:
+            return "CUSTOM"
+
+    monkeypatch.setattr(
+        CustomArgument,
+        "human_readable_name",
+        PropertyMock(side_effect=AssertionError("human_readable_name is deprecated")),
+    )
+    assert formatter(CustomArgument(["arg"])) == "CUSTOM"
+
+
 def test_format_param():
     assert format_param(Argument(["arg"])) == "ARG"
+    assert format_param(Argument(["arg"], metavar="<file>")) == "<file>"
     assert format_param(Option(["--opt"])) == "--opt"
     assert format_param(Option(["-o"])) == "-o"
     assert format_param(Option(["--opt", "-o"])) == "--opt (-o)"

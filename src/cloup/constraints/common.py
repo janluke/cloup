@@ -56,6 +56,10 @@ def get_required_params(params: Iterable[Parameter]) -> list[Parameter]:
 
 def get_param_label(param: Parameter) -> str:
     if param.param_type_name == "argument":
+        # Click 8.6 replaces human_readable_name with spec.
+        spec: str | None = getattr(param, "spec", None)
+        if spec is not None:
+            return spec
         return param.human_readable_name
     return sorted(param.opts, key=len)[-1]
 
@@ -74,7 +78,7 @@ def join_with_and(strings: Sequence[str], sep: str = ", ") -> str:
 
 def format_param(param: Parameter) -> str:
     if isinstance(param, Argument):
-        return param.human_readable_name
+        return get_param_label(param)
 
     opts = param.opts
     if len(opts) == 1:
