@@ -1,3 +1,6 @@
+import subprocess
+import sys
+import textwrap
 import types
 
 import click
@@ -84,3 +87,29 @@ def test_deprecated_click_names_are_reexported(name: str) -> None:
     with pytest.warns(DeprecationWarning):
         click_value = getattr(click, name)
     assert cloup_value is click_value
+
+
+def test_package_namespace_in_fresh_interpreter() -> None:
+    subprocess.run(
+        [
+            sys.executable,
+            "-c",
+            textwrap.dedent("""
+                import sys
+
+                import cloup
+
+                if sys.version_info >= (3, 15) and sys.get_lazy_imports() == "normal":
+                    assert "click" not in sys.modules
+                    assert "cloup._commands" not in sys.modules
+
+                assert cloup.constraints.__name__ == "cloup.constraints"
+                assert cloup.formatting.__name__ == "cloup.formatting"
+                assert cloup.styling.__name__ == "cloup.styling"
+                assert cloup.types.__name__ == "cloup.types"
+                assert cloup.typing.__name__ == "cloup.typing"
+                assert callable(cloup.command)
+                """),
+        ],
+        check=True,
+    )
